@@ -1,0 +1,50 @@
+http://www.danga.com/memcached/download.bml
+http://pecl.php.net/package/memcache
+
+## 先设置好 DAG 的 YUM 源。
+yum -y install libevent-devel
+## Installing for dependencies: libevent
+
+tar zxvf memcached-1.2.2.tar.gz
+cd memcached-1.2.2
+./configure --prefix=/usr/local/memcached
+make
+make install
+
+
+/usr/local/memcached/bin/memcached -l 192.168.0.11 -u nobody -d -m 4096 -vv >> /var/log/memcached.log
+启动的这个 memcached 为一个后台守护进程模式(-d)， 然后缓存的空间为 4096M(-m), 监听(-l)服务器 192.168.0.11 的默认端口(11211)，将日志写到 /var/log/memcached.log (-vv) 。
+/usr/local/memcached/bin/memcached -h
+memcached 1.2.2
+-p <num>      TCP port number to listen on (default: 11211)
+-U <num>      UDP port number to listen on (default: 0, off)
+-s <file>     unix socket path to listen on (disables network support)
+-l <ip_addr>  interface to listen on, default is INDRR_ANY
+-d            run as a daemon
+-r            maximize core file limit
+-u <username> assume identity of <username> (only when run as root)
+-m <num>      max memory to use for items in megabytes, default is 64 MB
+-M            return error on memory exhausted (rather than removing items)
+-c <num>      max simultaneous connections, default is 1024
+-k            lock down all paged memory
+-v            verbose (print errors/warnings while in event loop)
+-vv           very verbose (also print client commands/reponses)
+-h            print this help and exit
+-i            print memcached and libevent license
+-b            run a managed instanced (mnemonic: buckets)
+-P <file>     save PID in <file>, only used with -d option
+-f <factor>   chunk size growth factor, default 1.25
+-n <bytes>    minimum space allocated for key+value+flags, default 48
+
+echo "/usr/local/memcached/bin/memcached -l 192.168.0.11 -u nobody -d -m 4096 -vv >> /var/log/memcached.log" >> /etc/rc.local
+
+
+## cluster:
+<?php
+   $memcache_obj = new Memcache;
+   $memcache_obj->addServer('memcache_host', 11211);
+   $memcache_obj->addServer('failed_host', 11211);
+   
+   $stats = $memcache_obj->getExtendedStats();
+   print_r($stats);
+?>

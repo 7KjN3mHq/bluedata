@@ -1,0 +1,102 @@
+## requires
+yum -y install zlib-devel
+
+
+## install
+tar jxvf httpd-2.2.4.tar.bz2
+tar zxvf mod_limitipconn-0.22.tar.gz
+cd httpd-2.2.4
+patch -p1 < ../mod_limitipconn-0.22/apachesrc.diff
+./buildconf
+
+./configure \
+--prefix=/usr/local/apache \
+--enable-mods-shared=most \
+--enable-so \
+--enable-rewrite=shared \
+--enable-deflate=shared \
+--enable-forward=shared
+make
+make install
+cd ..
+
+cd mod_limitipconn-0.22
+PATH=/usr/local/apache/bin:$PATH make install
+cd ..
+
+tar zxvf cronolog-1.6.2.tar.gz
+cd cronolog-1.6.2
+./configure
+make
+make install
+
+
+## configuration
+mkdir /var/log/apache
+vi /usr/local/apache/conf/httpd.conf
+User nobody
+Group nobody
+ServerAdmin bluedata@gmail.com
+#Order deny,allow
+#Deny from all
+ErrorLog "|/usr/local/sbin/cronolog /var/log/apache/error_log.%Y%m%d"
+CustomLog "|/usr/local/sbin/cronolog /var/log/apache/access_log.%Y%m%d" combined
+Include conf/extra/httpd-mpm.conf
+Include conf/extra/httpd-info.conf
+Include conf/extra/httpd-vhosts.conf
+Include conf/extra/httpd-default.conf
+## Add
+Include conf/extra/httpd-modules.conf
+
+vi /usr/local/apache/conf/extra/httpd-modset.conf
+<IfModule mod_deflate.c>
+    DeflateCompressionLevel 9
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml application/x-httpd-php
+    AddOutputFilter DEFLATE css js
+</ifmodule>
+
+<IfModule mod_limitipconn.c>
+    <Location />
+        MaxConnPerIP 8
+        NoIPLimit image/* text/css application/x-shockwave-flash application/x-javascript
+    </Location>
+</IfModule>
+
+vi /usr/local/apache/conf/extra/httpd-mpm.conf
+PidFile /var/run/httpd.pid
+LockFile /var/lock/subsys/accept.lock
+ServerLimit        1024
+MaxClients         1024
+MaxRequestsPerChild   0
+
+vi /usr/local/apache/conf/extra/httpd-info.conf
+ExtendedStatus On
+
+vi /usr/local/apache/conf/extra/httpd-default.conf
+Timeout 10
+KeepAlive Off
+ServerTokens Prod
+
+vi /usr/local/apache/conf/extra/httpd-vhosts.conf
+<VirtualHost *:80>
+DocumentRoot /home/www
+ServerName *
+</VirtualHost>
+Include conf/extra/httpd-vhosts-*.conf
+
+vi /usr/local/apache/conf/extra/httpd-vhosts-main.conf
+## Add set
+
+vi /etc/crontab
+1 0 * * * root find /var/log/apache -type f -mtime +2 -exec rm -f {} \;
+
+cp -f /usr/local/apache/bin/apachectl /etc/rc.d/init.d/httpd
+vi /etc/init.d/httpd
+## Add
+#chkconfig: 345 85 15
+#description: Starts and stops httpd.
+chmod +x /etc/init.d/httpd
+chkconfig --del httpd && chkconfig --add httpd
+
+vi ~/.bash_profile
+PATH=$PATH:$HOME/bin:/usr/local/apache/bin

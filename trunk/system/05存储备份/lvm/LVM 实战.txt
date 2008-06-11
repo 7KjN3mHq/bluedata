@@ -1,0 +1,65 @@
+备份服务器的硬盘空间不够了，添加硬盘扩容，为了今后再扩容的方便，使用 LVM 。
+ 
+加挂一块硬盘，并用 fdisk 进行如下分区：
+# fdisk -l /dev/sdb
+Device Boot         Start          End          Blocks     Id     System
+/dev/sdb1                 1        2433      19543041    8e  Linux LVM
+/dev/sdb2            2434        4866     19543072+   8e  Linux LVM
+/dev/sdb3            4867        7299     19543072+   8e  Linux LVM
+/dev/sdb4            7300        9729      19518975    8e  Linux LVM
+ 
+习惯性的分成了四个区，其实只分一个区就行。
+ 
+初始化 LVM ：
+# vgscan
+ 
+建立 PV ：
+# pvcreate /dev/sdb1
+# pvcreate /dev/sdb2
+# pvcreate /dev/sdb3
+# pvcreate /dev/sdb4
+查看 PV：
+# pvdisplay /dev/sdb1
+ 
+创建 VG ：
+# vgcreate vga /dev/sdb1 /dev/sdb2 /dev/sdb3 /dev/sdb4
+查看 VG ：
+# vgdisplay vga
+ 
+创建 LV ：
+# lvcreate -l 28899 -n vga1 vga
+或者，
+# lvcreate -L 112890M -n vga1 vga
+-l 以 PE 为单位划分大小，-L 以 MB 为单位划分大小。
+查看 LV ：
+# lvdisplay /dev/vga/vga1
+ 
+格式化 LV ：
+# mke2fs -j -L /backup /dev/vga/vga1
+ 
+挂载：
+加入 /etc/fstab ，
+LABEL=/backup           /backup                 ext3    defaults        1 2
+# mount -a
+ 
+把原来用来备份的分区 (/dev/sda5) 上的数据复制到 /backup 。
+ 
+顺便试了试 LV 改名：
+# umount /backup
+# lvrename /dev/vga/vga1 /dev/vga/lv1
+# lvdisplay /dev/vga/lv1
+# e2label /dev/vga/lv1 /backup
+# mount -a
+LV 上的数据不会受到影响。
+ 
+最后，把 /dev/sda5 也加入 VG ，以扩大容量。
+# fdisk /dev/sda
+把 /dev/sda5 的 Id 改为 8e ，再把 /dev/sda5 也做成 PV ：
+# pvcreate /dev/sda5
+扩充 VG ：
+# vgextend vga /dev/sda5
+扩充 LV ：
+# lvextend -l +4765 /dev/vga/lv1
+扩充分区大小：
+# ext2online /dev/vga/lv1
+从 ext2online 这个命令的名字就可以知道，扩容是不需要 umount 的。

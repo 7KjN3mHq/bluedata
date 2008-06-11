@@ -1,0 +1,21 @@
+219.x.x.x  --  源电信ip
+61.x.x.x  --  双线机电信ip
+202.x.x.x  --  双线机网通ip
+
+domain.com  由 dns view 分流，电信用户直接得到源电信ip--219.x.x.x，网通用户得到双线机网通ip--202.x.x.x
+通过 iptables 把进入 202.x.x.x 的 80 端口的包转发到 61.x.x.x 的 81 端口（80 端口留给双线机电信ip的 web 服务），
+再通过 rinetd 把 61.x.x.x:81 的包转发到 219.x.x.x （不使用 squid 加速，是有多方面不可抗拒原因的）。
+
+
+你电信的接入设置为100.100.100.2/24,网关为100.100.100.1 那你加: route add -net ${ip_realserver}/24  gw 100.100.100.1，那他就走电信了啊。
+
+route add -net 219.153.20.128/25 gw 192.168.0.2
+route del -net 219.153.20.128/25 gw 192.168.0.2
+
+route del default eth0
+route add default ppp0
+
+ip route replace default via 192.168.6.2
+
+
+route add -host 219.153.20.171 eth2

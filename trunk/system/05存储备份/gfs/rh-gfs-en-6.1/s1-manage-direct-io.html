@@ -1,0 +1,541 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Direct I/O</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat GFS 6.1"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Managing GFS"
+HREF="ch-manage.html"><LINK
+REL="PREVIOUS"
+TITLE="Adding Journals to a File System"
+HREF="s1-manage-addjournalfs.html"><LINK
+REL="NEXT"
+TITLE="Data Journaling"
+HREF="s1-manage-data-journal.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat GFS 6.1: Administrator's Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-manage-addjournalfs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 5. Managing GFS</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-manage-data-journal.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-MANAGE-DIRECT-IO"
+>5.7. Direct I/O</A
+></H1
+><P
+>Direct I/O is a feature of the file system whereby file reads and
+      writes go directly from the applications to the storage device, bypassing
+      the operating system read and write caches. Direct I/O is used only by
+      applications (such as databases) that manage their own caches.</P
+><P
+>An application invokes direct I/O by opening a file with the
+	<TT
+CLASS="OPTION"
+>O_DIRECT</TT
+> flag. Alternatively, GFS can attach a direct
+	I/O attribute to a file, in which case direct I/O is used regardless of
+	how the file is opened.</P
+><P
+>When a file is opened with <TT
+CLASS="OPTION"
+>O_DIRECT</TT
+>, or when a GFS
+      direct I/O attribute is attached to a file, all I/O operations must be
+      done in block-size multiples of 512 bytes. The memory being
+      read from or written to must also be 512-byte aligned.</P
+><P
+>One of the following methods can be used to enable direct I/O on a
+      file:</P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="OPTION"
+>O_DIRECT</TT
+></P
+></LI
+><LI
+><P
+>GFS file attribute</P
+></LI
+><LI
+><P
+>GFS directory attribute</P
+></LI
+></UL
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-MANAGE-ODIRECT"
+>5.7.1. <TT
+CLASS="OPTION"
+>O_DIRECT</TT
+></A
+></H2
+><P
+>If an application uses the <TT
+CLASS="OPTION"
+>O_DIRECT</TT
+> flag on an
+	  <TT
+CLASS="COMMAND"
+>open()</TT
+> system call, direct I/O is used for the
+	  opened file.</P
+><P
+>To cause the <TT
+CLASS="OPTION"
+>O_DIRECT</TT
+> flag to be defined with
+	  recent glibc libraries, define <TT
+CLASS="OPTION"
+>_GNU_SOURCE</TT
+> at the
+	  beginning of a source file before any includes, or define it on the
+	  <B
+CLASS="GUILABEL"
+>cc</B
+> line when compiling.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-MANAGE-FILEATTRIBUTE"
+>5.7.2. GFS File Attribute</A
+></H2
+><P
+>The <TT
+CLASS="COMMAND"
+>gfs_tool</TT
+> command can be used to assign (set) a
+	  direct I/O attribute flag, <TT
+CLASS="OPTION"
+>directio</TT
+>, to a GFS
+	  file. The <TT
+CLASS="OPTION"
+>directio</TT
+> flag can also be cleared.</P
+><DIV
+CLASS="SIMPLESECT"
+><H3
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MANAGE-FA-USE"
+>5.7.2.1. Usage</A
+></H3
+><P
+><B
+CLASS="APPLICATION"
+>Setting the <TT
+CLASS="OPTION"
+>directio</TT
+> Flag</B
+></P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>gfs_tool setflag <TT
+CLASS="OPTION"
+>directio</TT
+> <TT
+CLASS="PARAMETER"
+><I
+>File</I
+></TT
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+><B
+CLASS="APPLICATION"
+>Clearing the <TT
+CLASS="OPTION"
+>directio</TT
+> Flag</B
+></P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>gfs_tool clearflag <TT
+CLASS="OPTION"
+>directio</TT
+> <TT
+CLASS="PARAMETER"
+><I
+>File</I
+></TT
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="PARAMETER"
+><I
+>File</I
+></TT
+></DT
+><DD
+><P
+>Specifies the file where the <TT
+CLASS="OPTION"
+>directio</TT
+>
+		flag is assigned.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SIMPLESECT"
+><H3
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MANAGE-FA-EX"
+>5.7.2.2. Example</A
+></H3
+><P
+>In this example, the command sets the <TT
+CLASS="OPTION"
+>directio</TT
+>
+	    flag on the file named <TT
+CLASS="FILENAME"
+>datafile</TT
+> in directory
+	    <TT
+CLASS="FILENAME"
+>/gfs1</TT
+>.</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>gfs_tool setflag directio /gfs1/datafile</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-MANAGE-DIRATTRIBUTE"
+>5.7.3. GFS Directory Attribute</A
+></H2
+><P
+>The <TT
+CLASS="COMMAND"
+>gfs_tool</TT
+> command can be used to assign (set) a
+	  direct I/O attribute flag, <TT
+CLASS="OPTION"
+>inherit_directio</TT
+>, to a GFS
+	  directory. Enabling the <TT
+CLASS="OPTION"
+>inherit_directio</TT
+> flag on a
+	  directory causes all newly created regular files in that directory to
+	  automatically inherit the <TT
+CLASS="OPTION"
+>directio</TT
+> flag. Also, the
+	  <TT
+CLASS="OPTION"
+>inherit_directio</TT
+> flag is inherited by any new
+	  subdirectories created in the directory. The
+	  <TT
+CLASS="OPTION"
+>inherit_directio</TT
+> flag can also be cleared.</P
+><DIV
+CLASS="SIMPLESECT"
+><H3
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MANAGE-DA-USE"
+>5.7.3.1. Usage</A
+></H3
+><P
+><B
+CLASS="APPLICATION"
+>Setting the <TT
+CLASS="OPTION"
+>inherit_directio</TT
+> flag</B
+></P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>gfs_tool setflag <TT
+CLASS="OPTION"
+>inherit_directio</TT
+> <TT
+CLASS="PARAMETER"
+><I
+>Directory</I
+></TT
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+><B
+CLASS="APPLICATION"
+>Clearing the <TT
+CLASS="OPTION"
+>inherit_directio</TT
+> flag</B
+></P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>gfs_tool clearflag <TT
+CLASS="OPTION"
+>inherit_directio</TT
+> <TT
+CLASS="PARAMETER"
+><I
+>Directory</I
+></TT
+></TT
+>&#13;</PRE
+></TD
+></TR
+></TABLE
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="PARAMETER"
+><I
+>Directory</I
+></TT
+></DT
+><DD
+><P
+>Specifies the directory where the
+		<TT
+CLASS="OPTION"
+>inherit_directio</TT
+> flag is set.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SIMPLESECT"
+><H3
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MANAGE-DA-EX"
+>5.7.3.2. Example</A
+></H3
+><P
+>In this example, the command sets the
+	  <TT
+CLASS="OPTION"
+>inherit_directio</TT
+> flag on the directory named
+	    <TT
+CLASS="FILENAME"
+>/gfs1/data/</TT
+>.</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>gfs_tool setflag inherit_directio /gfs1/data/</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-manage-addjournalfs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-manage-data-journal.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Adding Journals to a File System</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-manage.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Data Journaling</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

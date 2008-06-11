@@ -1,0 +1,16 @@
+显示行数
+:set nu
+反之
+:set nonu
+
+高亮显示搜索结果
+:set hlsearch
+关闭
+:set nohlsearch
+debian 可以加入 /etc/vim/vimrc，redhat 9 加入 ~/.vimrc，rhel 加入 /etc/vimrc
+
+redhat vim 中显示颜色或不显示颜色
+首先确保安装了 vim-enhanced 包，然后，vi ~/.vimrc，syntax on，显示颜色，syntax off，则不显示颜色
+为了方便，把 vi ln 到 vim
+mv /bin/vi /bin/vi.bak
+ln -s /usr/bin/vim /bin/vi

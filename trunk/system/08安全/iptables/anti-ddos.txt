@@ -1,0 +1,17 @@
+2.6 ÄÚºËÍøÂçÎÈ¶¨ÐÔ
+echo "0" > /proc/sys/net/ipv4/tcp_ecn
+
+°²È«¿¼ÂÇ
+echo "0" > /proc/sys/net/ipv4/conf/all/accept_redirects
+echo "0" > /proc/sys/net/ipv4/conf/all/accept_source_route
+
+·ÀÖ¹ IP ÆÛÆ­
+echo "1" > /proc/sys/net/ipv4/conf/eth0/rp_filter
+echo "1" > /proc/sys/net/ipv4/conf/eth0/log_martians
+
+·À DDOS
+echo "1" > /proc/sys/net/ipv4/tcp_syncookies
+echo "1" > /proc/sys/net/ipv4/tcp_synack_retries
+echo "2048" > /proc/sys/net/ipv4/tcp_max_syn_backlog
+
+iptables -A INPUT -p tcp --tcp-flags SYN,ACK,FIN,RST SYN -m limit --limit 30/m --limit-burst 2 -j ACCEPT

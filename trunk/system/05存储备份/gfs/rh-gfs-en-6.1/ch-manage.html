@@ -1,0 +1,940 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Managing GFS</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat GFS 6.1"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Initial Setup Tasks"
+HREF="s1-config-tasks.html"><LINK
+REL="NEXT"
+TITLE="Mounting a File System"
+HREF="s1-manage-mountfs.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat GFS 6.1: Administrator's Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-config-tasks.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-manage-mountfs.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-MANAGE"
+></A
+>Chapter 5. Managing GFS</H1
+><P
+>This chapter describes the tasks and commands for managing GFS and
+    consists of the following sections:
+    </P
+><P
+></P
+><UL
+><LI
+><P
+><A
+HREF="ch-manage.html#S1-MANAGE-MAKEFS"
+>Section 5.1 <I
+>Making a File System</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-mountfs.html"
+>Section 5.2 <I
+>Mounting a File System</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-unmountfs.html"
+>Section 5.3 <I
+>Unmounting a File System</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-quota.html"
+>Section 5.4 <I
+>GFS Quota Management</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-growfs.html"
+>Section 5.5 <I
+>Growing a File System</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-addjournalfs.html"
+>Section 5.6 <I
+>Adding Journals to a File System</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-direct-io.html"
+>Section 5.7 <I
+>Direct I/O</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-data-journal.html"
+>Section 5.8 <I
+>Data Journaling</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-atimeconf.html"
+>Section 5.9 <I
+>Configuring <TT
+CLASS="COMMAND"
+>atime</TT
+> Updates</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-suspendfs.html"
+>Section 5.10 <I
+>Suspending Activity on a File System</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-displaystats.html"
+>Section 5.11 <I
+>Displaying Extended GFS Information and Statistics</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-repairfs.html"
+>Section 5.12 <I
+>Repairing a File System</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-manage-pathnames.html"
+>Section 5.13 <I
+>Context-Dependent Path Names</I
+></A
+></P
+></LI
+></UL
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-MANAGE-MAKEFS"
+>5.1. Making a File System</A
+></H1
+><P
+>Once a cluster is set up and running, you can create a GFS file
+	system with the <TT
+CLASS="COMMAND"
+>gfs_mkfs</TT
+> command. A file system is
+      created on an  activated  CLVM volume.  The following information is required to run the
+      <TT
+CLASS="COMMAND"
+>gfs_mkfs</TT
+> command:</P
+><P
+></P
+><UL
+><LI
+><P
+>Lock protocol/module name (for example,
+	    <TT
+CLASS="COMMAND"
+>lock_dlm</TT
+>)</P
+></LI
+><LI
+><P
+>Cluster name </P
+></LI
+><LI
+><P
+>Number of journals (one journal required for each node that may
+	  be mounting the file system)</P
+></LI
+></UL
+><DIV
+CLASS="SIMPLESECT"
+><H2
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MKFS-USE"
+>5.1.1. Usage</A
+></H2
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>gfs_mkfs -p <TT
+CLASS="PARAMETER"
+><I
+>LockProtoName</I
+></TT
+> -t <TT
+CLASS="PARAMETER"
+><I
+>LockTableName</I
+></TT
+> -j <TT
+CLASS="PARAMETER"
+><I
+>Number BlockDevice</I
+></TT
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Make sure that you are very
+	familiar with using the <TT
+CLASS="PARAMETER"
+><I
+>LockProtoName</I
+></TT
+> and
+	<TT
+CLASS="PARAMETER"
+><I
+>LockTableName</I
+></TT
+> parameters. Improper use of
+	the <TT
+CLASS="PARAMETER"
+><I
+>LockProtoName</I
+></TT
+> and
+	<TT
+CLASS="PARAMETER"
+><I
+>LockTableName</I
+></TT
+> parameters may cause file system or
+	lock space corruption.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="PARAMETER"
+><I
+>LockProtoName</I
+></TT
+></DT
+><DD
+><P
+>Specifies the name of the locking protocol (for example,
+	      <TT
+CLASS="COMMAND"
+>lock_dlm</TT
+>) to use.</P
+></DD
+><DT
+><TT
+CLASS="PARAMETER"
+><I
+>LockTableName</I
+></TT
+></DT
+><DD
+><P
+>This parameter has two parts separated by a colon (no
+		spaces) as follows:
+		<TT
+CLASS="PARAMETER"
+><I
+>ClusterName:FSName</I
+></TT
+></P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="PARAMETER"
+><I
+>ClusterName</I
+></TT
+>, the name of the Red Hat		    cluster for which the GFS file system is being created.</P
+></LI
+><LI
+><P
+><TT
+CLASS="PARAMETER"
+><I
+>FSName</I
+></TT
+>, the file-system name,
+		  can be 1 to 16 characters long, and the name must 
+		  be unique among all file systems in the cluster.</P
+></LI
+></UL
+></DD
+><DT
+><TT
+CLASS="PARAMETER"
+><I
+>Number</I
+></TT
+></DT
+><DD
+><P
+>Specifies the number of journals to be created by the
+	      <TT
+CLASS="COMMAND"
+>gfs_mkfs</TT
+> command. One journal is required for
+	      each node that mounts the file system. (More journals than are
+	      needed can be specified at creation time to allow for future
+	      expansion.)</P
+></DD
+><DT
+><TT
+CLASS="PARAMETER"
+><I
+>BlockDevice</I
+></TT
+></DT
+><DD
+><P
+>Specifies a volume. </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SIMPLESECT"
+><H2
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MKFS-EX"
+>5.1.2. Examples</A
+></H2
+><P
+>In this example, <TT
+CLASS="COMMAND"
+>lock_dlm</TT
+> is the locking
+	  protocol that the file system uses. The cluster name is
+	  <TT
+CLASS="FILENAME"
+>alpha</TT
+>, and the file-system name is
+	  <TT
+CLASS="FILENAME"
+>gfs1</TT
+>. The file system contains eight journals and
+	  is created on <TT
+CLASS="FILENAME"
+>/dev/vg01/lvol0</TT
+>.</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>gfs_mkfs -p lock_dlm -t alpha:gfs1 -j 8 /dev/vg01/lvol0</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>In this example, a second <TT
+CLASS="COMMAND"
+>lock_dlm</TT
+> file
+	  system is made, which can be used in cluster
+	  <TT
+CLASS="FILENAME"
+>alpha</TT
+>. The file-system name is
+	  <TT
+CLASS="FILENAME"
+>gfs2</TT
+>. The file system contains eight journals and
+	  is created on <TT
+CLASS="FILENAME"
+>/dev/vg01/lvol1</TT
+>.</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>gfs_mkfs -p lock_dlm -t alpha:gfs2 -j 8 /dev/vg01/lvol1</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="SIMPLESECT"
+><H2
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MKFS-OPTS"
+>5.1.3. Complete Options</A
+></H2
+><P
+><A
+HREF="ch-manage.html#TB-TABLE-GFS-MKFS"
+>Table 5-1</A
+> describes the
+	<TT
+CLASS="COMMAND"
+>gfs_mkfs</TT
+> command options (flags and
+	parameters).</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-TABLE-GFS-MKFS"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Flag</TH
+><TH
+>Parameter</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-b</TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>BlockSize</I
+></TT
+></TD
+><TD
+>Sets the
+		file-system block size to
+		<TT
+CLASS="PARAMETER"
+><I
+>BlockSize</I
+></TT
+>. Default block size is 4096
+		bytes.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-D</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Enables debugging output.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-h</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Help. Displays available options.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-J</TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>MegaBytes</I
+></TT
+></TD
+><TD
+>Specifies the size of the journal in megabytes. Default
+		journal size is 128 megabytes. The minimum size is 32
+		megabytes.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-j</TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>Number</I
+></TT
+></TD
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>Specifies the number of journals to
+		be created by the <TT
+CLASS="COMMAND"
+>gfs_mkfs</TT
+> command. One
+		journal is required for each node that mounts the file
+		system.</TD
+></TR
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Note:</B
+> More journals than are
+		    needed can be specified at creation time to allow for future
+		    expansion.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-p</TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>LockProtoName</I
+></TT
+></TD
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>Specifies the name of the locking
+		    protocol to use. Recognized cluster-locking protocols
+		    include:</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>lock_dlm</TT
+> &#8212; The standard locking module.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>lock_gulm</TT
+> &#8212; The locking module compatible with
+		    earlier versions of GFS.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>lock_nolock</TT
+> &#8212; May be used when GFS is acting
+		    as a local file system (one node only).</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-O</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Prevents the <TT
+CLASS="COMMAND"
+>gfs_mkfs</TT
+> command from asking for
+		confirmation before writing the file system. </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-q</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Quiet. Do not display anything.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-r</TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>MegaBytes</I
+></TT
+></TD
+><TD
+>Specifies the size of the resource groups in
+		megabytes. Default resource group size is 256 megabytes.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-s</TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>Blocks</I
+></TT
+></TD
+><TD
+>Specifies the journal-segment size in file-system blocks.</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-t</TT
+></TD
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>LockTableName</I
+></TT
+></TD
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>This parameter has two parts
+		    separated by a colon (no spaces) as follows:
+		      <TT
+CLASS="PARAMETER"
+><I
+>ClusterName:FSName</I
+></TT
+>.</TD
+></TR
+><TR
+><TD
+> </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>ClusterName</I
+></TT
+> is the name of the
+		      Red Hat cluster for which the GFS file system is being
+		      created. The cluster name is set in the
+		      <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+>  
+		      file via the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>
+		      and displayed at the
+		      <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> in the
+		      Red Hat Cluster Suite cluster management GUI.</TD
+></TR
+><TR
+><TD
+> </TD
+></TR
+><TR
+><TD
+><TT
+CLASS="PARAMETER"
+><I
+>FSName</I
+></TT
+>, the
+		    file-system name, can be 1 to 16 characters in length, and
+		    the name must be unique among all file systems in the
+		    cluster.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="OPTION"
+>-V</TT
+></TD
+><TD
+>&nbsp;</TD
+><TD
+>Displays command version information.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 5-1. Command Options: <TT
+CLASS="COMMAND"
+>gfs_mkfs</TT
+></B
+></P
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-config-tasks.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-manage-mountfs.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Initial Setup Tasks</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Mounting a File System</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
