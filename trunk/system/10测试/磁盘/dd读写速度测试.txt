@@ -1,5 +1,0 @@
-写操作测速
-dd if=/dev/zero of=test bs=1024k count=4k
-
-读操作测速
-dd if=test of=/dev/null

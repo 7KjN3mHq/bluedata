@@ -1,8 +1,0 @@
-# vi /etc/ssh/sshd_config
-Protocol 2
-PasswordAuthentication no
-#ChallengeResponseAuthentication yes
-#GSSAPIAuthentication no
-#GSSAPICleanupCredentials no
-#X11Forwarding no
-UseDNS no
