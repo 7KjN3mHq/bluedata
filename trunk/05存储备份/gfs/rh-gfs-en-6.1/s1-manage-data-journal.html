@@ -1,0 +1,379 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Data Journaling</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat GFS 6.1"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Managing GFS"
+HREF="ch-manage.html"><LINK
+REL="PREVIOUS"
+TITLE="Direct I/O"
+HREF="s1-manage-direct-io.html"><LINK
+REL="NEXT"
+TITLE="Configuring atime Updates"
+HREF="s1-manage-atimeconf.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat GFS 6.1: Administrator's Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-manage-direct-io.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 5. Managing GFS</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-manage-atimeconf.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-MANAGE-DATA-JOURNAL"
+>5.8. Data Journaling</A
+></H1
+><P
+>Ordinarily, GFS writes only metadata to its journal. File contents
+      are subsequently written to disk by the kernel's periodic sync that
+      flushes file-system buffers. An <TT
+CLASS="COMMAND"
+>fsync()</TT
+> call on a file
+      causes the file's data to be written to disk immediately. The call returns
+      when the disk reports that all data is safely written.</P
+><P
+>Data journaling can result in a reduced <TT
+CLASS="COMMAND"
+>fsync()</TT
+>
+      time, especially for small files, because the file data is written to the
+      journal in addition to the metadata. An <TT
+CLASS="COMMAND"
+>fsync()</TT
+> returns
+      as soon as the data is written to the journal, which can be substantially
+      faster than the time it takes to write the file data to the main file
+      system.</P
+><P
+>Applications that rely on <TT
+CLASS="COMMAND"
+>fsync()</TT
+> to sync file
+      data may see improved performance by using data journaling. Data
+      journaling can be enabled automatically for any GFS files created in a
+      flagged directory (and all its subdirectories). Existing files with zero
+      length can also have data journaling turned on or off.</P
+><P
+>Using the <TT
+CLASS="COMMAND"
+>gfs_tool</TT
+> command, data journaling is
+      enabled on a directory (and all its subdirectories) or on a zero-length
+      file by setting the <TT
+CLASS="OPTION"
+>inherit_jdata</TT
+> or
+      <TT
+CLASS="OPTION"
+>jdata</TT
+> attribute flags to the directory or file,
+      respectively. The directory and file attribute flags can also be
+      cleared.</P
+><DIV
+CLASS="SIMPLESECT"
+><H2
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MANAGE-DJ-USE"
+>5.8.1. Usage</A
+></H2
+><P
+><B
+CLASS="APPLICATION"
+>Setting and Clearing the <TT
+CLASS="OPTION"
+>inherit_jdata</TT
+> Flag</B
+></P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>gfs_tool setflag <TT
+CLASS="OPTION"
+>inherit_jdata</TT
+> <TT
+CLASS="PARAMETER"
+><I
+>Directory</I
+></TT
+></TT
+>
+<TT
+CLASS="COMMAND"
+>gfs_tool clearflag <TT
+CLASS="OPTION"
+>inherit_jdata</TT
+> <TT
+CLASS="PARAMETER"
+><I
+>Directory</I
+></TT
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+><B
+CLASS="APPLICATION"
+>Setting and Clearing the <TT
+CLASS="OPTION"
+>jdata</TT
+> Flag</B
+></P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>gfs_tool setflag <TT
+CLASS="OPTION"
+>jdata</TT
+> <TT
+CLASS="PARAMETER"
+><I
+>File</I
+></TT
+></TT
+>
+<TT
+CLASS="COMMAND"
+>gfs_tool clearflag <TT
+CLASS="OPTION"
+>jdata</TT
+> <TT
+CLASS="PARAMETER"
+><I
+>File</I
+></TT
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="PARAMETER"
+><I
+>Directory</I
+></TT
+></DT
+><DD
+><P
+>Specifies the directory where the flag is set or cleared.</P
+></DD
+><DT
+><TT
+CLASS="PARAMETER"
+><I
+>File</I
+></TT
+></DT
+><DD
+><P
+>Specifies the zero-length file where the flag is set or
+	      cleared.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SIMPLESECT"
+><H2
+CLASS="SIMPLESECT"
+><A
+NAME="SS-MANAGE-DJ-EX"
+>5.8.2. Examples</A
+></H2
+><P
+>This example shows setting the <TT
+CLASS="OPTION"
+>inherit_jdata</TT
+> flag
+	on a directory. All files created in the directory or any of its
+	subdirectories will have the <TT
+CLASS="OPTION"
+>jdata</TT
+> flag assigned
+	automatically. Any data written to the files will be journaled.</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>gfs_tool setflag inherit_jdata /gfs1/data/</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>This example shows setting the <TT
+CLASS="OPTION"
+>jdata</TT
+> flag on a
+	file. The file must be zero size. Any data written to the file will be
+	journaled.</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>gfs_tool setflag jdata /gfs1/datafile</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-manage-direct-io.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-manage-atimeconf.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Direct I/O</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-manage.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configuring <TT
+CLASS="COMMAND"
+>atime</TT
+> Updates</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

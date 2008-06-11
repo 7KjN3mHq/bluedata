@@ -1,0 +1,18 @@
+删除大于100K的文件
+find /dir -size +100k -exec rm {} \;
+将目录下（含子目录）中所有的*.js 文件删掉
+find dir -name \*.js |xargs rm -f
+列出所有属性为777的文件
+find -perm 777 -exec ls -l {} \;
+
+批量替换
+find `pwd` -name "*.htm" -exec perl -p -i -e 's/bluedata\@xnjcw.com/bluedata\@gmail.com/g' {} \;
+
+只显示子目录
+find . -type d -maxdepth 1 | cut -d / -f2
+
+列出所有 .php 文件中包含 TEXT 字段的文件。
+find ./ -name "*.php" -exec grep -l "TEXT" {} \;
+
+忽略指定的目录和文件
+find /data/test/ -name "test5" -prune -o -name "test1" -prune -o -print

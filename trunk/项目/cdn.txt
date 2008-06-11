@@ -1,0 +1,546 @@
+# Date: 2006-02-28
+# Author: lanfeng
+# E-mail: bluedata AT gmail.com
+
+CDN 系统的实现
+三大子系统：1. DNS 策略解析系统    2. Cache Server 加速系统    3. 管理系统
+
+
+1. DNS 策略解析系统（区分电信/网通）
+
+需求
+根据访问者 IP 来源策略解析出使用双线服务器的 IP，网通用户得到网通 IP，其它用户得到电信 IP。
+将数据存入 MySQL 数据库，以便管理，在需要时还可以用 PHP 做出友善的多用户管理界面，如 http://www.aidns.cn/ 。
+按地区划分只需通过 ./documents/cnnet/dns.php 改写 ./documents/cnnet/cnnet.sh 按地区进一步区分一下 IP 段即可。
+
+测试环境
+操作系统：Redhat Linux 9
+软件：MySQL4.0.21 bind-9.3.2 mysql-bind-0.1
+
+实现
+MySQL 的安装，略。
+
+bind9 的安装
+tar zxvf bind-9.3.2.tar.gz
+tar zxvf mysql-bind-0-1.tgz
+cp mysql-bind-0.1/mysqldb.c bind-9.3.2/bin/named/
+cp mysql-bind-0.1/mysqldb.h bind-9.3.2/bin/named/include/
+cd bind-9.3.2
+
+编辑 bin/named/Makefile.in , 如下：
+DBDRIVER_OBJS = mysqldb.@O@
+DBDRIVER_SRCS = mysqldb.c
+DBDRIVER_INCLUDES = -I'/usr/local/mysql/include/mysql'
+DBDRIVER_LIBS = -L'/usr/local/mysql/lib/mysql' -lmysqlclient
+
+修改 bin/named/main.c
+找到如下内容：
+/*
+* Include header files for database drivers here.
+*/
+/* #include "xxdb.h" */
+在此后添加：
+#include "mysqldb.h"
+找到如下内容：
+/*
+* Add calls to register sdb drivers here.
+*/
+/* xxdb_init(); */
+在此后添加：
+    mysqldb_init();
+找到如下内容：
+/*
+* Add calls to unregister sdb drivers here.
+*/
+/* xxdb_clear(); */
+在此后添加：
+    mysqldb_clear();
+
+开启多线程处理并关闭 ipv6 编译安装：
+./configure --prefix=/usr/local/named --enable-threads --disable-ipv6
+make
+make install
+
+mkdir /usr/local/named/etc
+cd /usr/local/named
+
+生成 rndc 控制命令的 key 文件
+sbin/rndc-confgen > etc/rndc.conf
+
+cd etc
+
+从 rndc.conf 文件中提取 named.conf 用的 key 生成 named.conf 文件
+tail -10 rndc.conf | head -9 | sed 's/# //g' > named.conf
+
+生成 named.ca 文件
+../bin/dig > named.ca
+
+建立 localhost.zone 文件
+vi localhost.zone
+$TTL 86400
+$ORIGIN localhost.
+@ 1D IN SOA @ root (
+2006041700 ; serial
+3H         ; refresh
+15M        ; retry
+1W         ; expiry
+1D )       ; minimum
+
+@ IN NS localhost.
+@ IN A 127.0.0.1
+
+建立 localhost.arpa 文件
+vi localhost.arpa
+$TTL 86400
+@ IN SOA localhost. root.localhost. (
+2006041700 ; Serial
+28800      ; Refresh
+14400      ; Retry
+3600000    ; Expire
+86400 )    ; Minimum
+
+@ IN NS localhost.
+1 IN PTR localhost.
+
+建立 jc001.cn.zone 文件
+vi jc001.cn.zone
+$TTL 86400
+@ IN SOA ns1.jc001.tv. bluedata.xnjcw.com. (
+2006041700 ; serial
+3H         ; refresh
+15M        ; retry
+1W         ; expiry
+1D )       ; minimum
+
+@ IN NS ns1.jc001.tv.
+@ IN A 219.153.20.171
+www IN A 219.153.20.171
+mail IN A 219.153.32.197
+@ IN MX 1 mail.jc001.cn.
+
+建立 jc001.cn.arpa 文件
+vi jc001.cn.arpa
+$TTL 86400
+@ IN SOA ns1.jc001.tv. bluedata.xnjcw.com. (
+2006041700 ; Serial
+28800      ; Refresh
+14400      ; Retry
+3600000    ; Expire
+86400 )    ; Minimum
+
+@ IN NS ns1.jc001.tv.
+171 IN PTR www.jc001.cn.
+
+
+数据库的配置
+/usr/local/mysql/bin/mysql -uroot -pPASSWORD
+create database named;
+use named;
+
+创建正向解析表
+CREATE TABLE `jc001_tv_cnc_zone` (
+  `name` varchar(128) default NULL,
+  `ttl` bigint(20) unsigned default '21600',
+  `rdtype` varchar(128) NOT NULL default '',
+  `rdata` varchar(128) NOT NULL default ''
+) TYPE=MyISAM;
+
+添加数据，如下：
+INSERT INTO `jc001_tv_cnc_zone` VALUES ('www.jc001.tv', 21600, 'A', '219.153.32.197');
+INSERT INTO `jc001_tv_cnc_zone` VALUES ('jc001.tv', 21600, 'SOA', 'ns1.jc001.tv. bluedata.xnjcw.com. 2006030618 1H 2M 3W 6H');
+INSERT INTO `jc001_tv_cnc_zone` VALUES ('jc001.tv', 21600, 'NS', 'ns1.jc001.tv.');
+INSERT INTO `jc001_tv_cnc_zone` VALUES ('ns1.jc001.tv', 21600, 'A', '219.153.32.197');
+INSERT INTO `jc001_tv_cnc_zone` VALUES ('mail.jc001.tv', 21600, 'A', '219.153.32.197');
+INSERT INTO `jc001_tv_cnc_zone` VALUES ('jc001.tv', 21600, 'MX', '10 mail.jc001.tv.');
+
+再创建 jc001_tv_cnt_zone 及 jc001_tv_src_zone 表并添加所需数据。
+
+创建反向解析表
+CREATE TABLE `jc001_tv_arpa` (
+  `name` varchar(128) default NULL,
+  `ttl` int(20) default '21600',
+  `rdtype` varchar(128) default NULL,
+  `rdata` varchar(128) default NULL
+) TYPE=MyISAM;
+
+添加数据，如下：
+INSERT INTO `jc001_tv_arpa` VALUES ('32.153.219.in-addr.arpa', 21600, 'SOA', 'ns1.jc001.tv. bluedata.xnjcw.com. 2006030618 1H 2M 3W 6H');
+INSERT INTO `jc001_tv_arpa` VALUES ('32.153.219.in-addr.arpa', 21600, 'NS', 'ns1.jc001.tv.');
+INSERT INTO `jc001_tv_arpa` VALUES ('197.32.153.219.in-addr.arpa', 21600, 'PTR', 'ns1.jc001.tv.');
+
+
+创建 acl_src.conf 文件，内容如下（SRC_IP_LIST 即 Cache Server 的 IP 地址）：
+acl "src" {SRC_IP_LIST;};
+创建 acl_cnc.conf 文件，内容如下（CNC_IP_LIST 的获得在后面详述）：
+acl "cnc" {CNC_IP_LIST;};
+
+配置 named.conf，增加如下内容：
+options {
+    directory "/usr/local/named/etc";
+    pid-file "/var/run/named.pid";
+    forwarders {
+      61.128.128.68;
+      61.139.2.69;
+    };
+    auth-nxdomain no;
+};
+
+include "acl_src.conf";
+
+view "src" {
+match-clients { "src"; };
+
+zone "." IN {
+    type hint;
+    file "named.ca";
+};
+
+zone "localhost" IN {
+    type master;
+    file "localhost.zone";
+    allow-update { none; };
+};
+
+zone "0.0.127.in-addr.arpa" IN {
+    type master;
+    file "localhost.arpa";
+    allow-update { none; };
+};
+
+zone "jc001.tv" {
+type master;
+database "mysqldb named jc001_tv_src_zone localhost xnjcw xnjcw";
+};
+zone "32.153.219.in-addr.arpa" {
+type master;
+database "mysqldb named jc001_tv_arpa localhost xnjcw xnjcw";
+};
+
+zone "jc001.cn" IN {
+    type master;
+    file "jc001.cn.zone";
+};
+
+zone "20.153.219.in-addr.arpa" IN {
+    type master;
+    file "jc001.cn.arpa";
+};
+
+};
+
+include "acl_cnc.conf";
+
+view "cnc" {
+match-clients { "cnc"; };
+
+zone "." IN {
+    type hint;
+    file "named.ca";
+};
+
+zone "localhost" IN {
+    type master;
+    file "localhost.zone";
+    allow-update { none; };
+};
+
+zone "0.0.127.in-addr.arpa" IN {
+    type master;
+    file "localhost.arpa";
+    allow-update { none; };
+};
+
+zone "jc001.tv" {
+type master;
+database "mysqldb named jc001_tv_cnc_zone localhost xnjcw xnjcw";
+};
+zone "32.153.219.in-addr.arpa" {
+type master;
+database "mysqldb named jc001_tv_arpa localhost xnjcw xnjcw";
+};
+
+zone "jc001.cn" IN {
+    type master;
+    file "jc001.cn.zone";
+};
+
+zone "20.153.219.in-addr.arpa" IN {
+    type master;
+    file "jc001.cn.arpa";
+};
+
+};
+
+view "cnt" {
+match-clients { "any"; };
+
+zone "." IN {
+    type hint;
+    file "named.ca";
+};
+
+zone "localhost" IN {
+    type master;
+    file "localhost.zone";
+    allow-update { none; };
+};
+
+zone "0.0.127.in-addr.arpa" IN {
+    type master;
+    file "localhost.arpa";
+    allow-update { none; };
+};
+
+zone "jc001.tv" {
+type master;
+database "mysqldb named jc001_tv_cnt_zone localhost xnjcw xnjcw";
+};
+zone "32.153.219.in-addr.arpa" {
+type master;
+database "mysqldb named jc001_tv_arpa localhost xnjcw xnjcw";
+};
+
+zone "jc001.cn" IN {
+    type master;
+    file "jc001.cn.zone";
+};
+
+zone "20.153.219.in-addr.arpa" IN {
+    type master;
+    file "jc001.cn.arpa";
+};
+
+};
+
+
+注：1. 因为使用了视图，所以在每个视图中都要定义 zone ，包括 localhost。
+    2. 对于需要个性化添加的域名，使用数据库是方便的；对于提供 CDN 服务，
+       客户只需对需要加速域名做 CNAME ，那么，用文件保存 zone 就可以了。
+       例如，需要对 www.xbjcw.com 进行加速，可以做一个 xbjcw.jc001.cn 
+       的策略解析，然后 www.xbjcw.com CNAME xbjcw.jc001.cn 即可。
+    3. 如果域名很多，可把 CNC/CNT/正解/反解 数据分开存放在不同的数据库。
+    4. 对于使用同一双线缓存加速服务器的域名可以简单的使用 CNAME 指向做
+       了策略解析的域名即可。例如 www.xnjcw.com CNAME www.xbjcw.com
+
+检测
+/usr/local/named/sbin/named -g
+启动
+/usr/local/named/sbin/named &
+防火墙开启 53 端口
+/sbin/iptables -I INPUT -p udp --dport 53 -j ACCEPT
+
+
+创建启动脚本
+vi /etc/rc.d/init.d/named
+----------------------------------------代码开始----------------------------------------
+#!/bin/bash
+#
+# named This shell script takes care of starting and stopping
+# named (BIND DNS server).
+#
+# chkconfig: 345 99 99
+# description: named (BIND) is a Domain Name Server (DNS) \
+# that is used to resolve host names to IP addresses.
+# probe: true
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ ${NETWORKING} = "no" ] && exit 0
+
+[ -f /usr/local/named/sbin/named ] || exit 0
+
+[ -f /usr/local/named/etc/named.conf ] || exit 0
+
+# See how we were called.
+case "$1" in
+start)
+# Start daemons.
+echo -n "Starting named: "
+daemon /usr/local/named/sbin/named
+echo
+touch /var/lock/subsys/named
+;;
+stop)
+# Stop daemons.
+echo -n "Shutting down named: "
+killproc /usr/local/named/sbin/named
+rm -f /var/lock/subsys/named
+echo
+;;
+status)
+/usr/local/named/sbin/rndc status
+exit $?
+;;
+restart)
+$0 stop
+$0 start
+exit $?
+;;
+reload)
+/usr/local/named/sbin/rndc reload
+exit $?
+;;
+probe)
+# named knows how to reload intelligently; we don't want linuxconf
+# to offer to restart every time
+/usr/local/named/sbin/rndc reload >/dev/null 2>&1 || echo start
+exit 0
+;;
+
+*) 
+echo "Usage: named {start|stop|status|restart}"
+exit 1
+esac
+
+exit 0
+----------------------------------------代码结束----------------------------------------
+
+chmod 755 /etc/rc.d/init.d/named
+chkconfig --add named
+chkconfig named on
+
+注：启动 named 前需要先启动 MySQL ，笔者是在 /etc/rc.local 中自动启动 MySQL ，而 /etc/rc.local 的优先级最低，
+    所以在 /etc/rc.d/init.d/named 中也把优先级设置为 99 了，"# chkconfig: 345 99 99"。
+
+
+测试
+用四川电信的域名服务器进行解析
+$ host www.jc001.tv 61.139.2.69
+www.jc001.tv            A       219.153.20.186
+www.jc001.tv            A       219.153.20.177
+用成都网通的域名服务器进行解析
+$ host www.jc001.tv 218.104.200.170
+www.jc001.tv            A       219.153.32.197
+笔者将成都电信 ADSL 的域名服务器地址 202.98.96.68 加入到 acl_src.conf 中，用来模拟 Cache Server 返回 IP 的状况
+$ host www.jc001.tv 202.98.96.68
+www.jc001.tv            A       219.153.20.171
+www.jc001.biz 做了 CNAME 到 www.jc001.tv
+$ host www.jc001.biz
+www.jc001.biz           CNAME   www.jc001.tv
+www.jc001.tv            A       219.153.20.177
+www.jc001.tv            A       219.153.20.186
+
+注：在有多台服务器的状况下，DNS 轮循(一个域名设置多个 A 记录)可对负载进行分流。
+    Windows 系统可用 nslookup 进行测试。ipconfig /flushdns 清空 dns 缓存或关闭 DNS Client 服务。
+
+
+利用 jwhois 查询 ip 地址所属 isp 并进行处理得到电信/网通/铁通/长宽/移动/联通 ip 段
+cnnet.sh 程序如下：
+----------------------------------------代码开始----------------------------------------
+#!/bin/sh
+FILE=/tmp/ip_apnic
+rm -f $FILE 
+wget http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest -O $FILE
+grep 'apnic|CN|ipv4|' $FILE | cut -f 4,5 -d'|'| sed -e 's/|/ /g' | while read ip cnt
+do
+  echo $ip:$cnt
+mask=$(cat << EOF | bc | tail -1
+pow=32;
+define log2(x)
+{
+  if(x<=1) return(pow);
+  pow--;
+  return(log2(x/2));
+}
+log2($cnt)
+EOF)
+  echo $ip/$mask >> cnnet.txt
+  NETNAMEF=`whois $ip@whois.apnic.net | sed -e '/./{H;$!d;}' -e 'x;/netnum/!d' | grep ^netname | sed -e 's/.*:      \(.*\)/\1/g' | sort -u`
+  NETNAMEL=`echo $NETNAMEF | sed -e 's/-.*//g'`
+  case $NETNAMEL in
+  CHINANET|CHINATELECOM)
+    echo $ip/$mask >> chinanet.txt
+  ;;
+  CNCGROUP)
+    echo $ip/$mask >> cncgroup.txt
+  ;;
+  esac
+  case $NETNAMEF in
+  YINGYFWQ-INFORMATION-CENTER|SN-COM-NET-INFO-CENT-NET|SNXIAN|HFLAN|WHTEL|SXXZX|JX-DCB|CNINFONET-XJ|WH-CHINANET-NIC|CSIF|DNS-VLAN|JINHUA-TELECOM-COMPANY)
+    echo $ip/$mask >> chinanet.txt
+  ;;
+  DQTNET|CNC-JS-suzhou-MAN|CHINAINFO-SD|SH-CHINA-NETCOM|guotong-stock|HLTT)
+    echo $ip/$mask >> cncgroup.txt
+  ;;
+  CRTC|CRGxBsS|CRHunCsS)
+    echo $ip/$mask >> crtc.txt
+  ;;
+  GWBN)
+    echo $ip/$mask >> gwbn.txt
+  ;;
+  CMNET)
+    echo $ip/$mask >> cmnet.txt
+  ;;
+  UNICOM)
+    echo $ip/$mask >> unicom.txt
+  ;;
+  esac
+done
+----------------------------------------代码结束----------------------------------------
+
+
+对 ip 段进行处理，生成 acl_cnc.conf 文件：
+#!/bin/sh
+echo "acl \"cnc\" {" > acl_cnc.conf
+for x in `cat cncgroup.txt crtc.txt gwbn.txt`; do
+  echo "$x;" >> acl.conf
+done
+echo "};" >> acl.conf
+
+注：这里把铁通和长城宽带划入了网通。
+
+
+
+2. Cache Server 加速系统（文档未完成）
+
+双线服务器源地址策略路由
+建立电信/网通相应路由表并设置
+echo "201     CNC" >> /etc/iproute2/rt_tables
+ip route add CNC_IP_NET dev CNC_IF src CNC_IP table CNC
+ip route add default via CNC_IP_GW table CNC
+ip rule add from CNC_IP table CNC
+
+echo "202     CNT" >> /etc/iproute2/rt_tables
+ip route add CNT_IP_NET dev CNT_IF src CNT_IP table CNT
+ip route add default via CNT_IP_GW table CNT
+ip rule add from CNT_IP table CNT
+
+确保 main 路由表也能正确选路
+ip route add CNC_IP_NET dev CNC_IF src CNC_IP
+ip route add CNT_IP_NET dev CNT_IF src CNT_IP
+更改 main 路由表的默认路由：
+ip route replace default via CNT_IP_GW
+
+
+域名问题
+1. 对少量域名进行加速：
+先确定域名解析顺序是 hosts 文件优先。
+cat /etc/host.conf
+order hosts,bind
+然后在 /etc/hosts 中添加域名及对应源地址。
+2. 作为 CDN 服务的提供商：
+vi /etc/resolv.conf
+把 nameserver 设置为域名策略解析服务器的 IP。
+
+
+squid 部分
+测试环境
+操作系统：Debian GNU/Linux Sarge
+软件：squid2.5.9-10sarge2
+
+文档整理中……
+
+
+
+3. 管理系统
+对各 Cache Server 及域名流量的监控
+利用 snmp 及 cacti 来做，实施中……
+
+域名管理及流量察看
+用 PHP+MySQL 做前端，实施中……
+

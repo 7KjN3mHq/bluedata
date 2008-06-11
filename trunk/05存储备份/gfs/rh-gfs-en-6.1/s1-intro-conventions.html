@@ -1,0 +1,721 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Document Conventions</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat GFS 6.1"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Introduction"
+HREF="ch-intro.html"><LINK
+REL="PREVIOUS"
+TITLE="Introduction"
+HREF="ch-intro.html"><LINK
+REL="NEXT"
+TITLE="More to Come"
+HREF="s1-intro-more-to-come.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat GFS 6.1: Administrator's Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-intro.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Introduction</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-intro-more-to-come.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-INTRO-CONVENTIONS"
+>2. Document Conventions</A
+></H1
+><P
+>    
+   In this manual, certain words are represented
+    in different fonts, typefaces, sizes, and weights.  This highlighting is
+    systematic; different words are represented in the same style to
+    indicate their inclusion in a specific category.  The types of words
+    that are represented this way include the following:
+  </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="COMMAND"
+>command</TT
+></DT
+><DD
+><P
+>Linux commands (and other operating system commands, when used)
+	    are represented this way.  This style should indicate to you that
+	    you can type the word or phrase on the command line and press
+	    <SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Enter]</KEYCAP
+></SPAN
+> to invoke a command.  Sometimes a command
+	    contains words that would be displayed in a different style on their
+	    own (such as file names).  In these cases, they are considered to be
+	    part of the command, so the entire phrase is displayed as a command.
+	    For example:
+	  </P
+><P
+>	    Use the <TT
+CLASS="COMMAND"
+>cat testfile</TT
+> command to view the
+	    contents of a file, named <TT
+CLASS="FILENAME"
+>testfile</TT
+>, in the
+	    current working directory.
+	  </P
+></DD
+><DT
+><TT
+CLASS="FILENAME"
+>file name</TT
+></DT
+><DD
+><P
+>File names, directory names, paths, and RPM package names are
+	    represented this way.  This style indicates that a
+	    particular file or directory exists with that name on your system. Examples:
+	  </P
+><P
+>	    The <TT
+CLASS="FILENAME"
+>.bashrc</TT
+> file in your home directory
+	    contains bash shell definitions and aliases for your own use.
+	  </P
+><P
+>	    The <TT
+CLASS="FILENAME"
+>/etc/fstab</TT
+> file contains information
+	    about different system devices and file systems.
+	  </P
+><P
+>	    Install the <TT
+CLASS="FILENAME"
+>webalizer</TT
+> RPM if you want to use
+	    a Web server log file analysis program.
+	  </P
+></DD
+><DT
+><B
+CLASS="APPLICATION"
+>application</B
+></DT
+><DD
+><P
+>This style indicates that the program is an end-user application
+	    (as opposed to system software).  For example:
+	  </P
+><P
+>	    Use <B
+CLASS="APPLICATION"
+>Mozilla</B
+> to browse
+	    the Web.
+	  </P
+></DD
+><DT
+><SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[key]</KEYCAP
+></SPAN
+></DT
+><DD
+><P
+>A key on the keyboard is shown in this style.  For example:
+	  </P
+><P
+>	    To use <SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Tab]</KEYCAP
+></SPAN
+> completion, type in a character and then
+	    press the <SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Tab]</KEYCAP
+></SPAN
+> key.  Your terminal displays the list
+	    of files in the directory that start with that letter.
+	  </P
+></DD
+><DT
+><SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[key]</KEYCAP
+></SPAN
+>-<SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[combination]</KEYCAP
+></SPAN
+></DT
+><DD
+><P
+>A combination of keystrokes is represented in this way.  For
+	    example:
+	  </P
+><P
+>	    The <SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Ctrl]</KEYCAP
+></SPAN
+>-<SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Alt]</KEYCAP
+></SPAN
+>-<SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Backspace]</KEYCAP
+></SPAN
+> key combination exits your
+	      graphical session and returns you to the graphical login screen or
+	      the console.
+	  </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>text found on a GUI interface</B
+></DT
+><DD
+><P
+>A title, word, or phrase found on a GUI interface screen or
+	    window is shown in this style.  Text shown in this style indicates that a particular GUI screen or an element on a GUI
+	    screen (such as text associated with a checkbox or field).  Example:
+	  </P
+><P
+>	    Select the <B
+CLASS="GUILABEL"
+>Require Password</B
+> checkbox if you
+	    would like your screensaver to require a password before stopping.
+	  </P
+></DD
+><DT
+><B
+CLASS="GUIMENU"
+>top level of a menu on a GUI screen or window</B
+></DT
+><DD
+><P
+>A word in this style indicates that the word is
+	    the top level of a pulldown menu.  If you click on the word on
+	    the GUI screen, the rest of the menu should appear. For example:
+	  </P
+><P
+>	    Under <B
+CLASS="GUIMENU"
+>File</B
+> on a GNOME terminal, the
+	    <B
+CLASS="GUIMENUITEM"
+>New Tab</B
+> option allows you to open
+	    multiple shell prompts in the same window.
+	  </P
+><P
+>	    Instructions to type in a sequence of commands from a GUI menu look like the following example:
+	  </P
+><P
+>	    Go to <B
+CLASS="GUIMENU"
+>Applications</B
+> (the main menu on the
+panel) =&#62; <B
+CLASS="GUIMENU"
+>Programming</B
+> =&#62;
+	    <B
+CLASS="GUIMENUITEM"
+>Emacs Text Editor</B
+> to start the
+	    <B
+CLASS="APPLICATION"
+>Emacs</B
+> text editor.
+	  </P
+></DD
+><DT
+><B
+CLASS="GUIBUTTON"
+>button on a GUI screen or window</B
+></DT
+><DD
+><P
+>This style indicates that the text can be found on a clickable
+	    button on a GUI screen.  For example:
+	  </P
+><P
+>	      Click on the <B
+CLASS="GUIBUTTON"
+>Back</B
+> button to return to the
+	      webpage you last viewed.
+	  </P
+></DD
+><DT
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>computer output</SAMP
+></DT
+><DD
+><P
+>Text in this style indicates text displayed to a shell prompt
+	       such as error messages and responses to commands. For example:
+	  </P
+><P
+>	    The <TT
+CLASS="COMMAND"
+>ls</TT
+> command displays the contents of a
+	    directory. For example:
+	  </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>Desktop                about.html       logs          paulwesterberg.png
+Mail                   backupfiles      mail          reports</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	    The output returned in response to the command (in this case, the
+	    contents of the directory) is shown in this style.
+	  </P
+></DD
+><DT
+><TT
+CLASS="PROMPT"
+>prompt</TT
+></DT
+><DD
+><P
+>A prompt, which is a computer's way of signifying that it is ready
+	    for you to input something, is shown in this style.
+	    Examples:
+	  </P
+><P
+>	    <TT
+CLASS="PROMPT"
+>$</TT
+>
+	  </P
+><P
+>	    <TT
+CLASS="PROMPT"
+>#</TT
+>
+	  </P
+><P
+>	    <TT
+CLASS="PROMPT"
+>[stephen@maturin stephen]$</TT
+>
+	  </P
+><P
+>	    <TT
+CLASS="PROMPT"
+>leopard login:</TT
+>
+	  </P
+></DD
+><DT
+><KBD
+CLASS="USERINPUT"
+>user input</KBD
+></DT
+><DD
+><P
+>Text that the user types, either on the command line or
+	    into a text box on a GUI screen, is displayed in this style.  In
+	    the following example, <KBD
+CLASS="USERINPUT"
+>text</KBD
+> is displayed in
+	    this style:
+	  </P
+><P
+>	    To boot your system into the text based installation program, you
+	    must type in the <KBD
+CLASS="USERINPUT"
+>text</KBD
+> command at the
+	    <TT
+CLASS="PROMPT"
+>boot:</TT
+> prompt.
+	  </P
+></DD
+><DT
+><VAR
+CLASS="REPLACEABLE"
+>&#60;replaceable&#62;</VAR
+></DT
+><DD
+><P
+>Text used in examples that is meant to be replaced with data
+	provided by the user is displayed in this style. In the following
+	example, <VAR
+CLASS="REPLACEABLE"
+>&#60;version-number&#62;</VAR
+> is displayed
+	in this style:</P
+><P
+>	  The directory for the kernel source is
+	  <TT
+CLASS="FILENAME"
+>/usr/src/kernels/<VAR
+CLASS="REPLACEABLE"
+>&#60;version-number&#62;</VAR
+>/</TT
+>,
+	  where <VAR
+CLASS="REPLACEABLE"
+>&#60;version-number&#62;</VAR
+> is the version
+	  and type of kernel installed on this system.
+	</P
+></DD
+></DL
+></DIV
+><P
+>    Additionally, we use several different strategies to draw your attention to
+    certain pieces of information.  In order of urgency, these items are marked as a note, tip, important, caution,
+    or warning.  For example:
+  </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>      Remember that Linux is case sensitive.  In other words, a rose is not
+      a ROSE is not a rOsE.
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>      The directory <TT
+CLASS="FILENAME"
+>/usr/share/doc/</TT
+> contains additional
+      documentation for packages installed on your system.
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>      If you modify the DHCP configuration file, the changes do not take
+      effect until you restart the DHCP daemon.
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/caution.png"
+HSPACE="5"
+ALT="Caution"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Caution</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>      Do not perform routine tasks as root &#8212; use a regular user account
+      unless you need to use the root account for system administration tasks.
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Be careful to remove only the necessary
+      partitions. Removing other partitions could result in data loss or a
+      corrupted system environment.</P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-intro.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-intro-more-to-come.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Introduction</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-intro.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>More to Come</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
