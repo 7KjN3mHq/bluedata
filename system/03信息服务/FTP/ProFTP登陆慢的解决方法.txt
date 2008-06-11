@@ -1,3 +1,0 @@
-ProFTP 登陆慢的解决方法
-UseReverseDNS off
-IdentLookups off

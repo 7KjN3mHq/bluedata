@@ -1,6 +1,0 @@
-#!/bin/sh
-echo "acl \"chinanet\" {" > acl_chinanet.conf
-for x in `cat chinanet.txt`; do
-  echo "$x;" >> acl_chinanet.conf
-done
-echo "};" >> acl_chinanet.conf
