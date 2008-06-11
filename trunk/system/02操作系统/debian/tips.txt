@@ -1,0 +1,150 @@
+## adsl
+#!/bin/bash
+
+case "$1" in
+  start)
+    echo "starting ADSL service"
+    /usr/bin/pon dsl-provider
+  ;;
+  stop)
+    echo "stop ADSL connection"
+    /usr/bin/poff dsl-provider
+  ;;
+  restart)
+    echo "Stop && Starting ADSL connetion"
+    $0 stop
+    $0 start
+  ;;
+esac
+
+
+## sources.list
+deb http://debian.cn99.com/debian sarge main non-free contrib
+deb http://debian.cn99.com/debian-non-US/ sarge/non-US main contrib non-free
+deb http://debian.cn99.com/debian-security sarge/updates main contrib non-free
+deb ftp://mirrors.geekbone.org/debian sarge main non-free contrib
+deb ftp://mirrors.geekbone.org/debian-non-US sarge/non-US main contrib non-free
+deb ftp://mirrors.geekbone.org/debian-security sarge/updates main contrib non-free
+
+
+## 删除内核
+dpkg --purge --force-remove-essential kernel-image-2.6.7-1-686
+apt-get remove --purge kernel-headers-2.6.7-1-686
+
+
+## debian 上使用 rc.local
+touch /etc/init.d/rc.local
+设置可执行：
+chmod +x /etc/init.d/rc.local
+用update-rc.d设置启动级别：
+update-rc.d rc.local start 99 2 3 4 5 . stop 99 0 1 6 .
+为了编辑方便，创建一个链接：
+ln -s /etc/init.d/rc.local /etc/rc.local
+cat /etc/rc.local
+# start apache
+/usr/local/apache/bin/apachectl start
+
+
+## 更改 locale
+dpkg-reconfigure locales
+locale -a
+
+
+## aptinstall
+apt-get install mysql-server-4.1 mysql-client-4.1 libmysqlclient14-dev apache2 apache2-utils libapache2-mod-php4 php4 php4-mysql php4-gd2
+apt-get install nfs-kernel-server nfs-common portmap
+apt-get install make gcc g++ rcconf bzip2 vim wget
+
+
+## profile
+# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
+# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+
+PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
+
+if [ `id -u` = 0 ]; then
+user_tag="#"
+else
+user_tag="$"
+fi
+
+CL="\[\e[0m\]" 
+GREEN="$CL\[\e[0;32m\]" 
+BGREEN="$CL\[\e[0;32;1m\]" 
+XORG="$CL\[\e[0;36m\]" 
+XRED="$CL\[\e[0;35m\]" 
+ORG="$CL\[\e[0;33m\]" 
+
+DARK_GRAY="$CL\[\e[1;30m\]" 
+
+BLUE="$CL\[\e[1;34m\]" 
+
+export PROMPT_COMMAND=' 
+
+LINE="-" 
+#LINE="." 
+#L1h="." 
+#L1h="." 
+#L1e="." 
+#L2h="." 
+#L2e="." 
+L1h="" 
+L1e="" 
+L2h="" 
+L2e="" 
+
+ntty=$(tty | cut -d"/" -f3-4) 
+f1=$(ls | wc -l) 
+f2=$(ls -a | wc -l) 
+
+L1l="$LINE($USER@$HOSTNAME:$ntty)$LINE" 
+l_L1l=`expr length "$L1l"` 
+#echo "$L1l $l_L1l" 
+
+L1r="$LINE($PWD)$LINE($f1/$f2)$LINE" 
+l_L1r=`expr length "$L1r"` 
+l_home_m=`expr match $PWD $HOME` 
+if [ $l_home_m -gt 0 ]; then 
+let l_home_m=l_home_m-1 
+else 
+l_home_m=0 
+fi 
+#echo "$L1r $l_L1r" 
+
+let l_c=COLUMNS-l_L1l-l_L1r+l_home_m 
+
+L1c="" 
+c="$LINE" 
+n="$l_c" 
+#echo "col: $COLUMNS n: $n" 
+
+while [ "$n" -gt 0 ]; do L1c="$c$L1c"; let n=n-1; done 
+
+L1l="$BLUE$LINE($BGREEN\u$GREEN@\H:$ntty$BLUE)$LINE" 
+L1r="$BLUE$LINE($XRED\w$BLUE)$LINE$BLUE($DARK_GRAY$f1/$f2$BLUE)$LINE" 
+L1c="$DARK_GRAY$L1c" 
+
+L2l="$BLUE$LINE(:$ORG\A$BLUE:$XRED$user_tag$BLUE)$LINE$GREEN>$CL " 
+L2r="$GREEN$LINE$BLUE$LINE($ORG\d$BLUE)$LINE" 
+export PS1="$L1l$L1c$L1r\n$L2l" 
+' 
+
+umask 022
+
+alias h='history 25'
+alias ls='ls --color=auto'
+alias la='ls -a'
+alias lf='ls -FA'
+alias ll='ls -lh'
+
+JAVA_HOME=/usr/local/j2sdk1.4.2_05
+export JAVA_HOME
+CLASSPATH=${JAVA_HOME}/lib:${JAVA_HOME}/jre/lib
+export CLASSPATH
+PATH=$PATH:${JAVA_HOME}/bin:${JAVA_HOME}/jre/bin
+export PATH
+
+if [ $USER = "oracle" ]; then
+ulimit -u 16384
+#ulimit -n 65536
+fi

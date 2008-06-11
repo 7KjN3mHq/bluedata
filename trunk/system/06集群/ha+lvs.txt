@@ -1,0 +1,213 @@
+系统：CentOS4.3
+软件：heartbeat heartbeat-ldirectord ipvsadm arptables_jf
+
+机器：2台
+IP 分布：
+ld1(主调度器), lan_ip: 192.168.6.11  wan_ip: 219.153.35.30
+ld2(辅调度器), lan_ip: 192.168.6.12  wan_ip: 219.153.35.31
+VIP(虚拟 IP), lan_ip: 192.168.6.254  wan_ip: 219.153.35.29
+
+LVS/DR 模式
+
+
+1. 安装：
+yum -y install heartbeat heartbeat-ldirectord arptables_jf
+yum 会自动解决依赖性问题，包括安装 ipvsadm
+Installed: arptables_jf heartbeat heartbeat-ldirectord
+Dependency Installed: heartbeat-pils heartbeat-stonith ipvsadm perl-Digest-HMAC perl-Digest-SHA1 perl-Mail-IMAPClient perl-Net-DNS
+
+2. 配置：
+a) authkeys
+auth 1
+1 crc
+#2 sha1 sha1_any_password
+#3 md5 md5_any_password
+# chmod 600 authkeys
+
+
+b) ha.cf
+logfile /var/log/ha.log
+logfacility local0
+mcast eth0 225.0.0.1 694 1 0
+nice_failback off
+node ld1
+node ld2
+ping 219.153.35.1
+respawn hacluster /usr/lib/heartbeat/ipfail
+apiauth ipfail gid=haclient uid=hacluster
+
+
+c) haresources
+master:
+ld1 \
+LVS \
+IPaddr2::219.153.35.30/24/eth1/219.153.35.255 \
+IPaddr2::192.168.6.254/24/eth0/192.168.6.255 \
+ldirectord::ldirectord.cf \
+LVSSyncDaemonSwap::master
+
+backup:
+ld2 \
+LVS \
+IPaddr2::219.153.35.30/24/eth1/219.153.35.255 \
+IPaddr2::192.168.6.254/24/eth0/192.168.6.255 \
+ldirectord::ldirectord.cf \
+LVSSyncDaemonSwap::backup
+
+
+d) ldirectord.cf
+checktimeout=10
+checkinterval=2
+autoreload=no
+logfile="/var/log/ld.log"
+quiescent=yes
+
+virtual=219.153.35.29:80
+        fallback=127.0.0.1:80
+        real=219.153.35.30:80 gate 1
+        real=219.153.35.31:80 gate 1
+        service=http
+        request="checknode.lvs"
+        receive="ok"
+        scheduler=wrr
+        #persistent=30
+        protocol=tcp
+        checktype=negotiate
+
+
+e) LVS
+# vi /etc/ha.d/resource.d/LVS
+#!/bin/sh
+# chkconfig: 2345 90 10
+# description: Preparing for Load Balancer and Real Server switching.
+
+. /etc/init.d/functions
+
+unset LANG
+LC_ALL=C
+export LC_ALL
+
+VIP=219.153.35.29
+NETMASK=24
+IFACE=eth1
+BROADCAST=219.153.35.255
+REALIP=219.153.35.30
+
+case "$1" in
+    start)
+        echo "Preparing for Load Balancer"
+        echo "1" > /proc/sys/net/ipv4/ip_forward
+        ifconfig lo:0 down
+        arptables -F
+        ;;
+    stop)
+        echo "Preparing for Real Server"
+        echo "0" > /proc/sys/net/ipv4/ip_forward
+#        ip addr del $VIP/$NETMASK dev $IFACE
+        ifconfig lo:0 $VIP netmask 255.255.255.255 broadcast $BROADCAST up
+        arptables -F
+        arptables -A IN -d $VIP -j DROP
+        arptables -A OUT -s $VIP -o $IFACE -j mangle --mangle-ip-s $REALIP
+        ;;
+    *)
+        echo "Usage: LVS {start|stop}"
+        exit 1
+esac
+
+# chmod +x /etc/ha.d/resource.d/LVS
+
+
+f) /etc/hosts
+192.168.6.11     ld1.jc001.cn    ld1
+192.168.6.12     ld2.jc001.cn    ld2
+
+# uname -n
+# hostname ld1
+
+# cat /etc/sysconfig/network
+NETWORKING=yes
+HOSTNAME=ld1
+
+vi /etc/sysconfig/network-scripts/ifcfg-eth0
+GATEWAY=192.168.0.1
+
+# chkconfig --level 2345 heartbeat on
+# chkconfig heartbeat reset
+cd /etc/rc.d/rc[0-6].d
+mv S99heartbeat S75heartbeat
+mv K01heartbeat K05heartbeat
+
+
+3. 其它
+a) 网络调整
+# vi /etc/rc.local
+echo "900" > /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_established
+
+这里把 ip_conntrack_tcp_timeout_established 调整为和 lvs 的默认 timeout 一样。
+# ipvsadm -Ln --timeout
+可以通过 ipvsadm --set tcp tcpfin udp 来调整 TCP 和 UDP 的超时。
+
+
+b) 手动重载 /etc/ha.d/ldirectord.cf
+# /etc/ha.d/resource.d/ldirectord restart
+
+
+c) 查看统计信息：
+ipvsadm -L -n --stats
+Prot LocalAddress:Port Conns InPkts OutPkts InBytes OutBytes
+                      连接数 输入包 输出包 输入流量 输出流量
+
+watch "ipvsadm -L -n"
+
+/etc/ha.d/resource.d/LVSSyncDaemonSwap master status
+/etc/ha.d/resource.d/LVSSyncDaemonSwap backup status
+
+
+
+vi /etc/init.d/lvs
+#!/bin/sh
+# chkconfig: 2345 80 10
+# description: Starts and stops LVS Real Server.
+
+. /etc/init.d/functions
+
+unset LANG
+LC_ALL=C
+export LC_ALL
+
+VIP=192.168.6.1
+NETMASK=24
+IFACE=eth0
+BROADCAST=192.168.6.255
+REALIP=192.168.6.11
+
+case "$1" in
+    start)
+        echo "LVS Real Server start"
+        echo "0" > /proc/sys/net/ipv4/ip_forward
+        ifconfig lo:0 $VIP netmask 255.255.255.255 broadcast $BROADCAST up
+        arptables -F
+        arptables -A IN -d $VIP -j DROP
+        arptables -A OUT -s $VIP -o $IFACE -j mangle --mangle-ip-s $REALIP
+        ;;
+    stop)
+        echo "LVS Real Server stop"
+        ifconfig lo:0 down
+        arptables -F
+        ;;
+    *)
+        echo "Usage: lvs {start|stop}"
+        exit 1
+esac
+
+chmod +x /etc/init.d/lvs
+# chkconfig --add lvs
+# chkconfig --level 2345 lvs on
+
+
+If you wish to use ldirectord to monitor a MySQL service using a connect check,
+you will need the following packages from Red Hat:
+perl-DBI, libdbi, perl-CGI, mysql, libdbi-dbd-mysql and perl-DBD-MySQL.
+
+CentOS3.x: perl-CGI
+CentOS4.x: perl-FCGI

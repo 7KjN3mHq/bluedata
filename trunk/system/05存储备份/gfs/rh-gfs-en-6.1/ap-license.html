@@ -1,0 +1,692 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Upgrading GFS</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat GFS 6.1"
+HREF="index.html"><LINK
+REL="PREVIOUS"
+TITLE="Running GFS on a GNBD Server Node"
+HREF="s1-gnbd-gfs.html"><LINK
+REL="NEXT"
+TITLE="Index"
+HREF="generated-index.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="APPENDIX"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat GFS 6.1: Administrator's Guide</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-gnbd-gfs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="generated-index.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="APPENDIX"
+><H1
+><A
+NAME="AP-LICENSE"
+></A
+>Appendix A. Upgrading GFS</H1
+><P
+>To upgrade a node to Red Hat GFS 6.1 from earlier versions of
+    Red Hat GFS, you must convert the GFS cluster configuration archive (CCA) to a Red Hat Cluster Suite
+    cluster configuration system (CCS) configuration file
+    (<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+>) and convert GFS
+    <TT
+CLASS="COMMAND"
+>pool</TT
+> volumes to LVM2 volumes.</P
+><P
+>This appendix contains instructions for upgrading from GFS 6.0 (or GFS 5.2.1)
+    to Red Hat GFS 6.1, using GULM as the lock manager.</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>You must retain GULM
+    lock management for the upgrade to Red Hat GFS 6.1; that is, you
+    cannot change from GULM lock management to DLM lock
+    management during the upgrade to Red Hat GFS 6.1. However, after the 
+    upgrade to GFS 6.1, you can change lock managers. Refer to
+    <I
+CLASS="CITETITLE"
+>Red Hat Cluster Suite Configuring and Managing a Cluster</I
+> for information about changing lock
+    managers. </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>The following procedure demonstrates upgrading to Red Hat GFS
+    6.1 from a GFS 6.0 (or GFS 5.2.1) configuration with an example
+    <TT
+CLASS="COMMAND"
+>pool</TT
+> configuration for a pool volume named
+    <I
+CLASS="EMPHASIS"
+>argus</I
+> (refer to <A
+HREF="ap-license.html#EX-UPGRADE-POOLEXAMPLE"
+>Example A-1</A
+>).</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="EX-UPGRADE-POOLEXAMPLE"
+></A
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+> poolname argus
+ subpools 1
+ subpool 0 512 1 gfs_data
+ pooldevice 0 0 /dev/sda1</PRE
+></TD
+></TR
+></TABLE
+><P
+><B
+>Example A-1. Example <TT
+CLASS="COMMAND"
+>pool</TT
+> Configuration Information for
+	Pool Volume Named <I
+CLASS="EMPHASIS"
+>argus</I
+></B
+></P
+></DIV
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Halt the GFS nodes and the lock server nodes as follows:</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>Unmount GFS file systems from all nodes.</P
+></LI
+><LI
+><P
+>Stop the lock servers; at each lock server node, stop the lock
+	    server as follows:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>#<KBD
+CLASS="USERINPUT"
+> service lock_gulmd stop</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Stop <TT
+CLASS="COMMAND"
+>ccsd</TT
+> at all nodes; at each node, stop
+	    <TT
+CLASS="COMMAND"
+>ccsd</TT
+> as follows:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>#<KBD
+CLASS="USERINPUT"
+> service ccsd stop</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Deactivate pools; at each node, deactivate GFS
+	    <TT
+CLASS="COMMAND"
+>pool</TT
+> volumes as
+	    follows:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>#<KBD
+CLASS="USERINPUT"
+> service pool stop</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Uninstall Red Hat GFS RPMs.</P
+></LI
+></OL
+></LI
+><LI
+><P
+>Install new software:</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>Install Red Hat Enterprise Linux version 4 software (or verify that it is
+	      installed).</P
+></LI
+><LI
+><P
+>Install Red Hat Cluster Suite and Red Hat GFS RPMs.</P
+></LI
+></OL
+></LI
+><LI
+><P
+>At <I
+CLASS="EMPHASIS"
+>all</I
+> GFS 6.1 nodes, create a cluster
+	configuration file directory (<TT
+CLASS="FILENAME"
+>/etc/cluster</TT
+>) and
+	upgrade the CCA (in this example, located in
+	<TT
+CLASS="FILENAME"
+>/dev/pool/cca</TT
+>) to the new Red Hat Cluster Suite CCS configuration
+	file format by running the <TT
+CLASS="COMMAND"
+>ccs_tool upgrade</TT
+> command
+	as shown in the following example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>mkdir</KBD
+> /etc/cluster
+# <KBD
+CLASS="USERINPUT"
+>ccs_tool upgrade /dev/pool/cca &#62; /etc/cluster/cluster.conf</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>At <I
+CLASS="EMPHASIS"
+>all</I
+> GFS 6.1 nodes, start
+	  <TT
+CLASS="COMMAND"
+>ccsd</TT
+>, run the <TT
+CLASS="COMMAND"
+>lock_gulmd -c</TT
+>
+	  command, and start <TT
+CLASS="COMMAND"
+>clvmd</TT
+> as shown in the following
+	  example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>ccsd</KBD
+>
+# <KBD
+CLASS="USERINPUT"
+>lock_gulmd -c </KBD
+>
+Warning! You didn't specify a cluster name before --use_ccs
+  Letting ccsd choose which cluster we belong to.
+# <KBD
+CLASS="USERINPUT"
+>clvmd</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Ignore the warning message following the
+	    <TT
+CLASS="COMMAND"
+>lock_gulmd -c</TT
+> command. Because the cluster name
+	    is already included in the converted configuration file, there is
+	    no need to specify a cluster name when issuing the
+	    <TT
+CLASS="COMMAND"
+>lock_gulmd -c</TT
+> command.</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>At <I
+CLASS="EMPHASIS"
+>all</I
+> GFS 6.1 nodes, run
+	<TT
+CLASS="COMMAND"
+>vgscan</TT
+> as shown in the following example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>vgscan</KBD
+>
+  Reading all physical volumes.  This may take a while...
+  Found volume group "argus" using metadata type pool</PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>At <I
+CLASS="EMPHASIS"
+>one</I
+> GFS 6.1 node, convert the
+	<TT
+CLASS="COMMAND"
+>pool</TT
+> volume to an LVM2 volume by running the
+	<TT
+CLASS="COMMAND"
+>vgconvert</TT
+> command as shown in the following example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>vgconvert -M2 argus</KBD
+>
+  Volume group argus successfully converted</PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>At <I
+CLASS="EMPHASIS"
+>all</I
+> GFS 6.1 nodes, run
+	<TT
+CLASS="COMMAND"
+>vgchange -ay</TT
+> as shown in the following
+	example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>vgchange -ay</KBD
+>
+  1 logical volume(s) in volume group "argus" now active</PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>At the first node to mount a GFS file system, run the
+	<TT
+CLASS="COMMAND"
+>mount</TT
+> command with the <TT
+CLASS="OPTION"
+>upgrade</TT
+>
+	option as shown in the following example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>mount -t gfs -o upgrade /dev/pool/argus /mnt/gfs1</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>This step only needs to be done once &#8212; on
+	the first mount of the GFS file system.</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If static minor numbers were used on
+	    <TT
+CLASS="COMMAND"
+>pool</TT
+> volumes and the GFS 6.1 nodes are using
+	    LVM2 for other purposes (root file system) there may be problems
+	    activating the <TT
+CLASS="COMMAND"
+>pool</TT
+> volumes under GFS
+	    6.1. That is because of static minor conflicts. Refer to the
+	    following <B
+CLASS="APPLICATION"
+>Bugzilla</B
+> report for more information:</P
+><P
+><A
+HREF="https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=146035"
+TARGET="_top"
+>https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=146035</A
+></P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-gnbd-gfs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="generated-index.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Running GFS on a GNBD Server Node</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Index</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

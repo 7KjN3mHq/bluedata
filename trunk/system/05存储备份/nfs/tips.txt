@@ -1,0 +1,4 @@
+修改 nfs 启动参数
+vi /etc/sysconfig/nfs
+MOUNTD_NFS_V3=default
+RPCNFSDCOUNT=64

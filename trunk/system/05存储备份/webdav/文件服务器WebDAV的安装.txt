@@ -1,0 +1,39 @@
+WebDAV是Web-based Distributed Authoring and versioning的简称。它在RFC2291中被定义为利用HTTP协议来管理Web服务器上文件的协议。使用WebDAV，可以很方便地上传文件到Web服务器。本文描述如何在Apache服务器上实现WebDAV服务。
+
+1. 添加用户
+
+　　　访问WebDAV时，需要进行用户认证。用以下的命令添加用户。
+#htpasswd -c /etc/httpd/conf/dav_users davuser1
+
+　　　在这里，/etc/httpd/conf/dav_users为用户登录DB，davuser1为新添加的用户名。
+
+2. 设置
+
+　　　在/etc/httpd/conf.d/目录下，进行如下操作，生成dav.conf文件。
+　　　#cd /etc/httpd/conf.d
+　　　#vi dav.conf
+
+　　　在文件中，生成如下内容。
+　　　
+　　　　DAVLockDB /var/lib/dav/lockdb
+　　　
+
+　　　
+　　　　DAV On
+　　　　SSLRequireSSL
+　　　　AuthType Basic
+　　　　AuthName "WebDAV Directory"
+　　　　AuthUserFile /etc/httpd/conf/dav_users
+　　　　Require user davuser1
+　　
+
+3. 生成webdav
+
+　　　#cd /var/www
+　　　#mkdir webdav
+　　　# chown -R apache:apache webdav
+
+4. 再启动服务器
+
+　　　再启动httpd Web服务器
+　　　#/etc/rc.d/init.d/httpd restart

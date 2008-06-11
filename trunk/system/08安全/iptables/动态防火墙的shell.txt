@@ -1,0 +1,77 @@
+# vi anti-dos.sh
+
+#!/bin/bash
+
+unset LANG
+LC_ALL=C
+export LC_ALL
+
+IPTABLES="/sbin/iptables"
+EXT_IP="219.153.32.197"
+FTPFLAG="5"
+HTTPFLAG="10"
+
+ftp_who()
+{
+  netstat -an | grep $EXT_IP':21 '| grep -v LISTEN | grep -v ESTABLISHED | awk '{print $5;}' | awk -F':' '{print $1;}' | sort | uniq -c | awk '{print $1"="$2;}'
+}
+
+http_who()
+{
+  netstat -an | grep $EXT_IP':80 ' | grep -v LISTEN | awk '{print $5;}' | awk -F':' '{print $1;}' | sort | uniq -c | awk '{print $1"="$2;}'
+}
+
+for _un in $(ftp_who)
+do
+  IP=`echo $_un | gawk -F'=' '{print $2}'`
+  NUM=`echo $_un | awk -F'=' '{print $1}'`
+  if [ $NUM -gt $FTPFLAG ] && [ -z "`$IPTABLES -vnL | grep $IP`" ]
+    then
+      $IPTABLES -I INPUT -s $IP -p tcp --dport 21 -m state --state NEW,RELATED,ESTABLISHED -j DROP
+      echo "`date` FTP $IP NUM: $NUM" >> /var/log/dos.log
+  fi
+done
+
+for _un in $(http_who | grep -v $EXT_IP)
+do
+  IP=`echo $_un | gawk -F'=' '{print $2}'`
+  NUM=`echo $_un | awk -F'=' '{print $1}'`
+  if [ $NUM -gt $HTTPFLAG ] && [ -z "`$IPTABLES -vnL | grep $IP`" ]
+    then
+      $IPTABLES -I INPUT -s $IP -p tcp --dport 80 -m state --state NEW,RELATED,ESTABLISHED -j DROP
+      echo "`date` WEB $IP NUM: $NUM" >> /var/log/dos.log
+  fi
+done
+
+
+下面这个用 crontab 执行，时间间隔自定，用于清除前面那个脚本设置的规则
+
+# vi flush_anti-dos_rule.sh
+
+#! /bin/bash
+
+unset LANG
+LC_ALL=C
+export LC_ALL
+
+IPTABLES="/sbin/iptables"
+
+ftp_who()
+{ 
+  $IPTABLES -nL | grep "DROP" | grep "dpt:21" | awk '{print $4;}' 
+}
+
+http_who()
+{ 
+  $IPTABLES -nL | grep "DROP" | grep "dpt:80" | awk '{print $4;}' 
+}
+
+for _un in $(ftp_who)
+do 
+  $IPTABLES -D INPUT -s $_un -p tcp --dport 21 -m state --state NEW,RELATED,ESTABLISHED -j DROP 
+done
+
+for _un in $(http_who)
+do 
+  $IPTABLES -D INPUT -s $_un -p tcp --dport 80 -m state --state NEW,RELATED,ESTABLISHED -j DROP 
+done

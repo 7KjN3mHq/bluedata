@@ -1,0 +1,6 @@
+# yum -y install sysstat
+
+# iostat -x 2 3
+
+# iostat -p /dev/cciss/c0d0p5 2 6
+# iostat -p /dev/cciss/c0d0p7 2 6

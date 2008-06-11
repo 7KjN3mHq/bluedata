@@ -1,0 +1,55 @@
+# yum -y install bind
+
+
+# chown -R named:named /var/named
+# chmod -R 1777 /var/named
+# chmod -R 1777 /var/run/named
+
+:1,$s/jc001\.tv/9zhen\.com/g
+
+dig @219.153.35.31 bluedata.blog.9zhen.com -t ns
+
+; <<>> DiG 9.2.4 <<>> @202.98.96.68 bluedata.blog.jc001.tv -t ns
+;; global options:  printcmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 45468
+;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;bluedata.blog.jc001.tv.                IN      NS
+
+;; ANSWER SECTION:
+bluedata.blog.jc001.tv. 41028   IN      CNAME   blog.jc001.tv.
+blog.jc001.tv.          41540   IN      CNAME   chongqing.cache.jc001.tv.
+
+;; AUTHORITY SECTION:
+cache.jc001.tv.         60      IN      SOA     ns2.jc001.tv. bluedata.xnjcw.com. 2006122500 10800 900 604800 86400
+
+;; Query time: 26 msec
+;; SERVER: 202.98.96.68#53(202.98.96.68)
+;; WHEN: Wed Dec 27 09:11:20 2006
+;; MSG SIZE  rcvd: 142
+
+
+dig @218.104.200.170 bluedata.blog.jc001.tv -t ns
+
+; <<>> DiG 9.2.4 <<>> @218.104.200.170 bluedata.blog.jc001.tv -t ns
+;; global options:  printcmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 46319
+;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 1, ADDITIONAL: 0
+
+;; QUESTION SECTION:
+;bluedata.blog.jc001.tv.                IN      NS
+
+;; ANSWER SECTION:
+bluedata.blog.jc001.tv. 33343   IN      CNAME   blog.jc001.tv.
+blog.jc001.tv.          33343   IN      CNAME   beijing.cache.jc001.tv.
+
+;; AUTHORITY SECTION:
+cache.jc001.tv.         60      IN      SOA     ns2.jc001.tv. bluedata.xnjcw.com. 2006122500 10800 900 604800 86400
+
+;; Query time: 207 msec
+;; SERVER: 218.104.200.170#53(218.104.200.170)
+;; WHEN: Wed Dec 27 09:11:09 2006
+;; MSG SIZE  rcvd: 140

@@ -1,0 +1,4 @@
+修改 HELO 信息
+编辑 /etc/mail/sendmail.cf
+去掉 #Dj$w.Foo.COM 的注释，改为相应域名。
+检查 /usr/lib/sendmail -d0.1 -bt < /dev/null
