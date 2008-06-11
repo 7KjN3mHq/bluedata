@@ -1,0 +1,13 @@
+Nov 22 11:23:08 debian-1 kernel: ReiserFS: sda7: warning: vs-8115: get_num_ver: not directory item
+/sbin/reiserfsck /dev/sda7
+
+
+alien --to-deb package.rpm
+
+
+## sources.list
+deb http://debian.cn99.com/debian sarge main non-free contrib
+deb http://debian.cn99.com/debian-non-US sarge/non-US main contrib non-free
+deb ftp://mirrors.geekbone.org/debian sarge main non-free contrib
+deb ftp://mirrors.geekbone.org/debian-non-US sarge/non-US main contrib non-free
+deb ftp://mirrors.geekbone.org/debian-security sarge/updates main contrib non-free

@@ -1,0 +1,88 @@
+通过 SQL 语句创建表
+CREATE TABLE `temp` SELECT * FROM `supermarket_goods` WHERE `supermarket_id` = 14
+
+mysqldump 加上 --allow-keywords 这个参数可以在把关键字``起来。
+/usr/local/mysql/bin/mysqldump -u root -p --opt --allow-keywords dbname > dbname.sql
+
+
+修改 charset 的方法
+vi /etc/my.cnf
+[mysqld]
+default-character-set=gbk
+
+
+mysqld 指定监听地址
+vi /etc/my.cnf
+[mysqld]
+bind-address = 127.0.0.1
+
+
+选取一个表中的纪录插入另一个表
+INSERT INTO goods SELECT * FROM goods10D WHERE `client_id` =7
+
+批量替换
+UPDATE advsalon SET url=replace(url,'www.xnjcw.com','www.xbjcw.cn') WHERE 1
+
+
+优化数据库
+/usr/local/mysql/bin/mysqlcheck -o -uroot -pPASSWORD dbname
+
+修复表
+repair table TABLE_NAME;
+
+
+删除不存在的信息
+DELETE FROM `supplyHits` WHERE supplyId NOT IN (SELECT id FROM `supply_demmand`)
+
+
+统计 mysql 过慢查询记录中输出行大于 50 的异常 sql 语句
+#!/bin/bash
+
+file=/var/log/mysql/slow_queries.log
+current_line=1
+total_line=$(wc -l ${file} | awk '{ print $1 }')
+
+until [ $current_line -eq $total_line ]; do
+  line_content=`head -n $current_line $file | tail -n 1`
+  rs=`echo $line_content | grep "Rows_sent:" | awk '{print $7}'`
+  let current_line=$current_line+1
+  if [ $rs ]
+    then
+      if [ $rs -gt 50 ]
+        then
+          until [ $current_line -eq $total_line ]; do
+          next_line_content=`head -n $current_line $file | tail -n 1`
+          flag=`echo $next_line_content | awk '{print $1}'`
+          if [[ $flag == SELECT || $flag == select ]]
+            then
+              echo -e "$line_content\n$next_line_content\n\n" >> rs_log.txt
+              break
+          fi
+          let current_line=$current_line+1
+          done
+      fi
+  fi
+done
+
+
+忘记MySQL密码的更改方法
+1、在linux中
+如果 MySQL 正在运行，首先杀之： killall -TERM mysqld
+启动 MySQL ：/usr/bin/safe_mysqld --skip-grant-tables
+就可以不需要密码就进入 MySQL 了。 
+然后就是 
+>use mysql
+>update user set password=password("new_pass") where user="root";
+>flush privileges;
+重新杀 MySQL ，用正常方法启动 MySQL 。
+2、在windows中
+如果mysql正在运行，不要关闭
+执行：
+mysqld --skip-grant-tables
+命令
+这时如果看到屏幕没反应，表示服务已启动
+在一个新窗口中运行
+mysql
+可以不用密码登录
+update user set password=password("new_pass") where user="root";
+杀掉mysqld 的进程

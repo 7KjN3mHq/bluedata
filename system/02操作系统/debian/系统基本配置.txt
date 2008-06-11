@@ -1,0 +1,52 @@
+-----
+# vi /etc/apt/sources.list
+deb http://debian.cn99.com/debian testing main non-free contrib
+deb http://debian.cn99.com/debian-non-US sarge/non-US main contrib non-free
+deb ftp://mirrors.geekbone.org/debian sarge main non-free contrib
+deb ftp://mirrors.geekbone.org/debian-non-US sarge/non-US main contrib non-free
+deb ftp://mirrors.geekbone.org/debian-security sarge/updates main contrib non-free
+deb http://security.debian.org/ stable/updates main contrib non-free
+
+
+#deb http://debian.cn99.com/debian testing main non-free contrib
+#deb http://debian.cn99.com/debian proposed-updates main contrib non-free
+deb http://mirrors.geekbone.org/debian testing main non-free contrib
+deb http://mirrors.geekbone.org/debian proposed-updates main contrib non-free
+deb http://mirrors.geekbone.org/debian-security testing/updates main contrib non-free
+
+
+-----
+# unset LANG
+# apt-get update
+# apt-get install ssh
+
+
+-----
+# vi /etc/network/interfaces
+auto eth0
+iface eth0 inet static
+        address 192.168.0.242
+        netmask 255.255.255.0
+        network 192.168.0.0
+        broadcast 192.168.0.255
+        gateway 192.168.0.1
+
+auto eth1
+iface eth1 inet static
+        address 192.168.0.234
+        netmask 255.255.255.0
+        network 192.168.0.0
+        broadcast 192.168.0.255
+
+
+-----
+# vi /etc/hosts
+127.0.0.1       localhost
+192.168.0.242   debian-2
+
+
+-----
+# vi /etc/modprobe.d/aliases
+#alias net-pf-10 ipv6
+alias net-pf-10 off
+alias ipv6 off
