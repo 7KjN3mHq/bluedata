@@ -1,0 +1,396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Multi-port Services and LVS Clustering</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Setting Up a Red Hat Enterprise Linux LVS Cluster"
+HREF="ch-lvs-setup.html"><LINK
+REL="PREVIOUS"
+TITLE="Putting the Cluster Together"
+HREF="s1-lvs-connect.html"><LINK
+REL="NEXT"
+TITLE="FTP In an LVS Cluster"
+HREF="s1-lvs-ftp.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-connect.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 9. Setting Up a Red Hat Enterprise Linux LVS Cluster</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-ftp.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-MULTI"
+>9.3. Multi-port Services and LVS Clustering</A
+></H1
+><P
+>	LVS routers under any topology require extra configuration when creating
+	multi-port LVS services. Multi-port services can be created artificially
+	by using firewall marks to bundle together different, but related
+	protocols, such as HTTP (port 80) and HTTPS (port 443), or when LVS is
+	used to cluster true multi-port protocols, such as FTP. In either case,
+	the LVS router uses firewall marks to recognize that packets destined
+	for different ports, but bearing the same firewall mark, should be
+	handled identically. Also, when combined with persistence, firewall
+	marks ensure connections from the client machine are routed to the same
+	host, as long as the connections occur within the length of time
+	specified by the persistence parameter. For more on assigning
+	persistence to a virtual server, see <A
+HREF="s1-piranha-virtservs.html#S2-PIRANHA-VIRTSERV-SUB"
+>Section 10.6.1 <I
+>The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> Subsection</I
+></A
+>.
+      </P
+><P
+>	Unfortunately, the mechanism used to balance the loads on the real
+	servers &#8212; IPVS &#8212; can recognize the firewall marks assigned
+	to a packet, but cannot itself assign firewall marks. The job of
+	<I
+CLASS="EMPHASIS"
+>assigning</I
+> firewall marks must be performed by the
+	network packet filter, <TT
+CLASS="COMMAND"
+>iptables</TT
+>, outside of
+	<B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>.
+      </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-FWM"
+>9.3.1. Assigning Firewall Marks</A
+></H2
+><P
+>	  To assign firewall marks to a packet destined for a particular port,
+	  the administrator must use <TT
+CLASS="COMMAND"
+>iptables</TT
+>.
+	</P
+><P
+>	  This section illustrates how to bundle HTTP and HTTPS as an
+	  example, however FTP is another commonly clustered multi-port
+	  protocol. If an LVS cluster is used for FTP services, see <A
+HREF="s1-lvs-ftp.html"
+>Section 9.4 <I
+>FTP In an LVS Cluster</I
+></A
+> for details on how to best configure the
+	  cluster.
+	</P
+><P
+>	  The basic rule to remember when using firewall marks is that for every
+	  protocol using a firewall mark in <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>
+	  there must be a commensurate <TT
+CLASS="COMMAND"
+>iptables</TT
+> rule to
+	  assign marks to the network packets.
+	</P
+><P
+>	  Before creating network packet filter rules, make sure there are no
+	  rules already in place. To do this, open a shell prompt, login as root, and type:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/service iptables status</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	  If <TT
+CLASS="COMMAND"
+>iptables</TT
+> is not running, the prompt will
+	  instantly reappear. 
+	  </P
+><P
+>	  If <TT
+CLASS="COMMAND"
+>iptables</TT
+> is active, it displays a set of
+	  rules. If rules are present, type the following command:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/service iptables stop</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	  If the rules already in place are important, check the contents of
+	  <TT
+CLASS="FILENAME"
+>/etc/sysconfig/iptables</TT
+> and copy any rules worth
+	  keeping to a safe place before proceeding.
+	</P
+><P
+>	  Below are rules which assign the same firewall mark, 80, to incoming
+	  traffic destined for the floating IP address,
+	  <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+>, on ports 80 and 443. For
+	  instructions on assigning the VIP to the public network interface, see
+	  <A
+HREF="s1-piranha-virtservs.html#S2-PIRANHA-VIRTSERV-SUB"
+>Section 10.6.1 <I
+>The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> Subsection</I
+></A
+>. Also note that you must log
+	  in as root and load the module for <TT
+CLASS="COMMAND"
+>iptables</TT
+> before
+	  issuing rules for the first time.
+
+
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/modprobe ip_tables</TT
+>
+<TT
+CLASS="COMMAND"
+>/sbin/iptables -t mangle -A PREROUTING -p tcp \
+	    -d <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+>/32 --dport 80 -j MARK --set-mark 80</TT
+>
+<TT
+CLASS="COMMAND"
+>/sbin/iptables -t mangle-A PREROUTING -p tcp \
+               -d <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+>/32 --dport 443 -j MARK --set-mark 80</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	  In the above <TT
+CLASS="COMMAND"
+>iptables</TT
+> commands,
+	  <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+> should be replaced with the
+	  floating IP for your HTTP and HTTPS virtual servers. These commands
+	  have the net effect of assigning any traffic addressed to the VIP on
+	  the appropriate ports a firewall mark of 80, which in turn is
+	  recognized by IPVS and forwarded appropriately.
+	</P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    The commands above will take effect immediately, but do not
+	    persist through a reboot of the system. To ensure network packet
+	    filter settings are restored upon reboot, refer to
+	    <A
+HREF="s1-lvs-fwm-sav.html"
+>Section 9.5 <I
+>Saving Network Packet Filter Settings</I
+></A
+>
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-connect.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-ftp.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Putting the Cluster Together</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-setup.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>FTP In an LVS Cluster</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

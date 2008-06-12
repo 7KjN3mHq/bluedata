@@ -1,0 +1,549 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>SCSI Storage Requirements</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Supplementary Hardware Information"
+HREF="ap-hwinfo.html"><LINK
+REL="PREVIOUS"
+TITLE="Setting Up a Fibre Channel Interconnect"
+HREF="s1-hwinfo-singlefibre.html"><LINK
+REL="NEXT"
+TITLE="Selectively Installing Red Hat Cluster Suite Packages"
+HREF="ap-rhcs-sw-inst-cust.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-hwinfo-singlefibre.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Appendix A. Supplementary Hardware Information</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ap-rhcs-sw-inst-cust.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-HWINFO-SINGLESETUP"
+>A.3. SCSI Storage Requirements</A
+></H1
+><P
+>A single-initiator SCSI bus has only one node connected to it, and
+	provides host isolation and better performance than a multi-initiator
+	bus. Single-initiator buses ensure that each node is protected from
+	disruptions due to the workload, initialization, or repair of the other
+	nodes.</P
+><P
+>When using a single- or dual-controller RAID array that has multiple
+	host ports and provides simultaneous access to all the shared logical
+	units from the host ports on the storage enclosure, the setup of the
+	single-initiator SCSI buses to connect each cluster node to the RAID
+	array is possible. If a logical unit can fail over from one controller
+	to the other, the process must be transparent to the operating
+	system. Note that some RAID controllers restrict a set of disks to a
+	specific controller or port. In this case, single-initiator bus setups
+	are not possible.</P
+><P
+>A single-initiator bus must adhere to the requirements described in
+	<A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-SCSIBUSCONF"
+>Section A.3.1 <I
+>SCSI Configuration Requirements</I
+></A
+>.</P
+><P
+>To set up a single-initiator SCSI bus configuration, perform the
+	following steps:</P
+><P
+></P
+><UL
+><LI
+><P
+>Enable the onboard termination for each host bus adapter.</P
+></LI
+><LI
+><P
+>Enable the termination for each RAID controller. </P
+></LI
+><LI
+><P
+>Use the appropriate SCSI cable to connect each host bus
+	    adapter to the storage enclosure.</P
+></LI
+></UL
+><P
+>Setting host bus adapter termination is done in the adapter BIOS
+	utility during system boot. To set RAID controller termination, refer to
+	the vendor documentation. <A
+HREF="s1-hwinfo-singlesetup.html#FIG-HARDWARE-MULTI3"
+>Figure A-3</A
+> shows a
+	configuration that uses two single-initiator SCSI buses.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-HARDWARE-MULTI3"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/hardware/multidrop_3.png"></P
+></DIV
+><P
+><B
+>Figure A-3. Single-initiator SCSI Bus Configuration</B
+></P
+></DIV
+><P
+><A
+HREF="s1-hwinfo-singlesetup.html#FIG-HARDWARE-SRS"
+>Figure A-4</A
+> shows the termination in a
+	single-controller RAID array connected to two single-initiator SCSI
+	buses.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-HARDWARE-SRS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/hardware/single_raid_store.png"></P
+></DIV
+><P
+><B
+>Figure A-4. Single-controller RAID Array Connected to Single-initiator
+	  SCSI Buses</B
+></P
+></DIV
+><P
+><A
+HREF="s1-hwinfo-singlesetup.html#FIG-HARDWARE-DRS"
+>Figure A-5</A
+> shows the termination in a
+	dual-controller RAID array connected to two single-initiator SCSI
+	buses.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-HARDWARE-DRS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/hardware/dual_raid_store.png"></P
+></DIV
+><P
+><B
+>Figure A-5. Dual-controller RAID Array Connected to Single-initiator
+	  SCSI Buses</B
+></P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HWINFO-SCSIBUSCONF"
+>A.3.1. SCSI Configuration Requirements</A
+></H2
+><P
+>SCSI devices must adhere to a number of configuration requirements
+	  to operate correctly. Failure to adhere to these requirements
+	  adversely affects cluster operation and resource availability.</P
+><P
+>The following is an overview of SCSI configuration
+	  requirements:</P
+><P
+></P
+><UL
+><LI
+><P
+>Buses must be terminated at each end. Refer to <A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-SCSIBUS"
+>Section A.3.2 <I
+>SCSI Bus Termination</I
+></A
+> for more information.</P
+></LI
+><LI
+><P
+>Buses must not extend beyond the maximum length restriction for
+	      the bus type. Internal cabling must be included in the length of the
+	      SCSI bus. Refer to <A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-LENGTH"
+>Section A.3.3 <I
+>SCSI Bus Length</I
+></A
+> for more
+	      information.</P
+></LI
+><LI
+><P
+>All devices (host bus adapters and disks) on a bus must have
+	      unique SCSI identification numbers. Refer to <A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-NUM"
+>Section A.3.4 <I
+>SCSI Identification Numbers</I
+></A
+> for more information.</P
+></LI
+><LI
+><P
+>The Linux device name for each shared SCSI device must be the
+	      same on each cluster system. For example, a device named
+	      <TT
+CLASS="FILENAME"
+>/dev/sdc</TT
+> on one cluster system must be named
+	      <TT
+CLASS="FILENAME"
+>/dev/sdc</TT
+> on the other cluster system. One way
+	      to ensure that devices are named the same is by using identical
+	      hardware for both cluster systems.</P
+></LI
+></UL
+><P
+>Use the system's configuration utility to set SCSI identification
+	  numbers and enable host bus adapter termination.  When the system
+	  boots, a message is displayed describing how to start the utility. For
+	  example, the utility prompts the user to press
+	  <SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Ctrl]</KEYCAP
+></SPAN
+>-<SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[A]</KEYCAP
+></SPAN
+>, and
+	  follow the prompts to perform a particular task. To set storage
+	  enclosure and RAID controller termination, refer to the vendor
+	  documentation. Refer to <A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-SCSIBUS"
+>Section A.3.2 <I
+>SCSI Bus Termination</I
+></A
+> and <A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-NUM"
+>Section A.3.4 <I
+>SCSI Identification Numbers</I
+></A
+> for more information.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HWINFO-SCSIBUS"
+>A.3.2. SCSI Bus Termination</A
+></H2
+><P
+>A SCSI bus is an electrical path between two terminators. A device
+	  (host bus adapter, RAID controller, or disk) attaches to a SCSI bus by
+	  a short <I
+CLASS="FIRSTTERM"
+>stub</I
+>, which is an unterminated bus
+	  segment that usually must be less than 0.1 meter in length.</P
+><P
+>Buses must have only two terminators located at opposing ends of
+	  the bus. Additional terminators, terminators that are not at the ends
+	  of the bus, or long stubs cause the bus to operate
+	  incorrectly. Termination for a SCSI bus can be provided by the devices
+	  connected to the bus or by external terminators, if the internal
+	  (onboard) device termination can be disabled.</P
+><P
+>Testing has shown that external termination on HBAs that run at
+	  speeds greater than 80MB/second does not work reliably.</P
+><P
+>When disconnecting a device from a single-initiator SCSI bus follow
+	  these guidelines:</P
+><P
+></P
+><UL
+><LI
+><P
+>Unterminated SCSI cables must not be connected to an operational
+	      host bus adapter or storage device.</P
+></LI
+><LI
+><P
+>Connector pins must not bend or touch an electrical conductor
+	      while the SCSI cable is disconnected.</P
+></LI
+><LI
+><P
+>To disconnect a host bus adapter from a single-initiator bus,
+	      first disconnect the SCSI cable from the RAID controller and then
+	      from the adapter. This ensures that the RAID controller is not
+	      exposed to any erroneous input.</P
+></LI
+><LI
+><P
+>Protect connector pins from electrostatic discharge while the
+	      SCSI cable is disconnected by wearing a grounded anti-static wrist
+	      guard and physically protecting the cable ends from contact with
+	      other objects.</P
+></LI
+><LI
+><P
+>Do not remove a device that is currently participating in any
+	      SCSI bus transactions.</P
+></LI
+></UL
+><P
+>To enable or disable an adapter's internal termination, use the
+	  system BIOS utility. When the system boots, a message is displayed
+	  describing how to start the utility. For example, many utilities
+	  prompt users to press <SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Ctrl]</KEYCAP
+></SPAN
+>-<SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[A]</KEYCAP
+></SPAN
+>. Follow
+	  the prompts for setting the termination. At this point, it is also
+	  possible to set the SCSI identification number, as needed, and disable
+	  SCSI bus resets. Refer to <A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-NUM"
+>Section A.3.4 <I
+>SCSI Identification Numbers</I
+></A
+> for more
+	  information.</P
+><P
+>To set storage enclosure and RAID controller termination, refer to
+	  the vendor documentation.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HWINFO-LENGTH"
+>A.3.3. SCSI Bus Length</A
+></H2
+><P
+>A SCSI bus must adhere to length restrictions for the bus
+	  type. Buses that do not adhere to these restrictions do not operate
+	  properly. The length of a SCSI bus is calculated from one terminated
+	  end to the other and must include any cabling that exists inside the
+	  system or storage enclosures.</P
+><P
+>A cluster supports LVD (low voltage differential) buses. The maximum
+	  length of a single-initiator LVD bus is 25 meters.  The maximum length
+	  of a multi-initiator LVD bus is 12 meters. According to the SCSI
+	  standard, a single-initiator LVD bus is a bus that is connected to only
+	  two devices, each within 0.1 meter from a terminator. All other buses
+	  are defined as multi-initiator buses.</P
+><P
+>Do not connect any single-ended devices to an LVD bus; doing so
+	  converts the bus single-ended, which has a much shorter maximum length
+	  than a differential bus.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HWINFO-NUM"
+>A.3.4. SCSI Identification Numbers</A
+></H2
+><P
+>Each device on a SCSI bus must have a unique SCSI identification
+	  number. Devices include host bus adapters, RAID controllers, and
+	  disks.</P
+><P
+>The number of devices on a SCSI bus depends on the data path for
+	  the bus. A cluster supports wide SCSI buses, which have a 16-bit data
+	  path and support a maximum of 16 devices. Therefore, there are sixteen
+	  possible SCSI identification numbers that can be assigned to the
+	  devices on a bus.</P
+><P
+>In addition, SCSI identification numbers are prioritized. Use the
+	  following priority order to assign SCSI identification numbers:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>7 - 6 - 5 - 4 - 3 - 2 - 1 - 0 - 15 - 14 - 13 - 12 - 11 - 10 - 9 - 8 </SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>The previous order specifies that 7 is the highest priority, and 8
+	  is the lowest priority. The default SCSI identification number for a
+	  host bus adapter is 7, because adapters are usually assigned the
+	  highest priority. It is possible to assign identification numbers for
+	  logical units in a RAID subsystem by using the RAID management
+	  interface.</P
+><P
+>To modify an adapter's SCSI identification number, use the system
+	  BIOS utility. When the system boots, a message is displayed describing
+	  how to start the utility. For example, a user may be prompted to press
+	  <SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Ctrl]</KEYCAP
+></SPAN
+>-<SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[A]</KEYCAP
+></SPAN
+> and
+	  follow the prompts for setting the SCSI identification number. At this
+	  point, it is possible to enable or disable the adapter's internal
+	  termination, as needed, and disable SCSI bus resets. Refer to <A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-SCSIBUS"
+>Section A.3.2 <I
+>SCSI Bus Termination</I
+></A
+> for more information.</P
+><P
+>The prioritized arbitration scheme on a SCSI bus can result in
+	  low-priority devices being locked out for some period of time. This
+	  may cause commands to time out, if a low-priority storage device, such
+	  as a disk, is unable to win arbitration and complete a command that a
+	  host has queued to it. For some workloads, it is possible to avoid
+	  this problem by assigning low-priority SCSI identification numbers to
+	  the host bus adapters.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-hwinfo-singlefibre.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ap-rhcs-sw-inst-cust.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Setting Up a Fibre Channel Interconnect</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ap-hwinfo.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Selectively Installing Red Hat Cluster Suite Packages</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

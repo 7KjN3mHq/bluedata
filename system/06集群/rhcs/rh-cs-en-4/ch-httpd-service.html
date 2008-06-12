@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Setting Up Apache HTTP Server</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Using the Red Hat Cluster Manager"
+HREF="pt-clumanager.html"><LINK
+REL="PREVIOUS"
+TITLE="Diagnosing and Correcting Problems in a Cluster"
+HREF="s1-admin-problems.html"><LINK
+REL="NEXT"
+TITLE="Configuring Shared Storage"
+HREF="s1-apache-sharedfs.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-admin-problems.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-apache-sharedfs.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-HTTPD-SERVICE"
+></A
+>Chapter 5. Setting Up Apache HTTP Server</H1
+><P
+>      This chapter contains instructions for configuring Red Hat Enterprise Linux to make
+      the Apache HTTP Server highly available.
+    </P
+><P
+>The following is an example of setting up a cluster service that fails
+      over an Apache HTTP Server. Although the actual variables used in the service depend
+      on the specific configuration, the example may assist in setting up a
+      service for a particular environment.</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-APACHE-SETUP"
+>5.1. Apache HTTP Server Setup Overview</A
+></H1
+><P
+>First, configure Apache HTTP Server on all nodes in the cluster. If using a
+	failover domain , assign the service to all cluster nodes configured to
+	run the Apache HTTP Server. Refer to <A
+HREF="s1-config-failover-domain.html"
+>Section 3.8 <I
+>Configuring a Failover Domain</I
+></A
+> for
+	instructions.  The cluster software ensures that only one cluster system
+	runs the Apache HTTP Server at one time.  The example configuration consists of
+	installing the <TT
+CLASS="FILENAME"
+>httpd</TT
+> RPM package on all cluster
+	nodes (or on nodes in the failover domain, if used) and configuring a
+	shared GFS shared resource for the Web content.</P
+><P
+>When installing the Apache HTTP Server on the cluster systems, run the
+	following command to ensure that the cluster nodes do not automatically
+	start the service when the system boots:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>chkconfig --del httpd</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>Rather than having the system init scripts spawn the
+	<TT
+CLASS="COMMAND"
+>httpd</TT
+> daemon, the cluster infrastructure initializes
+	the service on the active cluster node. This ensures that the
+	corresponding IP address and file system mounts are active on only one
+	cluster node at a time.</P
+><P
+>When adding an <TT
+CLASS="FILENAME"
+>httpd</TT
+> service, a
+	<I
+CLASS="FIRSTTERM"
+>floating</I
+> IP address must be assigned to the
+	service so that the IP address will transfer from one cluster node to
+	another in the event of failover or service relocation. The cluster
+	infrastructure binds this IP address to the network interface on the
+	cluster system that is currently running the Apache HTTP Server. This IP address
+	ensures that the cluster node running <TT
+CLASS="FILENAME"
+>httpd</TT
+> is
+	transparent to the clients accessing the service.</P
+><P
+>The file systems that contain the Web content cannot be
+	automatically mounted on the shared storage resource when the cluster
+	nodes boot.  Instead, the cluster software must mount and unmount the
+	file system as the <TT
+CLASS="FILENAME"
+>httpd</TT
+> service is started and
+	stopped. This prevents the cluster systems from accessing the same data
+	simultaneously, which may result in data corruption.  Therefore, do not
+	include the file systems in the <TT
+CLASS="FILENAME"
+>/etc/fstab</TT
+>
+	file.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-admin-problems.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-apache-sharedfs.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Diagnosing and Correcting Problems in a Cluster</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-clumanager.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configuring Shared Storage</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

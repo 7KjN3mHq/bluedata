@@ -1,0 +1,442 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Putting the Cluster Together</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Setting Up a Red Hat Enterprise Linux LVS Cluster"
+HREF="ch-lvs-setup.html"><LINK
+REL="PREVIOUS"
+TITLE="Setting Up a Red Hat Enterprise Linux LVS Cluster"
+HREF="ch-lvs-setup.html"><LINK
+REL="NEXT"
+TITLE="Multi-port Services and LVS Clustering"
+HREF="s1-lvs-multi.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-lvs-setup.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 9. Setting Up a Red Hat Enterprise Linux LVS Cluster</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-multi.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-CONNECT"
+>9.2. Putting the Cluster Together</A
+></H1
+><P
+>	After determining which of the above routing methods to use, the
+	hardware for the LVS cluster should be linked together on the network.
+	</P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	  The adapter devices on the LVS routers must be configured to access
+	  the same networks. For instance if <TT
+CLASS="FILENAME"
+>eth0</TT
+> connects
+	  to public network and <TT
+CLASS="FILENAME"
+>eth1</TT
+> connects to the
+	  private network, then these same devices on the backup LVS router must
+	  connect to the same networks.
+	</P
+><P
+>	  Also the gateway listed in the first interface to come up at boot time
+	  is added to the routing table and subsequent gateways listed in other
+	  interfaces are ignored. This is especially important to consider when
+	  configuring the real servers.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	After physically connecting together the cluster hardware, configure the
+	network interfaces on the primary and backup LVS routers. This can be
+	done using a graphical application such as
+	<B
+CLASS="APPLICATION"
+>system-config-network</B
+> or by editing the
+	network scripts manually. For more information about adding devices
+	using <B
+CLASS="APPLICATION"
+>system-config-network</B
+>, see the chapter
+	titled <I
+CLASS="CITETITLE"
+>Network Configuration</I
+> in the
+	<I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux System Administration Guide</I
+>. For more information on editing
+	network scripts by hand, see the chapter titled <I
+CLASS="CITETITLE"
+>Network
+	Scripts</I
+> in the <I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux Reference Guide</I
+>. For the
+	remainder of the chapter, example alterations to network interfaces are
+	made either manually or through the
+	<B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>.
+      </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-NET-TIP"
+>9.2.1. General LVS Networking Tips</A
+></H2
+><P
+>	  Configure the real IP addresses for both the public and private
+	  networks on the LVS routers before attempting to configure the cluster
+	  using the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>. The sections on each
+	  topography give example network addresses, but the actual network
+	  addresses are needed. Below are some useful commands for bringing up
+	  network interfaces or checking their status.
+	</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Bringing Up Real Network Interfaces</DT
+><DD
+><P
+>The best way to bring up any real network interface is to
+		use the following commands as root replacing
+		<VAR
+CLASS="REPLACEABLE"
+>N</VAR
+> with the number corresponding to
+		the interface (<TT
+CLASS="FILENAME"
+>eth0</TT
+> and
+		<TT
+CLASS="FILENAME"
+>eth1</TT
+>):</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/ifup eth<VAR
+CLASS="REPLACEABLE"
+>N</VAR
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Do <I
+CLASS="EMPHASIS"
+>not</I
+> use the
+		  <TT
+CLASS="COMMAND"
+>ifup</TT
+> scripts to bring up any floating IP
+		  addresses you may configure using
+		  <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>
+		  (<TT
+CLASS="FILENAME"
+>eth0:1</TT
+> or
+		  <TT
+CLASS="FILENAME"
+>eth1:1</TT
+>). Use the
+		  <TT
+CLASS="COMMAND"
+>service</TT
+> command to start
+		  <TT
+CLASS="COMMAND"
+>pulse</TT
+> instead (see <A
+HREF="s1-lvs-start.html"
+>Section 10.8 <I
+>Starting the Cluster</I
+></A
+> for details).
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>To bring a network interface down, type the following
+	      command:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/ifdown eth<VAR
+CLASS="REPLACEABLE"
+>N</VAR
+></TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>Again, replace <VAR
+CLASS="REPLACEABLE"
+>N</VAR
+> in the above
+		command with the number corresponding to the interface you wish
+		to bring down.</P
+></DD
+><DT
+>Checking the Status of Network Interfaces</DT
+><DD
+><P
+>If you need to check which network interfaces are up at any
+		given time, type the following:
+	      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/ifconfig</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>To view the routing table for a machine, issue the following
+		command:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/route</TT
+></PRE
+></TD
+></TR
+></TABLE
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-lvs-setup.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-multi.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Setting Up a Red Hat Enterprise Linux LVS Cluster</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-setup.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Multi-port Services and LVS Clustering</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

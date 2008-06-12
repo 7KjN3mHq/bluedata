@@ -1,0 +1,572 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Adding a Cluster Service to the Cluster</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Adding Cluster Resources"
+HREF="s1-config-service-dev.html"><LINK
+REL="NEXT"
+TITLE="Propagating The Configuration File: New Cluster"
+HREF="s1-propagate-config.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-config-service-dev.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-propagate-config.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-ADD-SERVICE"
+>3.10. Adding a Cluster Service to the Cluster</A
+></H1
+><P
+>To add a cluster service to the cluster, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>At the left frame, click <B
+CLASS="GUILABEL"
+>Services</B
+>.
+	  </P
+></LI
+><LI
+><P
+>At the bottom of the right frame (labeled
+	    <B
+CLASS="GUILABEL"
+>Properties</B
+>), click the <B
+CLASS="GUIBUTTON"
+>Create a
+	    Service</B
+> button. Clicking
+	    <B
+CLASS="GUIBUTTON"
+>Create a Service</B
+> causes the
+	    <B
+CLASS="GUILABEL"
+>Add a Service</B
+> dialog box to be
+	    displayed.
+	  </P
+></LI
+><LI
+><P
+> At the <B
+CLASS="GUILABEL"
+>Add a Service</B
+> dialog box,
+	    type the name of the service in the <B
+CLASS="GUILABEL"
+>Name</B
+> text
+	    box and click <B
+CLASS="GUILABEL"
+>OK</B
+>. Clicking
+	    <B
+CLASS="GUILABEL"
+>OK</B
+> causes the <B
+CLASS="GUILABEL"
+>Service Management</B
+>
+	    dialog box to be displayed (refer to <A
+HREF="s1-add-service.html#FIG-SOFT-ADDSVC"
+>Figure 3-12</A
+>).</P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Use a descriptive name that clearly distinguishes the service
+	      from other services in the cluster.</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFT-ADDSVC"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/service-management-dbox.png"></P
+></DIV
+><P
+><B
+>Figure 3-12. Adding a Cluster Service</B
+></P
+></DIV
+><P
+></P
+></LI
+><LI
+><P
+>If you want to restrict the members on which this cluster
+	    service is able to run, choose a failover domain from the
+	    <B
+CLASS="GUILABEL"
+>Failover Domain</B
+> drop-down box.  (Refer to <A
+HREF="s1-config-failover-domain.html"
+>Section 3.8 <I
+>Configuring a Failover Domain</I
+></A
+> for instructions on how to
+	    configure a failover domain.)</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Autostart This Service</B
+> checkbox &#8212;
+	    This is checked by default. If <B
+CLASS="GUILABEL"
+>Autostart This
+	      Service</B
+> is checked, the service is started automatically
+	    when a cluster is started and running. If <B
+CLASS="GUILABEL"
+>Autostart This
+	      Service</B
+> is <I
+CLASS="EMPHASIS"
+>not</I
+> checked, the service must
+	    be started manually any time the cluster comes up from stopped state.
+	  </P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Run Exclusive</B
+> checkbox &#8212; This sets a
+	    policy wherein the service only runs on nodes that have <I
+CLASS="EMPHASIS"
+>no
+	      other</I
+> services running on them. For example, for a very
+	    busy web server that is clustered for high availability, it would
+	    would be advisable to keep that service on a node alone with no other
+	    services competing for his resources &#8212; that is, <B
+CLASS="GUILABEL"
+>Run
+	      Exclusive</B
+> checked. On the other hand, services that
+	    consume few resources (like NFS and Samba), can run together on the same
+	    node without little concern over contention for resources. For those
+	    types of services you can leave the <B
+CLASS="GUILABEL"
+>Run Exclusive</B
+>
+	    unchecked.</P
+></LI
+><LI
+><P
+>Select a recovery policy to specify how the resource manager
+	    should recover from a service failure. At the upper right of the 
+	    <B
+CLASS="GUILABEL"
+>Service Management</B
+> dialog box, there are three
+	    <B
+CLASS="GUILABEL"
+>Recovery Policy</B
+> options available:
+	  </P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Restart</B
+> &#8212; Restart the
+		service in the node the service is currently located. The default
+		setting is <B
+CLASS="GUILABEL"
+>Restart</B
+>. If the service cannot be
+		restarted in the the current node, the service is relocated.
+	      </P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Relocate</B
+> &#8212; Relocate the service
+		before restarting. Do not restart the node where the service is
+		currently located.
+	      </P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Disable</B
+> &#8212; Do not restart the
+		service at all.
+	      </P
+></LI
+></UL
+></LI
+><LI
+><P
+>Click the <B
+CLASS="GUIBUTTON"
+>Add a Shared Resource to this
+	      service</B
+> button and choose the a resource listed that you have
+	      configured in <A
+HREF="s1-config-service-dev.html"
+>Section 3.9 <I
+>Adding Cluster Resources</I
+></A
+>.</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If you are adding a Samba-service resource, connect a
+	      Samba-service resource directly to the service, 
+	      <I
+CLASS="EMPHASIS"
+>not</I
+> to a resource within a service. That
+	      is, at the <B
+CLASS="GUILABEL"
+>Service Management</B
+> dialog box,
+	      use either <B
+CLASS="GUIBUTTON"
+>Create a new resource for this 
+		service</B
+> or <B
+CLASS="GUIBUTTON"
+>Add a Shared Resource to
+		this service</B
+>; do <I
+CLASS="EMPHASIS"
+>not</I
+> use
+	      <B
+CLASS="GUIBUTTON"
+>Attach a new Private Resource to the
+		Selection</B
+> or <B
+CLASS="GUIBUTTON"
+>Attach a Shared Resource
+		to the selection</B
+>. </P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>If needed, you may also create a <I
+CLASS="FIRSTTERM"
+>private</I
+>
+	  resource that you can create that becomes a subordinate resource by
+	    clicking on the <B
+CLASS="GUIBUTTON"
+>Attach a new Private Resource to the
+	  Selection</B
+> button. The process is the same as creating a
+	  shared resource described in <A
+HREF="s1-config-service-dev.html"
+>Section 3.9 <I
+>Adding Cluster Resources</I
+></A
+>. The private resource will appear as
+	  a child to the shared resource to which you associated with the shared
+	  resource. Click the triangle icon next to the shared resource to
+	  display any private resources associated.</P
+></LI
+><LI
+><P
+>When finished, click <B
+CLASS="GUIBUTTON"
+>OK</B
+>.</P
+></LI
+><LI
+><P
+>Choose <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+	  <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to save the changes to the cluster
+	      configuration.</P
+></LI
+></OL
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>To verify the existence of the IP service resource used in a
+	  cluster service, you must use the <TT
+CLASS="COMMAND"
+>/sbin/ip addr
+	  list</TT
+> command on a cluster node. The following output shows
+	  the <TT
+CLASS="COMMAND"
+>/sbin/ip addr list</TT
+> command executed on a node
+	  running a cluster service:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>1: lo: &#60;LOOPBACK,UP&#62; mtu 16436 qdisc noqueue 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &#60;BROADCAST,MULTICAST,UP&#62; mtu 1356 qdisc pfifo_fast qlen 1000
+    link/ether 00:05:5d:9a:d8:91 brd ff:ff:ff:ff:ff:ff
+    inet 10.11.4.31/22 brd 10.11.7.255 scope global eth0
+    inet6 fe80::205:5dff:fe9a:d891/64 scope link
+    inet 10.11.4.240/22 scope global secondary eth0
+       valid_lft forever preferred_lft forever</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-config-service-dev.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-propagate-config.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Adding Cluster Resources</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Propagating The Configuration File: New Cluster</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

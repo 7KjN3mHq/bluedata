@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Setting Up a Fibre Channel Interconnect</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Supplementary Hardware Information"
+HREF="ap-hwinfo.html"><LINK
+REL="PREVIOUS"
+TITLE="Supplementary Hardware Information"
+HREF="ap-hwinfo.html"><LINK
+REL="NEXT"
+TITLE="SCSI Storage Requirements"
+HREF="s1-hwinfo-singlesetup.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ap-hwinfo.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Appendix A. Supplementary Hardware Information</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-hwinfo-singlesetup.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-HWINFO-SINGLEFIBRE"
+>A.2. Setting Up a Fibre Channel Interconnect</A
+></H1
+><P
+>Fibre Channel can be used in either single-initiator or
+	multi-initiator configurations.</P
+><P
+>A single-initiator Fibre Channel interconnect has only one node
+	connected to it. This may provide better host isolation and better
+	performance than a multi-initiator bus. Single-initiator interconnects
+	ensure that each node is protected from disruptions due to the workload,
+	initialization, or repair of the other node.</P
+><P
+>If employing a RAID array that has multiple host ports, and the RAID
+	array provides simultaneous access to all the shared logical units from
+	the host ports on the storage enclosure, set up single-initiator Fibre
+	Channel interconnects to connect each node to the RAID array. If a
+	logical unit can fail over from one controller to the other, the process
+	must be transparent to the operating system.</P
+><P
+><A
+HREF="s1-hwinfo-singlefibre.html#FIG-HARDWARE-SCRSIF"
+>Figure A-1</A
+> shows a single-controller RAID
+	array with two host ports and the host bus adapters connected directly
+	to the RAID controller, without using Fibre Channel hubs or
+	switches. When using this type of single-initiator Fibre Channel
+	connection, your RAID controller must have a separate host port for each
+	cluster node.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-HARDWARE-SCRSIF"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/hardware/single_fibre.png"></P
+></DIV
+><P
+><B
+>Figure A-1. Single-controller RAID Array Connected to Single-initiator
+	  Fibre Channel Interconnects</B
+></P
+></DIV
+><P
+>The external RAID array must have a separate SCSI channel for each
+	cluster node. In clusters with more than two nodes, connect each node to
+	the SCSI channel on the RAID array, using a single-initiator SCSI bus as
+	shown in <A
+HREF="s1-hwinfo-singlefibre.html#FIG-HARDWARE-SCRSIF"
+>Figure A-1</A
+>.
+      </P
+><P
+>To connect multiple cluster nodes to the same host port on the RAID
+	array, use a Fibre Channel hub or switch. In this case, each host bus
+	adapter is connected to the hub or switch, and the hub or switch is
+	connected to a host port on the RAID controller.</P
+><P
+>A Fibre Channel hub or switch is also required with a
+	dual-controller RAID array with two host ports on each controller. This
+	configuration is shown in <A
+HREF="s1-hwinfo-singlefibre.html#FIG-HARDWARE-DCRSIF"
+>Figure A-2</A
+>. Additional cluster nodes may be
+	connected to either Fibre Channel hub or switch shown in the
+	diagram. Some RAID arrays include a built-in hub so that each host port
+	is already connected to each of the internal RAID controllers.  In this
+	case, an additional external hub or switch may not be needed.
+      </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-HARDWARE-DCRSIF"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/hardware/fibre_hub.png"></P
+></DIV
+><P
+><B
+>Figure A-2. Dual-controller RAID Array Connected to Single-initiator
+	  Fibre Channel Interconnects</B
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ap-hwinfo.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-hwinfo-singlesetup.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Supplementary Hardware Information</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ap-hwinfo.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>SCSI Storage Requirements</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

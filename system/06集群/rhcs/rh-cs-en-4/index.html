@@ -1,0 +1,665 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Red Hat Cluster Suite</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="NEXT"
+TITLE="Introduction"
+HREF="ch-intro.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="BOOK"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="BOOK"
+><A
+NAME="INDEX"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="TITLE"
+><A
+NAME="AEN2"
+>Red Hat Cluster Suite</A
+></H1
+><H2
+CLASS="SUBTITLE"
+>Configuring and Managing a Cluster</H2
+><P
+CLASS="COPYRIGHT"
+><A
+HREF="legalnotice.html"
+>Copyright</A
+> &copy; 2000-2006 Red Hat, Inc., Mission Critical Linux, Inc., K.M. Sorenson</P
+><SPAN
+CLASS="ISBN"
+><ISBN
+CLASS="ISBN"
+>ISBN:       N/A
+    </ISBN
+></SPAN
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="ch-intro.html"
+>Introduction</A
+></DT
+><DD
+><DL
+><DT
+>1. <A
+HREF="ch-intro.html#S1-CLUSTER-HOWTOUSE"
+>How To Use This Manual</A
+></DT
+><DT
+>2. <A
+HREF="s1-intro-conventions.html"
+>Document Conventions</A
+></DT
+><DT
+>3. <A
+HREF="s1-intro-more-to-come.html"
+>More to Come</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="s1-intro-more-to-come.html#S2-INTRO-FEEDBACK"
+>Send in Your Feedback</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="s1-steps-rhnreg.html"
+>Activate Your Subscription</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="s1-steps-rhnreg.html#S2-STEPS-RHNREG-RHLOGIN"
+>Provide a Red Hat Login</A
+></DT
+><DT
+>4.2. <A
+HREF="s1-steps-rhnreg.html#S2-STEPS-RHNREG-SUBNUMBER"
+>Provide Your Subscription Number</A
+></DT
+><DT
+>4.3. <A
+HREF="s1-steps-rhnreg.html#S2-STEPS-RHNREG-CONNECT"
+>Connect Your System</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>I. <A
+HREF="pt-clumanager.html"
+>Using the Red Hat Cluster Manager</A
+></DT
+><DD
+><DL
+><DT
+>1. <A
+HREF="ch-overview.html"
+>Red Hat Cluster Manager Overview</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="ch-overview.html#S1-RHCM-FEATURES"
+>Red Hat Cluster Manager Features</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="ch-hardware.html"
+>Hardware Installation and Operating System Configuration</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="ch-hardware.html#S1-HARDWARE-CHOOSING"
+>Choosing a Hardware Configuration</A
+></DT
+><DT
+>2.2. <A
+HREF="s1-hardware-clustertable.html"
+>Cluster Hardware Components</A
+></DT
+><DT
+>2.3. <A
+HREF="s1-hardware-cluster.html"
+>Setting Up the Nodes</A
+></DT
+><DT
+>2.4. <A
+HREF="s1-hardware-linux.html"
+>Installing and Configuring Red Hat Enterprise Linux</A
+></DT
+><DT
+>2.5. <A
+HREF="s1-hardware-connect.html"
+>Setting Up and Connecting the Cluster Hardware</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="ch-software.html"
+>Installing and Configuring Red Hat Cluster Suite Software</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="ch-software.html#S1-INST-CONFIG-TASKS"
+>Software Installation and Configuration Tasks</A
+></DT
+><DT
+>3.2. <A
+HREF="s1-clustertool-overview.html"
+>Overview of the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></A
+></DT
+><DT
+>3.3. <A
+HREF="s1-pkg-install-all.html"
+>Installing the Red Hat Cluster Suite Packages</A
+></DT
+><DT
+>3.4. <A
+HREF="s1-start-clustertool.html"
+>Starting the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></A
+></DT
+><DT
+>3.5. <A
+HREF="s1-naming-cluster.html"
+>Naming The Cluster</A
+></DT
+><DT
+>3.6. <A
+HREF="s1-config-fence-devices.html"
+>Configuring Fence Devices</A
+></DT
+><DT
+>3.7. <A
+HREF="s1-add-delete-member.html"
+>Adding and Deleting Members</A
+></DT
+><DT
+>3.8. <A
+HREF="s1-config-failover-domain.html"
+>Configuring a Failover Domain</A
+></DT
+><DT
+>3.9. <A
+HREF="s1-config-service-dev.html"
+>Adding Cluster Resources</A
+></DT
+><DT
+>3.10. <A
+HREF="s1-add-service.html"
+>Adding a Cluster Service to the Cluster</A
+></DT
+><DT
+>3.11. <A
+HREF="s1-propagate-config.html"
+>Propagating The Configuration File: New Cluster</A
+></DT
+><DT
+>3.12. <A
+HREF="s1-starting-cluster.html"
+>Starting the Cluster Software</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="ch-admin.html"
+>Cluster Administration</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="ch-admin.html#S1-ADMIN-OVERVIEW"
+>Overview of the <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+></A
+></DT
+><DT
+>4.2. <A
+HREF="s1-admin-display.html"
+>Displaying Cluster and Service Status</A
+></DT
+><DT
+>4.3. <A
+HREF="s1-admin-start.html"
+>Starting and Stopping the Cluster Software</A
+></DT
+><DT
+>4.4. <A
+HREF="s1-admin-modify.html"
+>Modifying the Cluster Configuration</A
+></DT
+><DT
+>4.5. <A
+HREF="s1-admin-backup.html"
+>Backing Up and Restoring the Cluster Database</A
+></DT
+><DT
+>4.6. <A
+HREF="s1-admin-update.html"
+>Updating the Cluster Software</A
+></DT
+><DT
+>4.7. <A
+HREF="s1-admin-name.html"
+>Changing the Cluster Name</A
+></DT
+><DT
+>4.8. <A
+HREF="s1-admin-disable.html"
+>Disabling the Cluster Software</A
+></DT
+><DT
+>4.9. <A
+HREF="s1-admin-problems.html"
+>Diagnosing and Correcting Problems in a Cluster</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="ch-httpd-service.html"
+>Setting Up Apache HTTP Server</A
+></DT
+><DD
+><DL
+><DT
+>5.1. <A
+HREF="ch-httpd-service.html#S1-APACHE-SETUP"
+>Apache HTTP Server Setup Overview</A
+></DT
+><DT
+>5.2. <A
+HREF="s1-apache-sharedfs.html"
+>Configuring Shared Storage</A
+></DT
+><DT
+>5.3. <A
+HREF="s1-apache-inshttpd.html"
+>Installing and Configuring the Apache HTTP Server</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>II. <A
+HREF="pt-lvs.html"
+>Configuring a Linux Virtual Server Cluster</A
+></DT
+><DD
+><DL
+><DT
+>6. <A
+HREF="ch-lvs-intro.html"
+>Introduction to Linux Virtual Server</A
+></DT
+><DD
+><DL
+><DT
+>6.1. <A
+HREF="ch-lvs-intro.html#S1-INTRO-TECH-OVERVIEW"
+>Technology Overview</A
+></DT
+><DT
+>6.2. <A
+HREF="s1-introduction-configurations.html"
+>Basic Configurations</A
+></DT
+></DL
+></DD
+><DT
+>7. <A
+HREF="ch-lvs-overview.html"
+>Linux Virtual Server Overview</A
+></DT
+><DD
+><DL
+><DT
+>7.1. <A
+HREF="ch-lvs-overview.html#S1-LVS-BASIC"
+>A Basic LVS Configuration</A
+></DT
+><DT
+>7.2. <A
+HREF="s1-lvs-cm.html"
+>A Three Tiered LVS Configuration</A
+></DT
+><DT
+>7.3. <A
+HREF="s1-lvs-scheduling.html"
+>LVS Scheduling Overview</A
+></DT
+><DT
+>7.4. <A
+HREF="s1-lvs-routing.html"
+>Routing Methods</A
+></DT
+><DT
+>7.5. <A
+HREF="s1-lvs-persistance.html"
+>Persistence and Firewall Marks</A
+></DT
+><DT
+>7.6. <A
+HREF="s1-lvs-block-diagram.html"
+>LVS Cluster &#8212; A Block Diagram</A
+></DT
+></DL
+></DD
+><DT
+>8. <A
+HREF="ch-initial-setup.html"
+>Initial LVS Configuration</A
+></DT
+><DD
+><DL
+><DT
+>8.1. <A
+HREF="ch-initial-setup.html#S1-LVS-DAEMONS"
+>Configuring Services on the LVS Routers</A
+></DT
+><DT
+>8.2. <A
+HREF="s1-lvs-piranha-password.html"
+>Setting a Password for the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></A
+></DT
+><DT
+>8.3. <A
+HREF="s1-lvs-piranha-service.html"
+>Starting the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> Service</A
+></DT
+><DT
+>8.4. <A
+HREF="s1-lvs-piranha-access.html"
+>Limiting Access To the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></A
+></DT
+><DT
+>8.5. <A
+HREF="s1-lvs-forwarding.html"
+>Turning on Packet Forwarding</A
+></DT
+><DT
+>8.6. <A
+HREF="s1-lvs-server-daemons.html"
+>Configuring Services on the Real Servers</A
+></DT
+></DL
+></DD
+><DT
+>9. <A
+HREF="ch-lvs-setup.html"
+>Setting Up a Red Hat Enterprise Linux LVS Cluster</A
+></DT
+><DD
+><DL
+><DT
+>9.1. <A
+HREF="ch-lvs-setup.html#S1-LVS-NAT-NETWORK"
+>The NAT LVS Cluster</A
+></DT
+><DT
+>9.2. <A
+HREF="s1-lvs-connect.html"
+>Putting the Cluster Together</A
+></DT
+><DT
+>9.3. <A
+HREF="s1-lvs-multi.html"
+>Multi-port Services and LVS Clustering</A
+></DT
+><DT
+>9.4. <A
+HREF="s1-lvs-ftp.html"
+>FTP In an LVS Cluster</A
+></DT
+><DT
+>9.5. <A
+HREF="s1-lvs-fwm-sav.html"
+>Saving Network Packet Filter Settings</A
+></DT
+></DL
+></DD
+><DT
+>10. <A
+HREF="ch-lvs-piranha.html"
+>Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></A
+></DT
+><DD
+><DL
+><DT
+>10.1. <A
+HREF="ch-lvs-piranha.html#S1-PIRANHA-REQ"
+>Necessary Software</A
+></DT
+><DT
+>10.2. <A
+HREF="s1-piranha-login.html"
+>Logging Into the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></A
+></DT
+><DT
+>10.3. <A
+HREF="s1-piranha-ctrlmon.html"
+><B
+CLASS="GUILABEL"
+>CONTROL/MONITORING</B
+></A
+></DT
+><DT
+>10.4. <A
+HREF="s1-piranha-globalset.html"
+><B
+CLASS="GUILABEL"
+>GLOBAL SETTINGS</B
+></A
+></DT
+><DT
+>10.5. <A
+HREF="s1-piranha-redun.html"
+><B
+CLASS="GUILABEL"
+>REDUNDANCY</B
+></A
+></DT
+><DT
+>10.6. <A
+HREF="s1-piranha-virtservs.html"
+><B
+CLASS="GUILABEL"
+>VIRTUAL SERVERS</B
+></A
+></DT
+><DT
+>10.7. <A
+HREF="s1-lvs-sync.html"
+>Synchronizing Configuration Files</A
+></DT
+><DT
+>10.8. <A
+HREF="s1-lvs-start.html"
+>Starting the Cluster</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>III. <A
+HREF="pt-appendixes.html"
+>Appendixes</A
+></DT
+><DD
+><DL
+><DT
+>A. <A
+HREF="ap-hwinfo.html"
+>Supplementary Hardware Information</A
+></DT
+><DD
+><DL
+><DT
+>A.1. <A
+HREF="ap-hwinfo.html#S1-HWINFO-STORAGE-REQS"
+>Attached Storage Requirements</A
+></DT
+><DT
+>A.2. <A
+HREF="s1-hwinfo-singlefibre.html"
+>Setting Up a Fibre Channel Interconnect</A
+></DT
+><DT
+>A.3. <A
+HREF="s1-hwinfo-singlesetup.html"
+>SCSI Storage Requirements</A
+></DT
+></DL
+></DD
+><DT
+>B. <A
+HREF="ap-rhcs-sw-inst-cust.html"
+>Selectively Installing Red Hat Cluster Suite Packages</A
+></DT
+><DD
+><DL
+><DT
+>B.1. <A
+HREF="ap-rhcs-sw-inst-cust.html#S1-PKG-INSTALL"
+>Installing the Red Hat Cluster Suite Packages</A
+></DT
+></DL
+></DD
+><DT
+>C. <A
+HREF="ap-rhcs-dm-multipath-usagetxt.html"
+><TT
+CLASS="FILENAME"
+>Multipath-usage.txt</TT
+> File for  Red Hat Enterprise Linux 4 Update 3</A
+></DT
+></DL
+></DD
+><DT
+><A
+HREF="generated-index.html"
+>Index</A
+></DT
+><DT
+><A
+HREF="colophon.html"
+>Colophon</A
+></DT
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ch-intro.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Introduction</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

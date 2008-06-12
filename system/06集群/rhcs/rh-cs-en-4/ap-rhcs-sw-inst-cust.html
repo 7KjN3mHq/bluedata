@@ -1,0 +1,2633 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Selectively Installing Red Hat Cluster Suite Packages</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Appendixes"
+HREF="pt-appendixes.html"><LINK
+REL="PREVIOUS"
+TITLE="SCSI Storage Requirements"
+HREF="s1-hwinfo-singlesetup.html"><LINK
+REL="NEXT"
+TITLE="Multipath-usage.txt File for  Red Hat Enterprise Linux 4 Update 3"
+HREF="ap-rhcs-dm-multipath-usagetxt.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="APPENDIX"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-hwinfo-singlesetup.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ap-rhcs-dm-multipath-usagetxt.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="APPENDIX"
+><H1
+><A
+NAME="AP-RHCS-SW-INST-CUST"
+></A
+>Appendix B. Selectively Installing Red Hat Cluster Suite Packages</H1
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-PKG-INSTALL"
+>B.1. Installing the Red Hat Cluster Suite Packages</A
+></H1
+><P
+>	Red Hat Cluster Suite consists of the following RPM packages:
+      </P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>rgmanager</TT
+> &#8212; Manages cluster services
+	    and resources</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>system-config-cluster</TT
+> &#8212; Contains the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, used to graphically
+	configure the cluster and the display of the current status of the
+	nodes, resources, fencing agents, and cluster services</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>ccsd</TT
+> &#8212; Contains the cluster
+	configuration services daemon (<TT
+CLASS="COMMAND"
+>ccsd</TT
+>) and
+	associated files
+      </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>magma</TT
+> &#8212; Contains an interface library
+	for cluster lock management
+      </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>magma-plugins</TT
+> &#8212; Contains plugins for
+	the <TT
+CLASS="FILENAME"
+>magma</TT
+> library
+      </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>cman</TT
+> &#8212; Contains the Cluster Manager
+	(CMAN), which is used for managing cluster membership, messaging, and
+	notification
+      </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>cman-kernel</TT
+> &#8212; Contains required CMAN
+	kernel modules
+      </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>dlm</TT
+> &#8212; Contains distributed lock
+	management (DLM) library
+      </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>dlm-kernel</TT
+> &#8212; Contains required DLM
+	kernel modules</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>fence</TT
+> &#8212; The cluster I/O fencing system
+	that allows cluster nodes to connect to a variety of network power
+	switches, fibre channel switches, and integrated power management
+	interfaces
+      </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>gulm</TT
+> &#8212; Contains the GULM lock management
+	userspace tools and libraries (an alternative to using CMAN and DLM).
+      </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>iddev</TT
+> &#8212; Contains libraries used to
+      identify the file system (or volume manager) in which a device is
+      formatted
+      </P
+></LI
+></UL
+><P
+>Also, you can optionally install Red Hat GFS on your Red Hat Cluster Suite. Red Hat GFS
+    consists of the following RPMs:</P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>GFS</TT
+> &#8212; The Red Hat GFS module</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>GFS-kernel</TT
+> &#8212; The Red Hat GFS kernel module</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>gnbd</TT
+> &#8212; The GFS Network Block Device module</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>gnbd-kernel</TT
+> &#8212; Kernel module for the GFS
+      Network Block Device</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>lvm2-cluster</TT
+> &#8212; Cluster extensions for the
+      logical volume manager</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>GFS-kernheaders</TT
+> &#8212; GFS kernel header files</P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>gnbd-kernheaders</TT
+> &#8212;
+      <TT
+CLASS="FILENAME"
+>gnbd</TT
+> kernel header files</P
+></LI
+></UL
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>You can access the Red Hat Cluster Suite and Red Hat GFS products by using Red Hat Network to
+    subscribe to and access the channels containing the Red Hat Cluster Suite and Red Hat GFS    packages. From the Red Hat Network channel, you can manage entitlements for your
+    cluster nodes and 
+    upgrade packages for each node within the Red Hat Network Web-based interface. For more
+    information on using Red Hat Network, visit the following URL:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><A
+HREF="http://rhn.redhat.com"
+TARGET="_top"
+>http://rhn.redhat.com</A
+> </PRE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>You can install Red Hat Cluster Suite and Red Hat GFS RPMs  using either of the following
+    methods:</P
+><P
+></P
+><UL
+><LI
+><P
+>Automatic RPM installation &#8212; Using <TT
+CLASS="COMMAND"
+>up2date</TT
+></P
+></LI
+><LI
+><P
+>Custom RPM installation  &#8212; Selectively installing RPMs using the
+      <TT
+CLASS="COMMAND"
+>rpm</TT
+> utility</P
+></LI
+></UL
+><P
+>For automatic RPM installation, refer to <A
+HREF="ap-rhcs-sw-inst-cust.html#S2-PKG-INST-AUTO"
+>Section B.1.1 <I
+>Automatic RPM Installation</I
+></A
+>. For custom RPM installation, refer to <A
+HREF="ap-rhcs-sw-inst-cust.html#S2-PKG-SELECT"
+>Section B.1.2 <I
+>Custom RPM Installation</I
+></A
+>.</P
+><P
+>    
+  </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-PKG-INST-AUTO"
+>B.1.1. Automatic RPM Installation</A
+></H2
+><P
+>Automatic RPM installation consists of running the
+      <TT
+CLASS="COMMAND"
+>up2date</TT
+> utility at each node for the Red Hat Cluster Suite and
+      Red Hat GFS products. </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If you are installing the GFS RPMs, you must run
+	<TT
+CLASS="COMMAND"
+>up2date</TT
+> for Red Hat Cluster Suite before running it for Red Hat GFS.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>To automatically install RPMs, do the following at each node:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Log on as the root user.</P
+></LI
+><LI
+><P
+>Run <TT
+CLASS="COMMAND"
+>up2date --installall
+	--channel <VAR
+CLASS="REPLACEABLE"
+>Label</VAR
+></TT
+>  for
+	Red Hat Cluster Suite. The following example shows running the command for i386
+	RPMs:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>up2date --installall --channel rhel-i386-as-4-cluster</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>(Optional) If you are installing Red Hat GFS, run
+	  <TT
+CLASS="COMMAND"
+>up2date --installall
+	  --channel <VAR
+CLASS="REPLACEABLE"
+>Label</VAR
+></TT
+>  for
+	  Red Hat GFS. The following example shows running the command for i386
+	  RPMs:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>up2date --installall --channel rhel-i386-as-4-gfs-6.1</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+></OL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-PKG-SELECT"
+>B.1.2. Custom RPM Installation</A
+></H2
+><P
+>Custom RPM installation consists of the following steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Determine which RPMs to install. For information on determining
+	  which RPMs to install, refer to <A
+HREF="ap-rhcs-sw-inst-cust.html#S3-PKG-SELECT-DETERM"
+>Section B.1.2.1 <I
+>Determining RPMs To Install</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Install the RPMs using the <TT
+CLASS="COMMAND"
+>rpm</TT
+> utility. For
+	information about installing the RPMs using the <TT
+CLASS="COMMAND"
+>rpm</TT
+>
+	utility, refer to <A
+HREF="ap-rhcs-sw-inst-cust.html#S3-PKG-RPM"
+>Section B.1.2.2 <I
+>Installing Packages with the <TT
+CLASS="COMMAND"
+>rpm</TT
+> Utility</I
+></A
+>.</P
+></LI
+></OL
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If you are installing the GFS RPMs, you must install Red Hat Cluster Suite before
+      Red Hat GFS.</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-PKG-SELECT-DETERM"
+>B.1.2.1. Determining RPMs To Install</A
+></H3
+><P
+>Determining which RPMs to install is based on the following criteria:</P
+><P
+></P
+><UL
+><LI
+><P
+>The lock manager Red Hat Cluster Suite is using &#8212; either
+	  DLM or GULM
+	  </P
+></LI
+><LI
+><P
+>The Red Hat Cluster Suite and Red Hat GFS functions you are using (besides the
+	  standard functions)
+	  </P
+></LI
+><LI
+><P
+>Whether to include development libraries 
+	  </P
+></LI
+><LI
+><P
+>The type of kernel (or kernels) is installed
+	  </P
+></LI
+></UL
+><P
+></P
+><P
+></P
+><P
+></P
+><P
+></P
+><P
+>Use the following tables for determining which RPMs
+	to install:</P
+><P
+></P
+><UL
+><LI
+><P
+><A
+HREF="ap-rhcs-sw-inst-cust.html#TB-CS-DLM-RPMS"
+>Table B-1</A
+> &#8212; For Red Hat Cluster Suite with DLM</P
+></LI
+><LI
+><P
+><A
+HREF="ap-rhcs-sw-inst-cust.html#TB-CS-GULM-RPMS"
+>Table B-2</A
+> &#8212; For Red Hat Cluster Suite with GULM</P
+></LI
+><LI
+><P
+><A
+HREF="ap-rhcs-sw-inst-cust.html#TB-GFS-RPMS"
+>Table B-3</A
+> &#8212; For Red Hat GFS</P
+></LI
+></UL
+><P
+></P
+><P
+></P
+><P
+></P
+><P
+></P
+><P
+>The tables contain the following information to assist you in
+	determining which packages to install:</P
+><P
+></P
+><UL
+><LI
+><P
+>RPMs &#8212; The names of the RPMs (excluding revision
+	    numbers)</P
+></LI
+><LI
+><P
+>Inclusion &#8212; The tables provide the following
+	  information about whether an RPM should be included in the
+	  installation:</P
+><P
+></P
+><UL
+><LI
+><P
+>Req: Required RPM &#8212; You <I
+CLASS="EMPHASIS"
+>must</I
+> install the
+		RPM.</P
+></LI
+><LI
+><P
+>Opt: Optional RPM &#8212; Refer to the "Purpose" for more information
+		about determining whether to include the RPM.</P
+></LI
+><LI
+><P
+>Dev: Development RPM  &#8212; Used for development purposes. Refer to
+		the "Purpose" for more information about determining whether to
+		include the RPM.</P
+></LI
+></UL
+></LI
+><LI
+><P
+>Purpose &#8212; Provides a concise description of the RPM
+	    purpose. Assists in determining which RPMs to include other than the
+	    required RPMs.</P
+></LI
+></UL
+><P
+></P
+><P
+></P
+><P
+></P
+><P
+></P
+><P
+>To determine which RPMs to include in the installation, perform the
+	following steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Determine whether you are installing Red Hat Cluster Suite with DLM or
+	Red Hat Cluster Suite with GULM.</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>If you are installing Red Hat Cluster Suite with DLM, refer to
+	    <A
+HREF="ap-rhcs-sw-inst-cust.html#TB-CS-DLM-RPMS"
+>Table B-1</A
+> to identify which RPMs are required,
+	    optional, and for development.</P
+></LI
+><LI
+><P
+>If you are installing Red Hat Cluster Suite with GULM, refer to
+	    <A
+HREF="ap-rhcs-sw-inst-cust.html#TB-CS-GULM-RPMS"
+>Table B-2</A
+> to identify which RPMs are required,
+	    optional, and for development.</P
+></LI
+></OL
+></LI
+><LI
+><P
+>If you are installing Red Hat GFS, refer to
+	    <A
+HREF="ap-rhcs-sw-inst-cust.html#TB-GFS-RPMS"
+>Table B-3</A
+> to identify which RPMs are required,
+	    optional, and for development.</P
+></LI
+><LI
+><P
+>With the information gathered in the previous steps,
+	proceed to install the RPMs using the procedures in <A
+HREF="ap-rhcs-sw-inst-cust.html#S3-PKG-RPM"
+>Section B.1.2.2 <I
+>Installing Packages with the <TT
+CLASS="COMMAND"
+>rpm</TT
+> Utility</I
+></A
+>.</P
+></LI
+></OL
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-CS-DLM-RPMS"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>RPMs</TH
+><TH
+>Inclusion</TH
+><TH
+>Depends on Kernel Type?</TH
+><TH
+>Purpose</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>ccs-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The Cluster Configuration System</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>cman-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The Cluster Manager</TD
+></TR
+><TR
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>cman-kernel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>cman-kernel-hugemem-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>cman-kernel-smp-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><I
+CLASS="EMPHASIS"
+>Note:</I
+> The types of RPMs available
+	      vary according to RHN channel.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+><TD
+>Req</TD
+><TD
+>Yes</TD
+><TD
+>The Cluster Manager kernel modules</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>dlm-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The Distributed Lock Manager</TD
+></TR
+><TR
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>dlm-kernel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>dlm-kernel-hugemem-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>dlm-kernel-smp-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><I
+CLASS="EMPHASIS"
+>Note:</I
+> The types of RPMs available
+	      vary according to RHN channel.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+><TD
+>Req</TD
+><TD
+>Yes</TD
+><TD
+>The Distributed Lock Manager kernel modules</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>fence-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The cluster I/O fencing system</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>iddev-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>A library that identifies device contents</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>magma-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>A cluster/lock manager API abstraction library</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>magma-plugins-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>Cluster manager plugins for magma</TD
+></TR
+><TR
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>gulm-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><I
+CLASS="EMPHASIS"
+>Note:</I
+> The <TT
+CLASS="COMMAND"
+>gulm</TT
+>
+		module is required with DLM because the <TT
+CLASS="COMMAND"
+>magma-plugins</TT
+>
+		module has a dependency on the <TT
+CLASS="COMMAND"
+>gulm</TT
+>
+		RPM.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The Grand Unified Lock Manager (GULM, available
+	    for this release and earlier versions of Red Hat GFS)</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>perl-Net-Telnet-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>Net-Telnet Perl module</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>rgmanager-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Opt</TD
+><TD
+>No</TD
+><TD
+>Open source HA resource group failover</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>system-config-cluster-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>GUI to manage cluster configuration</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>ipvsadm-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Opt</TD
+><TD
+>No</TD
+><TD
+>Utility to administer the Linux Virtual Server</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>piranha-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Opt</TD
+><TD
+>No</TD
+><TD
+>Cluster administration tools</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>ccs-devel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+>CCS static library</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>cman-kernheaders-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+><TT
+CLASS="COMMAND"
+>cman</TT
+> kernel header files</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>dlm-devel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+>The Distributed Lock Manager user-space libraries</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>dlm-kernheaders-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+><TT
+CLASS="COMMAND"
+>dlm</TT
+> kernel header files</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>iddev-devel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+><TT
+CLASS="COMMAND"
+>iddev</TT
+> development libraries</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>magma-devel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+>A cluster/lock manager API abstraction library</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table B-1. RPM Selection Criteria: Red Hat Cluster Suite with DLM</B
+></P
+></DIV
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-CS-GULM-RPMS"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>RPMs</TH
+><TH
+>Inclusion</TH
+><TH
+>Depends on Kernel Type?</TH
+><TH
+>Purpose</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>ccs-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The Cluster Configuration System</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>fence-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The cluster I/O fencing system</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>gulm-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The Grand Unified Lock Manager (GULM, available
+	    for this release and earlier versions of Red Hat GFS)</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>iddev-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>A library that identifies device contents</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>magma-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>A cluster/lock manager API abstraction library</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>magma-plugins-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>Cluster manager plugins for magma</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>perl-Net-Telnet-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>Net-Telnet Perl module</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>system-config-cluster-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>GUI to manage cluster configuration</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>ipvsadm-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Opt</TD
+><TD
+>No</TD
+><TD
+>Utility to administer the Linux Virtual Server</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>piranha-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Opt</TD
+><TD
+>No</TD
+><TD
+>Cluster administration tools</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>ccs-devel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+>CCS static library</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>gulm-devel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+><TT
+CLASS="COMMAND"
+>gulm</TT
+> libraries</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>iddev-devel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+><TT
+CLASS="COMMAND"
+>iddev</TT
+> development libraries</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>magma-devel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+>A cluster/lock manager API abstraction library</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table B-2. RPM Selection Criteria: Red Hat Cluster Suite with GULM</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-GFS-RPMS"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>RPMs</TH
+><TH
+>Inclusion</TH
+><TH
+>Depends on Kernel Type?</TH
+><TH
+>Purpose</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>GFS-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>The Red Hat GFS module</TD
+></TR
+><TR
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>GFS-kernel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>GFS-kernel-hugemem-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>GFS-kernel-smp-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><I
+CLASS="EMPHASIS"
+>Note:</I
+> The types of RPMs available
+	      vary according to RHN channel.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+><TD
+>Req</TD
+><TD
+>Yes</TD
+><TD
+>The Red Hat GFS kernel modules</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Opt</TD
+><TD
+>No</TD
+><TD
+>The GFS Network Block Device</TD
+></TR
+><TR
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd-kernel-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd-kernel-hugemem-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd-kernel-smp-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+></TR
+><TR
+><TD
+><I
+CLASS="EMPHASIS"
+>Note:</I
+> The types of RPMs available
+	      vary according to  RHN channel.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+><TD
+>Opt</TD
+><TD
+>Yes</TD
+><TD
+>Kernel module for GFS Network Block Device</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>lvm2-cluster-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Req</TD
+><TD
+>No</TD
+><TD
+>Cluster extensions for the logical volume manager</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>GFS-kernheaders-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+>GFS kernel header files</TD
+></TR
+><TR
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd-kernheaders-<VAR
+CLASS="REPLACEABLE"
+>ver</VAR
+>-<VAR
+CLASS="REPLACEABLE"
+>rel</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>arch</VAR
+></TT
+></TD
+><TD
+>Dev</TD
+><TD
+>No</TD
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd</TT
+> kernel header files</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table B-3. RPM Selection Criteria: Red Hat GFS</B
+></P
+></DIV
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-PKG-RPM"
+>B.1.2.2. Installing Packages with the <TT
+CLASS="COMMAND"
+>rpm</TT
+> Utility</A
+></H3
+><P
+>You can use the <TT
+CLASS="COMMAND"
+>rpm</TT
+> utility to install RPMs from
+	CDs created with RHN ISOs. The procedure consists of copying RPMs to a local
+	computer, removing the RPMs that are not needed for the installation,
+	copying the RPMs to the cluster nodes, and installing them.</P
+><P
+> To install	the RPMs, follow these instructions:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>At a local computer (one that is not part of the
+	cluster) make a temporary directory to contain the RPMs. For
+	example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>mkdir /tmp/RPMS/</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Insert the Red Hat Cluster Suite CD into the CD-ROM drive.
+	  </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If a <B
+CLASS="GUILABEL"
+>Question</B
+> dialog box is displayed
+	    that asks if you want to run <TT
+CLASS="COMMAND"
+>autorun</TT
+>, click
+	    <B
+CLASS="GUIBUTTON"
+>No</B
+>. </P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>Copy all the RPM files from the CD (located in
+	<TT
+CLASS="FILENAME"
+>/media/cdrom/RedHat/RPMS/</TT
+>) to the
+	temporary directory created earlier. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>cp /media/cdrom/RedHat/RPMS/*.rpm  /tmp/RPMS/</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If your local computer is running a version of Red Hat Enterprise Linux that is earlier
+	    than Red Hat Enterprise Linux 4, the path to the RPMs on the CD may be different. For
+	    example, on Red Hat Enterprise Linux 3, the path is
+	    <TT
+CLASS="FILENAME"
+>/mnt/cdrom/RedHat/RPMS/</TT
+>.</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>Eject the CD from the CD-ROM drive.
+	  </P
+></LI
+><LI
+><P
+>(Optional) If you are installing Red Hat GFS, insert a
+	Red Hat GFS CD into the CD-ROM drive. If you are not installing Red Hat GFS,
+	proceed to step 8.</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If a <B
+CLASS="GUILABEL"
+>Question</B
+> dialog box is displayed
+		that asks if you want to run <TT
+CLASS="COMMAND"
+>autorun</TT
+>, click
+		<B
+CLASS="GUIBUTTON"
+>No</B
+>. </P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>Copy all the RPM files from the CD (located in
+	<TT
+CLASS="FILENAME"
+>/media/cdrom/RedHat/RPMS/</TT
+>) to the temporary
+	directory created earlier. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>cp /media/cdrom/RedHat/RPMS/*.rpm  /tmp/RPMS/</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If your local computer is running a version of Red Hat Enterprise Linux that is earlier
+	    than Red Hat Enterprise Linux 4, the path to the RPMs on the CD may be different. For
+	    example, on Red Hat Enterprise Linux 3, the path is
+	    <TT
+CLASS="FILENAME"
+>/mnt/cdrom/RedHat/RPMS/</TT
+>.</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>Eject the CD from the CD-ROM drive.
+	  </P
+></LI
+><LI
+><P
+>Change to the temporary directory containing the copied
+	RPM files. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>cd /tmp/RPMS/</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Remove the "-kernel" RPMs for kernels that are not installed in
+	the cluster node, and any other RPMs that are not being installed (for
+	example, optional or development RPMS). The following example removes
+	SMP and hugemem "-kernel" RPM files:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>rm *-kernel-smp* *-kernel-hugemem*</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>For information	about selecting the RPMs to install, refer to
+	<A
+HREF="ap-rhcs-sw-inst-cust.html#S3-PKG-SELECT-DETERM"
+>Section B.1.2.1 <I
+>Determining RPMs To Install</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Log in to each cluster node as the root user and make a
+	directory to contain the RPMs. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>mkdir /tmp/node-RPMS/</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Copy the RPMs from the temporary directory in the local
+	computer to directories in the cluster nodes using the
+	<TT
+CLASS="COMMAND"
+>scp</TT
+> command. For example, to copy the RPMs to node
+	rhcs-node-01, run the following command at the local computer:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$ <KBD
+CLASS="USERINPUT"
+>scp /tmp/RPMS/*.rpm root@rhcs-node-01:/tmp/node-RPMS/</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>At each node (logged in as root), change to the temporary
+	    directory created earlier (<TT
+CLASS="FILENAME"
+>/tmp/node-RPMS</TT
+>) and
+	    install the RPMs by running the <TT
+CLASS="COMMAND"
+>rpm</TT
+> utility as
+	    follows:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>cd /tmp/node-RPMS/</KBD
+>
+# <KBD
+CLASS="USERINPUT"
+>rpm -Uvh *</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+></OL
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-hwinfo-singlesetup.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ap-rhcs-dm-multipath-usagetxt.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>SCSI Storage Requirements</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-appendixes.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><TT
+CLASS="FILENAME"
+>Multipath-usage.txt</TT
+> File for  Red Hat Enterprise Linux 4 Update 3</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

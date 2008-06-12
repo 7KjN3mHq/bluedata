@@ -1,0 +1,1099 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Red Hat Cluster Manager Overview</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Using the Red Hat Cluster Manager"
+HREF="pt-clumanager.html"><LINK
+REL="PREVIOUS"
+TITLE="Using the Red Hat Cluster Manager"
+HREF="pt-clumanager.html"><LINK
+REL="NEXT"
+TITLE="Hardware Installation and Operating System Configuration"
+HREF="ch-hardware.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="pt-clumanager.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ch-hardware.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-OVERVIEW"
+></A
+>Chapter 1. Red Hat Cluster Manager Overview</H1
+><P
+> Red Hat Cluster Manager allows administrators to connect separate systems (called
+      <I
+CLASS="FIRSTTERM"
+>members</I
+> or <I
+CLASS="FIRSTTERM"
+>nodes</I
+>) together
+      to create failover clusters that ensure application availability and data
+      integrity under several failure conditions. Administrators can use Red Hat
+      Cluster Manager with database applications, file sharing services, web
+      servers, and more.</P
+><P
+>To set up a failover cluster, you must connect the nodes to the
+	cluster hardware, and configure the nodes into the cluster
+	environment. The foundation of a cluster is an advanced host membership
+	algorithm. This algorithm ensures that the cluster maintains complete
+	data integrity by using the following methods of inter-node
+	communication: </P
+><P
+></P
+><UL
+><LI
+><P
+>Network connections between the cluster systems
+	</P
+></LI
+><LI
+><P
+>A Cluster Configuration System daemon (ccsd) that synchronizes
+	configuration between cluster nodes
+	  </P
+></LI
+></UL
+><P
+>To make an application and data highly available in a cluster, you
+      must configure a <I
+CLASS="FIRSTTERM"
+>cluster service</I
+>, an application
+      that would benefit from Red Hat Cluster Manager to ensure high availability. A cluster
+      service is made up of cluster <I
+CLASS="FIRSTTERM"
+>resources</I
+>, components
+      that can be failed over from one node to another, such as an IP address,
+      an application initialization script, or a Red Hat GFS shared
+      partition. Building a cluster using Red Hat Cluster Manager allows transparent client
+      access to cluster services. For example, you can provide clients with
+      access to highly-available database applications by building a cluster
+      service using Red Hat Cluster Manager to manage service availability and shared Red Hat GFS
+      storage partitions for the database data and end-user applications.
+    </P
+><P
+>You can associate a cluster service with a <I
+CLASS="FIRSTTERM"
+>failover
+      domain</I
+>, a subset of cluster nodes that are eligible to run a
+      particular cluster service. In general, any eligible, properly-configured
+      node can run the cluster service. However, each cluster service can run on
+      only one cluster node at a time in order to maintain data integrity. You
+      can specify whether or not the nodes in a failover domain are ordered by
+      preference. You can also specify whether or not a cluster service is
+      restricted to run only on nodes of its associated failover domain. (When
+      associated with an unrestricted failover domain, a cluster service can be
+      started on any cluster node in the event no member of the failover domain
+      is available.)
+    </P
+><P
+>You can set up an <I
+CLASS="FIRSTTERM"
+>active-active</I
+> configuration
+      in which the members run different cluster services simultaneously, or a
+      <I
+CLASS="FIRSTTERM"
+>hot-standby</I
+> configuration in which primary members
+      run all the cluster services, and a backup member takes over only
+      if a primary member fails.</P
+><P
+>If a hardware or software failure occurs, the cluster automatically
+      restarts the failed node's cluster services on the functional node. This
+      <I
+CLASS="FIRSTTERM"
+>cluster-service failover</I
+> capability ensures that no
+      data is lost, and there is little disruption to users. When the failed
+      node recovers, the cluster can re-balance the cluster services across the
+      nodes.</P
+><P
+>In addition, you can cleanly stop the cluster services running on a cluster
+      system and then restart them on another system. This <I
+CLASS="FIRSTTERM"
+>cluster-service
+      relocation</I
+> capability allows you to maintain application and
+      data availability when a cluster node requires maintenance.  
+    </P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-RHCM-FEATURES"
+>1.1. Red Hat Cluster Manager Features</A
+></H1
+><P
+>Cluster systems deployed with Red Hat Cluster Manager include the
+	following features:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>No-single-point-of-failure hardware configuration</DT
+><DD
+><P
+>Clusters can include a dual-controller RAID array, multiple
+	      bonded network channels, multiple paths between
+	      cluster members and storage, and redundant uninterruptible power
+	      supply (UPS) systems to ensure that no single failure results in
+	      application down time or loss of data.
+	    </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>For information about using <TT
+CLASS="COMMAND"
+>dm-multipath</TT
+>
+	      with Red Hat Cluster Suite, refer to<A
+HREF="ap-rhcs-dm-multipath-usagetxt.html"
+>Appendix C <I
+><TT
+CLASS="FILENAME"
+>Multipath-usage.txt</TT
+> File for  Red Hat Enterprise Linux 4 Update 3</I
+></A
+></P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>Alternatively, a low-cost cluster can be set up to provide
+	      less availability than a no-single-point-of-failure cluster. For
+	      example, you can set up a cluster with a single-controller RAID
+	      array and only a single Ethernet channel.
+	    </P
+><P
+>Certain low-cost alternatives, such as host RAID controllers,
+	      software RAID without cluster support, and multi-initiator
+	      parallel SCSI configurations are not compatible or appropriate for
+	      use as shared cluster storage.
+	    </P
+></DD
+><DT
+>Cluster configuration and administration framework</DT
+><DD
+><P
+>Red Hat Cluster Manager allows you to easily configure and administer cluster
+	      services to make resources such as applications, server daemons,
+	      and shared data highly available. To create a cluster service, you
+	      specify the resources used in the cluster service as well as the
+	      properties of the cluster service, such as the cluster service
+	      name, application initialization (init) scripts, disk partitions,
+	      mount points, and the cluster nodes on which you prefer the
+	      cluster service to run. After you add a cluster service, the
+	      cluster management software stores the information in a cluster
+	      configuration file, and the configuration data is aggregated to
+	      all cluster nodes using the <I
+CLASS="FIRSTTERM"
+>Cluster Configuration
+	      System</I
+> (or <ACRONYM
+CLASS="ACRONYM"
+>CCS</ACRONYM
+>), a daemon installed
+	      on each cluster node that allows retrieval of changes to the
+	      XML-based <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+>
+	      configuration file.
+	    </P
+><P
+>Red Hat Cluster Manager provides an easy-to-use framework for database
+	      applications. For example, a database cluster service serves
+	      highly-available data to a database application. The application
+	      running on a cluster node provides network access to database
+	      client systems, such as Web applications. If the cluster service
+	      fails over to another node, the application can still access the
+	      shared database data. A network-accessible database cluster
+	      service is usually assigned an IP address, which is failed over
+	      along with the cluster service to maintain transparent access for
+	      clients.
+	    </P
+><P
+> The cluster-service framework can also easily extend
+	    to other applications through the use of customized init scripts.
+	    </P
+></DD
+><DT
+>Cluster administration user interface</DT
+><DD
+><P
+>The Red Hat Cluster Suite management graphical user interface (GUI)
+	      facilitates the administration and monitoring tasks of cluster 
+	      resources such as the following:  creating, starting, and stopping cluster
+	      services; relocating cluster services from one node to another;
+	      modifying the cluster service configuration; and monitoring the
+	      cluster nodes. The CMAN interface allows administrators to
+	      individually control the cluster on a per-node basis.</P
+></DD
+><DT
+>Failover domains</DT
+><DD
+><P
+>By assigning a cluster service to a <I
+CLASS="FIRSTTERM"
+>restricted failover
+	      domain</I
+>, you can limit the nodes that are eligible to
+	      run a cluster service in the event of a failover. (A cluster service that is
+	      assigned to a restricted failover domain cannot be started on a
+	      cluster node that is not included in that failover domain.) You
+	      can order the nodes in a failover domain by preference to ensure
+	      that a particular node runs the cluster service (as long as that node
+	      is active). If a cluster service is assigned to an unrestricted failover
+	      domain, the cluster service starts on any available cluster node (if
+	      none of the nodes of the failover domain are available).
+	    </P
+></DD
+><DT
+>Data integrity assurance</DT
+><DD
+><P
+>To ensure data integrity, only one node can run a cluster
+	      service and access cluster-service data at one time. The use of
+	      power switches in the cluster hardware configuration enables a
+	      node to power-cycle another node before restarting that
+	      node's cluster services during the failover process. This
+	      prevents any two systems from simultaneously accessing the same
+	      data and corrupting it. It is strongly recommended that
+	      <I
+CLASS="FIRSTTERM"
+>fence devices</I
+> (hardware or software
+	      solutions that remotely power, shutdown, and reboot cluster nodes)
+	      are used to guarantee data integrity under all failure
+	      conditions. Watchdog timers are an alternative used to ensure
+	      correct operation of cluster service failover.
+	    </P
+></DD
+><DT
+>Ethernet channel bonding</DT
+><DD
+><P
+>To monitor the health of the other nodes, each node
+	      monitors the health of the remote power switch, if any, and issues
+	      heartbeat pings over network channels. With Ethernet channel
+	      bonding, multiple Ethernet interfaces are configured to behave as
+	      one, reducing the risk of a single-point-of-failure in the typical
+	      switched Ethernet connection between systems.</P
+></DD
+><DT
+>Cluster-service failover capability</DT
+><DD
+><P
+>If a hardware or software failure occurs, the cluster takes
+	      the appropriate action to maintain application availability and
+	      data integrity. For example, if a node completely fails, a healthy
+	      node (in the associated failover domain, if used) starts the
+	      service or services that the failed node was running prior to
+	      failure. Cluster services already running on the healthy node are
+	      not significantly disrupted during the failover process.
+	    </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>For Red Hat Cluster Suite 4, node health is monitored through a cluster
+	      network heartbeat. In previous versions of Red Hat Cluster Suite, node health was
+	      monitored on shared disk. Shared disk is <I
+CLASS="EMPHASIS"
+>not</I
+> 
+	      required for node-health monitoring in Red Hat Cluster Suite 4.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>When a failed node reboots, it can rejoin the cluster and
+	      resume running the cluster service. Depending on how the cluster
+	      services are configured, the cluster can re-balance services among
+	      the nodes.
+	    </P
+></DD
+><DT
+>Manual cluster-service relocation capability</DT
+><DD
+><P
+>In addition to automatic cluster-service failover, a cluster allows
+	      you to cleanly stop cluster services on one node and restart them on
+	      another node. You can perform planned maintenance on a node
+	      system while continuing to provide application and data
+	      availability.
+	    </P
+></DD
+><DT
+>Event logging facility</DT
+><DD
+><P
+>To ensure that problems are detected and resolved before they
+	      affect cluster-service availability, the cluster daemons log messages by
+	      using the conventional Linux syslog subsystem.
+	    </P
+></DD
+><DT
+>Application monitoring</DT
+><DD
+><P
+>The infrastructure in a cluster monitors the state and health
+	      of an application. In this manner, should an application-specific
+	      failure occur, the cluster automatically restarts the
+	      application. In response to the application failure, the
+	      application attempts to be restarted on the node it was initially
+	      running on; failing that, it restarts on another cluster node. You
+	      can specify which nodes are eligible to run a cluster service by
+	      assigning a failover domain to the cluster service.
+	    </P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-RHCM-SUBYS"
+>1.1.1. Red Hat Cluster Manager Subsystem Overview</A
+></H2
+><P
+><A
+HREF="ch-overview.html#TB-TABLE-RHCM-SUBSYS"
+>Table 1-1</A
+> summarizes the GFS Software
+	subsystems and their components.
+	</P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-TABLE-RHCM-SUBSYS"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Software Subsystem</TH
+><TH
+>Components</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></TD
+><TD
+><TT
+CLASS="COMMAND"
+>system-config-cluster</TT
+></TD
+><TD
+>Command used to manage cluster configuration in a
+		    graphical setting.</TD
+></TR
+><TR
+><TD
+>Cluster Configuration System (CCS)</TD
+><TD
+><TT
+CLASS="COMMAND"
+>ccs_tool</TT
+></TD
+><TD
+>Notifies <TT
+CLASS="COMMAND"
+>ccsd</TT
+> of an updated
+	      <TT
+CLASS="FILENAME"
+>cluster.conf</TT
+> file.  Also, used for upgrading a
+	      configuration file from a Red Hat GFS 6.0 (or earlier) cluster to the
+	      format of the  Red Hat Cluster Suite 4 configuration file.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>ccs_test</TT
+></TD
+><TD
+>Diagnostic and testing command that is used to retrieve
+	      information from configuration files through
+	      <TT
+CLASS="COMMAND"
+>ccsd</TT
+>.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>ccsd</TT
+></TD
+><TD
+>CCS daemon that runs on all cluster nodes and provides
+	      configuration file data to cluster software.</TD
+></TR
+><TR
+><TD
+>Resource Group Manager (rgmanager)</TD
+><TD
+><TT
+CLASS="COMMAND"
+>clusvcadm</TT
+></TD
+><TD
+>Command
+		  used to manually enable, disable, relocate, and restart user
+		  services in a cluster</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>clustat</TT
+></TD
+><TD
+>Command used to display the status of the cluster,
+		  including node membership and services running.
+		  </TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>clurgmgrd</TT
+></TD
+><TD
+>Daemon used to handle user service requests including
+		  service start, service disable, service relocate, and service
+		  restart</TD
+></TR
+><TR
+><TD
+>Fence</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_ack_manual</TT
+></TD
+><TD
+>User interface for <TT
+CLASS="COMMAND"
+>fence_manual</TT
+> agent.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_apc</TT
+></TD
+><TD
+>Fence agent for APC power switch.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_bladecenter</TT
+></TD
+><TD
+>Fence agent for for IBM Bladecenters with Telnet
+		  interface.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_brocade</TT
+></TD
+><TD
+>Fence agent for Brocade Fibre Channel switch.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_bullpap</TT
+></TD
+><TD
+>Fence agent for Bull Novascale Platform Administration
+		  Processor (PAP) Interface.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_drac</TT
+></TD
+><TD
+>Fence agent for Dell Remote Access Controller/Modular
+		Chassis (DRAC/MC).</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_egenera</TT
+></TD
+><TD
+>Fence agent used with Egenera BladeFrame system.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_gnbd</TT
+></TD
+><TD
+>Fence agent used with GNBD storage.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_ilo</TT
+></TD
+><TD
+>Fence agent for HP ILO interfaces (formerly fence_rib).</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_ipmilan</TT
+></TD
+><TD
+>Fence agent for Intelligent Platform
+		  Management Interface (IPMI).</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_manual</TT
+></TD
+><TD
+>Fence agent for manual interaction. Note: Manual fencing
+		is <I
+CLASS="EMPHASIS"
+>not</I
+> supported for production
+		environments.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_mcdata</TT
+></TD
+><TD
+>Fence agent for McData Fibre Channel switch.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_node</TT
+></TD
+><TD
+>Command used by <TT
+CLASS="COMMAND"
+>lock_gulmd</TT
+> when a fence
+		  operation is required. This command takes the name of a node and
+		  fences it based on the node's fencing configuration.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_rps10</TT
+></TD
+><TD
+>Fence agent for WTI Remote Power Switch, Model RPS-10
+		(Only used with two-node clusters).</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_rsa</TT
+></TD
+><TD
+>Fence agent for IBM Remote Supervisor Adapter II (RSA II).</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_sanbox2</TT
+></TD
+><TD
+>Fence agent for SANBox2 Fibre Channel switch.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_vixel</TT
+></TD
+><TD
+>Fence agent for Vixel Fibre Channel switch.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fence_wti</TT
+></TD
+><TD
+>Fence agent for WTI power switch.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>fenced</TT
+></TD
+><TD
+>The fence daemon. Manages the fence domain.</TD
+></TR
+><TR
+><TD
+>DLM</TD
+><TD
+><TT
+CLASS="COMMAND"
+>libdlm.so.1.0.0</TT
+></TD
+><TD
+>Library for Distributed Lock Manager (DLM) support.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>dlm.ko</TT
+></TD
+><TD
+>Kernel module that is installed on cluster nodes for
+		  Distributed Lock Manager (DLM) support.</TD
+></TR
+><TR
+><TD
+>LOCK_GULM</TD
+><TD
+><TT
+CLASS="COMMAND"
+>lock_gulm.o</TT
+></TD
+><TD
+>Kernel module that is installed on GFS nodes using the
+		  LOCK_GULM lock module.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>lock_gulmd</TT
+></TD
+><TD
+>Server/daemon that runs on each node and communicates with all
+		  nodes in GFS cluster.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>libgulm.so.<VAR
+CLASS="REPLACEABLE"
+>xxx</VAR
+></TT
+></TD
+><TD
+>Library for GULM lock manager support</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>gulm_tool</TT
+></TD
+><TD
+>Command that configures and debugs the
+		  <TT
+CLASS="COMMAND"
+>lock_gulmd</TT
+> server.</TD
+></TR
+><TR
+><TD
+>LOCK_NOLOCK</TD
+><TD
+><TT
+CLASS="COMMAND"
+>lock_nolock.o</TT
+></TD
+><TD
+>Kernel module installed on a node using GFS as a local file
+		  system.</TD
+></TR
+><TR
+><TD
+>GNBD</TD
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd.o</TT
+></TD
+><TD
+>Kernel module that implements the GNBD device driver
+		  on clients.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd_serv.o</TT
+></TD
+><TD
+>Kernel module that implements the GNBD server. It allows a
+		  node to export local storage over the network.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd_export</TT
+></TD
+><TD
+>Command to create, export and manage GNBDs on a GNBD server.</TD
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+><TT
+CLASS="COMMAND"
+>gnbd_import</TT
+></TD
+><TD
+>Command to import and manage GNBDs on a GNBD client.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 1-1. Red Hat Cluster Manager Software Subsystem Components</B
+></P
+></DIV
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="pt-clumanager.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ch-hardware.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Using the Red Hat Cluster Manager</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-clumanager.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Hardware Installation and Operating System Configuration</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

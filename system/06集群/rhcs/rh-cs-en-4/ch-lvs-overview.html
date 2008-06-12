@@ -1,0 +1,421 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Linux Virtual Server Overview</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring a Linux Virtual Server Cluster"
+HREF="pt-lvs.html"><LINK
+REL="PREVIOUS"
+TITLE="Basic Configurations"
+HREF="s1-introduction-configurations.html"><LINK
+REL="NEXT"
+TITLE="A Three Tiered LVS Configuration"
+HREF="s1-lvs-cm.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-introduction-configurations.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-cm.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-LVS-OVERVIEW"
+></A
+>Chapter 7. Linux Virtual Server Overview</H1
+><P
+>      Red Hat Enterprise Linux LVS clustering uses a Linux machine called the <I
+CLASS="FIRSTTERM"
+>active
+      router</I
+> to send requests from the Internet to a pool of
+      servers. To accomplish this, LVS clusters consist of two basic machine
+      classifications &#8212; the LVS routers (one active and one backup) and a
+      pool of real servers which provide the critical services.
+    </P
+><P
+>      The active router serves two roles in the cluster:
+    </P
+><P
+></P
+><UL
+><LI
+><P
+>To balance the load on the real servers.</P
+></LI
+><LI
+><P
+>To check the integrity of the services on each of the real
+	  servers.</P
+></LI
+></UL
+><P
+>      The backup router's job is to monitor the active router and
+      assume its role in the event of failure.
+    </P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-BASIC"
+>7.1. A Basic LVS Configuration</A
+></H1
+><P
+>	<A
+HREF="ch-lvs-overview.html#GR-LVS-BASIC"
+>Figure 7-1</A
+> shows a simple LVS cluster consisting of
+	two layers. On the first layer are two LVS routers &#8212; one active
+	and one backup. Each of the LVS routers has two network interfaces, one
+	interface on the Internet and one on the private network, enabling them
+	to regulate traffic between the two networks. For this example the
+	active router is using <I
+CLASS="FIRSTTERM"
+>Network Address
+	Translation</I
+> or <I
+CLASS="FIRSTTERM"
+>NAT</I
+> to direct traffic
+	from the Internet to a variable number of real servers on the second
+	layer, which in turn provide the necessary services. Therefore, the real
+	servers in this example are connected to a dedicated private network
+	segment and pass all public traffic back and forth through the active
+	LVS router. To the outside world, the server cluster appears as one
+	entity.
+      </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-LVS-BASIC"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-lvs-overview/typical-lvs.png"></P
+></DIV
+><P
+><B
+>Figure 7-1. A Basic LVS Configuration</B
+></P
+></DIV
+><P
+>        Service requests arriving at the LVS cluster are addressed to a
+        <I
+CLASS="FIRSTTERM"
+>virtual IP</I
+> address or VIP. This is a
+        publicly-routable address the administrator of the site associates with
+        a fully-qualified domain name, such as www.example.com, and which is
+        assigned to one or more <I
+CLASS="FIRSTTERM"
+>virtual server</I
+><A
+NAME="AEN4267"
+HREF="#FTN.AEN4267"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+>. Note that a VIP address migrates from one LVS router to the
+        other during a failover, thus maintaining a presence at that IP address,
+        also known as <I
+CLASS="EMPHASIS"
+>floating IP addresses</I
+>.
+      </P
+><P
+>	VIP addresses may be aliased to the same device which
+	connects the LVS router to the Internet. For instance, if eth0 is
+	connected to the Internet, than multiple virtual servers can be
+	aliased to <TT
+CLASS="FILENAME"
+>eth0:1</TT
+>. Alternatively, each virtual
+	server can be associated with a separate device per service. For example,
+	HTTP traffic can be handled on <TT
+CLASS="FILENAME"
+>eth0:1</TT
+>, and FTP
+	traffic can be handled on <TT
+CLASS="FILENAME"
+>eth0:2</TT
+>.
+      </P
+><P
+>        Only one LVS router is active at a time. The role of the active router
+        is to redirect service requests from virtual IP addresses to the real
+        servers. The redirection is based on one of eight supported
+        load-balancing algorithms described further in <A
+HREF="s1-lvs-scheduling.html"
+>Section 7.3 <I
+>LVS Scheduling Overview</I
+></A
+>.
+      </P
+><P
+>	The active router also dynamically monitors the overall health of the
+	specific services on the real servers through simple
+	<I
+CLASS="FIRSTTERM"
+>send/expect scripts</I
+>. To aid in detecting the
+	health of services that require dynamic data, such as HTTPS or SSL, the
+	administrator can also call external executables. If a service on a real
+	server malfunctions, the active router stops sending jobs to that server
+	until it returns to normal operation.
+      </P
+><P
+>        The backup router performs the role of a standby system. Periodically,
+        the LVS routers exchange heartbeat messages through the primary external
+        public interface and, in a failover situation, the private
+        interface. Should the backup node fail to receive a heartbeat message
+        within an expected interval, it initiates a failover and assumes the
+        role of the active router. During failover, the backup router takes over
+        the VIP addresses serviced by the failed router using a technique known
+        as <I
+CLASS="FIRSTTERM"
+>ARP spoofing</I
+> &#8212; where the backup LVS
+        router announces itself as the destination for IP packets addressed to
+        the failed node. When the failed node returns to active service, the
+        backup node assumes its hot-backup role again.
+      </P
+><P
+>	The simple, two-layered configuration used in <A
+HREF="ch-lvs-overview.html#GR-LVS-BASIC"
+>Figure 7-1</A
+> is best for clusters serving data which does
+	  not change very frequently &#8212; such as static webpages &#8212;
+	  because the individual real servers do not automatically sync data
+	  between each node.
+      </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-RSYNC"
+>7.1.1. Data Replication and Data Sharing Between Real Servers</A
+></H2
+><P
+>	Since there is no built-in component in LVS clustering to share the same
+	data between the real servers, the administrator has two basic options:
+      </P
+><P
+></P
+><UL
+><LI
+><P
+>Synchronize the data across the real server pool</P
+></LI
+><LI
+><P
+>Add a third layer to the topology for shared data access</P
+></LI
+></UL
+><P
+>	The first option is preferred for servers that do not allow large
+	numbers of users to upload or change data on the real servers. If the
+	cluster allows large numbers of users to modify data, such as an
+	e-commerce website, adding a third layer is preferable.
+      </P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-LVS-RSYNC"
+>7.1.1.1. Configuring Real Servers to Synchronize Data</A
+></H3
+><P
+>	    There are many ways an administrator can choose to synchronize data
+	    across the pool of real servers. For instance, shell scripts can be
+	    employed so that if a Web engineer updates a page, the page is posted to
+	    all of the servers simultaneously. Also, the cluster administrator can
+	    use programs such as <TT
+CLASS="COMMAND"
+>rsync</TT
+> to replicate changed data
+	    across all nodes at a set interval.
+	  </P
+><P
+>	    However, this type of data synchronization does not optimally
+	    function if the cluster is overloaded with users constantly
+	    uploading files or issuing database transactions. For a cluster with
+	    a high load, a <I
+CLASS="FIRSTTERM"
+>three-tiered topology</I
+> is the
+	    ideal solution.
+	  </P
+></DIV
+></DIV
+></DIV
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN4267"
+HREF="ch-lvs-overview.html#AEN4267"
+><SPAN
+CLASS="footnote"
+>[1]</SPAN
+></A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>	    A virtual server is a service configured to listen on a specific
+	    virtual IP. Refer to <A
+HREF="s1-piranha-virtservs.html"
+>Section 10.6 <I
+><B
+CLASS="GUILABEL"
+>VIRTUAL SERVERS</B
+></I
+></A
+> for more
+	    on configuring a virtual server using the
+	    <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>.
+	  </P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-introduction-configurations.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-cm.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Basic Configurations</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>A Three Tiered LVS Configuration</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,530 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Setting Up the Nodes</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Hardware Installation and Operating System Configuration"
+HREF="ch-hardware.html"><LINK
+REL="PREVIOUS"
+TITLE="Cluster Hardware Components"
+HREF="s1-hardware-clustertable.html"><LINK
+REL="NEXT"
+TITLE="Installing and Configuring Red Hat Enterprise Linux"
+HREF="s1-hardware-linux.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-hardware-clustertable.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Hardware Installation and Operating System Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-hardware-linux.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-HARDWARE-CLUSTER"
+>2.3. Setting Up the Nodes</A
+></H1
+><P
+>	After identifying the cluster hardware components described in <A
+HREF="ch-hardware.html#S1-HARDWARE-CHOOSING"
+>Section 2.1 <I
+>Choosing a Hardware Configuration</I
+></A
+>, set up the basic cluster
+	  hardware and connect the nodes to the optional console switch and
+	  network switch or hub. Follow these steps:
+      </P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>In all nodes, install the required network adapters and host
+	    bus adapters. Refer to <A
+HREF="s1-hardware-cluster.html#S2-HARDWARE-BASIC"
+>Section 2.3.1 <I
+>Installing the Basic Cluster Hardware</I
+></A
+> for more
+	    information about performing this task.
+	  </P
+></LI
+><LI
+><P
+>Set up the optional console switch and connect it to each
+	    node. Refer to <A
+HREF="s1-hardware-cluster.html#S2-HARDWARE-CONSOLESETUP"
+>Section 2.3.3 <I
+>Setting Up a Console Switch</I
+></A
+> for more
+	    information about performing this task.</P
+><P
+>If a console switch is not used, then connect each node to a
+	    console terminal.</P
+></LI
+><LI
+><P
+>Set up the network switch or hub and use network cables to
+	    connect it to the nodes and the terminal server (if
+	    applicable). Refer to <A
+HREF="s1-hardware-cluster.html#S2-HARDWARE-NETWORKSETUP"
+>Section 2.3.4 <I
+>Setting Up a Network Switch or Hub</I
+></A
+> for
+	    more information about performing this task.</P
+></LI
+></OL
+><P
+>After performing the previous tasks, install Red Hat Enterprise Linux as described in
+	<A
+HREF="s1-hardware-linux.html"
+>Section 2.4 <I
+>Installing and Configuring Red Hat Enterprise Linux</I
+></A
+>.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-BASIC"
+>2.3.1. Installing the Basic Cluster Hardware</A
+></H2
+><P
+>Nodes must provide the CPU processing power and memory
+	  required by applications.</P
+><P
+>In addition, nodes must be able to accommodate the SCSI or Fibre
+	  Channel adapters, network interfaces, and serial ports that the
+	  hardware configuration requires. Systems have a limited number of
+	  pre-installed serial and network ports and PCI expansion slots. <A
+HREF="s1-hardware-cluster.html#TB-HARDWARE-BASIC"
+>Table 2-10</A
+> helps determine how much capacity the
+	  employed node systems require.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-BASIC"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Cluster Hardware Component</TH
+><TH
+>Serial Ports</TH
+><TH
+>Ethernet Ports</TH
+><TH
+>PCI Slots</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>SCSI or Fibre Channel adapter to shared disk storage</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+><TD
+>One for each bus adapter</TD
+></TR
+><TR
+><TD
+>Network connection for client access and Ethernet
+		heartbeat pings
+		</TD
+><TD
+>&nbsp;</TD
+><TD
+>One for each network connection</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>Point-to-point Ethernet connection for 2-node clusters
+		(optional)</TD
+><TD
+>&nbsp;</TD
+><TD
+>One for each connection</TD
+><TD
+>&nbsp;</TD
+></TR
+><TR
+><TD
+>Terminal server connection (optional)</TD
+><TD
+>One</TD
+><TD
+>&nbsp;</TD
+><TD
+>&nbsp;</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-10. Installing the Basic Cluster Hardware</B
+></P
+></DIV
+><P
+>Most systems come with at least one serial port. If a system has
+	  graphics display capability, it is possible to use the serial console
+	  port for a power switch connection. To expand your serial port
+	  capacity, use multi-port serial PCI cards. For multiple-node
+	  clusters, use a network power switch.</P
+><P
+>Also, ensure that local system disks are not on the
+	  same SCSI bus as the shared disks. For example, use two-channel SCSI
+	  adapters, such as the Adaptec 39160-series cards, and put the internal
+	  devices on one channel and the shared disks on the other
+	  channel. Using multiple SCSI cards is also possible.</P
+><P
+>Refer to the system documentation supplied by the vendor for
+	  detailed installation information. Refer to <A
+HREF="ap-hwinfo.html"
+>Appendix A <I
+>Supplementary Hardware Information</I
+></A
+>
+	  for hardware-specific information about using host bus adapters in a
+	  cluster.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-STORAGESETUP"
+>2.3.2. Shared Storage considerations</A
+></H2
+><P
+>In a cluster, shared disks can be used to store cluster service
+	  data. Because this storage must be available to all nodes running the
+	  cluster service configured to use the storage, it cannot be located on
+	  disks that depend on the availability of any one node.</P
+><P
+>There are some factors to consider when setting up shared
+	  disk storage in a cluster:</P
+><P
+></P
+><UL
+><LI
+><P
+>It is recommended to use a clustered file system such as
+	      Red Hat GFS to configure Red Hat Cluster Manager storage resources, as it offers shared
+	      storage that is suited for high-availability cluster services. For
+	      more information about installing and configuring Red Hat GFS, refer
+	      to the <I
+CLASS="CITETITLE"
+>Red Hat GFS Administrator's Guide</I
+>.
+	    </P
+></LI
+><LI
+><P
+>Whether you are using Red Hat GFS, local, or remote (for example,
+	      NFS) storage, it is <I
+CLASS="EMPHASIS"
+>strongly recommended</I
+> that
+	      you connect any storage systems or enclosures to redundant UPS
+	      systems for a highly-available source of power. Refer to <A
+HREF="s1-hardware-connect.html#S2-HARDWARE-UPSCFG"
+>Section 2.5.3 <I
+>Configuring UPS Systems</I
+></A
+> for more information.</P
+></LI
+><LI
+><P
+>The use of software RAID or <I
+CLASS="FIRSTTERM"
+>Logical Volume
+		Management</I
+> (<ACRONYM
+CLASS="ACRONYM"
+>LVM</ACRONYM
+>) for shared
+		storage is not supported. This is because these products do not
+		coordinate access to shared storage from multiple
+		hosts. Software RAID or LVM may be used on non-shared storage on
+		cluster nodes (for example, boot and system partitions, and
+		other file systems that are not associated with any cluster
+		services).</P
+><P
+>An exception to this rule is <I
+CLASS="FIRSTTERM"
+>CLVM</I
+>, the
+	      daemon and library that supports clustering of LVM2. CLVM allows
+	      administrators to configure shared storage for use as a resource
+	      in cluster services when used in conjunction with the CMAN cluster
+	      manager and the <I
+CLASS="FIRSTTERM"
+>Distributed Lock Manager</I
+>
+	      (DLM) mechanism for prevention of simultaneous node access to data
+	      and possible corruption. In addition, CLVM works with GULM as its
+	      cluster manager and lock manager.
+	    </P
+></LI
+><LI
+><P
+>For remote file systems such as NFS, you may use gigabit
+	      Ethernet for improved bandwidth over 10/100 Ethernet
+	      connections. Consider redundant links or channel bonding for
+	      improved remote file system availability. Refer to <A
+HREF="s1-hardware-connect.html#S2-HARDWARE-ETHBOND"
+>Section 2.5.1 <I
+>Configuring Ethernet Channel Bonding</I
+></A
+> for more information.
+	    </P
+></LI
+><LI
+><P
+>Multi-initiator SCSI configurations are not supported due to
+	      the difficulty in obtaining proper bus termination. Refer to <A
+HREF="ap-hwinfo.html"
+>Appendix A <I
+>Supplementary Hardware Information</I
+></A
+> for more information about configuring
+	      attached storage.</P
+></LI
+><LI
+><P
+>A shared partition can be used by only one cluster
+	      service.</P
+></LI
+><LI
+><P
+>Do not include any file systems used as a resource for a
+		cluster service in the node's local
+		<TT
+CLASS="FILENAME"
+>/etc/fstab</TT
+> files, because the cluster
+		software must control the mounting and unmounting of service
+		file systems.</P
+></LI
+><LI
+><P
+>For optimal performance of shared file systems, make sure to
+	      specify a 4 KB block size with the <TT
+CLASS="COMMAND"
+>mke2fs -b</TT
+>
+	      command. A smaller block size can cause long
+	      <TT
+CLASS="COMMAND"
+>fsck</TT
+> times. Refer to <A
+HREF="s1-hardware-connect.html#S3-HARDWARE-CREATEFS"
+>Section 2.5.3.2 <I
+>Creating File Systems</I
+></A
+>.</P
+></LI
+></UL
+><P
+>After setting up the shared disk storage hardware, partition the
+	  disks and create file systems on the partitions.  Refer to <A
+HREF="s1-hardware-connect.html#S3-HARDWARE-PARTDISKS"
+>Section 2.5.3.1 <I
+>Partitioning Disks</I
+></A
+>, and <A
+HREF="s1-hardware-connect.html#S3-HARDWARE-CREATEFS"
+>Section 2.5.3.2 <I
+>Creating File Systems</I
+></A
+> for more information on configuring
+	  disks.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-CONSOLESETUP"
+>2.3.3. Setting Up a Console Switch</A
+></H2
+><P
+>Although a console switch is not required for cluster operation,
+	  it can be used to facilitate node management and eliminate
+	  the need for separate monitors, mouses, and keyboards for each cluster
+	  node. There are several types of console switches.</P
+><P
+>For example, a terminal server enables connection to serial
+	  consoles and management of many nodes from a remote location. For a
+	  low-cost alternative, use a KVM (keyboard, video, and mouse) switch,
+	  which enables multiple nodes to share one keyboard, monitor, and
+	  mouse. A KVM switch is suitable for configurations in which GUI access
+	  to perform system management tasks is preferred.</P
+><P
+>Set up the console switch according to the documentation provided
+	  by the vendor.</P
+><P
+>After the console switch has been set up, connect it to each cluster
+	  node. The cables used depend on the type of console switch. For
+	  example, a Cyclades terminal server uses RJ45 to DB9
+	  crossover cables to connect a serial port on each node to
+	  the terminal server.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-NETWORKSETUP"
+>2.3.4. Setting Up a Network Switch or Hub</A
+></H2
+><P
+>A network switch or hub, although not required for operating a
+	  two-node cluster, can be used to facilitate cluster and client system
+	  network operations. Clusters of more than two nodes require a switch
+	  or hub.</P
+><P
+>Set up a network switch or hub according to the documentation
+	provided by the vendor.</P
+><P
+>After setting up the network switch or hub, connect it to
+	  each node by using conventional network cables. A
+	  terminal server, if used, is connected to the network
+	  switch or hub through a network cable.</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-hardware-clustertable.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-hardware-linux.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Cluster Hardware Components</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-hardware.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Installing and Configuring Red Hat Enterprise Linux</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

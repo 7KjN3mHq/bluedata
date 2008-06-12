@@ -1,0 +1,379 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Configuring the Cluster Software</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Cluster Configuration"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="The Cluster Configuration Tool"
+HREF="s1-software-overview.html"><LINK
+REL="NEXT"
+TITLE="Adding and Deleting Members"
+HREF="s1-add-delete-member.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-software-overview.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Cluster Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-add-delete-member.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-SOFTWARE-CONFIG"
+>3.3. Configuring the Cluster Software</A
+></H1
+><P
+>	Before describing the steps to configure the cluster, the hierarchical
+	structure of cluster members and resources needs to be considered.
+	Cluster members and resources can be thought of in terms of a
+	hierarchical structure, as shown in <A
+HREF="s1-software-config.html#FIG-SOFTWARE-FLOW"
+>Figure 3-5</A
+>.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFTWARE-FLOW"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/flowchart1.png"></P
+></DIV
+><P
+><B
+>Figure 3-5. Cluster Configuration Structure</B
+></P
+></DIV
+><P
+>The cluster is comprised of cluster nodes. The cluster nodes are
+	connected to a fencing device. Nodes can be separated by failover
+	domains to a cluster service. The services are comprised of managed
+	resources, such as NFS exports, IP addresses, and shared GFS partitions.
+	The structure is ultimately reflected in the
+	<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> XML structure.</P
+><P
+>      The steps to configure the cluster software consist of the
+      following:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Run the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> on one
+	  cluster member.</P
+></LI
+><LI
+><P
+>Click on the <B
+CLASS="GUILABEL"
+>Cluster</B
+> property and click the
+	    <B
+CLASS="GUIBUTTON"
+>Edit Cluster Properties</B
+> button. Enter a name
+	    for the cluster in the <B
+CLASS="GUILABEL"
+>Name</B
+> field. The name
+	    should be descriptive enough to distinguish it from other clusters
+	    and systems on your network (for example,
+	    <KBD
+CLASS="USERINPUT"
+>nfs_cluster</KBD
+> or
+	    <KBD
+CLASS="USERINPUT"
+>httpd_cluster</KBD
+>). The <B
+CLASS="GUILABEL"
+>Config
+	    Version</B
+> field should be set to <KBD
+CLASS="USERINPUT"
+>1</KBD
+>
+	    by default and is automatically incremented each time you save your
+	    cluster configuration.</P
+></LI
+><LI
+><P
+>To add a cluster node, click the <B
+CLASS="GUIMENU"
+>Cluster
+	      Nodes</B
+> property, then click the <B
+CLASS="GUIBUTTON"
+>Add a Cluster
+	      Node</B
+> button. Enter a cluster name that you can
+	      remember (such as the hostname assigned to the node, if any). Then
+	      click the amount of <B
+CLASS="GUILABEL"
+>Quorum Votes</B
+> you want to
+	      assign to the system.</P
+></LI
+><LI
+><P
+>Click on the <B
+CLASS="GUILABEL"
+>Fence Device</B
+> property and
+	    click the <B
+CLASS="GUIBUTTON"
+>Add a Fence Device</B
+> button to
+	    configure a fence device. Choose the device from the supported list
+	    in the drop-down menu. Each device has different configurations that
+	    you must enter (such as <B
+CLASS="GUILABEL"
+>Name</B
+>, <B
+CLASS="GUILABEL"
+>IP
+	      Address</B
+>, <B
+CLASS="GUILABEL"
+>Login</B
+> name and
+	    <B
+CLASS="GUILABEL"
+>Password</B
+>, if applicable.</P
+></LI
+><LI
+><P
+>Click the triangle next to <B
+CLASS="GUILABEL"
+>Managed
+	      Resources</B
+>, and click the <B
+CLASS="GUILABEL"
+>Failover
+	      Domains</B
+> property to set up one or more failover
+	      domains, if needed. Failover domains restrict the members on which
+	      a cluster service can run or restrict the order of members
+	      followed when a cluster service fails over from one failover
+	      domain member to another. Refer to <A
+HREF="s1-config-failover-domain.html"
+>Section 3.6 <I
+>Configuring a Failover Domain</I
+></A
+> for details.</P
+></LI
+><LI
+><P
+>Configure the <B
+CLASS="GUILABEL"
+>Resources</B
+> to be managed by
+	    the cluster, specifying any IP addresses, file systems, NFS exports,
+	    or user scripts to be managed by the cluster. Refer to <A
+HREF="s1-config-service-dev.html"
+>Section 3.7 <I
+>Adding Cluster Resources</I
+></A
+> for more information.</P
+></LI
+><LI
+><P
+>Configure a failover domain for the cluster
+	    service. Additionally, configure the cluster service using the
+	    available cluster resources, or create private resources used
+	    exclusively for the that service. Refer to <A
+HREF="s1-add-service.html"
+>Section 3.8 <I
+>Adding a Cluster Service to the Cluster</I
+></A
+> for more information.
+	  </P
+></LI
+><LI
+><P
+>Save cluster configuration changes by selecting
+	    <B
+CLASS="GUIMENU"
+>File</B
+> =&#62; <B
+CLASS="GUIMENUITEM"
+>Save</B
+>. When you
+	    save the cluster configuration, the command <TT
+CLASS="COMMAND"
+>service
+	    rgmanager reload</TT
+> command is executed to cause the cluster
+	    software to load the changed configuration file.</P
+></LI
+><LI
+><P
+>Quit the application by selecting <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+	    <B
+CLASS="GUIMENUITEM"
+>Quit</B
+>.</P
+><P
+>Running the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> for the
+	    first time causes the cluster configuration file
+	    <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> to be created
+	    automatically.
+	  </P
+></LI
+><LI
+><P
+>Copy the <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file to
+	    the other nodes using the <TT
+CLASS="COMMAND"
+>scp</TT
+> command.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-software-overview.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-add-delete-member.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Adding and Deleting Members</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

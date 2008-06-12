@@ -1,0 +1,861 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Configuring a Failover Domain</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Adding and Deleting Members"
+HREF="s1-add-delete-member.html"><LINK
+REL="NEXT"
+TITLE="Adding Cluster Resources"
+HREF="s1-config-service-dev.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-add-delete-member.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-config-service-dev.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-CONFIG-FAILOVER-DOMAIN"
+>3.8. Configuring a Failover Domain</A
+></H1
+><P
+>	A failover domain is a named subset of cluster nodes that are eligible to
+	run a cluster service in the event of a node failure. A failover domain can have
+	the following characteristics:</P
+><P
+></P
+><UL
+><LI
+><P
+>Unrestricted &#8212; Allows you to specify that a subset of
+	    members are preferred, but that a cluster service assigned to this domain
+	    can run on any available member.</P
+></LI
+><LI
+><P
+>Restricted &#8212; Allows you to restrict the members that can run
+	    a particular cluster service. If none of the members in a restricted
+	    failover domain are available, the cluster service cannot be started (either
+	    manually or by the cluster software).</P
+></LI
+><LI
+><P
+>Unordered &#8212; When a cluster service is assigned to an unordered
+	    failover domain, the member on which the cluster service runs is chosen from
+	    the available failover domain members with no priority
+	    ordering.</P
+></LI
+><LI
+><P
+>Ordered &#8212; Allows you to specify a preference order among the
+	    members of a failover domain. The member at the top of the list is
+	    the most preferred, followed by the second member in the list, and
+	    so on.</P
+></LI
+></UL
+><P
+>By default, failover domains are unrestricted and unordered.</P
+><P
+>In a cluster with several members, using a restricted failover
+	  domain can minimize the work to set up the cluster to run a cluster service
+	  (such as <TT
+CLASS="FILENAME"
+>httpd</TT
+>), which requires you to set up the
+	  configuration identically on all members that run the
+	  cluster service). Instead of setting up the entire cluster to run the
+	  cluster service,  you must set up only the members in the restricted
+	  failover domain that you associate with the cluster service.</P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>To configure a preferred member, you can create an unrestricted
+	  failover domain comprising only one cluster member. Doing that causes a 
+	  cluster service to run on that cluster member primarily (the preferred
+	  member), but allows the cluster service to fail over to any of the other
+	  members.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>The following sections describe adding a failover domain, removing a
+	failover domain, and removing members from a failover domain:</P
+><P
+></P
+><UL
+><LI
+><P
+><A
+HREF="s1-config-failover-domain.html#S2-CONFIG-ADD-FAILOVERDM"
+>Section 3.8.1 <I
+>Adding a Failover Domain</I
+></A
+>
+	  </P
+></LI
+><LI
+><P
+><A
+HREF="s1-config-failover-domain.html#S2-CONFIG-REMOVE-FAILOVERDM"
+>Section 3.8.2 <I
+>Removing a Failover Domain</I
+></A
+>
+	  </P
+></LI
+><LI
+><P
+><A
+HREF="s1-config-failover-domain.html#S2-CONFIG-REMOVE-MEMBER-FAILOVERDM"
+>Section 3.8.3 <I
+>Removing a Member from a Failover Domain</I
+></A
+>
+	  </P
+></LI
+></UL
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-CONFIG-ADD-FAILOVERDM"
+>3.8.1. Adding a Failover Domain</A
+></H2
+><P
+>To add a failover domain, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>At the left frame of the  the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, click
+	      <B
+CLASS="GUILABEL"
+>Failover Domains</B
+>.
+	    </P
+></LI
+><LI
+><P
+>At the bottom of the right frame (labeled
+	      <B
+CLASS="GUILABEL"
+>Properties</B
+>), click the <B
+CLASS="GUIBUTTON"
+>Create a
+		Failover Domain</B
+> button. Clicking the <B
+CLASS="GUIBUTTON"
+>Create a
+		Failover Domain</B
+> button causes the <B
+CLASS="GUILABEL"
+>Add Failover
+		Domain</B
+> dialog box to be displayed.</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Add Failover Domain</B
+> dialog box,
+	      specify a failover domain name at the <B
+CLASS="GUILABEL"
+>Name for new Failover
+		Domain</B
+> text box and click <B
+CLASS="GUILABEL"
+>OK</B
+>. Clicking
+	      <B
+CLASS="GUILABEL"
+>OK</B
+> causes the <B
+CLASS="GUILABEL"
+>Failover Domain
+		Configuration</B
+> dialog box to be displayed (<A
+HREF="s1-config-failover-domain.html#FIG-SOFT-FAILOVERDN"
+>Figure 3-10</A
+>).
+	    </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The name should be descriptive enough to distinguish its
+		purpose relative to other names used in your cluster.
+	      </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFT-FAILOVERDN"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/failoverdn.png"></P
+></DIV
+><P
+><B
+>Figure 3-10. <B
+CLASS="GUILABEL"
+>Failover Domain
+		  Configuration</B
+>: Configuring a Failover Domain</B
+></P
+></DIV
+></LI
+><LI
+><P
+>Click the <B
+CLASS="GUILABEL"
+>Available Cluster Nodes</B
+>
+	      drop-down box and select the members for this failover domain.
+	    </P
+></LI
+><LI
+><P
+>To restrict failover to members in this failover domain, click
+	      (check) the <B
+CLASS="GUILABEL"
+>Restrict Failover To This Domains Members</B
+>
+	      checkbox. (With <B
+CLASS="GUILABEL"
+>Restrict Failover To This Domains
+		Members</B
+> checked, services assigned to this failover
+	      domain fail over only to nodes in this failover domain.)
+	    </P
+></LI
+><LI
+><P
+>To prioritize the order in which the members in the failover
+	      domain assume control of a failed cluster service, follow these
+	      steps:</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>Click (check) the <B
+CLASS="GUILABEL"
+>Prioritized List</B
+>
+		  checkbox (<A
+HREF="s1-config-failover-domain.html#FIG-SOFT-FAILOVERDN-PRI"
+>Figure 3-11</A
+>). Clicking
+		  <B
+CLASS="GUILABEL"
+>Prioritized List</B
+> causes the
+		  <B
+CLASS="GUILABEL"
+>Priority</B
+> column to be displayed next to the
+		  <B
+CLASS="GUILABEL"
+>Member Node</B
+> column.
+		</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFT-FAILOVERDN-PRI"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/failoverdn-pri.png"></P
+></DIV
+><P
+><B
+>Figure 3-11. <B
+CLASS="GUILABEL"
+>Failover Domain
+		      Configuration</B
+>: Adjusting Priority</B
+></P
+></DIV
+></LI
+><LI
+><P
+>For each node that requires a priority adjustment, click the
+		  node listed in the <B
+CLASS="GUILABEL"
+>Member Node/Priority</B
+>
+		  columns and adjust priority by clicking one of the <B
+CLASS="GUILABEL"
+>Adjust
+		    Priority</B
+> arrows. Priority is indicated by the
+		  position in the <B
+CLASS="GUILABEL"
+>Member Node</B
+> column and the
+		  value in the <B
+CLASS="GUILABEL"
+>Priority</B
+> column. The node
+		  priorities are listed highest to lowest, with the highest
+		  priority node at the top of the <B
+CLASS="GUILABEL"
+>Member
+		    Node</B
+> column (having the lowest
+		  <B
+CLASS="GUILABEL"
+>Priority</B
+> number).
+		</P
+></LI
+></OL
+></LI
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>Close</B
+> to create the domain.</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, perform one
+	      of the following actions depending on whether the configuration is for
+	      a new cluster or for one that is operational and running:</P
+><P
+></P
+><UL
+><LI
+><P
+>New cluster &#8212; If this is a new cluster, choose
+		  <B
+CLASS="GUIMENU"
+>File</B
+> =&#62; <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to
+		  save the changes to the cluster configuration. 
+		</P
+></LI
+><LI
+><P
+>Running cluster &#8212; If this cluster is operational and
+		  running, and you want to propagate the change immediately, click
+		  the <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> button. Clicking
+		  <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> automatically saves the
+		  configuration change. If you do not want to propagate the change
+		  immediately, choose <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+		  <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to save the changes to the cluster
+		  configuration.</P
+></LI
+></UL
+></LI
+></OL
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-CONFIG-REMOVE-FAILOVERDM"
+>3.8.2. Removing a Failover Domain</A
+></H2
+><P
+>To remove a failover domain, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>At the left frame of the  the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, click the failover
+	      domain that you want to delete (listed under <B
+CLASS="GUILABEL"
+>Failover
+		Domains</B
+>). 
+	    </P
+></LI
+><LI
+><P
+>At the bottom of the right frame (labeled
+	      <B
+CLASS="GUILABEL"
+>Properties</B
+>), click the <B
+CLASS="GUIBUTTON"
+>Delete
+		Failover Domain</B
+> button. Clicking the
+	      <B
+CLASS="GUIBUTTON"
+>Delete Failover Domain</B
+> button causes a
+	      warning dialog box do be displayed asking if you want to remove
+	      the failover domain. Confirm that the failover domain identified
+	      in the warning dialog box is the one you want to delete and click
+	      <B
+CLASS="GUIBUTTON"
+>Yes</B
+>. Clicking <B
+CLASS="GUIBUTTON"
+>Yes</B
+>
+	      causes the failover domain to be removed from the list of failover
+	      domains under <B
+CLASS="GUILABEL"
+>Failover Domains</B
+> in the left
+	      frame of the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>.</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, perform one
+	      of the following actions depending on whether the configuration is for
+	      a new cluster or for one that is operational and running:</P
+><P
+></P
+><UL
+><LI
+><P
+>New cluster &#8212; If this is a new cluster, choose
+		  <B
+CLASS="GUIMENU"
+>File</B
+> =&#62; <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to
+		  save the changes to the cluster configuration. 
+		</P
+></LI
+><LI
+><P
+>Running cluster &#8212; If this cluster is operational and
+		  running, and you want to propagate the change immediately, click
+		  the <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> button. Clicking
+		  <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> automatically saves the
+		  configuration change. If you do not want to propagate the change
+		  immediately, choose <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+		  <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to save the changes to the cluster
+		  configuration.</P
+></LI
+></UL
+></LI
+></OL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-CONFIG-REMOVE-MEMBER-FAILOVERDM"
+>3.8.3. Removing a Member from a Failover Domain</A
+></H2
+><P
+>To remove a member from a failover domain, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>At the left frame of the  the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, click the failover
+	      domain that you want to change (listed under <B
+CLASS="GUILABEL"
+>Failover
+		Domains</B
+>). 
+	    </P
+></LI
+><LI
+><P
+>At the bottom of the right frame (labeled
+	      <B
+CLASS="GUILABEL"
+>Properties</B
+>), click the <B
+CLASS="GUIBUTTON"
+>Edit
+		Failover Domain Properties</B
+> button. Clicking the
+	      <B
+CLASS="GUIBUTTON"
+>Edit Failover Domain Properties</B
+> button causes the
+	      <B
+CLASS="GUILABEL"
+>Failover Domain  Configuration</B
+> dialog box to be
+	      displayed (<A
+HREF="s1-config-failover-domain.html#FIG-SOFT-FAILOVERDN"
+>Figure 3-10</A
+>).</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Failover Domain
+		Configuration</B
+> dialog box, in the <B
+CLASS="GUILABEL"
+>Member
+		Node</B
+> column, click the node name that you want to delete from
+	      the failover domain and click the <B
+CLASS="GUIBUTTON"
+>Remove Member from
+		Domain</B
+> button. Clicking <B
+CLASS="GUIBUTTON"
+>Remove Member from
+		Domain</B
+> removes the node from the <B
+CLASS="GUILABEL"
+>Member
+		Node</B
+> column. Repeat this step for each node that is to be
+	      deleted from the failover domain. (Nodes must be deleted one at a time.)
+	    </P
+></LI
+><LI
+><P
+>When finished, click <B
+CLASS="GUIBUTTON"
+>Close</B
+>.
+	    </P
+></LI
+><LI
+><P
+>At the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, perform one
+	      of the following actions depending on whether the configuration is for
+	      a new cluster or for one that is operational and running:</P
+><P
+></P
+><UL
+><LI
+><P
+>New cluster &#8212; If this is a new cluster, choose
+		  <B
+CLASS="GUIMENU"
+>File</B
+> =&#62; <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to
+		  save the changes to the cluster configuration. 
+		</P
+></LI
+><LI
+><P
+>Running cluster &#8212; If this cluster is operational and
+		  running, and you want to propagate the change immediately, click
+		  the <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> button. Clicking
+		  <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> automatically saves the
+		  configuration change. If you do not want to propagate the change
+		  immediately, choose <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+		  <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to save the changes to the cluster
+		  configuration.</P
+></LI
+></UL
+></LI
+></OL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-add-delete-member.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-config-service-dev.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Adding and Deleting Members</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Adding Cluster Resources</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

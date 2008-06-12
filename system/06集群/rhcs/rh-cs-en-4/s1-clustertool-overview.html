@@ -1,0 +1,432 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Overview of the Cluster Configuration Tool</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="NEXT"
+TITLE="Installing the Red Hat Cluster Suite Packages"
+HREF="s1-pkg-install-all.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-software.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-pkg-install-all.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-CLUSTERTOOL-OVERVIEW"
+>3.2. Overview of the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></A
+></H1
+><P
+>	The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> (<A
+HREF="s1-clustertool-overview.html#FIG-INTRO-CLUCONFIG"
+>Figure 3-1</A
+>) is a graphical user interface (GUI) for
+	creating, editing, saving, and propagating the cluster configuration
+	file, <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+>. The
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> is part of the Red Hat Cluster Suite 
+	management GUI, (the <TT
+CLASS="FILENAME"
+>system-config-cluster</TT
+> package)
+	and is accessed by the <B
+CLASS="GUILABEL"
+>Cluster Configuration</B
+> tab in
+	the Red Hat Cluster Suite management GUI.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-INTRO-CLUCONFIG"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/clustertoolgui.png"></P
+></DIV
+><P
+><B
+>Figure 3-1. <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></B
+></P
+></DIV
+><P
+>The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> uses a hierarchical
+	  structure to show relationships among components in the cluster
+	  configuration. A triangle icon to the left of a component name
+	  indicates that the component has one or more subordinate components
+	  assigned to it. To expand or collapse the portion of the tree below a
+	  component, click the triangle icon.</P
+><P
+>The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> represents the
+	  cluster configuration with the following components in the
+	  left frame:</P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Cluster Nodes</B
+> &#8212; Defines
+	    cluster nodes. Nodes are represented by name as subordinate elements
+	    under <B
+CLASS="GUILABEL"
+>Cluster Nodes</B
+>. Using configuration
+	    buttons at the bottom of the right frame (below
+	    <B
+CLASS="GUILABEL"
+>Properties</B
+>), you can add nodes, delete nodes,
+	    edit node properties, and configure fencing methods for each node.</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Fence Devices</B
+> &#8212; Defines fence
+	    devices. Fence devices are represented as subordinate elements under
+	    <B
+CLASS="GUILABEL"
+>Fence Devices</B
+>. Using configuration
+	    buttons at the bottom of the right frame (below
+	    <B
+CLASS="GUILABEL"
+>Properties</B
+>), you can add fence devices, delete fence
+	    devices, and edit fence-device properties. Fence devices must be
+	    defined before you can configure fencing (with the <B
+CLASS="GUIBUTTON"
+>Manage
+	    Fencing For This Node</B
+> button) for each node.</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Managed Resources</B
+> &#8212; Defines
+	failover domains, resources, and services. </P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Failover Domains</B
+> &#8212; Use this
+		section to configure one or more subsets of cluster nodes used
+		to run a service in the event of a node failure. Failover
+		domains are represented as subordinate elements under
+		<B
+CLASS="GUILABEL"
+>Failover Domains</B
+>. Using configuration
+		buttons at the bottom of the right frame (below
+		<B
+CLASS="GUILABEL"
+>Properties</B
+>), you can create failover
+		domains (when <B
+CLASS="GUILABEL"
+>Failover Domains</B
+> is selected)
+		or edit failover domain properties (when a failover domain is
+		selected).
+	      </P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Resources</B
+> &#8212; Use this section to
+		configure resources to be managed by the system. Choose from the
+		available list of file systems, IP addresses, NFS mounts and
+		exports, and user-created scripts and configure them
+		individually. Resources are represented as subordinate elements
+		under <B
+CLASS="GUILABEL"
+>Resources</B
+>. Using configuration
+		buttons at the bottom of the right frame (below
+		<B
+CLASS="GUILABEL"
+>Properties</B
+>), you can create resources (when
+		<B
+CLASS="GUILABEL"
+>Resources</B
+> is selected) or edit resource
+		properties (when a resource is selected).
+	      </P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Services</B
+> &#8212;  Use
+		this section to create and configure services that combine
+		cluster resources, nodes, and failover domains as needed. Services
+		are represented as subordinate elements under
+		<B
+CLASS="GUILABEL"
+>Services</B
+>. Using configuration buttons at
+		the bottom of the right frame (below
+		<B
+CLASS="GUILABEL"
+>Properties</B
+>), you can create services (when
+		<B
+CLASS="GUILABEL"
+>Services</B
+> is selected) 
+		or edit service properties (when a service is selected).
+	      </P
+></LI
+></UL
+></LI
+></UL
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Do not manually edit the contents of the
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file without guidance
+	  from an authorized Red Hat representative or unless you fully
+	  understand the consequences of editing the
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file manually.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	<A
+HREF="s1-clustertool-overview.html#FIG-SOFTWARE-FLOW"
+>Figure 3-2</A
+> shows the hierarchical relationship
+	among cluster configuration components. The cluster comprises
+	cluster nodes. The cluster nodes are connected to one or more fencing
+	devices. Nodes can be separated by failover domains to a cluster
+	service. The services comprise managed resources such as NFS
+	exports, IP addresses, and shared GFS partitions. The structure is
+	ultimately reflected in the
+	<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> XML structure. The
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> provides a convenient way to
+	create and manipulate the <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+>
+	file.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFTWARE-FLOW"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/flowchart1.png"></P
+></DIV
+><P
+><B
+>Figure 3-2. Cluster Configuration Structure</B
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-pkg-install-all.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Installing the Red Hat Cluster Suite Packages</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

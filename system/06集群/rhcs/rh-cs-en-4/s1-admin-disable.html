@@ -1,0 +1,295 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Disabling the Cluster Software</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Cluster Administration"
+HREF="ch-admin.html"><LINK
+REL="PREVIOUS"
+TITLE="Changing the Cluster Name"
+HREF="s1-admin-name.html"><LINK
+REL="NEXT"
+TITLE="Diagnosing and Correcting Problems in a Cluster"
+HREF="s1-admin-problems.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-admin-name.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Cluster Administration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-admin-problems.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-ADMIN-DISABLE"
+>4.8. Disabling the Cluster Software</A
+></H1
+><P
+>It may become necessary to temporarily disable the cluster software
+	on a cluster member. For example, if a cluster member experiences a
+	hardware failure, you may want to reboot that member, but
+	prevent it from rejoining the cluster to perform maintenance
+	on the system.</P
+><P
+>Use the <TT
+CLASS="COMMAND"
+>/sbin/chkconfig</TT
+> command to stop the
+	member from joining the cluster at boot-up as follows:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>chkconfig --level 2345 rgmanager off</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 gfs off</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 clvmd off</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 fenced off</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 lock_gulmd off</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 cman off</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 ccsd off</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>Once the problems with the disabled cluster member have been resolved,
+      use the following commands to allow the member to rejoin the cluster:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>chkconfig --level 2345 rgmanager on</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 gfs on</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 clvmd on</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 fenced on</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 lock_gulmd on</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 cman on</TT
+>
+<TT
+CLASS="COMMAND"
+>chkconfig --level 2345 ccsd on</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>You can then reboot the member for the changes to take effect or run
+      the following commands in the order shown to restart cluster software:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service ccsd start</TT
+>
+	   </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service lock_gulmd start</TT
+> or <TT
+CLASS="COMMAND"
+> service cman
+	      start</TT
+> according to the type of lock manager used</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service fenced start</TT
+> (DLM clusters only)</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service clvmd start</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service gfs start</TT
+>, if you are using Red Hat GFS</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service rgmanager start</TT
+></P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-admin-name.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-admin-problems.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Changing the Cluster Name</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-admin.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Diagnosing and Correcting Problems in a Cluster</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

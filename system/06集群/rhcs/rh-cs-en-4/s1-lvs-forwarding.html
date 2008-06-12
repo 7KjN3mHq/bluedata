@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Turning on Packet Forwarding</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Initial LVS Configuration"
+HREF="ch-initial-setup.html"><LINK
+REL="PREVIOUS"
+TITLE="Limiting Access To the Piranha Configuration Tool"
+HREF="s1-lvs-piranha-access.html"><LINK
+REL="NEXT"
+TITLE="Configuring Services on the Real Servers"
+HREF="s1-lvs-server-daemons.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-piranha-access.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 8. Initial LVS Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-server-daemons.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-FORWARDING"
+>8.5. Turning on Packet Forwarding</A
+></H1
+><P
+>	In order for the LVS router to forward network packets properly to the
+	real servers, each LVS router node must have IP forwarding turned on in
+	the kernel. Log in as root and change the line which reads
+	<SAMP
+CLASS="COMPUTEROUTPUT"
+>net.ipv4.ip_forward = 0</SAMP
+> in
+	<TT
+CLASS="FILENAME"
+>/etc/sysctl.conf</TT
+> to the following:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>net.ipv4.ip_forward = <KBD
+CLASS="USERINPUT"
+>1</KBD
+></SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	The changes take effect when you reboot the system.
+      </P
+><P
+>	To check if IP forwarding is turned on, issue the following command as
+	root:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/sysctl net.ipv4.ip_forward</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	If the above command returns a <SAMP
+CLASS="COMPUTEROUTPUT"
+>1</SAMP
+>, then
+	IP forwarding is enabled. If it returns a
+	<SAMP
+CLASS="COMPUTEROUTPUT"
+>0</SAMP
+>, then you can turn it on manually
+	using the following command:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/sysctl -w net.ipv4.ip_forward=1</TT
+></PRE
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-piranha-access.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-server-daemons.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Limiting Access To the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-initial-setup.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configuring Services on the Real Servers</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

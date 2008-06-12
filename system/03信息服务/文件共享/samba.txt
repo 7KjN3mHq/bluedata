@@ -1,0 +1,12 @@
+samba3 中文显示
+display charset = cp936
+unix charset = cp936
+dos charset = cp936
+
+挂载 Windows 主机的目录到本地
+mount -t smbfs -o username=USERNAME,password=PASSWORD,iocharset=cp936 //IP/DIR /DIR
+
+WindowsXP 加入域
+As Administrator on the XP machines, run regedit, and set the following registry key:
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\netlogon\parameters "RequireSignOrSeal"=dword:00000000
+After rebooting, you should now be able to log into your Samba domain from the Windows XP machine.

@@ -1,0 +1,292 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Introduction to Linux Virtual Server</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring a Linux Virtual Server Cluster"
+HREF="pt-lvs.html"><LINK
+REL="PREVIOUS"
+TITLE="Configuring a Linux Virtual Server Cluster"
+HREF="pt-lvs.html"><LINK
+REL="NEXT"
+TITLE="Basic Configurations"
+HREF="s1-introduction-configurations.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-introduction-configurations.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-LVS-INTRO"
+></A
+>Chapter 6. Introduction to Linux Virtual Server</H1
+><P
+>      Using Red Hat Enterprise Linux, it is possible to create highly available server clustering
+      solutions able to withstand many common hardware and software failures
+      with little or no interruption of critical services. By allowing multiple
+      computers to work together in offering these critical services, system
+      administrators can plan and execute system maintenance and upgrades
+      without service interruption.
+    </P
+><P
+>      The chapters in this part guide you through the following steps in
+      understanding and deploying a clustering solution based on the Red Hat Enterprise Linux
+      <I
+CLASS="FIRSTTERM"
+>Linux Virtual Server</I
+> (LVS) technology:
+    </P
+><P
+></P
+><UL
+><LI
+><P
+>Explains the Linux Virtual Server technology used by Red Hat Enterprise Linux to
+	  create a load-balancing cluster
+	</P
+></LI
+><LI
+><P
+>Explains how to configure a Red Hat Enterprise Linux LVS cluster</P
+></LI
+><LI
+><P
+>Guides you through the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>, a
+	  graphical interface used for configuring and monitoring an LVS
+	  cluster</P
+></LI
+></UL
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-INTRO-TECH-OVERVIEW"
+>6.1. Technology Overview</A
+></H1
+><P
+>        Red Hat Enterprise Linux implements highly available server solutions via clustering. It is
+        important to note that <I
+CLASS="FIRSTTERM"
+>cluster</I
+> computing consists
+        of three distinct branches:
+      </P
+><P
+></P
+><UL
+><LI
+><P
+>            <I
+CLASS="FIRSTTERM"
+>Compute clustering</I
+> (such as Beowulf) uses
+            multiple machines to provide greater computing power for
+            computationally intensive tasks. This type of clustering is not
+            addressed by Red Hat Enterprise Linux.
+          </P
+></LI
+><LI
+><P
+>            <I
+CLASS="FIRSTTERM"
+>High-availability (HA) clustering</I
+> uses
+            multiple machines to add an extra level of reliability for a
+            service or group of services.
+          </P
+></LI
+><LI
+><P
+>	    <I
+CLASS="FIRSTTERM"
+>Load-balance clustering</I
+> uses specialized
+	    routing techniques to dispatch traffic to a pool of servers.
+	  </P
+></LI
+></UL
+><P
+>	Red Hat Enterprise Linux addresses the latter two types of clustering technology. Using a
+	collection of programs to monitor the health of the systems and services
+	in the cluster.
+      </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>          The clustering technology included in Red Hat Enterprise Linux is not synonymous with
+          <I
+CLASS="FIRSTTERM"
+>fault tolerance</I
+>. Fault tolerant systems use
+          highly specialized and often very expensive hardware to implement a
+          fully redundant environment in which services can run uninterrupted by
+          hardware failures.
+        </P
+><P
+>          However, fault tolerant systems do not account for operator and
+          software errors which Red Hat Enterprise Linux can address through service
+          redundancy. Also, since Red Hat Enterprise Linux is designed to run on commodity
+          hardware, it creates an environment with a high level of system
+          availability at a fraction of the cost of fault tolerant hardware.
+        </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-introduction-configurations.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Configuring a Linux Virtual Server Cluster</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Basic Configurations</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,675 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Adding Cluster Resources</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Configuring a Failover Domain"
+HREF="s1-config-failover-domain.html"><LINK
+REL="NEXT"
+TITLE="Adding a Cluster Service to the Cluster"
+HREF="s1-add-service.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-config-failover-domain.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-add-service.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-CONFIG-SERVICE-DEV"
+>3.9. Adding Cluster Resources</A
+></H1
+><P
+>To specify a device for a cluster service, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>On the <B
+CLASS="GUILABEL"
+>Resources</B
+> property of the
+	    <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, click the <B
+CLASS="GUIBUTTON"
+>Create
+	      a Resource</B
+> button. Clicking the <B
+CLASS="GUIBUTTON"
+>Create
+	      a Resource</B
+> button causes the <B
+CLASS="GUILABEL"
+>Resource
+	    Configuration</B
+> dialog box to be displayed.</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Resource Configuration</B
+> dialog
+	    box, under <B
+CLASS="GUILABEL"
+>Select a Resource Type</B
+>, click the
+	    drop-down box. At the drop-down box, select a resource to
+	    configure. The resource options are described as follows:</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>GFS</DT
+><DD
+><P
+><B
+CLASS="GUILABEL"
+>Name</B
+> &#8212; Create a name for the
+		  file system resource.</P
+><P
+><B
+CLASS="GUILABEL"
+>Mount
+		  Point</B
+> &#8212; Choose the path
+		to which the file system resource is mounted.</P
+><P
+><B
+CLASS="GUILABEL"
+>Device</B
+> &#8212; Specify the device
+		file associated with the file system
+		  resource.</P
+><P
+><B
+CLASS="GUILABEL"
+>Options</B
+> 
+		&#8212; Options to pass to the <TT
+CLASS="COMMAND"
+>mkfs</TT
+> call for
+		the new file system.</P
+><P
+><B
+CLASS="GUILABEL"
+>File System
+		ID</B
+> &#8212; When creating a new file system
+		resource, you can leave this field blank. Leaving the field
+		blank causes a file system ID to be assigned automatically after
+		you click <B
+CLASS="GUIBUTTON"
+>OK</B
+> at the <B
+CLASS="GUILABEL"
+>Resource
+		Configuration</B
+> dialog box. If you need to assign a
+		file system ID explicitly, specify it in this
+		field.</P
+><P
+><B
+CLASS="GUILABEL"
+>Force Unmount</B
+>
+		  checkbox &#8212; If checked, forces the file system to
+		  unmount. The default setting is unchecked.</P
+></DD
+><DT
+>File System</DT
+><DD
+><P
+><B
+CLASS="GUILABEL"
+>Name</B
+> &#8212; Create a name for the
+		  file system resource.
+		</P
+><P
+><B
+CLASS="GUILABEL"
+>File System Type</B
+> &#8212; Choose the
+		file system for the resource using the drop-down menu.</P
+><P
+><B
+CLASS="GUILABEL"
+>Mount Point</B
+> &#8212; Choose the path
+		to which the file system resource is mounted.</P
+><P
+><B
+CLASS="GUILABEL"
+>Device</B
+> &#8212; Specify the device
+		file associated with the file system
+		resource.</P
+><P
+><B
+CLASS="GUILABEL"
+>Options</B
+> 
+		&#8212; Options to pass to the <TT
+CLASS="COMMAND"
+>mkfs</TT
+> call for
+		the new file system.</P
+><P
+><B
+CLASS="GUILABEL"
+>File System
+		ID</B
+> &#8212; When creating a new file system
+		resource, you can leave this field blank. Leaving the field
+		blank causes a file system ID to be assigned automatically after
+		you click <B
+CLASS="GUIBUTTON"
+>OK</B
+> at the <B
+CLASS="GUILABEL"
+>Resource
+		Configuration</B
+> dialog box. If you need to assign a
+		file system ID explicitly, specify it in this
+		field.</P
+><P
+>Checkboxes &#8212; Specify
+		mount and unmount actions when a service is stopped (for
+		example, when disabling or relocating a service):</P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Force unmount</B
+> &#8212; If checked,
+		      forces the file system to unmount. The default setting is
+		      unchecked.</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Reboot host node if	unmount fails</B
+>
+		      &#8212; If checked, reboots the node if unmounting this
+		      file system fails. The default setting is
+		      unchecked.</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Check file system
+			before mounting</B
+> &#8212; If checked, causes
+		      <TT
+CLASS="COMMAND"
+>fsck</TT
+> to be run on the file system
+		      before mounting it. The default setting is unchecked.</P
+></LI
+></UL
+></DD
+><DT
+>IP Address</DT
+><DD
+><P
+><B
+CLASS="GUILABEL"
+>IP Address</B
+> &#8212; Type the IP
+		address for the resource.
+		</P
+><P
+><B
+CLASS="GUILABEL"
+>Monitor Link</B
+> checkbox  &#8212; Check
+		the box to enable or disable link status monitoring of the IP
+		address resource
+		</P
+></DD
+><DT
+>NFS Mount</DT
+><DD
+><P
+><B
+CLASS="GUILABEL"
+>Name</B
+> &#8212; Create a symobolic name for the
+		  NFS mount.</P
+><P
+><B
+CLASS="GUILABEL"
+>Mount
+		  Point</B
+> &#8212; Choose the path
+		to which the file system resource is mounted.</P
+><P
+><B
+CLASS="GUILABEL"
+>Host</B
+> &#8212; Specify the NFS server
+		  name.</P
+><P
+><B
+CLASS="GUILABEL"
+>Export Path</B
+> 
+		&#8212; NFS export on the
+		  server.</P
+><P
+><B
+CLASS="GUILABEL"
+>NFS</B
+> and
+		  <B
+CLASS="GUILABEL"
+>NFS4</B
+> options &#8212; Specify NFS protocol:</P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>NFS</B
+> &#8212; Specifies using NFSv3
+		      protocol. The default setting is <B
+CLASS="GUILABEL"
+>NFS</B
+>.</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>NFS4</B
+>
+		      &#8212; Specifies using NFSv4 protocol. </P
+></LI
+></UL
+><P
+><B
+CLASS="GUILABEL"
+>Options</B
+> &#8212; NFS-specific
+		      options to pass to the <TT
+CLASS="COMMAND"
+>mkfs</TT
+> call for
+		      the new file system. For more information, refer to the
+		<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>nfs</SPAN
+>(5)</SPAN
+>
+		man page.</P
+><P
+><B
+CLASS="GUILABEL"
+>Force
+		      Unmount</B
+> checkbox &#8212; If checked, forces the
+		      file system to unmount. The default setting is unchecked.</P
+></DD
+><DT
+>NFS Client</DT
+><DD
+><P
+><B
+CLASS="GUILABEL"
+>Name</B
+> &#8212; Enter a name for the NFS
+		client resource.</P
+><P
+><B
+CLASS="GUILABEL"
+>Target</B
+> &#8212; Enter a target for the
+		NFS client resource. Supported targets are hostnames, IP
+		addresses (with wild-card support), and
+		netgroups.</P
+><P
+><B
+CLASS="GUILABEL"
+>Read-Write</B
+> and 
+		  <B
+CLASS="GUILABEL"
+>Read Only</B
+> options &#8212; Specify
+		the type of access rights for this NFS client resource:</P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Read-Write</B
+> &#8212; Specifies that
+		      the NFS client has read-write access. The default setting is
+		      <B
+CLASS="GUILABEL"
+>Read-Write</B
+>.</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Read Only</B
+>
+		      &#8212; Specifies that the NFS client has read-only
+		      access.</P
+></LI
+></UL
+><P
+><B
+CLASS="GUILABEL"
+>Options</B
+> &#8212; Additional client
+		access rights. For more information, refer to the
+		<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>exports</SPAN
+>(5)</SPAN
+>
+		man page, <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>General
+		Options</SPAN
+></SPAN
+></P
+></DD
+><DT
+>NFS Export</DT
+><DD
+><P
+><B
+CLASS="GUILABEL"
+>Name</B
+> &#8212; Enter a name for the NFS
+		export resource.</P
+></DD
+><DT
+>Script</DT
+><DD
+><P
+><B
+CLASS="GUILABEL"
+>Name</B
+> &#8212; Enter a name for the
+		custom user script.</P
+><P
+><B
+CLASS="GUILABEL"
+>File (with
+		path)</B
+> &#8212; Enter the path where this custom script
+		is located (for example,
+		<TT
+CLASS="FILENAME"
+>/etc/init.d/<VAR
+CLASS="REPLACEABLE"
+>userscript</VAR
+></TT
+>)
+		</P
+></DD
+><DT
+>Samba Service</DT
+><DD
+><P
+><B
+CLASS="GUILABEL"
+>Name</B
+> &#8212; Enter a name for the
+		Samba server.</P
+><P
+><B
+CLASS="GUILABEL"
+>Work Group</B
+>
+		&#8212; Enter the Windows workgroup name or Windows NT domain
+		of the Samba service. 
+		</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>When creating or editing a cluster service, connect a
+		  Samba-service resource directly to the service, 
+		  <I
+CLASS="EMPHASIS"
+>not</I
+> to a resource within a service. That
+		  is, at the <B
+CLASS="GUILABEL"
+>Service Management</B
+> dialog box,
+		  use either <B
+CLASS="GUIBUTTON"
+>Create a new resource for this 
+		  service</B
+> or <B
+CLASS="GUIBUTTON"
+>Add a Shared Resource to
+		  this service</B
+>; do <I
+CLASS="EMPHASIS"
+>not</I
+> use
+		  <B
+CLASS="GUIBUTTON"
+>Attach a new Private Resource to the
+		  Selection</B
+> or <B
+CLASS="GUIBUTTON"
+>Attach a Shared Resource
+		  to the selection</B
+>. </P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+></DL
+></DIV
+></LI
+><LI
+><P
+>When finished, click <B
+CLASS="GUIBUTTON"
+>OK</B
+>.</P
+></LI
+><LI
+><P
+>Choose <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+	      <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to save the change to the
+	      <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> configuration file.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-config-failover-domain.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-add-service.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Configuring a Failover Domain</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Adding a Cluster Service to the Cluster</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

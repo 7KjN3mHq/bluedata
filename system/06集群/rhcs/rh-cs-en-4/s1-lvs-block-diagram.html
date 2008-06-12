@@ -1,0 +1,484 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>LVS Cluster &#8212; A Block Diagram</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Linux Virtual Server Overview"
+HREF="ch-lvs-overview.html"><LINK
+REL="PREVIOUS"
+TITLE="Persistence and Firewall Marks"
+HREF="s1-lvs-persistance.html"><LINK
+REL="NEXT"
+TITLE="Initial LVS Configuration"
+HREF="ch-initial-setup.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-persistance.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 7. Linux Virtual Server Overview</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ch-initial-setup.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-BLOCK-DIAGRAM"
+>7.6. LVS Cluster &#8212; A Block Diagram</A
+></H1
+><P
+>	LVS routers use a collection of programs to monitor cluster members and
+	cluster services. <A
+HREF="s1-lvs-block-diagram.html#GR-LVS-COMPONENTS"
+>Figure 7-4</A
+> illustrates how
+	these various programs on both the active and backup LVS routers work
+	together to manage the cluster.
+      </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-LVS-COMPONENTS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-lvs-overview/components.png"></P
+></DIV
+><P
+><B
+>Figure 7-4. Components of a Running LVS Cluster</B
+></P
+></DIV
+><P
+>	The <TT
+CLASS="COMMAND"
+>pulse</TT
+> daemon runs on both the active and passive
+	LVS routers. On the backup router, <TT
+CLASS="COMMAND"
+>pulse</TT
+> sends a
+	<I
+CLASS="FIRSTTERM"
+>heartbeat</I
+> to the public interface of the active
+	router to make sure the active router is still properly functioning. On
+	the active router, <TT
+CLASS="COMMAND"
+>pulse</TT
+> starts the
+	<TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon and responds to
+	<I
+CLASS="FIRSTTERM"
+>heartbeat</I
+> queries from the backup LVS router.
+      </P
+><P
+>	Once started, the <TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon calls the
+	<TT
+CLASS="COMMAND"
+>ipvsadm</TT
+> utility to configure and maintain the IPVS
+	routing table in the kernel and starts a <TT
+CLASS="COMMAND"
+>nanny</TT
+>
+	process for each configured virtual server on each real server. Each
+	<TT
+CLASS="COMMAND"
+>nanny</TT
+> process checks the state of one configured
+	service on one real server, and tells the <TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon
+	if the service on that real server is malfunctioning. If a malfunction
+	is detected, the <TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon instructs
+	<TT
+CLASS="COMMAND"
+>ipvsadm</TT
+> to remove that real server from the IPVS
+	routing table.
+      </P
+><P
+>	If the backup router does not receive a response from the active router,
+	it initiates failover by calling <TT
+CLASS="COMMAND"
+>send_arp</TT
+> to reassign
+	all virtual IP addresses to the NIC hardware addresses
+	(<I
+CLASS="FIRSTTERM"
+>MAC</I
+> address) of the backup node, sends a command
+	to the active router via both the public and private network interfaces
+	to shut down the <TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon on the active router, and
+	starts the <TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon on the backup node to accept
+	requests for the configured virtual servers.
+      </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-COMPONENTS"
+>7.6.1. Components of an LVS Cluster</A
+></H2
+><P
+>	  <A
+HREF="s1-lvs-block-diagram.html#S3-LVS-PULSE"
+>Section 7.6.1.1 <I
+><TT
+CLASS="COMMAND"
+>pulse</TT
+></I
+></A
+> shows a detailed list of each software
+	  component in an LVS router.
+	</P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-LVS-PULSE"
+>7.6.1.1. <TT
+CLASS="COMMAND"
+>pulse</TT
+></A
+></H3
+><P
+>	    This is the controlling process which starts all other daemons
+	    related to LVS routers. At boot time, the daemon is started by the
+	    <TT
+CLASS="FILENAME"
+>/etc/rc.d/init.d/pulse</TT
+> script. It then reads
+	    the configuration file
+	    <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/lvs.cf</TT
+>. On the active router,
+	    <TT
+CLASS="COMMAND"
+>pulse</TT
+> starts the LVS daemon. On the backup
+	    router, <TT
+CLASS="COMMAND"
+>pulse</TT
+> determines the health of the active
+	    router by executing a simple heartbeat at a user-configurable
+	    interval. If the active router fails to respond after a
+	    user-configurable interval, it initiates failover. During failover,
+	    <TT
+CLASS="COMMAND"
+>pulse</TT
+> on the backup router instructs the
+	    <TT
+CLASS="COMMAND"
+>pulse</TT
+> daemon on the active router to shut down
+	    all LVS services, starts the <TT
+CLASS="COMMAND"
+>send_arp</TT
+> program to
+	    reassign the floating IP addresses to the backup router's MAC
+	    address, and starts the <TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon.
+	  </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-LVS-LVS"
+>7.6.1.2. <TT
+CLASS="COMMAND"
+>lvs</TT
+></A
+></H3
+><P
+>	    The <TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon runs on the active LVS router once
+	    called by <TT
+CLASS="COMMAND"
+>pulse</TT
+>. It reads the configuration file
+	    <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/lvs.cf</TT
+>, calls the
+	    <TT
+CLASS="COMMAND"
+>ipvsadm</TT
+> utility to build and maintain the IPVS
+	    routing table, and assigns a <TT
+CLASS="COMMAND"
+>nanny</TT
+> process for
+	    each configured LVS service. If <TT
+CLASS="COMMAND"
+>nanny</TT
+> reports a
+	    real server is down, <TT
+CLASS="COMMAND"
+>lvs</TT
+> instructs the
+	    <TT
+CLASS="COMMAND"
+>ipvsadm</TT
+> utility to remove the real server from
+	    the IPVS routing table.
+	</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-LVS-IPVSADM"
+>7.6.1.3. <TT
+CLASS="COMMAND"
+>ipvsadm</TT
+></A
+></H3
+><P
+>          This service updates the IPVS routing table in the kernel. The
+          <TT
+CLASS="COMMAND"
+>lvs</TT
+> daemon sets up and administers an LVS cluster
+          by calling <TT
+CLASS="COMMAND"
+>ipvsadm</TT
+> to add, change, or delete entries
+          in the IPVS routing table.
+        </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN4563"
+>7.6.1.4. <TT
+CLASS="COMMAND"
+>nanny</TT
+></A
+></H3
+><P
+>          The <TT
+CLASS="COMMAND"
+>nanny</TT
+> monitoring daemon runs on the active LVS
+          router. Through this daemon, the active router determines the health
+          of each real server and, optionally, monitors its workload. A separate
+          process runs for each service defined on each real server.
+        </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-LVS-CF"
+>7.6.1.5. <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/lvs.cf</TT
+></A
+></H3
+><P
+>          This is the LVS cluster configuration file. Directly or indirectly,
+          all daemons get their configuration information from this file.
+        </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-LVS-PIRANHA-GUI"
+>7.6.1.6. <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></A
+></H3
+><P
+>	    This is the Web-based tool for monitoring, configuring, and
+	    administering an LVS cluster. This is the default tool to maintain
+	    the <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/lvs.cf</TT
+> LVS cluster
+	    configuration file.
+	
+	  </P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-LVS-SEND_ARP"
+>7.6.1.7. <TT
+CLASS="COMMAND"
+>send_arp</TT
+></A
+></H3
+><P
+>	    This program sends out ARP broadcasts when the floating IP address
+	    changes from one node to another during failover.
+	  </P
+><P
+>	    <A
+HREF="ch-initial-setup.html"
+>Chapter 8 <I
+>Initial LVS Configuration</I
+></A
+> reviews important
+	    post-installation configuration steps you should take before
+	    configuring Red Hat Enterprise Linux to be an LVS router.
+	  </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-persistance.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ch-initial-setup.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Persistence and Firewall Marks</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-overview.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Initial LVS Configuration</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

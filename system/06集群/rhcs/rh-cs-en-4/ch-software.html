@@ -1,0 +1,406 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Installing and Configuring Red Hat Cluster Suite Software</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Using the Red Hat Cluster Manager"
+HREF="pt-clumanager.html"><LINK
+REL="PREVIOUS"
+TITLE="Setting Up and Connecting the Cluster Hardware"
+HREF="s1-hardware-connect.html"><LINK
+REL="NEXT"
+TITLE="Overview of the Cluster Configuration Tool"
+HREF="s1-clustertool-overview.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-hardware-connect.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-clustertool-overview.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-SOFTWARE"
+></A
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</H1
+><P
+>This chapter describes how to install and configure Red Hat Cluster Suite software
+    and consists of the following sections:</P
+><P
+></P
+><UL
+><LI
+><P
+><A
+HREF="ch-software.html#S1-INST-CONFIG-TASKS"
+>Section 3.1 <I
+>Software Installation and Configuration Tasks</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-clustertool-overview.html"
+>Section 3.2 <I
+>Overview of the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-pkg-install-all.html"
+>Section 3.3 <I
+>Installing the Red Hat Cluster Suite Packages</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-start-clustertool.html"
+>Section 3.4 <I
+>Starting the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-naming-cluster.html"
+>Section 3.5 <I
+>Naming The Cluster</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-config-fence-devices.html"
+>Section 3.6 <I
+>Configuring Fence Devices</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-add-delete-member.html"
+>Section 3.7 <I
+>Adding and Deleting Members</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-config-failover-domain.html"
+>Section 3.8 <I
+>Configuring a Failover Domain</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-config-service-dev.html"
+>Section 3.9 <I
+>Adding Cluster Resources</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-add-service.html"
+>Section 3.10 <I
+>Adding a Cluster Service to the Cluster</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-propagate-config.html"
+>Section 3.11 <I
+>Propagating The Configuration File: New Cluster</I
+></A
+></P
+></LI
+><LI
+><P
+><A
+HREF="s1-starting-cluster.html"
+>Section 3.12 <I
+>Starting the Cluster Software</I
+></A
+></P
+></LI
+></UL
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-INST-CONFIG-TASKS"
+>3.1. Software Installation and Configuration Tasks</A
+></H1
+><P
+>Installing and configuring Red Hat Cluster Suite software consists of the following
+      steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Installing Red Hat Cluster Suite software.</P
+><P
+>Refer to <A
+HREF="s1-pkg-install-all.html"
+>Section 3.3 <I
+>Installing the Red Hat Cluster Suite Packages</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Starting the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool.</B
+></P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>Creating a new configuration file or using an existing
+		one.</P
+></LI
+><LI
+><P
+>Choose locking: either DLM or GULM.</P
+></LI
+></OL
+><P
+>Refer to <A
+HREF="s1-start-clustertool.html"
+>Section 3.4 <I
+>Starting the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></I
+></A
+>.</P
+></LI
+><LI
+><P
+>Naming the cluster. Refer to <A
+HREF="s1-naming-cluster.html"
+>Section 3.5 <I
+>Naming The Cluster</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Creating fence devices. Refer to <A
+HREF="s1-config-fence-devices.html"
+>Section 3.6 <I
+>Configuring Fence Devices</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Creating cluster members. Refer to <A
+HREF="s1-add-delete-member.html"
+>Section 3.7 <I
+>Adding and Deleting Members</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Creating failover domains. Refer to <A
+HREF="s1-config-failover-domain.html"
+>Section 3.8 <I
+>Configuring a Failover Domain</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Creating resources. Refer to <A
+HREF="s1-config-service-dev.html"
+>Section 3.9 <I
+>Adding Cluster Resources</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Creating cluster services.</P
+><P
+>Refer to <A
+HREF="s1-add-service.html"
+>Section 3.10 <I
+>Adding a Cluster Service to the Cluster</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Propagating the configuration file to the other nodes in the
+	    cluster.</P
+><P
+>Refer to <A
+HREF="s1-propagate-config.html"
+>Section 3.11 <I
+>Propagating The Configuration File: New Cluster</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Starting the cluster software. Refer to <A
+HREF="s1-starting-cluster.html"
+>Section 3.12 <I
+>Starting the Cluster Software</I
+></A
+>.</P
+></LI
+></OL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-hardware-connect.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-clustertool-overview.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Setting Up and Connecting the Cluster Hardware</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-clumanager.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Overview of the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

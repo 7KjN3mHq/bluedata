@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Cluster Administration</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Using the Red Hat Cluster Manager"
+HREF="pt-clumanager.html"><LINK
+REL="PREVIOUS"
+TITLE="Starting the Cluster Software"
+HREF="s1-starting-cluster.html"><LINK
+REL="NEXT"
+TITLE="Displaying Cluster and Service Status"
+HREF="s1-admin-display.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-starting-cluster.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-admin-display.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-ADMIN"
+></A
+>Chapter 4. Cluster Administration</H1
+><P
+>This chapter describes the various administrative tasks
+    for maintaining a cluster after it has been installed and
+    configured.</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-ADMIN-OVERVIEW"
+>4.1. Overview of the <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+></A
+></H1
+><P
+>	The <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> is part of the Red Hat Cluster Suite
+	management GUI, (the <TT
+CLASS="FILENAME"
+>system-config-cluster</TT
+> package)
+	and is accessed by a tab in the Red Hat Cluster Suite management GUI. The
+	<B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> displays the status of
+	cluster members and services and provides control of cluster services. </P
+><P
+>	The members and services displayed in the
+	<B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> are determined by the
+	cluster configuration file
+	(<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+>). The cluster
+	configuration file is maintained via the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> in the cluster management GUI.</P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Do not manually edit the contents of the
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file without guidance
+	  from an authorized Red Hat representative or unless you fully
+	  understand the consequences of editing the
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file manually.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	You can access the <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> by
+	clicking the <B
+CLASS="GUIMENU"
+>Cluster Management</B
+> tab at the cluster
+	management GUI to <A
+HREF="ch-admin.html#FIG-INTRO-CLUSTATUS"
+>Figure 4-1</A
+>).</P
+><P
+>	Use the <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> to enable,
+	disable, restart, or relocate a service. To enable a service, select the
+	service in the <B
+CLASS="GUILABEL"
+>Services</B
+> area and click
+	<B
+CLASS="GUILABEL"
+>Enable</B
+>. To disable a service, select the
+	service in the <B
+CLASS="GUILABEL"
+>Services</B
+> area and click
+	<B
+CLASS="GUILABEL"
+>Disable</B
+>. To restart a service, select the
+	service in the <B
+CLASS="GUILABEL"
+>Services</B
+> area and click
+	<B
+CLASS="GUILABEL"
+>Restart</B
+>. To relocate service from one member to
+	another, drag the service to another member and drop the service onto
+	that member.  Relocating a  member restarts the service on that
+	member. (Relocating a service to its current member &#8212; that is,
+	dragging a service to its current member and dropping the 
+	service onto that member &#8212; restarts the service.)</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-INTRO-CLUSTATUS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/admin/clustatus.png"></P
+></DIV
+><P
+><B
+>Figure 4-1. <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+></B
+></P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-starting-cluster.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-admin-display.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Starting the Cluster Software</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-clumanager.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Displaying Cluster and Service Status</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

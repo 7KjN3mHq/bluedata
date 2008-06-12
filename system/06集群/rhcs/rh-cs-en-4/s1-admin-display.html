@@ -1,0 +1,658 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Displaying Cluster and Service Status</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Cluster Administration"
+HREF="ch-admin.html"><LINK
+REL="PREVIOUS"
+TITLE="Cluster Administration"
+HREF="ch-admin.html"><LINK
+REL="NEXT"
+TITLE="Starting and Stopping the Cluster Software"
+HREF="s1-admin-start.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-admin.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Cluster Administration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-admin-start.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-ADMIN-DISPLAY"
+>4.2. Displaying Cluster and Service Status</A
+></H1
+><P
+>Monitoring cluster and application service status can help identify
+	and resolve problems in the cluster environment. The following tools
+	assist in displaying cluster status information:</P
+><P
+></P
+><UL
+><LI
+><P
+>The <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+></P
+></LI
+><LI
+><P
+>The <TT
+CLASS="COMMAND"
+>clustat</TT
+> utility</P
+></LI
+></UL
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Members that are not running the cluster software cannot determine
+	or report the status of other members of the cluster.
+	</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>Cluster and service status includes the following
+      information:</P
+><P
+></P
+><UL
+><LI
+><P
+>Cluster member system status</P
+></LI
+><LI
+><P
+>Service status and which cluster system is running the service
+	    or owns the service</P
+></LI
+></UL
+><P
+>The following tables describe how to analyze the status information
+	shown by the <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> and the
+	<TT
+CLASS="COMMAND"
+>clustat</TT
+> utility.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-ADMIN-MEMBERSTATTOOL"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Member Status</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Member</B
+></TD
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>The node is part of the
+		  cluster.</TD
+></TR
+><TR
+><TD
+>Note: A node can be a member of a
+		  cluster; however, the node may be inactive and incapable of
+		  running services. For example, if <TT
+CLASS="COMMAND"
+>rgmanager</TT
+> is
+		  not running on the node, but all other cluster software components
+		  are running in the node, the node appears as a
+		  <B
+CLASS="GUILABEL"
+>Member</B
+> in the
+		  <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+>. However,
+		without <TT
+CLASS="COMMAND"
+>rgmanager</TT
+> running, the node does not
+		  appear in the <TT
+CLASS="COMMAND"
+>clustat</TT
+> display. 
+		  </TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+></TR
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Dead</B
+></TD
+><TD
+>The member system is unable to participate as a cluster
+		  member. The most basic cluster software is not running on the
+		  node.
+	    </TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 4-1. Member Status for the
+	<B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+></B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-ADMIN-MEMBERCLUSTAT"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Member Status </TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Online</B
+></TD
+><TD
+>The node is communicating with other nodes in the
+		  cluster.</TD
+></TR
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Inactive</B
+></TD
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>The node is unable to communicate with the
+		  other nodes in the cluster. If the node is
+		  inactive, <TT
+CLASS="COMMAND"
+>clustat</TT
+> does not display the node. If
+		  <TT
+CLASS="COMMAND"
+>rgmanager</TT
+> is not running in a node, the
+		  node is inactive.</TD
+></TR
+><TR
+><TD
+>Note: Although a node is inactive, it may still appear
+		as a <B
+CLASS="GUILABEL"
+>Member</B
+> in the
+		<B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+>. However, if the
+		node is inactive, it is incapable of running services.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 4-2. Member Status for <TT
+CLASS="COMMAND"
+>clustat</TT
+></B
+></P
+></DIV
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-ADMIN-SERVICESTAT"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Service Status</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Started</B
+></TD
+><TD
+>The service resources are configured and available on the
+		cluster system that owns the service.</TD
+></TR
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Pending</B
+></TD
+><TD
+>The service has failed on a member and is pending start on
+	      another member.
+	      </TD
+></TR
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Disabled</B
+></TD
+><TD
+>The service has been disabled, and does not have an
+                assigned owner. A disabled service is never restarted
+                automatically by the cluster.</TD
+></TR
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Stopped</B
+></TD
+><TD
+>The service is not running; it is waiting for a member capable of
+		starting the service. A service remains in the stopped state if
+		autostart is disabled.</TD
+></TR
+><TR
+><TD
+><B
+CLASS="GUILABEL"
+>Failed</B
+></TD
+><TD
+>The service has failed to start on the cluster and cannot
+	      successfully stop the service. A failed service is never restarted
+	      automatically by the cluster.  
+	      </TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 4-3. Service Status</B
+></P
+></DIV
+><P
+> The <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> displays the
+	current cluster status in the <B
+CLASS="GUILABEL"
+>Services
+	</B
+> area and automatically updates the status every 10
+	seconds. Additionally, you can display a snapshot of the current 
+	cluster status from a shell prompt by invoking the
+	<TT
+CLASS="COMMAND"
+>clustat</TT
+> utility. <A
+HREF="s1-admin-display.html#EX-ADMIN-CLUSTATOUT"
+>Example 4-1</A
+>
+	shows the output of the <TT
+CLASS="COMMAND"
+>clustat</TT
+> utility.</P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="EX-ADMIN-CLUSTATOUT"
+></A
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>&#13;# <KBD
+CLASS="USERINPUT"
+>clustat</KBD
+>
+<SAMP
+CLASS="COMPUTEROUTPUT"
+>Member Status: Quorate, Group Member
+ 
+  Member Name                              State      ID
+  ------ ----                              -----      --
+  tng3-2                                   Online     0x0000000000000002
+  tng3-1                                   Online     0x0000000000000001
+ 
+  Service Name         Owner (Last)                   State
+  -------- -----       ----- ------                   -----
+  webserver            (tng3-1                      ) failed
+  email                tng3-2                         started
+&#13;</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+><B
+>Example 4-1. Output of <TT
+CLASS="COMMAND"
+>clustat</TT
+></B
+></P
+></DIV
+><P
+>To monitor the cluster and display status at specific time intervals
+	from a shell prompt, invoke <TT
+CLASS="COMMAND"
+>clustat</TT
+> with the
+	<TT
+CLASS="COMMAND"
+>-i <VAR
+CLASS="REPLACEABLE"
+>time</VAR
+></TT
+> option, where
+	<VAR
+CLASS="REPLACEABLE"
+>time</VAR
+> specifies the number of seconds between
+	status snapshots. The following example causes
+	the <TT
+CLASS="COMMAND"
+>clustat</TT
+> utility to display cluster status every
+	10 seconds:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>#<KBD
+CLASS="USERINPUT"
+>clustat -i 10</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-admin.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-admin-start.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Cluster Administration</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-admin.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Starting and Stopping the Cluster Software</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

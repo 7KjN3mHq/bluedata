@@ -1,0 +1,441 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>LVS Scheduling Overview</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Linux Virtual Server Overview"
+HREF="ch-lvs-overview.html"><LINK
+REL="PREVIOUS"
+TITLE="A Three Tiered LVS Configuration"
+HREF="s1-lvs-cm.html"><LINK
+REL="NEXT"
+TITLE="Routing Methods"
+HREF="s1-lvs-routing.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-cm.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 7. Linux Virtual Server Overview</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-routing.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-SCHEDULING"
+>7.3. LVS Scheduling Overview</A
+></H1
+><P
+>	One of the advantages of using an LVS cluster is its ability to perform
+	flexible, IP-level load balancing on the real server pool. This
+	flexibility is due to the variety of scheduling algorithms an
+	administrator can choose from when configuring a cluster. LVS load
+	balancing is superior to less flexible methods, such as
+	<I
+CLASS="FIRSTTERM"
+>Round-Robin DNS</I
+> where the hierarchical nature of
+	DNS and the caching by client machines can lead to load
+	imbalances. Additionally, the low-level filtering employed by the LVS
+	router has advantages over application-level request forwarding because
+	balancing loads at the network packet level causes minimal computational
+	overhead and allows for greater scalability.
+      </P
+><P
+>	Using scheduling, the active router can take into account the real
+	servers' activity and, optionally, an administrator-assigned
+	<I
+CLASS="FIRSTTERM"
+>weight</I
+> factor when routing service
+	requests. Using assigned weights gives arbitrary priorities to
+	individual machines. Using this form of scheduling, it is possible to
+	create a group of real servers using a variety of hardware and software
+	combinations and the active router can evenly load each real server.
+      </P
+><P
+>	The scheduling mechanism for an LVS cluster is provided by a collection
+	of kernel patches called <I
+CLASS="FIRSTTERM"
+>IP Virtual Server</I
+> or
+	<I
+CLASS="FIRSTTERM"
+>IPVS</I
+> modules. These modules enable
+	<I
+CLASS="FIRSTTERM"
+>layer 4</I
+> (<I
+CLASS="FIRSTTERM"
+>L4</I
+>) transport
+	layer switching, which is designed to work well with multiple servers on
+	a single IP address.
+      </P
+><P
+>	To track and route packets to the real servers efficiently, IPVS builds
+	an <I
+CLASS="FIRSTTERM"
+>IPVS table</I
+> in the kernel. This table is used
+	by the active LVS router to redirect requests from a virtual server
+	address to and returning from real servers in the pool. The IPVS table
+	is constantly updated by a utility called <I
+CLASS="FIRSTTERM"
+>ipvsadm</I
+>
+	&#8212; adding and removing cluster members depending on their
+	availability.
+      </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-SCHED"
+>7.3.1. Scheduling Algorithms</A
+></H2
+><P
+>	  The structure that the IPVS table takes depends on the scheduling
+	  algorithm that the administrator chooses for any given virtual
+	  server. To allow for maximum flexibility in the types of services you
+	  can cluster and how these services are scheduled, Red Hat Enterprise Linux provides the
+	  following scheduling algorithms listed below. For instructions on how
+	  to assign scheduling algorithms refer to <A
+HREF="s1-piranha-virtservs.html#S2-PIRANHA-VIRTSERV-SUB"
+>Section 10.6.1 <I
+>The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> Subsection</I
+></A
+>.
+	</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><I
+CLASS="EMPHASIS"
+>Round-Robin Scheduling</I
+></DT
+><DD
+><P
+>Distributes each request sequentially around the pool of
+		real servers. Using this algorithm, all the real servers are
+		treated as equals without regard to capacity or load. This
+		scheduling model resembles round-robin DNS but is more granular
+		due to the fact that it is network-connection based and not
+		host-based. LVS round-robin scheduling also does not suffer the
+		imbalances caused by cached DNS queries.
+	      </P
+></DD
+><DT
+><I
+CLASS="EMPHASIS"
+>Weighted Round-Robin Scheduling</I
+></DT
+><DD
+><P
+>Distributes each request sequentially around the pool of
+		real servers but gives more jobs to servers with greater
+		capacity. Capacity is indicated by a user-assigned weight
+		factor, which is then adjusted upward or downward by dynamic
+		load information. Refer to <A
+HREF="s1-lvs-scheduling.html#S2-LVS-SCHED-WEIGHT"
+>Section 7.3.2 <I
+>Server Weight and Scheduling</I
+></A
+>
+		for more on weighting real servers.
+	      </P
+><P
+>Weighted round-robin scheduling is a preferred choice if
+		there are significant differences in the capacity of real
+		servers in the pool. However, if the request load varies
+		dramatically, the more heavily weighted server may answer more
+		than its share of requests.
+	      </P
+></DD
+><DT
+><I
+CLASS="EMPHASIS"
+>Least-Connection</I
+></DT
+><DD
+><P
+>Distributes more requests to real servers with fewer active
+		connections. Because it keeps track of live connections to the
+		real servers through the IPVS table, least-connection is a type
+		of dynamic scheduling algorithm, making it a better choice if
+		there is a high degree of variation in the request load. It is
+		best suited for a real server pool where each member node has
+		roughly the same capacity. If a group of servers have different
+		capabilities, weighted least-connection scheduling is a better
+		choice.
+	      </P
+></DD
+><DT
+><I
+CLASS="EMPHASIS"
+>Weighted Least-Connections
+	    (default)</I
+></DT
+><DD
+><P
+>Distributes more requests to servers with fewer active
+		connections relative to their capacities. Capacity is indicated
+		by a user-assigned weight, which is then adjusted upward or
+		downward by dynamic load information. The addition of weighting
+		makes this algorithm ideal when the real server pool contains
+		hardware of varying capacity. Refer to <A
+HREF="s1-lvs-scheduling.html#S2-LVS-SCHED-WEIGHT"
+>Section 7.3.2 <I
+>Server Weight and Scheduling</I
+></A
+> for more on weighting real
+		servers.
+	      </P
+></DD
+><DT
+><I
+CLASS="EMPHASIS"
+>Locality-Based Least-Connection Scheduling</I
+></DT
+><DD
+><P
+>Distributes more requests to servers with fewer active
+		connections relative to their destination IPs. This algorithm is
+		designed for use in a proxy-cache server cluster. It routes the
+		packets for an IP address to the server for that address unless
+		that server is above its capacity and has a server in its half
+		load, in which case it assigns the IP address to the least
+		loaded real server.
+	      </P
+></DD
+><DT
+><I
+CLASS="EMPHASIS"
+>Locality-Based Least-Connection Scheduling with
+	    Replication Scheduling</I
+></DT
+><DD
+><P
+>Distributes more requests to servers with fewer active
+		connections relative to their destination IPs. This algorithm is
+		also designed for use in a proxy-cache server cluster. It
+		differs from Locality-Based Least-Connection Scheduling by
+		mapping the target IP address to a subset of real server
+		nodes. Requests are then routed to the server in this subset
+		with the lowest number of connections. If all the nodes for the
+		destination IP are above capacity, it replicates a new server
+		for that destination IP address by adding the real server with
+		the least connections from the overall pool of real servers to
+		the subset of real servers for that destination IP. The most
+		loaded node is then dropped from the real server subset to
+		prevent over-replication.
+	      </P
+></DD
+><DT
+><I
+CLASS="EMPHASIS"
+>Destination Hash Scheduling</I
+></DT
+><DD
+><P
+>Distributes requests to the pool of real servers by looking
+	      up the destination IP in a static hash table. This algorithm is
+	      designed for use in a proxy-cache server cluster.
+	      </P
+></DD
+><DT
+><I
+CLASS="EMPHASIS"
+>Source Hash Scheduling</I
+></DT
+><DD
+><P
+>Distributes requests to the pool of real servers by
+	      looking up the source IP in a static hash table. This algorithm is
+	      designed for LVS routers with multiple firewalls. 
+	      </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-SCHED-WEIGHT"
+>7.3.2. Server Weight and Scheduling</A
+></H2
+><P
+>	  The administrator of an LVS cluster can assign a
+	  <I
+CLASS="FIRSTTERM"
+>weight</I
+> to each node in the real server
+	  pool. This weight is an integer value which is factored into any
+	  <I
+CLASS="EMPHASIS"
+>weight-aware</I
+> scheduling algorithms (such as
+	  weighted least-connections) and helps the LVS router more evenly load
+	  hardware with different capabilities.
+	</P
+><P
+>	  Weights work as a ratio relative to one another. For instance, if one
+	  real server has a weight of 1 and the other server has a weight of 5,
+	  then the server with a weight of 5 gets 5 connections for every 1
+	  connection the other server gets. The default value for a real server
+	  weight is 1.
+	</P
+><P
+>	  Although adding weight to varying hardware configurations in a real
+	  server pool can help load-balance the cluster more efficiently, it can
+	  cause temporary imbalances when a real server is introduced to the
+	  real server pool and the virtual server is scheduled using weighted
+	  least-connections. For example, suppose there are three servers in the
+	  real server pool. Servers A and B are weighted at 1 and the third,
+	  server C, is weighted at 2. If server C goes down for any reason,
+	  servers A and B evenly distributes the abandoned load. However, once
+	  server C comes back online, the LVS router sees it has zero
+	  connections and floods the server with all incoming requests until it
+	  is on par with servers A and B.
+	</P
+><P
+>	  To prevent this phenomenon, administrators can make the virtual server
+	  a <I
+CLASS="FIRSTTERM"
+>quiesce</I
+> server &#8212; anytime a new real
+	  server node comes online, the least-connections table is reset to zero
+	  and the LVS router routes requests as if all the real servers were
+	  newly added to the cluster.
+	</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-cm.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-routing.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>A Three Tiered LVS Configuration</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-overview.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Routing Methods</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

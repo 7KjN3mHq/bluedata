@@ -1,0 +1,443 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Backing Up and Restoring the Cluster Database</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Cluster Administration"
+HREF="ch-admin.html"><LINK
+REL="PREVIOUS"
+TITLE="Modifying the Cluster Configuration"
+HREF="s1-admin-modify.html"><LINK
+REL="NEXT"
+TITLE="Updating the Cluster Software"
+HREF="s1-admin-update.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-admin-modify.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Cluster Administration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-admin-update.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-ADMIN-BACKUP"
+>4.5. Backing Up and Restoring the Cluster Database</A
+></H1
+><P
+>The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> automatically retains
+	backup copies of the three most recently used configuration files
+	(besides the currently used configuration file). Retaining the backup
+	copies is useful if the cluster does not function correctly because of
+	misconfiguration and you need to return to a previous working
+	configuration.</P
+><P
+>Each time you save a configuration file, the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> saves backup copies of the
+	three most recently used configuration files as
+	<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf.bak.1</TT
+>,
+	<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf.bak.2</TT
+>, and
+	<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf.bak.3</TT
+>. The backup file
+	<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf.bak.1</TT
+> is the newest backup,
+	<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf.bak.2</TT
+> is the second
+	newest backup, and <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf.bak.3</TT
+>
+	is the third newest backup.</P
+><P
+> If a cluster member becomes inoperable because of misconfiguration,
+      restore the configuration file according to the following steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>At the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> tab of the Red Hat Cluster Suite
+	     management GUI, click <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+	     <B
+CLASS="GUIMENUITEM"
+>Open</B
+>.</P
+></LI
+><LI
+><P
+>Clicking <B
+CLASS="GUILABEL"
+>File =&#62; Open</B
+> causes the
+	  <B
+CLASS="GUILABEL"
+>system-config-cluster</B
+> dialog box to be
+	  displayed.</P
+></LI
+><LI
+><P
+>At the the <B
+CLASS="GUILABEL"
+>system-config-cluster</B
+> dialog
+	  box, select a backup file (for example, 
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf.bak.1</TT
+>). Verify the file
+	  selection in the <B
+CLASS="GUILABEL"
+>Selection</B
+> box and click
+	  <B
+CLASS="GUIBUTTON"
+>OK</B
+>.</P
+></LI
+><LI
+><P
+>Increment the configuration version beyond the current working
+	  version number as follows:</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>Click <B
+CLASS="GUILABEL"
+>Cluster</B
+> =&#62;
+	  <B
+CLASS="GUILABEL"
+>Edit Cluster Properties</B
+>.</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Cluster Properties</B
+>
+	  dialog box, change the <B
+CLASS="GUILABEL"
+>Config Version</B
+> value and click
+	  <B
+CLASS="GUIBUTTON"
+>OK</B
+>.</P
+></LI
+></OL
+></LI
+><LI
+><P
+>	  Click <B
+CLASS="GUIMENU"
+>File</B
+> =&#62; <B
+CLASS="GUIMENUITEM"
+>Save As</B
+>.</P
+></LI
+><LI
+><P
+>Clicking <B
+CLASS="GUIMENU"
+>File</B
+> =&#62; <B
+CLASS="GUIMENUITEM"
+>Save
+	      As</B
+> causes the <B
+CLASS="GUILABEL"
+>system-config-cluster</B
+>
+	  dialog box to be  displayed.</P
+></LI
+><LI
+><P
+>At the the <B
+CLASS="GUILABEL"
+>system-config-cluster</B
+> dialog
+	  box, select
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> and click
+	  <B
+CLASS="GUIBUTTON"
+>OK</B
+>. (Verify the file
+	  selection in the <B
+CLASS="GUILABEL"
+>Selection</B
+> box.)</P
+></LI
+><LI
+><P
+>Clicking <B
+CLASS="GUIBUTTON"
+>OK</B
+> causes an
+	  <B
+CLASS="GUILABEL"
+>Information</B
+> dialog box to be displayed. At that
+	  dialog box, click <B
+CLASS="GUIBUTTON"
+>OK</B
+>.</P
+></LI
+><LI
+><P
+>Propagate the updated configuration file throughout the cluster
+	  by clicking <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+>.</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> does not display
+	      the <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> button if the cluster is new
+	      and has not been started yet, or if the node from which you are running the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> is not a member of the
+	      cluster. If the 	<B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> button is
+	      not displayed, you can still use the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>; however, you cannot
+	      propagate the configuration. You can still
+	      <I
+CLASS="EMPHASIS"
+>save</I
+> the configuration file. For information
+	      about using the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> for a
+	      new cluster configuration, refer to <A
+HREF="ch-software.html"
+>Chapter 3 <I
+>Installing and Configuring Red Hat Cluster Suite Software</I
+></A
+>.</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>Clicking <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> causes a
+	  <B
+CLASS="GUILABEL"
+>Warning</B
+> dialog box to be displayed. Click
+	  <B
+CLASS="GUIBUTTON"
+>Yes</B
+> to propagate the configuration.</P
+></LI
+><LI
+><P
+>	  Click the <B
+CLASS="GUILABEL"
+>Cluster Management</B
+> tab and verify that
+	  the changes have been propagated to the cluster members.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-admin-modify.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-admin-update.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Modifying the Cluster Configuration</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-admin.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Updating the Cluster Software</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

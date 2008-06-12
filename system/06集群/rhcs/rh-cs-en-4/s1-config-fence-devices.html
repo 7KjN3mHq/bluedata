@@ -1,0 +1,1160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Configuring Fence Devices</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Naming The Cluster"
+HREF="s1-naming-cluster.html"><LINK
+REL="NEXT"
+TITLE="Adding and Deleting Members"
+HREF="s1-add-delete-member.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-naming-cluster.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-add-delete-member.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-CONFIG-FENCE-DEVICES"
+>3.6. Configuring Fence Devices</A
+></H1
+><P
+>Configuring fence devices for the cluster consists of selecting one
+      or more fence devices and specifying fence-device-dependent parameters
+      (for example, name, IP address, login, and password). </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+>To configure fence devices, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Click <B
+CLASS="GUILABEL"
+>Fence Devices</B
+>. At the bottom of the
+	    right frame (labeled <B
+CLASS="GUILABEL"
+>Properties</B
+>), click the
+	    <B
+CLASS="GUIBUTTON"
+>Add a Fence Device</B
+> button. Clicking <B
+CLASS="GUIBUTTON"
+> Add
+	    a Fence Device</B
+> causes the <B
+CLASS="GUILABEL"
+>Fence Device
+	    Configuration</B
+> dialog box to be displayed (refer to <A
+HREF="s1-config-fence-devices.html#FIG-FENCE-DEVICE-CONFIG-DBOX"
+>Figure 3-6</A
+>).</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-FENCE-DEVICE-CONFIG-DBOX"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/fence-device-config-dbox.png"></P
+></DIV
+><P
+><B
+>Figure 3-6. Fence Device Configuration</B
+></P
+></DIV
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Fence Device Configuration</B
+> dialog
+	    box, click the drop-down box under <B
+CLASS="GUILABEL"
+>Add a New Fence
+	      Device</B
+> and select the type of fence device to
+	    configure.</P
+></LI
+><LI
+><P
+>Specify the information in the <B
+CLASS="GUILABEL"
+>Fence Device
+	    Configuration</B
+> dialog box according to the type of fence
+	    device. Refer to the following tables for more information. 
+	</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-APC"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the APC device connected
+		  to the cluster.
+		  </TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the device.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		      authenticate the connection to the device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-1. Configuring an APC Fence Device</B
+></P
+></DIV
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-BROCADE"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the Brocade device
+		  connected to the cluster.
+		</TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the device.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-2. Configuring a Brocade Fibre Channel Switch</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-BULLPAP"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the PAP console.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the PAP console.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the PAP console.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-3. Configuring a Bull Platform Administration Processor (PAP)
+	  Interface</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-DRACMC"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>The name assigned to the DRAC.</TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the DRAC.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the DRAC.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the DRAC.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-4. Configuring a Dell Remote Access Controller/Modular Chassis (DRAC/MC)
+	  Interface</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-EGEN"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the BladeFrame device
+		  connected to the cluster.
+		</TD
+></TR
+><TR
+><TD
+>CServer</TD
+><TD
+>The hostname (and optionally the
+		username in the form of
+		<KBD
+CLASS="USERINPUT"
+>username@hostname</KBD
+>) assigned to the
+		device. Refer to the
+		<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>fence_egenera</SPAN
+>(8)</SPAN
+> 
+		man page.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-5. Configuring an Egenera BladeFrame</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-GNBD"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the GNBD device used to
+		fence the cluster. Note that the GFS server must be accessed via
+		GNBD for cluster node fencing support.
+		</TD
+></TR
+><TR
+><TD
+>Server</TD
+><TD
+>The hostname of each GNBD to
+		disable. For multiple hostnames, separate each hostname with a
+		space.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-6. Configuring a Global Network Block Device (GNBD) fencing agent</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-HPILO"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the server with HP iLO
+		  support.
+		</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the device.</TD
+></TR
+><TR
+><TD
+>Hostname</TD
+><TD
+>The hostname assigned to the
+		device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-7. Configuring an HP Integrated Lights Out (iLO) card</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-BLADECTR"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the IBM Bladecenter
+		  device connected to the cluster.
+		</TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the device.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-8. Configuring an IBM Blade Center that Supports Telnet</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-RSAII"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the RSA device connected
+		  to the cluster.
+		  </TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the device.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		      authenticate the connection to the device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-9. Configuring an IBM Remote Supervisor Adapter II (RSA
+	  II)</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-IPMI"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the IPMI port.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name of a user capable of
+		issuing power on/off commands to the given IPMI port.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the IPMI port.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-10. Configuring an Intelligent Platform Management Interface
+	      (IPMI)</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-MANUAL"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name to assign the Manual fencing
+		  agent. Refer to <TT
+CLASS="COMMAND"
+>fence_manual</TT
+>(8) for more
+		  information.
+		</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-11. Configuring Manual Fencing</B
+></P
+></DIV
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Manual fencing is <I
+CLASS="EMPHASIS"
+>not</I
+> supported for
+	    production environments.</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-MCDATA"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the McData device
+		  connected to the cluster.
+		</TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the device.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-12. Configuring a McData Fibre Channel Switch</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-WTI-RPS10"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the WTI RPS-10  power switch
+		  connected to the cluster.
+		</TD
+></TR
+><TR
+><TD
+>Device</TD
+><TD
+>The device the switch is connected to on the controlling
+		host (for example, <TT
+CLASS="FILENAME"
+>/dev/ttys2</TT
+>).</TD
+></TR
+><TR
+><TD
+>Port</TD
+><TD
+>The switch outlet number.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-13. Configuring an RPS-10 Power Switch (two-node clusters only)
+	 </B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-SANBOX"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the SANBox2 device
+		  connected to the cluster.
+		</TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the device.</TD
+></TR
+><TR
+><TD
+>Login</TD
+><TD
+>The login name used to access the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-14. Configuring a QLogic SANBox2 Switch</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-VIXEL"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the Vixel switch connected
+		  to the cluster.
+		</TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-15. Configuring a Vixel SAN Fibre Channel Switch</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-SOFTWARE-FENCE-WTI"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Field</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Name</TD
+><TD
+>A name for the WTI power switch
+		  connected to the cluster.
+		</TD
+></TR
+><TR
+><TD
+>IP Address</TD
+><TD
+>The IP address assigned to the device.</TD
+></TR
+><TR
+><TD
+>Password</TD
+><TD
+>The password used to
+		  authenticate the connection to the device.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 3-16. Configuring a WTI Network Power Switch</B
+></P
+></DIV
+></LI
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>OK</B
+>.</P
+></LI
+><LI
+><P
+>Choose <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+	  <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to save the changes to the cluster
+	      configuration.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-naming-cluster.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-add-delete-member.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Naming The Cluster</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Adding and Deleting Members</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

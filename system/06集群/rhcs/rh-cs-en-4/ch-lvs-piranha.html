@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Configuring the LVS Routers with Piranha Configuration Tool</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring a Linux Virtual Server Cluster"
+HREF="pt-lvs.html"><LINK
+REL="PREVIOUS"
+TITLE="Saving Network Packet Filter Settings"
+HREF="s1-lvs-fwm-sav.html"><LINK
+REL="NEXT"
+TITLE="Logging Into the Piranha Configuration Tool"
+HREF="s1-piranha-login.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-fwm-sav.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-piranha-login.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-LVS-PIRANHA"
+></A
+>Chapter 10. Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></H1
+><P
+>      The <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> provides a structured approach
+      to creating the necessary configuration file for a Piranha cluster &#8212;
+      <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/lvs.cf</TT
+>. This chapter describes the
+      basic operation of the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> and how to
+      activate the cluster once configuration is complete.
+    </P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	The configuration file for the LVS cluster follows strict formatting
+	rules. Using the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> is the best
+	way to prevent syntax errors in the <TT
+CLASS="FILENAME"
+>lvs.cf</TT
+> and
+	therefore prevent software failures.
+      </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-PIRANHA-REQ"
+>10.1. Necessary Software</A
+></H1
+><P
+>	The <TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> service must be running on the
+	primary LVS router to use the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>. To
+	configure the cluster, you minimally need a text-only Web browser, such
+	as <TT
+CLASS="COMMAND"
+>links</TT
+>. If you are accessing the LVS router from
+	another machine, you also need an <TT
+CLASS="COMMAND"
+>ssh</TT
+> connection to
+	the primary LVS router as the root user.
+      </P
+><P
+>	While configuring the primary LVS router it is a good idea to keep a
+	concurrent <TT
+CLASS="COMMAND"
+>ssh</TT
+> connection in a terminal window. This
+	connection provides a secure way to restart <TT
+CLASS="COMMAND"
+>pulse</TT
+> and
+	other services, configure network packet filters, and monitor
+	<TT
+CLASS="FILENAME"
+>/var/log/messages</TT
+> during trouble shooting.
+      </P
+><P
+>	The next four sections walk through each of the configuration pages
+	of the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> and give instructions on
+	using it to set up the LVS cluster.
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-fwm-sav.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-piranha-login.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Saving Network Packet Filter Settings</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Logging Into the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

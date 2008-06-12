@@ -1,0 +1,364 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Starting the Cluster Configuration Tool</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Installing the Red Hat Cluster Suite Packages"
+HREF="s1-pkg-install-all.html"><LINK
+REL="NEXT"
+TITLE="Naming The Cluster"
+HREF="s1-naming-cluster.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-pkg-install-all.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-naming-cluster.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-START-CLUSTERTOOL"
+>3.4. Starting the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></A
+></H1
+><P
+>You can start the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> by
+      logging in to a cluster node as root with the <TT
+CLASS="COMMAND"
+>ssh -Y</TT
+> command
+      and issuing the <TT
+CLASS="COMMAND"
+>system-config-cluster</TT
+> command. For
+      example, to start the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> on
+      cluster node nano-01, do the following:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Log in to a cluster node and run
+	  <TT
+CLASS="COMMAND"
+>system-config-cluster</TT
+>. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>$<KBD
+CLASS="USERINPUT"
+>ssh -Y root@nano-01</KBD
+>
+       .
+       .
+       .
+#<KBD
+CLASS="USERINPUT"
+>system-config-cluster</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>If this is the first time you have started the
+		<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, the program prompts you to
+		either open an existing configuration or create a new one. Click
+		<B
+CLASS="GUIBUTTON"
+>Create New Configuration</B
+> to start a new
+		configuration file (refer to <A
+HREF="s1-start-clustertool.html#FIG-SOFTWARE-CLUSTERTOOL-NEW"
+>Figure 3-3</A
+>). 
+	      </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFTWARE-CLUSTERTOOL-NEW"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/cluconfig-new.png"></P
+></DIV
+><P
+><B
+>Figure 3-3. Starting a New Configuration File</B
+></P
+></DIV
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The <B
+CLASS="GUILABEL"
+>Cluster Management</B
+> tab for the Red Hat Cluster Suite
+		  management GUI is available after you save the configuration
+		  file with the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, exit,
+		  and restart the the Red Hat Cluster Suite management GUI
+		  (<TT
+CLASS="COMMAND"
+>system-config-cluster</TT
+>). (The 
+		  <B
+CLASS="GUILABEL"
+>Cluster Management</B
+> tab displays the status of the
+		  cluster service manager, cluster nodes, and resources, and shows
+		  statistics concerning cluster service operation. To manage the
+		cluster system further, choose the <B
+CLASS="GUILABEL"
+>Cluster
+		Configuration</B
+> tab.)
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>For a new configuration, a <B
+CLASS="GUILABEL"
+>Lock
+		  Method</B
+> dialog box is displayed requesting a choice of
+		either the GULM or DLM lock method (and multicast address for
+		  DLM).</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFTWARE-CLUSTERTOOL-LOCKMETHOD"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/cluconfig-lockmethod-new.png"></P
+></DIV
+><P
+><B
+>Figure 3-4. Choosing a Lock Method</B
+></P
+></DIV
+></LI
+></OL
+></LI
+><LI
+><P
+>Starting the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> displays
+	  a graphical representation of the configuration (<A
+HREF="s1-start-clustertool.html#FIG-SOFTWARE-CLUSTERSTART"
+>Figure 3-5</A
+>) as specified in the
+	  cluster configuration file,
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+>.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFTWARE-CLUSTERSTART"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/cluconfig-start.png"></P
+></DIV
+><P
+><B
+>Figure 3-5. The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></B
+></P
+></DIV
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-pkg-install-all.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-naming-cluster.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Installing the Red Hat Cluster Suite Packages</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Naming The Cluster</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

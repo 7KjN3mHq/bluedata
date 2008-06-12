@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>GLOBAL SETTINGS</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring the LVS Routers with Piranha Configuration Tool"
+HREF="ch-lvs-piranha.html"><LINK
+REL="PREVIOUS"
+TITLE="CONTROL/MONITORING"
+HREF="s1-piranha-ctrlmon.html"><LINK
+REL="NEXT"
+TITLE="REDUNDANCY"
+HREF="s1-piranha-redun.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-piranha-ctrlmon.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 10. Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-piranha-redun.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-PIRANHA-GLOBALSET"
+>10.4. <B
+CLASS="GUILABEL"
+>GLOBAL SETTINGS</B
+></A
+></H1
+><P
+>	The <B
+CLASS="GUILABEL"
+>GLOBAL SETTINGS</B
+> panel is where the cluster
+	administrator defines the
+	networking details for the primary LVS router's public and private
+	network interfaces.
+      </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-GLOBAL-SETTINGS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-piranha-gui/global-settings.png"></P
+></DIV
+><P
+><B
+>Figure 10-3. The <B
+CLASS="GUILABEL"
+>GLOBAL SETTINGS</B
+> Panel</B
+></P
+></DIV
+><P
+>	The top half of this panel sets up the primary LVS router's public and
+	private network interfaces. These are the interfaces already configured in <A
+HREF="ch-lvs-setup.html#S1-NAT-ROUTER-IFCFG"
+>Section 9.1.1 <I
+>Configuring Network Interfaces for a NAT LVS Cluster</I
+></A
+>.
+      </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>Primary server public IP</B
+></DT
+><DD
+><P
+>In this field, enter the publicly routable real IP
+	      address for the primary LVS node. 
+	    </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Primary server private IP</B
+></DT
+><DD
+><P
+>Enter the real IP address for an alternative network interface
+	      on the primary LVS node. This address is used solely as an
+	      alternative heartbeat channel for the backup router and does not
+	      have to correlate to the real private IP address assigned in <A
+HREF="ch-lvs-setup.html#S1-NAT-ROUTER-IFCFG"
+>Section 9.1.1 <I
+>Configuring Network Interfaces for a NAT LVS Cluster</I
+></A
+>. You may leave this field blank,
+	      but doing so will mean there is no alternate heartbeat channel for
+	      the backup LVS router to use and therefore will create a single
+	      point of failure.
+	    </P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The primary LVS router's private IP can be configured on any
+		interface that accepts TCP/IP, whether it be an Ethernet adapter
+		or a serial port.
+	      </P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Use network type</B
+></DT
+><DD
+><P
+>Click the <B
+CLASS="GUIBUTTON"
+>NAT</B
+> button to select NAT
+	    routing.</P
+></DD
+></DL
+></DIV
+><P
+>	The next three fields deal specifically with
+	the NAT router's virtual network interface connected the private network
+	with the real servers.
+      </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>NAT Router IP</B
+></DT
+><DD
+><P
+>Enter the private floating IP in this text field. This
+	    floating IP should be used as the gateway for the real servers.
+	    </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>NAT Router netmask</B
+></DT
+><DD
+><P
+>If the NAT router's floating IP needs a particular netmask,
+	      select it from drop-down list.
+	    </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>NAT Router device</B
+></DT
+><DD
+><P
+>Use this text field to define the device name of the network interface
+	      for the floating IP address, such as <KBD
+CLASS="USERINPUT"
+>eth1:1</KBD
+>.
+	    </P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>You should alias the NAT floating IP
+	      address to the Ethernet interface connected to the private
+	      network. In this example, the private network is on the
+	      <TT
+CLASS="FILENAME"
+>eth1</TT
+> interface, so
+	      <KBD
+CLASS="USERINPUT"
+>eth1:1</KBD
+> is the floating IP address.
+	      </P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+></DL
+></DIV
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	  After completing this page, click the
+	  <B
+CLASS="GUIBUTTON"
+>ACCEPT</B
+> button to make sure you do not lose any
+	  changes when selecting a new panel.
+	</P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-piranha-ctrlmon.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-piranha-redun.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><B
+CLASS="GUILABEL"
+>CONTROL/MONITORING</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-piranha.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><B
+CLASS="GUILABEL"
+>REDUNDANCY</B
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Saving Network Packet Filter Settings</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Setting Up a Red Hat Enterprise Linux LVS Cluster"
+HREF="ch-lvs-setup.html"><LINK
+REL="PREVIOUS"
+TITLE="FTP In an LVS Cluster"
+HREF="s1-lvs-ftp.html"><LINK
+REL="NEXT"
+TITLE="Configuring the LVS Routers with Piranha Configuration Tool"
+HREF="ch-lvs-piranha.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-ftp.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 9. Setting Up a Red Hat Enterprise Linux LVS Cluster</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ch-lvs-piranha.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-FWM-SAV"
+>9.5. Saving Network Packet Filter Settings</A
+></H1
+><P
+>	After configuring the appropriate network packet filters for your
+	situation, save the settings so they get restored after a
+	reboot. For <TT
+CLASS="COMMAND"
+>iptables</TT
+>, type the following command:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/service iptables save</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	This saves the settings in
+	<TT
+CLASS="FILENAME"
+>/etc/sysconfig/iptables</TT
+> so they can be recalled at
+	boot time.
+      </P
+><P
+>	Once this file is written, you are able to use the
+	<TT
+CLASS="COMMAND"
+>/sbin/service</TT
+> command to start, stop, and check the
+	status (using the status switch) of <TT
+CLASS="COMMAND"
+>iptables</TT
+>. The
+	<TT
+CLASS="COMMAND"
+>/sbin/service</TT
+> will automatically load the appropriate
+	module for you. For an example of how to use the
+	<TT
+CLASS="COMMAND"
+>/sbin/service</TT
+> command, see <A
+HREF="s1-lvs-piranha-service.html"
+>Section 8.3 <I
+>Starting the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> Service</I
+></A
+>.
+      </P
+><P
+>	Finally, you need to be sure the appropriate service is set to activate
+	on the proper runlevels. For more on this, see <A
+HREF="ch-initial-setup.html#S1-LVS-DAEMONS"
+>Section 8.1 <I
+>Configuring Services on the LVS Routers</I
+></A
+>.
+      </P
+><P
+>	  The next chapter explains how to use the
+	  <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> to configure the LVS router and
+	  describe the steps necessary to active an LVS cluster.
+	</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-ftp.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ch-lvs-piranha.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>FTP In an LVS Cluster</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-setup.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
