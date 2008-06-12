@@ -1,0 +1,710 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Setting Up a Red Hat Enterprise Linux LVS Cluster</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring a Linux Virtual Server Cluster"
+HREF="pt-lvs.html"><LINK
+REL="PREVIOUS"
+TITLE="Configuring Services on the Real Servers"
+HREF="s1-lvs-server-daemons.html"><LINK
+REL="NEXT"
+TITLE="Putting the Cluster Together"
+HREF="s1-lvs-connect.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-server-daemons.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-connect.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-LVS-SETUP"
+></A
+>Chapter 9. Setting Up a Red Hat Enterprise Linux LVS Cluster</H1
+><P
+>      A Red Hat Enterprise Linux LVS cluster consists of two basic groups:
+      the LVS routers and the real servers. To prevent a single point of
+      failure, each groups should contain at least two member systems.
+    </P
+><P
+>      The LVS router group should consist of two identical or very similar
+      systems running Red Hat Enterprise Linux. One will act as the active LVS router while the
+      other stays in hot standby mode, so they need to have as close to the same
+      capabilities as possible.
+    </P
+><P
+>      Before choosing and configuring the hardware for the real server group,
+      you most decide what which of the three types of LVS topographies to use.
+    </P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-NAT-NETWORK"
+>9.1. The NAT LVS Cluster</A
+></H1
+><P
+>	  The NAT topography allows for great latitude in utilizing existing
+	  hardware, but it is limited in its ability to handle large loads due
+	  to the fact that all packets going into and coming out of the cluster
+	  pass through the LVS router.
+	</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Network Layout</DT
+><DD
+><P
+>The topography for an LVS cluster utilizing NAT routing is
+		  the easiest to configure from a network layout perspective
+		  because the cluster needs only one access point to the public
+		  network. The real servers pass all requests back through the
+		  LVS router so they are on their own private network.</P
+></DD
+><DT
+>Hardware</DT
+><DD
+><P
+>The NAT topography is the most flexible in regards to
+		  cluster hardware because the real servers do not need to be
+		  Linux machines to function correctly in the cluster. In a NAT
+		  cluster, each real server only needs one NIC since it will
+		  only be responding to the LVS router. The LVS routers, on the
+		  other hand, need two NICs each to route traffic between the
+		  two networks. Because this topography creates a network
+		  bottleneck at the LVS router, gigabit Ethernet NICs can be
+		  employed on each LVS router to increase the bandwidth the LVS
+		  routers can handle. If gigabit Ethernet is employed on the LVS
+		  routers, any switch connecting the real servers to the LVS
+		  routers must have at least two gigabit Ethernet ports to
+		  handle the load efficiently.</P
+></DD
+><DT
+>Software</DT
+><DD
+><P
+>Because the NAT topography requires the use of
+	      <TT
+CLASS="COMMAND"
+>iptables</TT
+> for some configurations, there can be
+	      a fair amount of software configuration outside of
+	      <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>. In particular, FTP services
+	      and the use of firewall marks requires extra manual configuration
+	      of the LVS routers to route requests properly.</P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S1-NAT-ROUTER-IFCFG"
+>9.1.1. Configuring Network Interfaces for a NAT LVS Cluster</A
+></H2
+><P
+>	  To set up a NAT LVS cluster, the administrator must first configure
+	  the network interfaces for the public network and the private network
+	  on the LVS routers. In this example, the LVS routers' public
+	  interfaces (<TT
+CLASS="FILENAME"
+>eth0</TT
+>) will be on the 192.168.26/24
+	  network (I know, I know, this is not a routable IP, but let us pretend
+	  there is a firewall in front of the LVS router for good measure) and
+	  the private interfaces which link to the real servers
+	  (<TT
+CLASS="FILENAME"
+>eth1</TT
+>) will be on the 10.11.12/24 network.
+	</P
+><P
+>	  So on the active or <I
+CLASS="FIRSTTERM"
+>primary</I
+> LVS router node,
+	  the public interface's network script,
+	  <TT
+CLASS="FILENAME"
+>/etc/sysconfig/network-scripts/ifcfg-eth0</TT
+>, could
+	  look something like this:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>DEVICE=eth0
+BOOTPROTO=static
+ONBOOT=yes
+IPADDR=192.168.26.9
+NETMASK=255.255.255.0
+GATEWAY=192.168.26.254</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	  The <TT
+CLASS="FILENAME"
+>/etc/sysconfig/network-scripts/ifcfg-eth1</TT
+> for
+	  the private NAT interface on the LVS router could look something like
+	  this:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>DEVICE=eth1
+BOOTPROTO=static
+ONBOOT=yes
+IPADDR=10.11.12.9
+NETMASK=255.255.255.0</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	  In this example, the VIP for the LVS router's public interface will be
+	  192.168.26.10 and the VIP for the NAT or private interface will be
+	  10.11.12.10. So, it is essential that the real servers route requests
+	  back to the VIP for the NAT interface.
+	</P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    The sample Ethernet interface configuration settings in this section
+	    are for the real IP addresses of an LVS router and
+	    <I
+CLASS="EMPHASIS"
+>not</I
+> the floating IP addresses. To configure the
+	    public and private floating IP addresses the administrator should
+	    use the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>, as shown in <A
+HREF="s1-piranha-globalset.html"
+>Section 10.4 <I
+><B
+CLASS="GUILABEL"
+>GLOBAL SETTINGS</B
+></I
+></A
+> and <A
+HREF="s1-piranha-virtservs.html#S2-PIRANHA-VIRTSERV-SUB"
+>Section 10.6.1 <I
+>The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> Subsection</I
+></A
+>.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	  After configuring the primary LVS router node's network interfaces,
+	  configure the backup LVS router's real network interfaces &#8212;
+	  taking care that none of the IP address conflict with any other IP
+	  addresses on the network.
+	</P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    Be sure each interface on the backup node services the same network
+	    as the interface on primary node.  For instance, if eth0 connects to
+	    the public network on the primary node, it must also connect to the
+	    public network on the backup node as well.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-NAT-ROUT-REAL"
+>9.1.2. Routing on the Real Servers</A
+></H2
+><P
+>	  The most important thing to remember when configuring the real servers
+	  network interfaces in a NAT cluster is to set the gateway for the
+	  NAT floating IP address of the LVS router. In this example, that address will
+	  be 10.11.12.10.
+	</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    Once the network interfaces are up on the real servers, the machines
+	    will be unable to ping or connect in other ways to the public
+	    network. This is normal. You will, however, be able to ping the real
+	    IP for the LVS router's private interface, in this case 10.11.12.8.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	  So the real server's
+	  <TT
+CLASS="FILENAME"
+>/etc/sysconfig/network-scripts/ifcfg-eth0</TT
+> file could
+	  look similar to this:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>DEVICE=eth0
+ONBOOT=yes
+BOOTPROTO=static
+IPADDR=10.11.12.1
+NETMASK=255.255.255.0
+GATEWAY=10.11.12.10</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    If a real server has more than one network interface configured with
+	    a <SAMP
+CLASS="COMPUTEROUTPUT"
+>GATEWAY=</SAMP
+> line, the first one to
+	    come up will get the gateway. Therefore if both
+	    <TT
+CLASS="FILENAME"
+>eth0</TT
+> and <TT
+CLASS="FILENAME"
+>eth1</TT
+> are
+	    configured and <TT
+CLASS="FILENAME"
+>eth1</TT
+> is used for LVS clustering,
+	    the real servers may not route requests properly.
+	  </P
+><P
+>	    It is best to turn off extraneous network interfaces by setting
+	    <SAMP
+CLASS="COMPUTEROUTPUT"
+>ONBOOT=<KBD
+CLASS="USERINPUT"
+>no</KBD
+></SAMP
+> in
+	    their network scripts within the
+	    <TT
+CLASS="FILENAME"
+>/etc/sysconfig/network-scripts/</TT
+> directory or by making
+	    sure the gateway is correctly set in the interface which comes
+	    up first.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-ENABLING-NAT"
+>9.1.3. Enabling NAT Routing on the LVS Routers</A
+></H2
+><P
+>	  In a simple NAT LVS cluster where each clustered service uses only one
+	  port, like HTTP on port 80, the administrator needs only to enable
+	  packet forwarding on the LVS routers for the requests to be properly
+	  routed between the outside world and the real servers. See <A
+HREF="s1-lvs-forwarding.html"
+>Section 8.5 <I
+>Turning on Packet Forwarding</I
+></A
+> for instructions on turning on packet
+	  forwarding. However, more configuration is necessary when the
+	  clustered services require more than one port to go to the same real
+	  server during a user session. For information on creating
+	  multi-port services using firewall marks, see <A
+HREF="s1-lvs-multi.html"
+>Section 9.3 <I
+>Multi-port Services and LVS Clustering</I
+></A
+>.
+	</P
+><P
+>	  Once forwarding is enabled on the LVS routers and the real servers are
+	  set up and have the clustered services running, use the
+	  <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> to configure the cluster as
+	  shown in <A
+HREF="ch-lvs-piranha.html"
+>Chapter 10 <I
+>Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></I
+></A
+>.
+	</P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    Do not configure the floating IP for <TT
+CLASS="FILENAME"
+>eth0:1</TT
+> or
+	    <TT
+CLASS="FILENAME"
+>eth1:1</TT
+> by manually editing network scripts or
+	    using a network configuration tool. Instead, use the
+	    <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> as shown in <A
+HREF="s1-piranha-globalset.html"
+>Section 10.4 <I
+><B
+CLASS="GUILABEL"
+>GLOBAL SETTINGS</B
+></I
+></A
+> and <A
+HREF="s1-piranha-virtservs.html#S2-PIRANHA-VIRTSERV-SUB"
+>Section 10.6.1 <I
+>The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> Subsection</I
+></A
+> to configure any cluster-related
+	    virtual interfaces.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	  When finished, start the <TT
+CLASS="COMMAND"
+>pulse</TT
+> service as shown in
+	  <A
+HREF="s1-lvs-start.html"
+>Section 10.8 <I
+>Starting the Cluster</I
+></A
+>. Once <TT
+CLASS="COMMAND"
+>pulse</TT
+> is up and
+	  running, the active LVS router will begin routing requests to the pool
+	  of real servers.
+	</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-server-daemons.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-connect.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Configuring Services on the Real Servers</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Putting the Cluster Together</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

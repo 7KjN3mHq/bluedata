@@ -1,0 +1,1277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Adding and Deleting Members</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Configuring Fence Devices"
+HREF="s1-config-fence-devices.html"><LINK
+REL="NEXT"
+TITLE="Configuring a Failover Domain"
+HREF="s1-config-failover-domain.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-config-fence-devices.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-config-failover-domain.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-ADD-DELETE-MEMBER"
+>3.7. Adding and Deleting Members</A
+></H1
+><P
+>The procedure to add a member to a cluster varies depending on
+    whether the cluster is a newly-configured cluster or a cluster that is
+    already configured and running. To add a member to a new cluster, refer to <A
+HREF="s1-add-delete-member.html#S2-ADD-MEMBER-NEW"
+>Section 3.7.1 <I
+>Adding a Member to a Cluster</I
+></A
+>. To add a member to an existing cluster, refer
+    to  <A
+HREF="s1-add-delete-member.html#S2-ADD-MEMBER-RUNNING"
+>Section 3.7.2 <I
+>Adding a Member to a Running Cluster</I
+></A
+>. To delete a member from a
+    cluster, refer to <A
+HREF="s1-add-delete-member.html#S2-DELETE-MEMBER"
+>Section 3.7.3 <I
+>Deleting a Member from a Cluster</I
+></A
+>.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-ADD-MEMBER-NEW"
+>3.7.1. Adding a Member to a Cluster</A
+></H2
+><P
+>To add a member to a new cluster, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Click <B
+CLASS="GUILABEL"
+>Cluster Node</B
+>.
+	    </P
+></LI
+><LI
+><P
+>At the bottom of the right frame (labeled
+	      <B
+CLASS="GUILABEL"
+>Properties</B
+>), click the <B
+CLASS="GUIBUTTON"
+>Add a
+		Cluster Node</B
+> button.  Clicking that button causes a
+	      <B
+CLASS="GUILABEL"
+>Node Properties</B
+> dialog box to be displayed.  For a DLM
+	      cluster, the <B
+CLASS="GUILABEL"
+>Node Properties</B
+> dialog box
+	      presents text boxes for <B
+CLASS="GUILABEL"
+>Cluster Node Name</B
+> and
+	      <B
+CLASS="GUILABEL"
+>Quorum Votes</B
+> (refer to <A
+HREF="s1-add-delete-member.html#FIG-SOFT-NEWMEMBER-DLM"
+>Figure 3-7</A
+>). For a GULM 
+	      cluster, the <B
+CLASS="GUILABEL"
+>Node Properties</B
+> dialog box
+	      presents text boxes for <B
+CLASS="GUILABEL"
+>Cluster Node Name</B
+> and
+	      <B
+CLASS="GUILABEL"
+>Quorum Votes</B
+>, and presents a checkbox for
+	      <B
+CLASS="GUILABEL"
+>GULM Lockserver</B
+> (refer to <A
+HREF="s1-add-delete-member.html#FIG-SOFT-NEWMEMBER-GULM"
+>Figure 3-8</A
+>).</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFT-NEWMEMBER-DLM"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/newmember-dlm.png"></P
+></DIV
+><P
+><B
+>Figure 3-7. Adding a Member to a New DLM Cluster</B
+></P
+></DIV
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFT-NEWMEMBER-GULM"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/newmember-gulm.png"></P
+></DIV
+><P
+><B
+>Figure 3-8. Adding a Member to a New GULM Cluster</B
+></P
+></DIV
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Cluster Node Name</B
+> text box, specify a
+	    node name. The entry can be a name or an IP address of the
+	    node on the cluster subnet.</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Each node must be on the same subnet as the node from which
+	      you are running the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> and
+	      must be defined either in DNS or in the
+	      <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file of each cluster node.</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The node on which you are running the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> must be explicitly
+	      added as a cluster member; the node is not automatically added
+	      to the cluster configuration as a result of running the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>.</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>Optionally, at the <B
+CLASS="GUILABEL"
+>Quorum Votes</B
+> text box,
+	    you can specify a value; however in most configurations you can leave
+	    it blank. Leaving the <B
+CLASS="GUILABEL"
+>Quorum Votes</B
+> text box
+	    blank causes the quorum votes value for that node to be set to the
+	    default value of <KBD
+CLASS="USERINPUT"
+>1</KBD
+>.</P
+></LI
+><LI
+><P
+>If the cluster is a GULM cluster and you want this node to be
+	    a GULM lock server, click the <B
+CLASS="GUILABEL"
+>GULM Lockserver</B
+>
+	    checkbox (marking it as checked).
+	    </P
+></LI
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>OK</B
+>.</P
+></LI
+><LI
+><P
+>Configure fencing for the node:</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>Click the node that you added in the previous step.</P
+></LI
+><LI
+><P
+>At the bottom of the right frame (below
+		  <B
+CLASS="GUILABEL"
+>Properties</B
+>), click <B
+CLASS="GUIBUTTON"
+>Manage Fencing
+		    For This Node</B
+>. Clicking <B
+CLASS="GUIBUTTON"
+>Manage Fencing
+		    For This Node</B
+> causes the <B
+CLASS="GUILABEL"
+>Fence
+		    Configuration</B
+> dialog box to be displayed.</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Fence Configuration</B
+> dialog
+		box, bottom of the right frame (below
+		<B
+CLASS="GUILABEL"
+>Properties</B
+>), click <B
+CLASS="GUIBUTTON"
+>Add a New 
+		Fence Level</B
+>. Clicking <B
+CLASS="GUIBUTTON"
+>Add a New
+		Fence Level</B
+> causes a
+		fence-level element (for example,
+		<B
+CLASS="GUILABEL"
+>Fence-Level-1</B
+>,
+		<B
+CLASS="GUILABEL"
+>Fence-Level-2</B
+>, and so on) to be displayed
+		below  the node in the left frame of the <B
+CLASS="GUILABEL"
+>Fence
+		Configuration</B
+> dialog box.</P
+></LI
+><LI
+><P
+>Click the fence-level element.</P
+></LI
+><LI
+><P
+>At the bottom of the right frame (below
+		  <B
+CLASS="GUILABEL"
+>Properties</B
+>), click <B
+CLASS="GUIBUTTON"
+>Add a New
+		  Fence to this Level</B
+>. Clicking <B
+CLASS="GUIBUTTON"
+>Add a New
+		  Fence to this Level</B
+> causes the <B
+CLASS="GUILABEL"
+>Fence
+		  Properties</B
+> dialog box to be displayed.</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Fence Properties</B
+> dialog box,
+		  click the <B
+CLASS="GUILABEL"
+>Fence Device Type</B
+> drop-down box and
+		  select the fence device for this node. Also, provide additional
+		  information required (for example, <B
+CLASS="GUILABEL"
+>Port</B
+> and
+		  <B
+CLASS="GUILABEL"
+>Switch</B
+> for an APC Power Device).</P
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Fence Properties</B
+>
+		  dialog box, click <B
+CLASS="GUILABEL"
+>OK</B
+>. Clicking
+		  <B
+CLASS="GUILABEL"
+>OK</B
+> causes a fence device element to be
+		  displayed below the fence-level element.</P
+></LI
+><LI
+><P
+>To create additional fence devices at this
+		  fence level, return to step 6d. Otherwise, proceed to the
+		  next step.</P
+></LI
+><LI
+><P
+>To create additional fence levels, return to step
+		6c. Otherwise, proceed to the next step.</P
+></LI
+><LI
+><P
+>If you have configured all the fence levels and
+		  fence devices for this node, click
+		  <B
+CLASS="GUILABEL"
+>Close</B
+>.</P
+></LI
+></OL
+></LI
+><LI
+><P
+>Choose <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+	      <B
+CLASS="GUIMENUITEM"
+>Save</B
+> to save the changes to the cluster
+	      configuration.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-ADD-MEMBER-RUNNING"
+>3.7.2. Adding a Member to a Running Cluster</A
+></H2
+><P
+>The procedure for adding a member to a running cluster depends on
+	  whether the cluster contains only two nodes or more than two
+	  nodes. To add a member to a running cluster, follow the steps in one of
+	  the following sections according to the number of nodes in the
+	  cluster:</P
+><P
+></P
+><UL
+><LI
+><P
+>For clusters with <I
+CLASS="EMPHASIS"
+>only</I
+> two nodes &#8212;</P
+><P
+><A
+HREF="s1-add-delete-member.html#S3-ADD-MEMBER-RUNNING-2NODE"
+>Section 3.7.2.1 <I
+>Adding a Member to a Running Cluster That Contains
+	    <I
+CLASS="EMPHASIS"
+>Only</I
+> Two Nodes</I
+></A
+>
+	    </P
+></LI
+><LI
+><P
+>For clusters with <I
+CLASS="EMPHASIS"
+>more than</I
+> two nodes
+	      &#8212;</P
+><P
+><A
+HREF="s1-add-delete-member.html#S3-ADD-MEMBER-RUNNING-MORE-THAN-2NODES"
+>Section 3.7.2.2 <I
+>Adding a Member to a Running Cluster That Contains
+	    <I
+CLASS="EMPHASIS"
+>More Than</I
+> Two Nodes</I
+></A
+>
+	    </P
+></LI
+></UL
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-ADD-MEMBER-RUNNING-2NODE"
+>3.7.2.1. Adding a Member to a Running Cluster That Contains
+	    <I
+CLASS="EMPHASIS"
+>Only</I
+> Two Nodes</A
+></H3
+><P
+>To add a member to an existing cluster that is currently in
+	    operation, and contains <I
+CLASS="EMPHASIS"
+>only</I
+> two nodes, follow
+	    these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Add the node and configure fencing for it as in</P
+><P
+><A
+HREF="s1-add-delete-member.html#S2-ADD-MEMBER-NEW"
+>Section 3.7.1 <I
+>Adding a Member to a Cluster</I
+></A
+>.
+	      </P
+></LI
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> to propagate the
+		updated configuration to other running nodes in the cluster.
+	      </P
+></LI
+><LI
+><P
+>Use the <TT
+CLASS="COMMAND"
+>scp</TT
+> command to send the
+		updated <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file from
+		one of the existing cluster nodes to the new node.
+	      </P
+></LI
+><LI
+><P
+>At the Red Hat Cluster Suite management GUI
+	      <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> tab, disable each 
+	      service listed under <B
+CLASS="GUILABEL"
+>Services</B
+>.
+	      </P
+></LI
+><LI
+><P
+>Stop the cluster software on the two running nodes
+		by running the following commands at each node in this order:
+	      </P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service rgmanager stop</TT
+>
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service gfs stop</TT
+>, if you are using
+		  Red Hat GFS
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service clvmd stop</TT
+>
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service fenced stop</TT
+>
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service cman stop</TT
+>
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service ccsd stop</TT
+>
+		  </P
+></LI
+></OL
+></LI
+><LI
+><P
+>Start cluster software on all cluster nodes (including the
+		added one) by running the following commands in this order:
+	      </P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service ccsd start</TT
+>
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service cman start</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service fenced start</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service clvmd start</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service gfs start</TT
+>, if you are using
+		    Red Hat GFS</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service rgmanager start</TT
+></P
+></LI
+></OL
+></LI
+><LI
+><P
+>Start the Red Hat Cluster Suite management GUI. At the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> tab, verify that the
+	      configuration is correct. At the
+	      <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> tab verify that the
+	      nodes and services are running as expected.
+	      </P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-ADD-MEMBER-RUNNING-MORE-THAN-2NODES"
+>3.7.2.2. Adding a Member to a Running Cluster That Contains
+	    <I
+CLASS="EMPHASIS"
+>More Than</I
+> Two Nodes</A
+></H3
+><P
+>To add a member to an existing cluster that is currently in
+	  operation, and contains <I
+CLASS="EMPHASIS"
+>more than</I
+> two nodes,
+	  follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Add the node and configure fencing for it as in</P
+><P
+><A
+HREF="s1-add-delete-member.html#S2-ADD-MEMBER-NEW"
+>Section 3.7.1 <I
+>Adding a Member to a Cluster</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> to propagate the
+	    updated configuration to other running nodes in the cluster.
+	    </P
+></LI
+><LI
+><P
+>Use the <TT
+CLASS="COMMAND"
+>scp</TT
+> command to send the
+	      updated <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file from
+	      one of the existing cluster nodes to the new node.</P
+></LI
+><LI
+><P
+>Start cluster services on the new node by running the
+	  following commands in this order:</P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service ccsd start</TT
+>
+		</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service lock_gulmd start</TT
+> or <TT
+CLASS="COMMAND"
+>		    service cman start</TT
+> according to the type of lock
+		    manager used</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service fenced start</TT
+> (DLM clusters only)</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service clvmd start</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service gfs start</TT
+>, if you are using
+		Red Hat GFS</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service rgmanager start</TT
+></P
+></LI
+></OL
+></LI
+><LI
+><P
+>Start the Red Hat Cluster Suite management GUI. At the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> tab, verify that the
+	      configuration is correct. At the
+	      <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> tab verify that the
+	      nodes and services are running as expected.
+	      </P
+></LI
+></OL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-DELETE-MEMBER"
+>3.7.3. Deleting a Member from a Cluster</A
+></H2
+><P
+>To delete a member from an existing cluster that is currently in
+	  operation, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>At one of the running nodes (not to be removed), run the
+	      Red Hat Cluster Suite management GUI. At the
+	      <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> tab, under 
+	      <B
+CLASS="GUILABEL"
+>Services</B
+>, disable or relocate each service
+	      that is running on the node to be deleted.
+	    </P
+></LI
+><LI
+><P
+>Stop the cluster software on the node to be deleted by
+	      running the following commands at that node in this order:
+	      </P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service rgmanager stop</TT
+>
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service gfs stop</TT
+>, if you are using
+		  Red Hat GFS
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service clvmd stop</TT
+>
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service fenced stop</TT
+> (DLM clusters only)
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service lock_gulmd stop</TT
+> or <TT
+CLASS="COMMAND"
+>		      service cman stop</TT
+> according to the type of lock
+		      manager used
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service ccsd stop</TT
+>
+		  </P
+></LI
+></OL
+></LI
+><LI
+><P
+>At the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> (on
+	      one of the running members), delete the member as follows:
+	    </P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>If necessary, click the triangle icon to expand
+		  the <B
+CLASS="GUILABEL"
+>Cluster Nodes</B
+> property.
+		</P
+></LI
+><LI
+><P
+>Select the cluster node to be deleted. At the bottom of
+		  the right frame (labeled <B
+CLASS="GUILABEL"
+>Properties</B
+>),
+		  click the <B
+CLASS="GUIBUTTON"
+>Delete Node</B
+> button.
+		</P
+></LI
+><LI
+><P
+>Clicking the <B
+CLASS="GUIBUTTON"
+>Delete Node</B
+> button
+		causes a warning dialog box to be displayed requesting
+		confirmation of the deletion (<A
+HREF="s1-add-delete-member.html#FIG-SOFT-DELETEMEMBER"
+>Figure 3-9</A
+>).
+		</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFT-DELETEMEMBER"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/deletemember.png"></P
+></DIV
+><P
+><B
+>Figure 3-9. Confirm Deleting a Member</B
+></P
+></DIV
+></LI
+><LI
+><P
+>At that dialog box, click <B
+CLASS="GUIBUTTON"
+>Yes</B
+> to confirm
+		  deletion.
+		</P
+></LI
+><LI
+><P
+>Propagate the updated configuration by clicking the
+		<B
+CLASS="GUILABEL"
+>Send to Cluster</B
+> button. (Propagating the
+		updated configuration automatically saves the configuration.)
+		</P
+></LI
+></OL
+></LI
+><LI
+><P
+>Stop the cluster software on the all remaining running nodes
+		(including GULM lock-server nodes for GULM clusters) by
+		running the following commands at each node in this order:
+	    </P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service rgmanager stop</TT
+>
+		</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service gfs stop</TT
+>, if you are using
+		  Red Hat GFS
+		</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service clvmd stop</TT
+>
+		</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service fenced stop</TT
+> (DLM clusters only)
+		</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service lock_gulmd stop</TT
+> or <TT
+CLASS="COMMAND"
+>		    service cman stop</TT
+> according to the type of lock
+		  manager used
+		</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service ccsd stop</TT
+>
+		</P
+></LI
+></OL
+></LI
+><LI
+><P
+>Start cluster software on all remaining  cluster nodes (including the
+		GULM lock-server nodes for a GULM cluster) by running the following
+		commands in this order: 
+	      </P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service ccsd start</TT
+>
+		  </P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service lock_gulmd start</TT
+> or <TT
+CLASS="COMMAND"
+>		      service cman start</TT
+> according to the type of lock
+		    manager used</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service fenced start</TT
+> (DLM clusters only)</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service clvmd start</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service gfs start</TT
+>, if you are using
+		    Red Hat GFS</P
+></LI
+><LI
+><P
+><TT
+CLASS="COMMAND"
+>service rgmanager start</TT
+></P
+></LI
+></OL
+></LI
+><LI
+><P
+>Start the Red Hat Cluster Suite management GUI. At the
+	      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> tab, verify that the
+	      configuration is correct. At the
+	      <B
+CLASS="APPLICATION"
+>Cluster Status Tool</B
+> tab verify that the
+	      nodes and services are running as expected.
+	      </P
+></LI
+></OL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-config-fence-devices.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-config-failover-domain.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Configuring Fence Devices</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configuring a Failover Domain</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

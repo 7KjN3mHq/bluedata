@@ -1,0 +1,1352 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>VIRTUAL SERVERS</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring the LVS Routers with Piranha Configuration Tool"
+HREF="ch-lvs-piranha.html"><LINK
+REL="PREVIOUS"
+TITLE="REDUNDANCY"
+HREF="s1-piranha-redun.html"><LINK
+REL="NEXT"
+TITLE="Synchronizing Configuration Files"
+HREF="s1-lvs-sync.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-piranha-redun.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 10. Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-sync.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-PIRANHA-VIRTSERVS"
+>10.6. <B
+CLASS="GUILABEL"
+>VIRTUAL SERVERS</B
+></A
+></H1
+><P
+>	The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVERS</B
+> panel displays information for
+	each currently defined virtual server. Each table entry shows the status
+	of the virtual server, the server name, the virtual IP assigned to the
+	server, the netmask of the virtual IP, the port number to which the
+	service communicates, the protocol used, and the virtual device
+	interface.
+      </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-VIRTUAL-SERVERS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-piranha-gui/virtual-servers.png"></P
+></DIV
+><P
+><B
+>Figure 10-5. The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVERS</B
+> Panel</B
+></P
+></DIV
+><P
+>	Each server displayed in the <B
+CLASS="GUILABEL"
+>VIRTUAL SERVERS</B
+> panel
+	can be configured on subsequent screens or
+	<I
+CLASS="FIRSTTERM"
+>subsections</I
+>.
+      </P
+><P
+>	To add a service, click the <B
+CLASS="GUIBUTTON"
+>ADD</B
+> button. To remove
+	a service, select it by clicking the radio button next to the virtual
+	server and click the <B
+CLASS="GUIBUTTON"
+>DELETE</B
+> button.
+      </P
+><P
+>	To enable or disable a virtual server in the table click its radio button
+	and click the <B
+CLASS="GUIBUTTON"
+>(DE)ACTIVATE</B
+> button.
+      </P
+><P
+>	After adding a virtual server, you can configure it by clicking
+	the radio button to its left and clicking the <B
+CLASS="GUILABEL"
+>EDIT</B
+>
+	button to display the <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+>
+	subsection.
+      </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-PIRANHA-VIRTSERV-SUB"
+>10.6.1. The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> Subsection</A
+></H2
+><P
+>	  The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> subsection panel shown in
+	  <A
+HREF="s1-piranha-virtservs.html#GR-VIRTUAL-SERVERS-SUB"
+>Figure 10-6</A
+> allows you to configure an
+	  individual virtual server. Links to subsections related specifically
+	  to this virtual server are located along the top of the page. But
+	  before configuring any of the subsections related to this virtual
+	  server, complete this page and click on the
+	  <B
+CLASS="GUIBUTTON"
+>ACCEPT</B
+> button.
+	</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-VIRTUAL-SERVERS-SUB"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-piranha-gui/virtual-server-sub.png"></P
+></DIV
+><P
+><B
+>Figure 10-6. The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVERS</B
+> Subsection</B
+></P
+></DIV
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>Name</B
+></DT
+><DD
+><P
+>Enter a descriptive name to identify the virtual server.
+		This name is <I
+CLASS="EMPHASIS"
+>not</I
+> the hostname for the
+		machine, so make it descriptive and easily identifiable. You can
+		even reference the protocol used by the virtual server, such as
+		HTTP.
+		</P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Application port</B
+></DT
+><DD
+><P
+>Enter the port number through which the service application
+		will listen. Since this example is for HTTP services, port 80 is
+		used.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUIMENU"
+>Protocol</B
+></DT
+><DD
+><P
+>Choose between UDP and TCP in the drop-down menu. Web
+		servers typically communicate via the TCP protocol, so this is
+		selected in the example above.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Virtual IP Address</B
+></DT
+><DD
+><P
+>Enter the virtual server's floating IP address in this text
+		field.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUIMENU"
+>Virtual IP Network Mask</B
+></DT
+><DD
+><P
+>Set the netmask for this virtual server with the drop-down
+		menu.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Firewall Mark</B
+></DT
+><DD
+><P
+>Do <I
+CLASS="EMPHASIS"
+>not</I
+> enter a firewall mark integer
+		  value in this field unless you are bundling multi-port
+		  protocols or creating a multi-port virtual server for
+		  separate, but related protocols. In this example, the above
+		  virtual server has a <B
+CLASS="GUILABEL"
+>Firewall Mark</B
+> of 80
+		  because we are bundling connections to HTTP on port 80 and to
+		  HTTPS on port 443 using the firewall mark value of 80. When
+		  combined with persistence, this technique will ensure users
+		  accessing both insecure and secure webpages are routed to
+		  the same real server, preserving state.
+	      </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Entering a firewall mark in this
+		field allows IPVS to recognize that packets bearing this
+		firewall mark are treated the same, but you must perform further
+		configuration outside of the
+		<B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> to actually assign the
+		firewall marks. See <A
+HREF="s1-lvs-multi.html"
+>Section 9.3 <I
+>Multi-port Services and LVS Clustering</I
+></A
+> for
+		instructions on creating multi-port services and <A
+HREF="s1-lvs-ftp.html"
+>Section 9.4 <I
+>FTP In an LVS Cluster</I
+></A
+> for creating a highly available FTP
+		virtual server.
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Device</B
+></DT
+><DD
+><P
+>Enter the name of the network device to which you want the
+		floating IP address defined the <B
+CLASS="GUILABEL"
+>Virtual IP
+		Address</B
+> field to bind. 
+	      </P
+><P
+>You should alias the public floating IP
+		address to the Ethernet interface connected to the public
+		network. In this example, the public network is on the
+		<TT
+CLASS="FILENAME"
+>eth0</TT
+> interface, so
+		<KBD
+CLASS="USERINPUT"
+>eth0:1</KBD
+> should be entered as the device
+		name.
+		</P
+></DD
+></DL
+></DIV
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>Re-entry Time</B
+></DT
+><DD
+><P
+>Enter an integer value which defines the length of time, in
+		seconds, before the active LVS router attempts to bring a real server back
+		into the cluster after a failure.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Service Timeout</B
+></DT
+><DD
+><P
+>Enter an integer value which defines the length of time, in
+		seconds, before a real server is considered dead and removed
+		from the cluster.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Quiesce server</B
+></DT
+><DD
+><P
+>When the <B
+CLASS="GUILABEL"
+>Quiesce server</B
+> radio button is
+		selected, anytime a new real server node comes online, the
+		least-connections table is reset to zero so the active LVS
+		router routes requests as if all the real servers were freshly
+		added to the cluster. This option prevents the a new server from
+		becoming bogged down with a high number of connections upon
+		entering the cluster.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Load monitoring tool</B
+></DT
+><DD
+><P
+>The LVS router can monitor the load on the various real
+		servers by using either <TT
+CLASS="COMMAND"
+>rup</TT
+> or
+		<TT
+CLASS="COMMAND"
+>ruptime</TT
+>. If you select <TT
+CLASS="COMMAND"
+>rup</TT
+>
+		from the drop-down menu, each real server must run the
+		<TT
+CLASS="COMMAND"
+>rstatd</TT
+> service. If you select
+		<TT
+CLASS="COMMAND"
+>ruptime</TT
+>, each real server must run the
+		<TT
+CLASS="COMMAND"
+>rwhod</TT
+> service.
+	      </P
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/caution.png"
+HSPACE="5"
+ALT="Caution"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Caution</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Load monitoring is
+		<I
+CLASS="EMPHASIS"
+>not</I
+> the same as load balancing and can
+		result in hard to predict scheduling behavior when combined
+		with weighted scheduling algorithms. Also, if you use load
+		monitoring, the real servers in the cluster must be Linux
+		machines.
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Scheduling</B
+></DT
+><DD
+><P
+>Select your preferred scheduling algorithm from the
+		drop-down menu. The default is <KBD
+CLASS="USERINPUT"
+>Weighted
+		least-connection</KBD
+>. For more information on scheduling
+		algorithms, see <A
+HREF="s1-lvs-scheduling.html#S2-LVS-SCHED"
+>Section 7.3.1 <I
+>Scheduling Algorithms</I
+></A
+>.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Persistence</B
+></DT
+><DD
+><P
+>If an administrator needs persistent connections to the
+		virtual server during client transactions, enter the number of
+		seconds of inactivity allowed to lapse before a connection times
+		out in this text field.
+	      </P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If you entered a value in the <B
+CLASS="GUILABEL"
+>Firewall
+		    Mark</B
+> field above, you should enter a value for
+		    persistence as well. Also, be sure that if you use firewall
+		    marks and persistence together, that the amount of
+		    persistence is the same for each virtual server with the
+		    firewall mark. For more on persistence and firewall marks,
+		    refer to <A
+HREF="s1-lvs-persistance.html"
+>Section 7.5 <I
+>Persistence and Firewall Marks</I
+></A
+>.
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+><B
+CLASS="GUIMENU"
+>Persistence Network Mask</B
+></DT
+><DD
+><P
+>To limit persistence to particular subnet, select the
+		appropriate network mask from the drop-down menu.
+	      </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Before the advent of firewall marks,
+		persistence limited by subnet was a crude way of bundling
+		connections. Now, it is best to use persistence in relation to
+		firewall marks to achieve the same result.
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+></DL
+></DIV
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    Remember to click the <B
+CLASS="GUIBUTTON"
+>ACCEPT</B
+> button after
+	    making any changes in this panel. To make sure you do not lose
+	    changes when selecting a new panel.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-PIRANHA-VIRTSERVS-RS"
+>10.6.2. <B
+CLASS="GUILABEL"
+>REAL SERVER</B
+> Subsection</A
+></H2
+><P
+>	  Clicking on the <B
+CLASS="GUILABEL"
+>REAL SERVER</B
+> subsection link at
+	  the top of the panel displays the <B
+CLASS="GUILABEL"
+>EDIT REAL
+	  SERVER</B
+> subsection. It displays the status of the physical
+	  server hosts for a particular virtual service.
+	</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-REAL-SERVER"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-piranha-gui/real-server-sub.png"></P
+></DIV
+><P
+><B
+>Figure 10-7. The <B
+CLASS="GUILABEL"
+>REAL SERVER</B
+> Subsection</B
+></P
+></DIV
+><P
+>	  Click the <B
+CLASS="GUIBUTTON"
+>ADD</B
+> button to add a new server. To
+	  delete an existing server, select the radio button beside it and click
+	  the <B
+CLASS="GUIBUTTON"
+>DELETE</B
+> button. Click the
+	  <B
+CLASS="GUIBUTTON"
+>EDIT</B
+> button to load the <B
+CLASS="GUILABEL"
+>EDIT REAL
+	  SERVER</B
+> panel, as seen in <A
+HREF="s1-piranha-virtservs.html#GR-REAL-SERVER-CONFIG"
+>Figure 10-8</A
+>.
+	</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-REAL-SERVER-CONFIG"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-piranha-gui/real-server-sub-2.png"></P
+></DIV
+><P
+><B
+>Figure 10-8. The <B
+CLASS="GUILABEL"
+>REAL SERVER</B
+> Configuration Panel</B
+></P
+></DIV
+><P
+>	  This panel consists of three entry fields:
+	</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>Name</B
+></DT
+><DD
+><P
+>A descriptive name for the real server.
+	      </P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>This name is <I
+CLASS="EMPHASIS"
+>not</I
+> the
+		  hostname for the machine, so make it descriptive and easily
+		  identifiable.
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Address</B
+></DT
+><DD
+><P
+>The real server's IP address. Since the listening port is
+		already specified for the associated virtual server, do not add
+		a port number.
+	      </P
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Weight</B
+></DT
+><DD
+><P
+>An integer value indicating this host's capacity relative to
+		that of other hosts in the pool. The value can be arbitrary, but
+		treat it as a ratio in relation to other real servers in the
+		cluster. For more on server weight, see <A
+HREF="s1-lvs-scheduling.html#S2-LVS-SCHED-WEIGHT"
+>Section 7.3.2 <I
+>Server Weight and Scheduling</I
+></A
+>.
+	      </P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    Remember to click the <B
+CLASS="GUIBUTTON"
+>ACCEPT</B
+> button after
+	    making any changes in this panel. To make sure you do not lose any
+	    changes when selecting a new panel.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-PIRANHA-VIRTSERVS-EMS"
+>10.6.3. <B
+CLASS="GUILABEL"
+>EDIT MONITORING SCRIPTS</B
+> Subsection</A
+></H2
+><P
+>	  Click on the <B
+CLASS="GUILABEL"
+>MONITORING SCRIPTS</B
+> link at the top
+	  of the page.  The <B
+CLASS="GUILABEL"
+>EDIT MONITORING SCRIPTS</B
+>
+	  subsection allows the administrator to specify a send/expect string
+	  sequence to verify that the service for the virtual server is
+	  functional on each real server. It is also the place where the
+	  administrator can specify customized scripts to check services
+	  requiring dynamically changing data.
+	</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-MONITORING-SCRIPTS-SUB"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-piranha-gui/monitoring-scripts-sub.png"></P
+></DIV
+><P
+><B
+>Figure 10-9. The <B
+CLASS="GUILABEL"
+>EDIT MONITORING SCRIPTS</B
+> Subsection</B
+></P
+></DIV
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>Sending Program</B
+></DT
+><DD
+><P
+>For more advanced service verification, you can use this
+		field to specify the path to a service-checking script. This
+		functionality is especially helpful for services that require
+		dynamically changing data, such as HTTPS or SSL.
+	      </P
+><P
+>To use this functionality, you must write a script that
+		returns a textual response, set it to be executable, and type
+		the path to it in the <B
+CLASS="GUILABEL"
+>Sending Program</B
+> field.
+	      </P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>To ensure that each server in the real
+		  server pool is checked, use the special token
+		  <KBD
+CLASS="USERINPUT"
+>%h</KBD
+> after the path to the script in
+		  the <B
+CLASS="GUILABEL"
+>Sending Program</B
+> field. This
+		  token is replaced with each real server's IP address as the
+		  script is called by the <TT
+CLASS="COMMAND"
+>nanny</TT
+> daemon.
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>The following is a sample script to use as a guide when
+	      composing an external service-checking script:
+	      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>#!/bin/sh
+
+TEST=`dig -t soa example.com @$1 | grep -c dns.example.com
+
+if [ $TEST != "1" ]; then
+	echo "OK
+else
+	echo "FAIL"
+fi</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If an external program is entered in
+		  the <B
+CLASS="GUILABEL"
+>Sending Program</B
+> field, then the
+		  <B
+CLASS="GUILABEL"
+>Send</B
+> field is ignored.
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Send</B
+></DT
+><DD
+><P
+>Enter a string for the <TT
+CLASS="COMMAND"
+>nanny</TT
+> daemon to
+		send to each real server in this field. By default the send
+		field is completed for HTTP. You can alter this value depending on
+		your needs. If you leave this field blank, the
+		<TT
+CLASS="COMMAND"
+>nanny</TT
+> daemon attempts to open the
+		port and assume the service is running if it succeeds.
+	      </P
+><P
+>Only one send sequence is allowed in this field, and it can only
+		contain printable, ASCII characters as well as the following
+		escape characters:
+	      </P
+><P
+></P
+><UL
+><LI
+><P
+>\n for new line.</P
+></LI
+><LI
+><P
+>\r for carriage return.</P
+></LI
+><LI
+><P
+>\t for tab.</P
+></LI
+><LI
+><P
+>\ to escape the next character which follows it.
+		  </P
+></LI
+></UL
+></DD
+><DT
+><B
+CLASS="GUILABEL"
+>Expect</B
+></DT
+><DD
+><P
+>Enter a the textual response the server should return if it
+		is functioning properly. If you wrote your own sending program,
+		enter the response you told it to send if it was successful.
+	      </P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>To determine what to send for a given
+		  service, you can open a <TT
+CLASS="COMMAND"
+>telnet</TT
+> connection to
+		  the port on a real server and see what is returned. For
+		  instance, FTP reports 220 upon connecting, so could enter
+		  <KBD
+CLASS="USERINPUT"
+>quit</KBD
+> in the <B
+CLASS="GUILABEL"
+>Send</B
+>
+		  field and <KBD
+CLASS="USERINPUT"
+>220</KBD
+> in the
+		  <B
+CLASS="GUILABEL"
+>Expect</B
+> field.
+		</P
+></TD
+></TR
+></TABLE
+></DIV
+></DD
+></DL
+></DIV
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    Remember to click the <B
+CLASS="GUIBUTTON"
+>ACCEPT</B
+> button after
+	    making any changes in this panel. To make sure you do not lose any
+	    changes when selecting a new panel.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	  Once you have configured virtual servers using the
+	  <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>, you must copy specific
+	  configuration files to the backup LVS router. See <A
+HREF="s1-lvs-sync.html"
+>Section 10.7 <I
+>Synchronizing Configuration Files</I
+></A
+> for
+	  details.
+	</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-piranha-redun.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-sync.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><B
+CLASS="GUILABEL"
+>REDUNDANCY</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-piranha.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Synchronizing Configuration Files</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

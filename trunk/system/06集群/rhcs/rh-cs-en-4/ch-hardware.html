@@ -1,0 +1,825 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Hardware Installation and Operating System Configuration</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Using the Red Hat Cluster Manager"
+HREF="pt-clumanager.html"><LINK
+REL="PREVIOUS"
+TITLE="Red Hat Cluster Manager Overview"
+HREF="ch-overview.html"><LINK
+REL="NEXT"
+TITLE="Cluster Hardware Components"
+HREF="s1-hardware-clustertable.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-overview.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-hardware-clustertable.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-HARDWARE"
+></A
+>Chapter 2. Hardware Installation and Operating System Configuration</H1
+><P
+>      To set up the hardware configuration and install Red Hat Enterprise Linux, follow these
+      steps:</P
+><P
+></P
+><UL
+><LI
+><P
+>Choose a cluster hardware configuration that meets the needs of
+	  applications and users; refer to <A
+HREF="ch-hardware.html#S1-HARDWARE-CHOOSING"
+>Section 2.1 <I
+>Choosing a Hardware Configuration</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Set up and connect the members and the optional console
+	  switch and network switch or hub; refer to <A
+HREF="s1-hardware-cluster.html"
+>Section 2.3 <I
+>Setting Up the Nodes</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Install and configure Red Hat Enterprise Linux on the cluster
+	  members; refer to <A
+HREF="s1-hardware-linux.html"
+>Section 2.4 <I
+>Installing and Configuring Red Hat Enterprise Linux</I
+></A
+>.</P
+></LI
+><LI
+><P
+>Set up the remaining cluster hardware components and connect them
+	  to the members; refer to <A
+HREF="s1-hardware-connect.html"
+>Section 2.5 <I
+>Setting Up and Connecting the Cluster Hardware</I
+></A
+>.</P
+></LI
+></UL
+><P
+>After setting up the hardware configuration and installing Red Hat Enterprise Linux,
+      install the cluster software.</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-HARDWARE-CHOOSING"
+>2.1. Choosing a Hardware Configuration</A
+></H1
+><P
+>	The Red Hat Cluster Manager allows administrators to use
+	commodity hardware to set up a cluster configuration that meets the
+	performance, availability, and data integrity needs of applications and
+	users. Cluster hardware ranges from low-cost minimum configurations that
+	include only the components required for cluster operation, to high-end
+	configurations that include redundant Ethernet channels, hardware RAID,
+	and power switches.
+      </P
+><P
+>	Regardless of configuration, the use of high-quality hardware in a
+	cluster is recommended, as hardware malfunction is a primary cause of
+	system down time.
+      </P
+><P
+>	Although all cluster configurations provide availability, some
+	configurations protect against every <I
+CLASS="FIRSTTERM"
+>single point of
+	failure</I
+>. In addition, all cluster configurations provide
+	data integrity, but some configurations protect data under every failure
+	condition. Therefore, administrators must fully understand the needs of
+	their computing environment and also the availability and data integrity
+	features of different hardware configurations to choose the cluster
+	hardware that meets the requirements.
+      </P
+><P
+>	When choosing a cluster hardware configuration, consider the following:
+      </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Performance requirements of applications and users</DT
+><DD
+><P
+>Choose a hardware configuration that provides adequate memory,
+	      CPU, and I/O resources.  Be sure that the configuration chosen can
+	      handle any future increases in workload as well.</P
+></DD
+><DT
+>Cost restrictions</DT
+><DD
+><P
+>The hardware configuration chosen must meet budget
+	      requirements. For example, systems with multiple I/O ports usually
+	      cost more than low-end systems with fewer expansion
+	      capabilities.</P
+></DD
+><DT
+>Availability requirements</DT
+><DD
+><P
+>In a mission-critical production environment, a cluster
+	      hardware configuration must protect against all single points of
+	      failure, including: disk, storage interconnect, Ethernet channel,
+	      and power failure. Environments that can tolerate an interruption
+	      in availability (such as development environments) may not require
+	      as much protection.</P
+></DD
+><DT
+>Data integrity under all failure conditions requirement</DT
+><DD
+><P
+>Using fence devices in a cluster configuration ensures that
+	      service data is protected under every failure condition. These
+	      devices enable a node to power cycle another node before
+	      restarting its services during failover. Power switches protect
+	      against data corruption in cases where an unresponsive (or hung)
+	      node tries to write data to the disk after its replacement node
+	      has taken over its services.
+	    </P
+><P
+>If you are not using power switches in the cluster, cluster
+	      service failures can result in services being run on more than one
+	      node, which can cause data corruption. Refer to <A
+HREF="s1-hardware-connect.html#S2-HARDWARE-PWRCFG"
+>Section 2.5.2 <I
+>Configuring a Fence Device</I
+></A
+> for more information about the
+	      benefits of using power switches in a cluster. It is required that
+	      production environments use power switches in the cluster hardware
+	      configuration.</P
+></DD
+></DL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-MINIMUMREQ"
+>2.1.1. Minimum Hardware Requirements</A
+></H2
+><P
+>A <I
+CLASS="FIRSTTERM"
+>minimum hardware configuration</I
+> includes
+	only the hardware components that are required for cluster operation, as
+	follows:</P
+><P
+></P
+><UL
+><LI
+><P
+>At least two servers to run cluster services</P
+></LI
+><LI
+><P
+>Ethernet connection for sending heartbeat pings and for client network
+	      access</P
+></LI
+><LI
+><P
+>Network switch or hub to connect cluster nodes and resources
+	    </P
+></LI
+><LI
+><P
+>A fence device
+	    </P
+></LI
+></UL
+><P
+>The hardware components described in <A
+HREF="ch-hardware.html#TB-HARDWARE-MINICLUSTER"
+>Table 2-1</A
+> can be used to set up a minimum
+	  cluster configuration. This configuration does not ensure data
+	  integrity under all failure conditions, because it does not include
+	  power switches. Note that this is a sample configuration; it is
+	  possible to set up a minimum configuration using other
+	  hardware.</P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The minimum cluster configuration is not a supported solution
+	    and <I
+CLASS="EMPHASIS"
+>should not be used</I
+> in a production
+	    environment, as it does not ensure data integrity under all
+	    failure conditions.</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-MINICLUSTER"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Hardware</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>At least two server systems</TD
+><TD
+>Each system becomes a node exclusively for use in the
+		  cluster; system hardware requirements are similar to that of
+		  Red Hat Enterprise Linux 4.</TD
+></TR
+><TR
+><TD
+>One network interface card (NIC) for each node</TD
+><TD
+>One network interface connects to a hub or switch for
+		  cluster connectivity.</TD
+></TR
+><TR
+><TD
+>Network cables with RJ45 connectors</TD
+><TD
+>Network cables connect to the network interface on each
+		  node for client access and heartbeat packets.</TD
+></TR
+><TR
+><TD
+>RAID storage enclosure</TD
+><TD
+>The RAID storage enclosure contains one controller with
+		at least two host ports.</TD
+></TR
+><TR
+><TD
+>Two HD68 SCSI cables</TD
+><TD
+>Each cable connects one host bus adapter to one port on the RAID
+		controller, creating two single-initiator SCSI buses.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-1. Example of Minimum Cluster Configuration</B
+></P
+></DIV
+><P
+>	  The minimum hardware configuration is a cost-effective cluster
+	  configuration for development purposes; however, it contains
+	  components that can cause service outages if failed. For example, if
+	  the RAID controller fails, then all cluster services become
+	  unavailable.</P
+><P
+>To improve availability, protect against component failure, and
+	  ensure data integrity under all failure conditions, more hardware is
+	  required. Refer to <A
+HREF="ch-hardware.html#TB-HARDWARE-PROTECT"
+>Table 2-2</A
+>.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-PROTECT"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Problem</TH
+><TH
+>Solution</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Disk failure</TD
+><TD
+>Hardware RAID to replicate data across multiple disks</TD
+></TR
+><TR
+><TD
+>RAID controller failure</TD
+><TD
+>Dual RAID controllers to provide redundant access to disk
+	      data</TD
+></TR
+><TR
+><TD
+>Network interface failure</TD
+><TD
+>Ethernet channel bonding and failover</TD
+></TR
+><TR
+><TD
+>Power source failure</TD
+><TD
+>Redundant uninterruptible power supply (UPS) systems</TD
+></TR
+><TR
+><TD
+>Machine failure</TD
+><TD
+>Power switches</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-2. Improving Availability and Data Integrity</B
+></P
+></DIV
+><P
+><A
+HREF="ch-hardware.html#FIG-HARDWARE-HARDWARE1"
+>Figure 2-1</A
+> illustrates a hardware
+	  configuration with improved availability. This configuration uses a
+	  fence device (in this case, a network-attached power switch) and the
+	  nodes are configured for Red Hat GFS storage attached to a Fibre Channel
+	  SAN switch. For more information about configuring and using Red Hat GFS,
+	  refer to the <I
+CLASS="CITETITLE"
+>Red Hat GFS Administrator's Guide</I
+>.
+	</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-HARDWARE-HARDWARE1"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/hardware/hardware1.png"></P
+></DIV
+><P
+><B
+>Figure 2-1. Hardware Configuration for Improved availability</B
+></P
+></DIV
+><P
+>A hardware configuration that ensures data integrity under
+	failure conditions can include the following components:</P
+><P
+></P
+><UL
+><LI
+><P
+>At least two servers to run cluster services</P
+></LI
+><LI
+><P
+>Switched Ethernet connection between each node for heartbeat
+	    pings and for client network access</P
+></LI
+><LI
+><P
+>Dual-controller RAID array or redundant access to SAN or other
+	    storage.</P
+></LI
+><LI
+><P
+>Network power switches to enable each node to power-cycle
+	    the other nodes during the failover process</P
+></LI
+><LI
+><P
+>Ethernet interfaces configured to use channel bonding</P
+></LI
+><LI
+><P
+>At least two UPS systems for a highly-available source of power</P
+></LI
+></UL
+><P
+>	  The components described in <A
+HREF="ch-hardware.html#TB-HARDWARE-NOSPOF"
+>Table 2-3</A
+> can be
+	  used to set up a no single point of failure cluster configuration that
+	  includes two single-initiator SCSI buses and power switches to
+	  ensure data integrity under all failure conditions. Note that this
+	  is a sample configuration; it is possible to set up a
+	  no single point of failure configuration using other hardware.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-NOSPOF"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Hardware</TH
+><TH
+>Description</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Two servers (up to 16 supported)</TD
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>Each node includes the
+		following hardware:</TD
+></TR
+><TR
+><TD
+>Two network interfaces for:</TD
+></TR
+><TR
+><TD
+>Client network access</TD
+></TR
+><TR
+><TD
+>Fence device connection</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+></TR
+><TR
+><TD
+>One network switch</TD
+><TD
+>A network switch enables the connection of multiple nodes
+		to a network.</TD
+></TR
+><TR
+><TD
+>Three network cables (each node)</TD
+><TD
+>Two cables to connect each node to the redundant network
+		switches and a cable to connect to the fence device.</TD
+></TR
+><TR
+><TD
+>Two RJ45 to DB9 crossover cables</TD
+><TD
+>RJ45 to DB9 crossover cables connect a serial port on
+                   each node to the Cyclades terminal server.</TD
+></TR
+><TR
+><TD
+>Two power switches</TD
+><TD
+>Power switches enable each node to power-cycle the other
+		  node before restarting its services. Two RJ45 Ethernet cables
+		  for a node are connected to each switch.</TD
+></TR
+><TR
+><TD
+>FlashDisk RAID Disk Array with dual controllers</TD
+><TD
+>Dual RAID controllers protect against disk and controller
+                   failure. The RAID controllers provide simultaneous access to
+                   all the logical units on the host ports.</TD
+></TR
+><TR
+><TD
+>Two HD68 SCSI cables</TD
+><TD
+>HD68 cables connect each host bus adapter to a RAID
+                   enclosure "in" port, creating two single-initiator SCSI
+                   buses.</TD
+></TR
+><TR
+><TD
+>Two terminators</TD
+><TD
+>Terminators connected to each "out" port on the RAID
+		enclosure terminate both single-initiator SCSI buses.</TD
+></TR
+><TR
+><TD
+>Redundant UPS Systems</TD
+><TD
+>UPS systems provide a highly-available source of
+                   power. The power cables for the power switches and the RAID
+                   enclosure are connected to two UPS systems.</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-3. Example of a No Single Point of Failure Configuration</B
+></P
+></DIV
+><P
+>	Cluster hardware configurations can also include other optional hardware
+	components that are common in a computing environment. For example, a
+	cluster can include a <I
+CLASS="FIRSTTERM"
+>network switch</I
+> or
+	<I
+CLASS="FIRSTTERM"
+>network hub</I
+>, which enables the connection of the
+	nodes to a network. A cluster may also include a
+	<I
+CLASS="FIRSTTERM"
+>console switch</I
+>, which facilitates the management
+	of multiple nodes and eliminates the need for separate monitors,
+	mouses, and keyboards for each node.
+      </P
+><P
+>	One type of console switch is a <I
+CLASS="FIRSTTERM"
+>terminal server</I
+>,
+	which enables connection to serial consoles and management of many
+	nodes from one remote location. As a low-cost alternative, you can use
+	a <I
+CLASS="FIRSTTERM"
+>KVM</I
+> (keyboard, video, and mouse) switch, which
+	enables multiple nodes to share one keyboard, monitor, and mouse. A
+	KVM switch is suitable for configurations in which access to a graphical user
+	interface (GUI) to perform system management tasks is preferred.</P
+><P
+>When choosing a system, be sure that it provides the required PCI
+	slots, network slots, and serial ports. For example, a no single point
+	of failure configuration requires multiple bonded Ethernet ports. Refer
+	to <A
+HREF="s1-hardware-cluster.html#S2-HARDWARE-BASIC"
+>Section 2.3.1 <I
+>Installing the Basic Cluster Hardware</I
+></A
+> for more information.
+      </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-PWRCTRL"
+>2.1.2. Choosing the Type of Fence Device</A
+></H2
+><P
+>The Red Hat Cluster Manager implementation consists of a generic power management
+	  layer and a set of device-specific modules which accommodate a range
+	  of power management types. When selecting the appropriate type of
+	  fence device to deploy in the cluster, it is important to recognize
+	  the implications of specific device types.</P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Use of a fencing method is an integral part of a production
+	    cluster environment. Configuration of a cluster without a fence
+	    device is not supported.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>Red Hat Cluster Manager supports several types of fencing methods, including
+          network power switches, fabric switches, and Integrated Power
+          Management hardware. <A
+HREF="s1-hardware-clustertable.html#TBL-HARDWARE-FENCEDEVS"
+>Table 2-5</A
+>
+          summarizes the supported types of fence devices and some examples of
+          brands and models that have been tested with Red Hat Cluster Manager.
+        </P
+><P
+>Ultimately, choosing the right type of fence device to deploy in a
+	cluster environment depends on the data integrity requirements versus
+	the cost and availability of external power switches.</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-overview.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-hardware-clustertable.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Red Hat Cluster Manager Overview</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-clumanager.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Cluster Hardware Components</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

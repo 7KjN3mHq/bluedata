@@ -1,0 +1,484 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Multipath-usage.txt File for  Red Hat Enterprise Linux 4 Update 3</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Appendixes"
+HREF="pt-appendixes.html"><LINK
+REL="PREVIOUS"
+TITLE="Selectively Installing Red Hat Cluster Suite Packages"
+HREF="ap-rhcs-sw-inst-cust.html"><LINK
+REL="NEXT"
+TITLE="Index"
+HREF="generated-index.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="APPENDIX"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ap-rhcs-sw-inst-cust.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="generated-index.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="APPENDIX"
+><H1
+><A
+NAME="AP-RHCS-DM-MULTIPATH-USAGETXT"
+></A
+>Appendix C. <TT
+CLASS="FILENAME"
+>Multipath-usage.txt</TT
+> File for  Red Hat Enterprise Linux 4 Update 3</H1
+><P
+>This appendix contains the <TT
+CLASS="FILENAME"
+>Multipath-usage.txt</TT
+> file. The
+      file is included with the <TT
+CLASS="COMMAND"
+>dm-multipath</TT
+> RPM and provides
+      guidelines for using <TT
+CLASS="COMMAND"
+>dm-multipath</TT
+> with Red Hat Cluster Suite for
+      Red Hat Enterprise Linux 4 Update 3:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>&#13;
+    RHEL4 U3 Device Mapper Multipath Usage
+
+
+Overview
+------------
+Device Mapper Multipath (DM-MP) allows nodes to route I/O over
+multiple paths to a storage controller. A path refers to the
+connection from an HBA port to a storage controller port. As paths
+fail and new paths come up, DM-MP reroutes the I/O over the
+available paths.
+
+When there are multiple paths to a storage controller, each path
+appears as a separate device.  DM-MP creates a new device on top of
+those devices. For example, a node with two HBAs attached to a storage
+controller with two ports via a single unzoned FC switch sees four
+devices: /dev/sda, /dev/sdb, /dev/sdc, and /dev/sdd. DM-MP creates a
+single device, /dev/mpath/mpath1 that reroutes I/O to those four
+underlying devices. 
+
+DM-MP consists of the following components:
+
+o dm-multipath kernel module -- This module reroutes I/O and fails
+  over paths and path groups.
+
+o multipath command -- This command configures, lists, and removes
+  multipath  devices. The command is run in rc.sysinit during startup,
+   and by udev, whenever a block device    is added.
+
+o multipathd daemon -- This daemon monitors paths, checking to see
+  if faulty paths have been fixed. As paths come back up, multipathd
+  may also initiate path group switches to ensure that the optima
+  path group is being used. Also, it is possible to interactively
+  modify a multipath device. 
+
+o kpartx command -- This command creates Device Mapper devices for the
+  partitions on a device. It is necessary to use this command for DOS-
+  based partitions with DM-MP.
+
+
+DM-MP works with a variety of storage arrays. It
+auto-configures the following storage arrays:
+
+o 3PARdata VV
+o Compaq HSV110
+o Compaq MSA1000
+o DDN SAN DataDirector
+o DEC HSG80
+o EMC SYMMETRIX
+o EMC CLARiiON
+o FSC CentricStor
+o HITACHI DF400
+o HITACHI DF500
+o HITACHI DF600
+o HP HSV110
+o HP HSV210
+o HP A6189A
+o HP Open-
+o IBM 3542
+o IBM ProFibre 4000R
+o NETAPP
+o SGI TP9100
+o SGI TP9300
+o SGI TP9400
+o SGI TP9500
+o STK OPENstroage D280
+o SUN StorEdge 3510
+o SUN T4
+
+Storage arrays not included in the list may require entries in the
+/etc/multipath.conf file.
+
+NOTE: Some storage arrays require special handling of I/O errors and
+      path-group switching. Those require separate hardware handler
+      kernel modules. 
+
+
+
+Terms and Concepts
+---------------------
+
+Hardware Handler:
+    A kernel module that performs hardware-specific actions when
+    switching path groups and dealing with I/O errors.
+
+Path:
+    The connection from an HBA port to a storage controller port for
+    a LUN. Each path appears as a separate device. Paths can be in
+    various states (refer to "Path States").
+
+Path States:
+    ready  - Path is able to handle I/O requests.
+    shaky  - Path is up, but temporarily not available for normal
+             operations.
+    faulty - Path is unable to handle I/O requests.
+    ghost  - Path is a passive path, on an active/passive
+             controller.
+    
+        NOTE: The shaky and ghost states only exist for certain
+              storage arrays.
+
+Path Group:
+    A grouping of paths. With DM-MP, only one path group--the
+    active path group--receives I/O at any time. Within a path
+    group, DM-MP selects which ready path should receive I/O in
+    a round robin fashion. Path groups can be in various states
+    (refer to "Path Group States").
+
+Path Group States:
+    active   - Path group currently receiving I/O requests.
+    enabled  - Path groups to try if the active path group has no paths
+               in the ready state.
+    disabled - Path groups to try if the active path group and all
+           enabled path groups have no paths in the active state.
+    
+        NOTE: The disabled state only exists for certain storage arrays.
+
+Path Priority:
+    Each path can have a priority assigned to it by a callout program.
+    Path priorities can be used to group paths by priority and change
+    their relative weights for the round robin path selector.
+
+Path Group Priority:
+    Each path group has a priority that is equal to the sum of the
+    priorities of all the non-faulty paths in the group. By default, the
+    multipathd daemon tries to ensure that the path group with the
+    highest priority is always in the active state.
+
+Failover:
+    When I/O to a path fails, the dm-multipath module tries to switch to 
+    an enabled path group. If there are no enabled path groups with
+    any paths in the ready state, dm-multipath tries to switch to a
+    disabled path group. If necessary, dm-multipath runs the hardware
+    handler for the multipath device.
+
+Failback:
+    At regular intervals, multipathd checks the current priority of
+    all path groups. If the current path group is not the highest
+    priority path group, multipathd reacts according to the failback
+    mode. By default, multipathd immediately switches to the highest
+    priority path group. Other options for multipathd are to (a) wait
+    for a user-defined length of time (for the path groups to stabilize)
+    and then switch or (b) for multipathd to do nothing and wait for
+    manual intervention.  Failback can be forced at any time by
+    running the multipath command.
+
+Multipath device:
+    The multipath device is the device mapper device created by
+    dm-multipath. A multipath device can be identified by either
+    its WWID or its alias. A multipath device has one or more path
+    groups. It also has numerous attributes defined in the
+    following file:
+    
+/usr/share/doc/device-mapper-multipathd-0.4.5/multipath.conf.annotated 
+
+alias:
+    The alias is the name of a multipath device. By default, the
+    alias is set to the WWID. However, by setting the
+    "user_friendly_names" configuration option, the alias is set to a
+    unique name of the form mpath&#60;n&#62;. The alias name can also be
+    explicitly set for each multipath device in the configuration file.
+
+    NOTE: While the alias in guaranteed to be unique on a node, it
+          is not guaranteed to be the same on all nodes using the
+          multipath device. Also, it may change.
+
+WWID:
+    The WWID (World Wide Identifier) is an identifier for the
+    multipath device that is guaranteed to be globally unique and
+    unchanging. It is determined by the getuid callout program.
+
+
+Using DM-MP
+------------------------------------
+
+Initial setup:
+
+1. If it is not already installed. Install the device-mapper-multipath
+   package.
+
+2. Edit /etc/multipath.conf. For new installations, all devices are
+   blacklisted. The default blacklist is listed in the commented out
+   section of /etc/multipath.conf.  If you comment out or delete
+   the following lines in /etc/multipath.conf, the default blacklist 
+   takes effect:
+
+
+   devnode_blacklist {
+           devnode "*"
+   }
+
+
+
+   For some conditions, that may not be sufficient. If DM-MP is
+   multipathing devices that you do not want it to work on, you can
+   blacklist the devices by either device name or WWID.
+
+   NOTE: It is safest to blacklist individual devices by WWID, because
+         their device names may change. 
+
+   Several other configuration options are detailed later in this
+   document. To check the  effects of configuration changes, you can
+   do a dry run with the following command:
+
+   # multipath -v2 -d
+
+3. Set the multipathd init script to run at boot time. by issuing
+   the commands
+
+   # chkconfig --add multipathd
+   # chkconfig multipathd on
+
+4. start dm-multipath (This is only necessary the first time.  On
+   reboot, this should happen automatically).
+
+   # multipath
+   # /etc/init.d/multipathd start
+
+After initial setup, all access to the multipathed storage should go
+through the multipath device.
+
+
+Configuration File:
+
+Many features of DM-MP are configurable using the configuration file,
+/etc/multipath.conf.
+
+For a complete list of all options with descriptions, refer to
+/usr/share/doc/device-mapper-multipathd-0.4.5/multipath.conf.annotated
+
+The configuration file is divided into four sections: system defaults,
+blacklisted devices (devnode_blacklist), per storage array model settings
+(devices), and per multipath device settings (multipaths).  The per
+multipath device settings are used for the multipath device with a
+matching "wwid" value. The per storage array model settings are used
+for all multipath devices with matching "vendor" and "product" values.
+To determine the attributes of a multipath device, first the per
+multipath settings are checked, then the per controller settings, then
+the system defaults.  The blacklisted device section is described
+setup step 2.
+
+NOTE: There are compiled-in defaults for the "defaults",
+      "devnode_blacklist", and "devices" sections of the
+      configuration file. To see what these are, refer to the
+      following file:
+
+/usr/share/doc/device-mapper-multipathd-0.4.5/multipath.conf.synthetic
+
+If you are using one of the storage arrays listed in the preceding
+text (in "Overview"), you probably do not need to modify the "devices"
+subsection. If you are using a simple disk enclosure, the defaults
+should work. If you are using a storage array that is not
+listed, you may need to create a "devices" subsection for your array.
+
+Explanation of output
+-----------------------
+When you create, modify, or list a multipath device, you get a
+printout of the current device setup. The format is as follows.
+
+For each multipath device:
+
+action_if_any: alias (wwid_if_different_from_alias)
+[size][features][hardware_handler]
+
+For each path group:
+
+\_ scheduling_policy [path_group_priority_if_known]
+[path_group_status_if_known]
+
+
+For each path:
+
+ \_ host:channel:id:lun devnode major:minor [path_status]
+ [dm_status_if_known]
+
+
+NOTE: The preceding lines for path group and path
+      were broken because of print limitations.
+
+The dm status (dm_status_if_known) is like the path status
+(path_status), but from the kernel's point of view.  The dm status
+has two states: "failed", which is analogous to "faulty",
+and "active" which covers all other path states. Occasionally,
+the path state and the dm state of a device will temporarily
+not agree. 
+
+NOTE: When a multipath device is being created or modified, the
+path group status and the dm status are not known.  Also, the
+features are not always correct. When a multipath device is being 
+isted, the path group priority is not known.
+
+Restrictions
+---------------
+DM-MP cannot be run on either the root or boot device.
+
+Other Sources of information
+----------------------------
+Configuration file explanation:
+/usr/share/doc/device-mapper-multipathd-0.4.5/multipath.conf.annotated
+
+Upstream documentation:
+http://christophe.varoqui.free.fr/wiki/wakka.php?wiki=Home
+
+mailing list:
+dm-devel@redhat.com
+Subscribe to this from https://www.redhat.com/mailman/listinfo/dm-devel.
+The list archives are at https://www.redhat.com/archives/dm-devel/
+
+Man pages:
+multipath.8, multipathd.8, kpartx.8 mpath_ctl.8&#13;</PRE
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ap-rhcs-sw-inst-cust.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="generated-index.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Selectively Installing Red Hat Cluster Suite Packages</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-appendixes.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Index</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

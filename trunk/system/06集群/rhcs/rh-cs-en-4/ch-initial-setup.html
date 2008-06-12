@@ -1,0 +1,444 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Initial LVS Configuration</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring a Linux Virtual Server Cluster"
+HREF="pt-lvs.html"><LINK
+REL="PREVIOUS"
+TITLE="LVS Cluster &#8212; A Block Diagram"
+HREF="s1-lvs-block-diagram.html"><LINK
+REL="NEXT"
+TITLE="Setting a Password for the Piranha Configuration Tool"
+HREF="s1-lvs-piranha-password.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-block-diagram.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-piranha-password.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CH-INITIAL-SETUP"
+></A
+>Chapter 8. Initial LVS Configuration</H1
+><P
+>      After installing Red Hat Enterprise Linux, you must take some basic steps to set up both the
+      LVS routers and the real servers in the LVS cluster. This chapter covers
+      these initial steps in detail.
+    </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	The LVS router node that becomes the active node once the cluster is
+	started is also referred to as the <I
+CLASS="FIRSTTERM"
+>primary
+	node</I
+>. When configuring an LVS cluster, use the
+	<B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> on the primary node.
+      </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-DAEMONS"
+>8.1. Configuring Services on the LVS Routers</A
+></H1
+><P
+>	The Red Hat Enterprise Linux installation program installs all of the components needed to
+	set up an LVS cluster, but the appropriate services must be activated
+	before configuring the cluster. For both LVS routers, set the
+	appropriate services to start at boot time. There are three primary
+	tools available for setting services to activate at boot time under
+	Red Hat Enterprise Linux: the command line program <TT
+CLASS="COMMAND"
+>chkconfig</TT
+>, the
+	ncurses-based program <TT
+CLASS="COMMAND"
+>ntsysv</TT
+>, and the graphical
+	<B
+CLASS="APPLICATION"
+>Services Configuration Tool</B
+>. All of these tools require
+	root access.
+      </P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	  To attain root access, open a shell prompt and type the following
+	  command followed by the root password:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>su -</TT
+></PRE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	On the LVS routers, there are three services which need to be set to
+	activate at boot time:
+      </P
+><P
+></P
+><UL
+><LI
+><P
+>The <TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> service (primary node only)</P
+></LI
+><LI
+><P
+>The <TT
+CLASS="COMMAND"
+>pulse</TT
+> service</P
+></LI
+><LI
+><P
+>The <TT
+CLASS="COMMAND"
+>sshd</TT
+> service</P
+></LI
+></UL
+><P
+>	If you are clustering multi-port services or using firewall marks, you
+	must also enable the <TT
+CLASS="COMMAND"
+>iptables</TT
+> service.
+      </P
+><P
+>	It is best to set these services to activate in both runlevel 3 and
+	runlevel 5. To accomplish this using <TT
+CLASS="COMMAND"
+>chkconfig</TT
+>, type
+	the following command for each service:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/chkconfig --level 35 <VAR
+CLASS="REPLACEABLE"
+>daemon</VAR
+> on</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	In the above command, replace <VAR
+CLASS="REPLACEABLE"
+>daemon</VAR
+> with the
+	name of the service you are activating. To get a list of services on the
+	system as well as what runlevel they are set to activate on, issue the
+	following command:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/chkconfig --list</TT
+></PRE
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	  Turning any of the above services on using
+	  <TT
+CLASS="COMMAND"
+>chkconfig</TT
+> does not actually start the daemon. To do
+	  this use the <TT
+CLASS="COMMAND"
+>/sbin/service</TT
+> command. See <A
+HREF="s1-lvs-piranha-service.html"
+>Section 8.3 <I
+>Starting the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> Service</I
+></A
+> for an example of how to use the
+	  <TT
+CLASS="COMMAND"
+>/sbin/service</TT
+> command.
+	</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	For more information on runlevels and configuring services with
+	<TT
+CLASS="COMMAND"
+>ntsysv</TT
+> and the
+	<B
+CLASS="APPLICATION"
+>Services Configuration Tool</B
+>, refer to the chapter titled
+	<I
+CLASS="CITETITLE"
+>"Controlling Access to Services"</I
+> in the
+	<I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux System Administration Guide</I
+>.
+      </P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-block-diagram.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-piranha-password.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>LVS Cluster &#8212; A Block Diagram</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Setting a Password for the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

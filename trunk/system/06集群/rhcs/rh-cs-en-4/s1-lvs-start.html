@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Starting the Cluster</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring the LVS Routers with Piranha Configuration Tool"
+HREF="ch-lvs-piranha.html"><LINK
+REL="PREVIOUS"
+TITLE="Synchronizing Configuration Files"
+HREF="s1-lvs-sync.html"><LINK
+REL="NEXT"
+TITLE="Appendixes"
+HREF="pt-appendixes.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-sync.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 10. Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="pt-appendixes.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-START"
+>10.8. Starting the Cluster</A
+></H1
+><P
+>	To start the LVS cluster, it is best to have two root terminals open
+	simultaneously or two simultaneous root open <TT
+CLASS="COMMAND"
+>ssh</TT
+> sessions to
+	the primary LVS router.
+      </P
+><P
+>	In one terminal, watch the kernel log messages with the command:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>tail -f /var/log/messages</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	Then start the cluster by typing the following command into the other terminal:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/service pulse start</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	Follow the progress of the <TT
+CLASS="COMMAND"
+>pulse</TT
+> service's startup in
+	the terminal with the kernel log messages. When you see the following
+	output, the pulse daemon has started properly:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>gratuitous lvs arps finished</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	To stop watching <TT
+CLASS="FILENAME"
+>/var/log/messages</TT
+>, type
+	<SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[Ctrl]</KEYCAP
+></SPAN
+>-<SPAN
+CLASS="KEYCAP"
+><KEYCAP
+>[c]</KEYCAP
+></SPAN
+>.
+      </P
+><P
+>	From this point on, the primary LVS router is also the active LVS
+	router. While you can make requests to the cluster at this point, you
+	should start the backup LVS router before putting the cluster into
+	service. To do this, simply repeat the process described above on the
+	backup LVS router node.
+      </P
+><P
+>	After completing this final step, the cluster will be up and running.
+      </P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-sync.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="pt-appendixes.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Synchronizing Configuration Files</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-piranha.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Appendixes</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

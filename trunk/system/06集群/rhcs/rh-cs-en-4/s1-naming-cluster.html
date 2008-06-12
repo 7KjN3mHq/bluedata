@@ -1,0 +1,419 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Naming The Cluster</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Starting the Cluster Configuration Tool"
+HREF="s1-start-clustertool.html"><LINK
+REL="NEXT"
+TITLE="Configuring Fence Devices"
+HREF="s1-config-fence-devices.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-start-clustertool.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-config-fence-devices.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-NAMING-CLUSTER"
+>3.5. Naming The Cluster</A
+></H1
+><P
+>Naming the cluster consists of specifying a cluster name, a
+	configuration version (optional), and values for
+	<B
+CLASS="GUILABEL"
+>Post-Join Delay</B
+> and <B
+CLASS="GUILABEL"
+>Post-Fail 
+      Delay</B
+>. Name the cluster as follows:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>At the left frame, click <B
+CLASS="GUILABEL"
+>Cluster</B
+>.
+	  </P
+></LI
+><LI
+><P
+>At the bottom of the right frame (labeled
+	    <B
+CLASS="GUILABEL"
+>Properties</B
+>), click the <B
+CLASS="GUIBUTTON"
+>Edit
+	      Cluster Properties</B
+> button. Clicking that button
+	    causes a <B
+CLASS="GUILABEL"
+>Cluster Properties</B
+> dialog box to be
+	    displayed. The <B
+CLASS="GUILABEL"
+>Cluster Properties</B
+> dialog box
+	    presents text boxes for <B
+CLASS="GUILABEL"
+>Name</B
+>, <B
+CLASS="GUILABEL"
+>Config
+	    Version</B
+>, and two <B
+CLASS="GUILABEL"
+>Fence Daemon
+	    Properties</B
+> parameters: <B
+CLASS="GUILABEL"
+>Post-Join
+	    Delay</B
+> and <B
+CLASS="GUILABEL"
+>Post-Fail Delay</B
+>.
+	  </P
+></LI
+><LI
+><P
+>At the <B
+CLASS="GUILABEL"
+>Name</B
+> text box, specify a name for the
+	    cluster. The name should be descriptive enough to distinguish it from
+	    other clusters and systems on your network (for example,
+	    <KBD
+CLASS="USERINPUT"
+>nfs_cluster</KBD
+> or
+	    <KBD
+CLASS="USERINPUT"
+>httpd_cluster</KBD
+>). The cluster name cannot
+	  exceed 15 characters.
+	  </P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Choose the cluster name carefully. The only way to change the
+	    name of a Red Hat cluster is to create a new cluster configuration
+	    with the new name.</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>(Optional) The <B
+CLASS="GUILABEL"
+>Config Version</B
+> value is
+	    set to <KBD
+CLASS="USERINPUT"
+>1</KBD
+> by default and is automatically
+	    incremented each time you save your  cluster configuration. However,
+	    if you need to set it to another value, you can specify it at the
+	    <B
+CLASS="GUILABEL"
+>Config Version</B
+> text box.
+	  </P
+></LI
+><LI
+><P
+>Specify the <B
+CLASS="GUILABEL"
+>Fence Daemon Properties</B
+>
+	    parameters: <B
+CLASS="GUILABEL"
+>Post-Join Delay</B
+> and <B
+CLASS="GUILABEL"
+>Post-Fail
+	      Delay</B
+>. </P
+><P
+></P
+><OL
+TYPE="a"
+><LI
+><P
+>The <B
+CLASS="GUILABEL"
+>Post-Join Delay</B
+> parameter
+		is the number of seconds the fence daemon
+		(<TT
+CLASS="COMMAND"
+>fenced</TT
+>) waits before fencing a node after the node
+		joins the fence domain.
+ The <B
+CLASS="GUILABEL"
+>Post-Join Delay</B
+>
+		default value is <KBD
+CLASS="USERINPUT"
+>3</KBD
+>. A typical setting for
+		<B
+CLASS="GUILABEL"
+>Post-Join Delay</B
+> is between 20 and 30 seconds,
+		but can vary according to cluster and network performance.</P
+></LI
+><LI
+><P
+>The <B
+CLASS="GUILABEL"
+>Post-Fail Delay</B
+> parameter 
+		is the number of seconds the fence daemon
+		(<TT
+CLASS="COMMAND"
+>fenced</TT
+>) waits before fencing a node (a
+		member of the fence domain) after the node has failed.
+		The <B
+CLASS="GUILABEL"
+>Post-Fail Delay</B
+>
+		default value is <KBD
+CLASS="USERINPUT"
+>0</KBD
+>. Its value may be
+		varied to suit cluster and network performance.</P
+></LI
+></OL
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>For more information about <B
+CLASS="GUILABEL"
+>Post-Join
+		Delay</B
+> and <B
+CLASS="GUILABEL"
+>Post-Fail Delay</B
+>, refer
+		to the
+		<SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>fenced</SPAN
+>(8)</SPAN
+> man page.</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>Save cluster configuration changes by selecting
+	    <B
+CLASS="GUIMENU"
+>File</B
+> =&#62; <B
+CLASS="GUIMENUITEM"
+>Save</B
+>. </P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-start-clustertool.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-config-fence-devices.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Starting the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configuring Fence Devices</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,423 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Modifying the Cluster Configuration</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Cluster Administration"
+HREF="ch-admin.html"><LINK
+REL="PREVIOUS"
+TITLE="Starting and Stopping the Cluster Software"
+HREF="s1-admin-start.html"><LINK
+REL="NEXT"
+TITLE="Backing Up and Restoring the Cluster Database"
+HREF="s1-admin-backup.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-admin-start.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Cluster Administration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-admin-backup.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-ADMIN-MODIFY"
+>4.4. Modifying the Cluster Configuration</A
+></H1
+><P
+>	To modify the cluster configuration (the cluster configuration file
+	(<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+>), use 
+	the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>. For more information
+	about using the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, refer to
+	<A
+HREF="ch-software.html"
+>Chapter 3 <I
+>Installing and Configuring Red Hat Cluster Suite Software</I
+></A
+>.</P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Do not manually edit the contents of the
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file without guidance
+	  from an authorized Red Hat representative or unless you fully
+	  understand the consequences of editing the
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file manually.</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Although the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> provides a
+	<B
+CLASS="GUILABEL"
+>Quorum Votes</B
+> parameter in the
+	<B
+CLASS="GUILABEL"
+>Properties</B
+> dialog box of each cluster member, that
+	parameter is intended <I
+CLASS="EMPHASIS"
+>only</I
+> for use during initial cluster
+	configuration. Furthermore, it is recommended that you retain the default
+	<B
+CLASS="GUILABEL"
+>Quorum Votes</B
+> value of
+	<KBD
+CLASS="USERINPUT"
+>1</KBD
+>. For more information about using the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, refer to <A
+HREF="ch-software.html"
+>Chapter 3 <I
+>Installing and Configuring Red Hat Cluster Suite Software</I
+></A
+>.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	To edit the cluster configuration file, click the <B
+CLASS="GUILABEL"
+>Cluster
+      Configuration</B
+> tab in the cluster configuration GUI. Clicking
+      the <B
+CLASS="GUILABEL"
+>Cluster Configuration</B
+> tab displays a graphical
+      representation of the cluster configuration. Change the configuration file
+      according the the following steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>	    Make changes to cluster elements (for example, create a
+	  service).</P
+></LI
+><LI
+><P
+>Propagate the updated configuration file throughout the cluster
+	  by clicking <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+>.</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> does not display
+	the <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> button if the cluster is new
+	and has not been started yet, or if the node from which you are running the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> is not a member of the cluster. If the
+	<B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> button is not displayed, you can
+	still use the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>; however,
+	you cannot propagate the configuration. You can still
+	<I
+CLASS="EMPHASIS"
+>save</I
+> the configuration file. For information about
+	using the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> for a new cluster
+	configuration, refer to <A
+HREF="ch-software.html"
+>Chapter 3 <I
+>Installing and Configuring Red Hat Cluster Suite Software</I
+></A
+>.</P
+></TD
+></TR
+></TABLE
+></DIV
+></LI
+><LI
+><P
+>Clicking <B
+CLASS="GUIBUTTON"
+>Send to Cluster</B
+> causes a
+	  <B
+CLASS="GUILABEL"
+>Warning</B
+> dialog box to be displayed. Click
+	  <B
+CLASS="GUIBUTTON"
+>Yes</B
+> to save and propagate the
+	  configuration.</P
+></LI
+><LI
+><P
+>Clicking <B
+CLASS="GUIBUTTON"
+>Yes</B
+> causes an
+	  <B
+CLASS="GUILABEL"
+>Information</B
+> dialog box to be displayed,
+	  confirming that the current configuration has been propagated to the
+	  cluster. Click <B
+CLASS="GUIBUTTON"
+>OK</B
+>. </P
+></LI
+><LI
+><P
+>Click the <B
+CLASS="GUILABEL"
+>Cluster Management</B
+> tab and verify that
+	  the changes have been propagated to the cluster members.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-admin-start.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-admin-backup.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Starting and Stopping the Cluster Software</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-admin.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Backing Up and Restoring the Cluster Database</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

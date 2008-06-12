@@ -1,0 +1,903 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Installing and Configuring Red Hat Enterprise Linux</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Hardware Installation and Operating System Configuration"
+HREF="ch-hardware.html"><LINK
+REL="PREVIOUS"
+TITLE="Setting Up the Nodes"
+HREF="s1-hardware-cluster.html"><LINK
+REL="NEXT"
+TITLE="Setting Up and Connecting the Cluster Hardware"
+HREF="s1-hardware-connect.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-hardware-cluster.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Hardware Installation and Operating System Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-hardware-connect.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-HARDWARE-LINUX"
+>2.4. Installing and Configuring Red Hat Enterprise Linux</A
+></H1
+><P
+>After the setup of basic cluster hardware, proceed with installation
+	of Red Hat Enterprise Linux on each node and ensure that all systems recognize the
+	connected devices. Follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Install Red Hat Enterprise Linux on all cluster nodes. Refer to
+	    <I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux Installation Guide</I
+> for instructions.</P
+><P
+>In addition, when installing Red Hat Enterprise Linux, it is <I
+CLASS="EMPHASIS"
+>strongly
+	      recommended</I
+> to do the following:</P
+><P
+></P
+><UL
+><LI
+><P
+>Gather the IP addresses for the nodes and for the bonded
+		Ethernet ports, before installing Red Hat Enterprise Linux. Note that the IP
+		addresses for the bonded Ethernet ports can be private IP
+		addresses, (for example, 10.<VAR
+CLASS="REPLACEABLE"
+>x.x.x</VAR
+>).
+	      </P
+></LI
+><LI
+><P
+>Do not place local file systems (such as <TT
+CLASS="FILENAME"
+>/</TT
+>,
+		<TT
+CLASS="FILENAME"
+>/etc</TT
+>, <TT
+CLASS="FILENAME"
+>/tmp</TT
+>, and
+		<TT
+CLASS="FILENAME"
+>/var</TT
+>) on shared disks or on the same SCSI bus
+		as shared disks. This helps prevent the other cluster nodes from
+		accidentally mounting these file systems, and also reserves the
+		limited number of SCSI identification numbers on a bus for cluster
+		disks.</P
+></LI
+><LI
+><P
+>Place <TT
+CLASS="FILENAME"
+>/tmp</TT
+> and <TT
+CLASS="FILENAME"
+>/var</TT
+> on
+		different file systems. This may improve node performance.</P
+></LI
+><LI
+><P
+>When a node boots, be sure that the node detects
+		the disk devices in the same order in which they were detected
+		during the Red Hat Enterprise Linux installation. If the devices are not detected in
+		the same order, the node may not boot.</P
+></LI
+><LI
+><P
+>When using certain RAID storage configured with Logical Unit
+		Numbers (<ACRONYM
+CLASS="ACRONYM"
+>LUN</ACRONYM
+>s) greater than zero, it may be
+		necessary to enable LUN support by adding the following to
+		<TT
+CLASS="FILENAME"
+>/etc/modprobe.conf</TT
+>:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>options scsi_mod max_scsi_luns=255</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+></UL
+></LI
+><LI
+><P
+>Reboot the nodes.</P
+></LI
+><LI
+><P
+>When using a terminal server, configure Red Hat Enterprise Linux to send
+	  console messages to the console port.</P
+></LI
+><LI
+><P
+>Edit the <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file on each cluster
+	    node and include the IP addresses used in the cluster or ensure
+	    that the addresses are in DNS. Refer to <A
+HREF="s1-hardware-linux.html#S2-HARDWARE-ETCHOSTS"
+>Section 2.4.1 <I
+>Editing the <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> File</I
+></A
+> for more information about
+	    performing this task.</P
+></LI
+><LI
+><P
+>Decrease the alternate kernel boot timeout limit to reduce boot
+	    time for nodes. Refer to <A
+HREF="s1-hardware-linux.html#S2-HARDWARE-TIMEOUT"
+>Section 2.4.2 <I
+>Decreasing the Kernel Boot Timeout Limit</I
+></A
+> for
+	    more information about performing this task.</P
+></LI
+><LI
+><P
+>Ensure that no login (or <TT
+CLASS="COMMAND"
+>getty</TT
+>) programs are
+	    associated with the serial ports that are being used for the 
+	    remote power switch connection (if
+	    applicable). To perform this task, edit the
+	    <TT
+CLASS="FILENAME"
+>/etc/inittab</TT
+> file and use a hash symbol
+	    (<SPAN
+CLASS="SYMBOL"
+>#</SPAN
+>) to comment out the entries that correspond to
+	    the serial ports used for the remote power
+	    switch. Then, invoke the <TT
+CLASS="COMMAND"
+>init q</TT
+> command.</P
+></LI
+><LI
+><P
+>Verify that all systems detect all the installed
+	  hardware:</P
+><P
+></P
+><UL
+><LI
+><P
+>Use the <TT
+CLASS="COMMAND"
+>dmesg</TT
+> command to display the
+		console startup messages. Refer to <A
+HREF="s1-hardware-linux.html#S2-HARDWARE-CONSOLEMSG"
+>Section 2.4.3 <I
+>Displaying Console Startup Messages</I
+></A
+> for more information about
+		performing this task.</P
+></LI
+><LI
+><P
+>Use the <TT
+CLASS="COMMAND"
+>cat /proc/devices</TT
+> command to
+		display the devices configured in the kernel. Refer to <A
+HREF="s1-hardware-linux.html#S2-HARDWARE-KDEVICES"
+>Section 2.4.4 <I
+>Displaying Devices Configured in the Kernel</I
+></A
+> for more information about
+		performing this task.</P
+></LI
+></UL
+></LI
+><LI
+><P
+>Verify that the nodes can communicate over all the
+	    network interfaces by using the <TT
+CLASS="COMMAND"
+>ping</TT
+> command to
+	    send test packets from one node to another.</P
+></LI
+><LI
+><P
+>If intending to configure Samba services, verify that the
+	    required RPM packages for Samba services are installed.</P
+></LI
+></OL
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-ETCHOSTS"
+>2.4.1. Editing the <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> File</A
+></H2
+><P
+>The <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file contains the IP
+	  address-to-hostname translation table. The
+	  <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file on each node must contain entries
+	  for IP addresses and associated hostnames for all cluster nodes.</P
+><P
+>As an alternative to the <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file,
+	  name services such as DNS or NIS can be used to define the host
+	  names used by a cluster.  However, to limit the number of dependencies
+	  and optimize availability, it is strongly recommended to use the
+	  <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file to define IP addresses for
+	  cluster network interfaces.</P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+>The following is an example of an <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+>
+	  file on a node of a cluster that does not use DNS-assigned
+	  hostnames:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>127.0.0.1         localhost.localdomain     localhost
+192.168.1.81      node1.example.com         node1
+193.186.1.82      node2.example.com         node2
+193.186.1.83      node3.example.com         node3</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>The previous example shows the IP addresses and hostnames for
+	  three nodes (<I
+CLASS="FIRSTTERM"
+>node1</I
+>,
+	  <I
+CLASS="FIRSTTERM"
+>node2</I
+>, and <I
+CLASS="FIRSTTERM"
+>node3</I
+>),
+      </P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Do <I
+CLASS="EMPHASIS"
+>not</I
+> assign the node hostname to the localhost
+	  (127.0.0.1) address, as this causes issues with the CMAN cluster management
+	   system.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>Verify correct formatting of the local host entry in the
+	  <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file to ensure that it does not
+	  include non-local systems in the entry for the local host. An example
+	  of an incorrect local host entry that includes a non-local system
+	  (<I
+CLASS="FIRSTTERM"
+>server1</I
+>) is shown next:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>127.0.0.1     localhost.localdomain     localhost server1</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>An Ethernet connection may not operate properly if the format of
+	  the <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file is not correct. Check the
+	  <TT
+CLASS="FILENAME"
+>/etc/hosts</TT
+> file and correct the file format by
+	  removing non-local systems from the local host entry, if necessary.
+	</P
+><P
+>Note that each network adapter must be configured with the
+	  appropriate IP address and netmask.</P
+><P
+>The following example shows a portion of the output from the
+	  <TT
+CLASS="COMMAND"
+>/sbin/ip addr list</TT
+> command on a cluster node:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>2: eth0: &#60;BROADCAST,MULTICAST,UP&#62; mtu 1356 qdisc pfifo_fast qlen 1000
+    link/ether 00:05:5d:9a:d8:91 brd ff:ff:ff:ff:ff:ff
+    inet 10.11.4.31/22 brd 10.11.7.255 scope global eth0
+    inet6 fe80::205:5dff:fe9a:d891/64 scope link
+       valid_lft forever preferred_lft forever</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>You may also add the IP addresses for the cluster nodes to your
+	DNS server. Refer to the <I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux System Administration Guide</I
+> for
+	information on configuring DNS, or consult your network administrator.
+	</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-TIMEOUT"
+>2.4.2. Decreasing the Kernel Boot Timeout Limit</A
+></H2
+><P
+>It is possible to reduce the boot time for a node by
+	  decreasing the kernel boot timeout limit. During the Red Hat Enterprise Linux boot
+	  sequence, the boot loader allows for specifying an alternate kernel to
+	  boot. The default timeout limit for specifying a kernel is ten
+	  seconds.</P
+><P
+>To modify the kernel boot timeout limit for a node, edit the
+	appropriate files as follows:</P
+><P
+>When using the GRUB boot loader, the timeout parameter in
+	  <TT
+CLASS="FILENAME"
+>/boot/grub/grub.conf</TT
+> should be modified to
+	  specify the appropriate number of seconds for the
+	  <TT
+CLASS="PARAMETER"
+><I
+>timeout</I
+></TT
+> parameter. To set this interval to 3
+	  seconds, edit the parameter to the following:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>timeout = 3</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>When using the LILO or ELILO boot loaders, edit the
+	  <TT
+CLASS="FILENAME"
+>/etc/lilo.conf</TT
+> file (on x86 systems) or the
+	  <TT
+CLASS="FILENAME"
+>elilo.conf</TT
+> file (on Itanium systems) and specify
+	  the desired value (in tenths of a second) for the
+	  <TT
+CLASS="PARAMETER"
+><I
+>timeout</I
+></TT
+> parameter. The following example sets
+	  the timeout limit to three seconds:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>timeout = 30</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>To apply any changes made to the 
+	  <TT
+CLASS="FILENAME"
+>/etc/lilo.conf</TT
+> file, invoke the
+	  <TT
+CLASS="COMMAND"
+>/sbin/lilo</TT
+> command.</P
+><P
+>On an Itanium system, to apply any changes made to the
+	  <TT
+CLASS="FILENAME"
+>/boot/efi/efi/redhat/elilo.conf</TT
+> file, invoke the
+	  <TT
+CLASS="COMMAND"
+>/sbin/elilo</TT
+> command.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-CONSOLEMSG"
+>2.4.3. Displaying Console Startup Messages</A
+></H2
+><P
+>Use the <TT
+CLASS="COMMAND"
+>dmesg</TT
+> command to display the console
+	  startup messages. Refer to the <SPAN
+CLASS="CITEREFENTRY"
+><SPAN
+CLASS="REFENTRYTITLE"
+>dmesg</SPAN
+>(8)</SPAN
+> man page for more information.</P
+><P
+>The following example of output from the <TT
+CLASS="COMMAND"
+>dmesg</TT
+>
+	  command shows that two external SCSI buses and nine disks were
+	  detected on the node. (Lines with backslashes display as one line on
+	  most screens):</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>May 22 14:02:10 storage3 kernel: scsi0 : Adaptec AHA274x/284x/294x \
+	      (EISA/VLB/PCI-Fast SCSI) 5.1.28/3.2.4 
+May 22 14:02:10 storage3 kernel:         
+May 22 14:02:10 storage3 kernel: scsi1 : Adaptec AHA274x/284x/294x \
+              (EISA/VLB/PCI-Fast SCSI) 5.1.28/3.2.4 
+May 22 14:02:10 storage3 kernel:         
+May 22 14:02:10 storage3 kernel: scsi : 2 hosts. 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST39236LW         Rev: 0004 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sda at scsi0, channel 0, id 0, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST318203LC        Rev: 0001 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sdb at scsi1, channel 0, id 0, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST318203LC        Rev: 0001 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sdc at scsi1, channel 0, id 1, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST318203LC        Rev: 0001 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sdd at scsi1, channel 0, id 2, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST318203LC        Rev: 0001 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sde at scsi1, channel 0, id 3, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST318203LC        Rev: 0001 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sdf at scsi1, channel 0, id 8, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST318203LC        Rev: 0001 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sdg at scsi1, channel 0, id 9, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST318203LC        Rev: 0001 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sdh at scsi1, channel 0, id 10, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: SEAGATE   Model: ST318203LC        Rev: 0001 
+May 22 14:02:11 storage3 kernel: Detected scsi disk sdi at scsi1, channel 0, id 11, lun 0 
+May 22 14:02:11 storage3 kernel:   Vendor: Dell      Model: 8 BAY U2W CU      Rev: 0205 
+May 22 14:02:11 storage3 kernel:   Type:   Processor \
+                          ANSI SCSI revision: 03 
+May 22 14:02:11 storage3 kernel: scsi1 : channel 0 target 15 lun 1 request sense \
+	      failed, performing reset. 
+May 22 14:02:11 storage3 kernel: SCSI bus is being reset for host 1 channel 0. 
+May 22 14:02:11 storage3 kernel: scsi : detected 9 SCSI disks total.</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>The following example of the <TT
+CLASS="COMMAND"
+>dmesg</TT
+> command
+	output shows that a quad Ethernet card was detected on the
+	node:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>May 22 14:02:11 storage3 kernel: 3c59x.c:v0.99H 11/17/98 Donald Becker
+May 22 14:02:11 storage3 kernel: tulip.c:v0.91g-ppc 7/16/99 
+May 22 14:02:11 storage3 kernel: eth0: Digital DS21140 Tulip rev 34 at 0x9800, \
+	      00:00:BC:11:76:93, IRQ 5. 
+May 22 14:02:12 storage3 kernel: eth1: Digital DS21140 Tulip rev 34 at 0x9400, \
+	      00:00:BC:11:76:92, IRQ 9. 
+May 22 14:02:12 storage3 kernel: eth2: Digital DS21140 Tulip rev 34 at 0x9000, \
+	      00:00:BC:11:76:91, IRQ 11. 
+May 22 14:02:12 storage3 kernel: eth3: Digital DS21140 Tulip rev 34 at 0x8800, \
+	      00:00:BC:11:76:90, IRQ 10.</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-KDEVICES"
+>2.4.4. Displaying Devices Configured in the Kernel</A
+></H2
+><P
+>To be sure that the installed devices (such as network
+	  interfaces), are configured in the kernel, use the <TT
+CLASS="COMMAND"
+>cat
+	  /proc/devices</TT
+> command on each node. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>Character devices:
+  1 mem
+  4 /dev/vc/0
+  4 tty
+  4 ttyS
+  5 /dev/tty
+  5 /dev/console
+  5 /dev/ptmx
+  6 lp
+  7 vcs
+ 10 misc
+ 13 input
+ 14 sound
+ 29 fb
+ 89 i2c
+116 alsa
+128 ptm
+136 pts
+171 ieee1394
+180 usb
+216 rfcomm
+226 drm
+254 pcmcia
+
+Block devices:
+  1 ramdisk
+  2 fd
+  3 ide0
+  8 sd
+  9 md
+ 65 sd
+ 66 sd
+ 67 sd
+ 68 sd
+ 69 sd
+ 70 sd
+ 71 sd
+128 sd
+129 sd
+130 sd
+131 sd
+132 sd
+133 sd
+134 sd
+135 sd
+253 device-mapper</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>The previous example shows:</P
+><P
+></P
+><UL
+><LI
+><P
+>Onboard serial ports (<SAMP
+CLASS="COMPUTEROUTPUT"
+>ttyS</SAMP
+>)</P
+></LI
+><LI
+><P
+>USB devices (<SAMP
+CLASS="COMPUTEROUTPUT"
+>usb</SAMP
+>)</P
+></LI
+><LI
+><P
+>SCSI devices (<SAMP
+CLASS="COMPUTEROUTPUT"
+>sd</SAMP
+>)</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-hardware-cluster.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-hardware-connect.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Setting Up the Nodes</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-hardware.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Setting Up and Connecting the Cluster Hardware</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

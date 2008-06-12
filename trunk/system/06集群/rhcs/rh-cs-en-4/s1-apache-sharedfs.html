@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Configuring Shared Storage</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Setting Up Apache HTTP Server"
+HREF="ch-httpd-service.html"><LINK
+REL="PREVIOUS"
+TITLE="Setting Up Apache HTTP Server"
+HREF="ch-httpd-service.html"><LINK
+REL="NEXT"
+TITLE="Installing and Configuring the Apache HTTP Server"
+HREF="s1-apache-inshttpd.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-httpd-service.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 5. Setting Up Apache HTTP Server</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-apache-inshttpd.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-APACHE-SHAREDFS"
+>5.2. Configuring Shared Storage</A
+></H1
+><P
+>To set up the shared file system resource, perform the following tasks
+      as root on one cluster system:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>On one cluster node, use the interactive
+	    <TT
+CLASS="COMMAND"
+>parted</TT
+> utility to create a partition to use for
+	    the document root directory. Note that it is possible to create
+	    multiple document root directories on different disk
+	    partitions. Refer to <A
+HREF="s1-hardware-connect.html#S3-HARDWARE-PARTDISKS"
+>Section 2.5.3.1 <I
+>Partitioning Disks</I
+></A
+> for more
+	    information.</P
+></LI
+><LI
+><P
+>Use the <TT
+CLASS="COMMAND"
+>mkfs</TT
+> command to create an ext3 file
+	    system on the partition you created in the previous step. Specify
+	    the drive letter and the partition number. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>mkfs -t ext3 /dev/sde3</PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Mount the file system that contains the document root
+	  directory. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>mount /dev/sde3 /var/www/html</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>Do not add this mount information to the
+	    <TT
+CLASS="FILENAME"
+>/etc/fstab</TT
+> file because only the cluster
+	    software can mount and unmount file systems used in a
+	    service.</P
+></LI
+><LI
+><P
+>Copy all the required files to the document root directory.</P
+></LI
+><LI
+><P
+>If you have CGI files or other files that must be in different
+	  directories or in separate partitions, repeat these steps, as
+	  needed.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-httpd-service.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-apache-inshttpd.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Setting Up Apache HTTP Server</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-httpd-service.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Installing and Configuring the Apache HTTP Server</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,525 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>The Cluster Configuration Tool</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Cluster Configuration"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Cluster Configuration"
+HREF="ch-software.html"><LINK
+REL="NEXT"
+TITLE="Configuring the Cluster Software"
+HREF="s1-software-config.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-software.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Cluster Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-software-config.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-SOFTWARE-OVERVIEW"
+>3.2. The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></A
+></H1
+><P
+>You can use either of the following methods to access the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>:</P
+><P
+></P
+><UL
+><LI
+><P
+>Select <B
+CLASS="GUIMENU"
+>Main Menu</B
+> =&#62;
+		<B
+CLASS="GUIMENUITEM"
+>System Settings</B
+> =&#62;
+	    <B
+CLASS="GUIMENUITEM"
+>Server Settings</B
+> =&#62;
+	    <B
+CLASS="GUIMENUITEM"
+>Cluster</B
+>.</P
+></LI
+><LI
+><P
+>At a shell prompt, type the
+	    <TT
+CLASS="COMMAND"
+>system-config-cluster</TT
+> command.</P
+></LI
+></UL
+><P
+>If this is the first time you have started the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>, the program prompts you to
+	either open an existing configuration or create a new one. Click
+	<B
+CLASS="GUIBUTTON"
+>Create New Configuration</B
+> to start a new
+	configuration file.
+      </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFTWARE-CLUSTERTOOL"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/cluconfig-new.png"></P
+></DIV
+><P
+><B
+>Figure 3-1. Starting a New Configuration File</B
+></P
+></DIV
+><P
+>The following sections are available within the
+      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>:</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFTWARE-CLUSTERSTART"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/cluconfig-start.png"></P
+></DIV
+><P
+><B
+>Figure 3-2. The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></B
+></P
+></DIV
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Cluster Nodes</B
+> &#8212; Use this
+	  section to add members to the cluster and optionally configure a power
+	  controller connection for any given member.</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Fence Devices</B
+> &#8212; Use this
+	  section to establish one or more devices or methods to control each
+	  node in a cluster, which maintains cluster availability and
+	  integrity.</P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Managed Resources</B
+> &#8212; Use this
+	  section to configure one or more resources to be controlled and
+	  configured for the cluster. </P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Failover Domains</B
+> &#8212; Use this
+	      section to configure one or more subsets of cluster nodes used to
+	      run a service in the event of a node failure.
+	      </P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Resources</B
+> &#8212; Use this section to
+		configure resources to be managed by the system. Choose from the
+		available list of filesystems, IP addresses, NFS mounts and
+		exports, and user-created scripts and configure them
+		individually.
+	      </P
+></LI
+><LI
+><P
+><B
+CLASS="GUILABEL"
+>Services</B
+> &#8212; Use this section to
+	      create and configure services that combine cluster resources,
+	      nodes, and failover domains as needed.
+	      </P
+></LI
+></UL
+></LI
+></UL
+><P
+>The hierarchical relationships in the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> reflect the organization of
+	the resource information in the
+	<TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file.</P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Do not manually edit the contents of the
+	  <TT
+CLASS="FILENAME"
+>/etc/cluster/cluster.conf</TT
+> file unless you fully
+	  understand the consequences of manual configuration.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	Save your configuration at any point (using <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+	<B
+CLASS="GUIMENUITEM"
+>Save</B
+>) while running the
+	<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>. When <B
+CLASS="GUIMENU"
+>File</B
+>
+	=&#62; <B
+CLASS="GUIMENUITEM"
+>Quit</B
+> is selected, it prompts you to save
+	changes if any unsaved changes to the configuration are detected.</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	  When you save the cluster configuration for the first time using the
+	  <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> and exit the application,
+	  the next time you configure the cluster (either by choosing
+	  <B
+CLASS="GUIMENU"
+>Main Menu</B
+> =&#62; <B
+CLASS="GUIMENU"
+>System Settings</B
+> =&#62;
+	  <B
+CLASS="GUIMENU"
+>Server Settings</B
+> =&#62;
+	  <B
+CLASS="GUIMENUITEM"
+>Cluster</B
+> or by running
+	  <TT
+CLASS="COMMAND"
+>system-config-cluster</TT
+> from a shell prompt) the
+	  <B
+CLASS="GUILABEL"
+>Management</B
+> tab will appear along with the
+	  <B
+CLASS="GUILABEL"
+>Cluster Configuration</B
+> tab.  The
+	  <B
+CLASS="GUILABEL"
+>Management</B
+>
+	  <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> displays the status of the
+	  cluster service manager, cluster nodes, and resources, and shows
+	  statistics concerning cluster service operation. If you need to
+	  further configure the cluster system, choose the <B
+CLASS="GUILABEL"
+>Cluster
+	  Configuration</B
+> tab.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>The <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> uses a hierarchical
+	  structure to show relationships between components in the cluster
+	  configuration.  A triangular icon to the left of a component name
+	  indicates that the component has resources configured. To expand or
+	  collapse the portion of the tree below a component, click the triangle
+	  icon.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-INTRO-CLUCONFIG"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/cluconfig.png"></P
+></DIV
+><P
+><B
+>Figure 3-3. <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></B
+></P
+></DIV
+><P
+>For example, to configure an existing node, click the triangle icon
+	next to the <B
+CLASS="GUILABEL"
+>Cluster Nodes</B
+> property and select the
+	node. Three buttons appear in the <B
+CLASS="GUILABEL"
+>Properties</B
+>
+	portion of the window. Click <B
+CLASS="GUIBUTTON"
+>Edit Node
+	Properties</B
+>.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-SOFTWARE-NODEPROPS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/software/node-properties.png"></P
+></DIV
+><P
+><B
+>Figure 3-4. Node Properties</B
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-software-config.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Cluster Configuration</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configuring the Cluster Software</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

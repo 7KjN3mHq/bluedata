@@ -1,0 +1,318 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Installing the Red Hat Cluster Suite Packages</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="PREVIOUS"
+TITLE="Overview of the Cluster Configuration Tool"
+HREF="s1-clustertool-overview.html"><LINK
+REL="NEXT"
+TITLE="Starting the Cluster Configuration Tool"
+HREF="s1-start-clustertool.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-clustertool-overview.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Installing and Configuring Red Hat Cluster Suite Software</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-start-clustertool.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-PKG-INSTALL-ALL"
+>3.3. Installing the Red Hat Cluster Suite Packages</A
+></H1
+><P
+>You can install Red Hat Cluster Suite and (optionally install) Red Hat GFS RPMs
+      automatically by running the <TT
+CLASS="COMMAND"
+>up2date</TT
+> utility at each
+      node for the Red Hat Cluster Suite and Red Hat GFS products.</P
+><DIV
+CLASS="TIP"
+><P
+></P
+><TABLE
+CLASS="TIP"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/tip.png"
+HSPACE="5"
+ALT="Tip"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Tip</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>You can access the Red Hat Cluster Suite and Red Hat GFS products by using Red Hat Network to
+      subscribe to and access the channels containing the Red Hat Cluster Suite and Red Hat GFS      packages. From the Red Hat Network channel, you can manage entitlements for your
+      cluster nodes and 
+      upgrade packages for each node within the Red Hat Network Web-based interface. For more
+      information on using Red Hat Network, visit <A
+HREF="http://rhn.redhat.com"
+TARGET="_top"
+>http://rhn.redhat.com</A
+>.
+    </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>To automatically install RPMs, follow these steps at each node:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Log on as the root user.</P
+></LI
+><LI
+><P
+>Run <TT
+CLASS="COMMAND"
+>up2date --installall
+	--channel <VAR
+CLASS="REPLACEABLE"
+>Label</VAR
+></TT
+>  for
+	Red Hat Cluster Suite. The following example shows running the command for i386
+	RPMs:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>up2date --installall --channel rhel-i386-as-4-cluster</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>(Optional) If you are installing Red Hat GFS, run
+	  <TT
+CLASS="COMMAND"
+>up2date --installall
+	  --channel <VAR
+CLASS="REPLACEABLE"
+>Label</VAR
+></TT
+>  for
+	  Red Hat GFS. The following example shows running the command for i386
+	  RPMs:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+># <KBD
+CLASS="USERINPUT"
+>up2date --installall --channel rhel-i386-as-4-gfs-6.1</KBD
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+></OL
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The preceding procedure accommodates most installation
+	requirements. However, if your installation has extreme limitations on
+	storage and RAM, refer to <A
+HREF="ap-rhcs-sw-inst-cust.html"
+>Appendix B <I
+>Selectively Installing Red Hat Cluster Suite Packages</I
+></A
+>
+	for more detailed information about Red Hat Cluster Suite and Red Hat GFS RPM packages and
+	customized installation of those packages.</P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-clustertool-overview.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-start-clustertool.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Overview of the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Starting the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

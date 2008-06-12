@@ -1,0 +1,433 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Starting the Piranha Configuration Tool Service</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Initial LVS Configuration"
+HREF="ch-initial-setup.html"><LINK
+REL="PREVIOUS"
+TITLE="Setting a Password for the Piranha Configuration Tool"
+HREF="s1-lvs-piranha-password.html"><LINK
+REL="NEXT"
+TITLE="Limiting Access To the Piranha Configuration Tool"
+HREF="s1-lvs-piranha-access.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-piranha-password.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 8. Initial LVS Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-piranha-access.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-PIRANHA-SERVICE"
+>8.3. Starting the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> Service</A
+></H1
+><P
+>	After you have set the password for the
+	<B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>, start or
+	restart the <TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> service located in
+	<TT
+CLASS="COMMAND"
+>/etc/rc.d/init.d/piranha-gui</TT
+>. To do this, type the
+	following command as root:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/service piranha-gui start</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>or</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/service piranha-gui restart</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	Issuing this command starts a private session of the Apache HTTP Server by calling
+	the symbolic link <TT
+CLASS="COMMAND"
+>/usr/sbin/piranha_gui -&#62;
+	/usr/sbin/httpd</TT
+>.  For security reasons, the
+	<TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> version of <TT
+CLASS="COMMAND"
+>httpd</TT
+> runs
+	as the piranha user in a separate process. The fact that
+	<TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> leverages the <TT
+CLASS="COMMAND"
+>httpd</TT
+>
+	service means that:
+      </P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>The Apache HTTP Server must be installed on the system.</P
+></LI
+><LI
+><P
+>Stopping or restarting the Apache HTTP Server via the
+	    <TT
+CLASS="COMMAND"
+>service</TT
+> command stops the
+	    <TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> service.</P
+></LI
+></OL
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	  If the command <TT
+CLASS="COMMAND"
+>/sbin/service httpd stop</TT
+> or
+	  <TT
+CLASS="COMMAND"
+>/sbin/service httpd restart</TT
+> is issued on an LVS
+	  router, you must start the <TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> service by
+	  issuing the following command:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/service piranha-gui start</TT
+></PRE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	The <TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> service is all that is necessary to
+	begin configuring an LVS cluster. However, if you are configuring the cluster
+	remotely, the <TT
+CLASS="COMMAND"
+>sshd</TT
+> service is also required.  You do
+	<I
+CLASS="EMPHASIS"
+>not</I
+> need to start the <TT
+CLASS="COMMAND"
+>pulse</TT
+>
+	service until configuration using the
+	<B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> is complete. See <A
+HREF="s1-lvs-start.html"
+>Section 10.8 <I
+>Starting the Cluster</I
+></A
+> for information on starting the
+	<TT
+CLASS="COMMAND"
+>pulse</TT
+> service.
+      </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-PIRANHA-PORT"
+>8.3.1. Configuring the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> Web Server
+	Port</A
+></H2
+><P
+>	  The <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> runs on port 3636 by
+	  default. To change this port number, change the line
+	  <SAMP
+CLASS="COMPUTEROUTPUT"
+>Listen 3636 </SAMP
+> in Section 2 of the
+	  <TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> Web server configuration file
+	  <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/conf/httpd.conf</TT
+>.
+	</P
+><P
+>	  To use the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> you need at minimum a
+	  text-only Web browser. If you start a Web browser on the primary LVS
+	  router, open the location
+	  <KBD
+CLASS="USERINPUT"
+>http://<VAR
+CLASS="REPLACEABLE"
+>localhost</VAR
+>:3636</KBD
+>.
+	  You can reach the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> from anywhere
+	  via Web browser by replacing <VAR
+CLASS="REPLACEABLE"
+>localhost</VAR
+> with
+	  the hostname or IP address of the primary LVS router.
+	</P
+><P
+>	  When your browser connects to the
+	  <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>, you must login to access the
+	  cluster configuration services.  Enter <KBD
+CLASS="USERINPUT"
+>piranha</KBD
+>
+	  in the <B
+CLASS="GUILABEL"
+>Username</B
+> field and the password set with
+	  <TT
+CLASS="COMMAND"
+>piranha-passwd</TT
+> in the <B
+CLASS="GUILABEL"
+>Password</B
+>
+	  field.
+	</P
+><P
+>	  Now that the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> is running,
+	  you may wish to consider limiting who has access to the tool
+	  over the network. The next section reviews ways to accomplish this
+	  task.
+	</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-piranha-password.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-piranha-access.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Setting a Password for the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-initial-setup.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Limiting Access To the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

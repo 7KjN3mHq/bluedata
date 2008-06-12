@@ -1,0 +1,7 @@
+vi /etc/exports
+/home 192.168.6.0/24(rw,no_root_squash,async)
+/usr/local/resin-2.1.17 192.168.6.0/24(rw,no_root_squash,async)
+
+
+vi /etc/fstab
+192.168.0.250:/home  /home  nfs  noatime,nodev,nosuid,intr,rsize=32768,wsize=32768  0  0

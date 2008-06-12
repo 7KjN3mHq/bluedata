@@ -1,0 +1,320 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>CONTROL/MONITORING</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring the LVS Routers with Piranha Configuration Tool"
+HREF="ch-lvs-piranha.html"><LINK
+REL="PREVIOUS"
+TITLE="Logging Into the Piranha Configuration Tool"
+HREF="s1-piranha-login.html"><LINK
+REL="NEXT"
+TITLE="GLOBAL SETTINGS"
+HREF="s1-piranha-globalset.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-piranha-login.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 10. Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-piranha-globalset.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-PIRANHA-CTRLMON"
+>10.3. <B
+CLASS="GUILABEL"
+>CONTROL/MONITORING</B
+></A
+></H1
+><P
+>	The <B
+CLASS="GUILABEL"
+>CONTROL/MONITORING</B
+> Panel presents the cluster
+	administrator with a limited runtime status of the cluster. It displays
+	the status of the <TT
+CLASS="COMMAND"
+>pulse</TT
+> daemon, the LVS routing
+	table, and the LVS-spawned <TT
+CLASS="COMMAND"
+>nanny</TT
+> processes.
+      </P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>The fields for <B
+CLASS="GUILABEL"
+>CURRENT LVS ROUTING TABLE</B
+> and
+	<B
+CLASS="GUILABEL"
+>CURRENT LVS PROCESSES</B
+> remain blank until you
+	actually start the cluster, as shown in <A
+HREF="s1-lvs-start.html"
+>Section 10.8 <I
+>Starting the Cluster</I
+></A
+>.
+	</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-CONTROL-MONITORING"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-piranha-gui/control-monitoring.png"></P
+></DIV
+><P
+><B
+>Figure 10-2. The <B
+CLASS="GUILABEL"
+>CONTROL/MONITORING</B
+> Panel</B
+></P
+></DIV
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><B
+CLASS="GUILABEL"
+>Auto update</B
+></DT
+><DD
+><P
+>The status display on this page can be updated automatically
+	      at a user configurable interval. To enable this feature, click on
+	      the <B
+CLASS="GUILABEL"
+>Auto update</B
+> checkbox and set the desired
+	      update frequency in the <B
+CLASS="GUILABEL"
+>Update frequency in
+	      seconds</B
+> text box (the default value is 10 seconds).
+	    </P
+><P
+>It is not recommended that you set the automatic update to
+	      an interval less than 10 seconds. Doing so may make it difficult
+	      to reconfigure the <B
+CLASS="GUILABEL"
+>Auto update</B
+> interval
+	      because the page will update too frequently. If you encounter
+	      this issue, simply click on another panel and then back on
+	      <B
+CLASS="GUILABEL"
+>CONTROL/MONITORING</B
+>.
+	    </P
+><P
+>The <B
+CLASS="GUILABEL"
+>Auto update</B
+> feature does not work
+	      with all browsers, such as <B
+CLASS="APPLICATION"
+>Mozilla</B
+>.
+	    </P
+></DD
+><DT
+><B
+CLASS="GUIBUTTON"
+>Update information now</B
+></DT
+><DD
+><P
+>You can manually update the status information
+	      manually by clicking this button.
+	    </P
+></DD
+><DT
+><B
+CLASS="GUIBUTTON"
+>CHANGE PASSWORD</B
+></DT
+><DD
+><P
+>Clicking this button takes you to a help screen with
+	    information on how to change the administrative password for the
+	    <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>.
+	    </P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-piranha-login.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-piranha-globalset.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Logging Into the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-piranha.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><B
+CLASS="GUILABEL"
+>GLOBAL SETTINGS</B
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

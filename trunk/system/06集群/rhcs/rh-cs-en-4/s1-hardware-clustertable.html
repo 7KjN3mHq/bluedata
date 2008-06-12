@@ -1,0 +1,626 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Cluster Hardware Components</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Hardware Installation and Operating System Configuration"
+HREF="ch-hardware.html"><LINK
+REL="PREVIOUS"
+TITLE="Hardware Installation and Operating System Configuration"
+HREF="ch-hardware.html"><LINK
+REL="NEXT"
+TITLE="Setting Up the Nodes"
+HREF="s1-hardware-cluster.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-hardware.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Hardware Installation and Operating System Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-hardware-cluster.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-HARDWARE-CLUSTERTABLE"
+>2.2. Cluster Hardware Components</A
+></H1
+><P
+>Use the following section to identify the hardware components
+	  required for the cluster configuration.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-CLUSTERSYSTEM"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Hardware</TH
+><TH
+>Quantity</TH
+><TH
+>Description</TH
+><TH
+>Required</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Cluster nodes</TD
+><TD
+>16 (maximum supported)</TD
+><TD
+>Each node must provide enough PCI slots, network slots,
+		and storage adapters for the cluster hardware
+		configuration. Because attached storage devices must have the
+		same device special file on each node, it is recommended that
+		the nodes have symmetric I/O subsystems. It is also recommended
+		that the processor speed and amount of system memory be adequate
+		for the processes run on the cluster nodes. Refer to <A
+HREF="s1-hardware-cluster.html#S2-HARDWARE-BASIC"
+>Section 2.3.1 <I
+>Installing the Basic Cluster Hardware</I
+></A
+> for more information.</TD
+><TD
+>Yes</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-4. Cluster Node Hardware</B
+></P
+></DIV
+><P
+><A
+HREF="s1-hardware-clustertable.html#TBL-HARDWARE-FENCEDEVS"
+>Table 2-5</A
+> includes several different
+	  types of fence devices.</P
+><P
+> A single cluster requires only one type of power switch.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TBL-HARDWARE-FENCEDEVS"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Type</TH
+><TH
+>Description</TH
+><TH
+>Models</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Network-attached power switches.</TD
+><TD
+>Remote
+		(LAN, Internet) fencing using RJ45 Ethernet connections and
+		remote terminal access to the device.</TD
+><TD
+>APC
+		MasterSwitch 92xx/96xx; WTI NPS-115/NPS-230, IPS-15,
+		IPS-800/IPS-800-CE and TPS-2 </TD
+></TR
+><TR
+><TD
+>Fabric Switches.</TD
+><TD
+>Fence control interface integrated in several models of
+		  fabric switches used for Storage Area Networks (SANs). Used as
+		a way to fence a failed node from accessing shared data.</TD
+><TD
+>Brocade Silkworm 2<VAR
+CLASS="REPLACEABLE"
+>x</VAR
+>00, McData
+		  Sphereon, Vixel 9200</TD
+></TR
+><TR
+><TD
+>Integrated Power Management Interfaces</TD
+><TD
+>Remote power management features in various brands of
+		  server systems; can be used as a fencing agent in cluster
+		  systems</TD
+><TD
+>HP Integrated Lights-out (iLO), IBM BladeCenter with
+		firmware dated 7-22-04 or later</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-5. Fence Devices</B
+></P
+></DIV
+><P
+><A
+HREF="s1-hardware-clustertable.html#TB-HARDWARE-SHAREDDISK"
+>Table 2-7</A
+> through <A
+HREF="s1-hardware-clustertable.html#TB-HARDWARE-UPS"
+>Table 2-8</A
+> show a variety of hardware components for
+	    an administrator to choose from. An individual cluster does
+	    <I
+CLASS="EMPHASIS"
+>not</I
+> require all of the components listed in
+	    these tables.</P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-NETWORK"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Hardware</TH
+><TH
+>Quantity</TH
+><TH
+>Description</TH
+><TH
+>Required</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Network interface</TD
+><TD
+>One for each network connection</TD
+><TD
+>Each network connection requires a network interface
+		  installed in a node.</TD
+><TD
+>Yes</TD
+></TR
+><TR
+><TD
+>Network switch or hub</TD
+><TD
+>One</TD
+><TD
+>A network switch or hub allows connection of multiple
+		nodes to a network.</TD
+><TD
+>Yes</TD
+></TR
+><TR
+><TD
+>Network cable</TD
+><TD
+>One for each network interface</TD
+><TD
+>A conventional network cable, such as a cable with an
+		  RJ45 connector, connects each network interface to a network
+		  switch or a network hub.</TD
+><TD
+>Yes</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-6. Network Hardware Table</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-SHAREDDISK"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Hardware</TH
+><TH
+>Quantity</TH
+><TH
+>Description</TH
+><TH
+>Required</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Host bus adapter</TD
+><TD
+>One per node</TD
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>To connect to shared disk storage,
+		      install either a parallel SCSI or a Fibre Channel host bus
+		      adapter in a PCI slot in each cluster node.</TD
+></TR
+><TR
+><TD
+>For parallel SCSI, use a low voltage differential
+		      (LVD) host bus adapter. Adapters have either HD68 or VHDCI
+		      connectors.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+><TD
+>Yes</TD
+></TR
+><TR
+><TD
+>External disk storage enclosure</TD
+><TD
+>At least one</TD
+><TD
+><P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+>Use Fibre Channel or
+		    single-initiator parallel SCSI to connect the cluster
+		    nodes to a single or dual-controller RAID array. To use
+		    single-initiator buses, a RAID controller must have multiple
+		    host ports and provide simultaneous access to all the
+		    logical units on the host ports. To use a dual-controller
+		    RAID array, a logical unit must fail over from one
+		    controller to the other in a way that is transparent to the
+		    operating system.</TD
+></TR
+><TR
+><TD
+>SCSI RAID arrays that
+		      provide simultaneous access to all logical units on the
+		      host ports are recommended.</TD
+></TR
+><TR
+><TD
+>To ensure symmetry of device IDs and LUNs, many RAID
+		      arrays with dual redundant controllers must be configured
+		      in an active/passive mode.</TD
+></TR
+><TR
+><TD
+>Refer to <A
+HREF="ap-hwinfo.html"
+>Appendix A <I
+>Supplementary Hardware Information</I
+></A
+> for
+			more information.</TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+></TD
+><TD
+>Yes</TD
+></TR
+><TR
+><TD
+>SCSI cable</TD
+><TD
+>One per node</TD
+><TD
+>SCSI cables with 68 pins connect each host bus adapter to
+		  a storage enclosure port. Cables have either HD68 or VHDCI
+		  connectors. Cables vary based on adapter type.</TD
+><TD
+>Only for parallel SCSI configurations</TD
+></TR
+><TR
+><TD
+>SCSI terminator</TD
+><TD
+>As required by hardware configuration</TD
+><TD
+>For a RAID storage enclosure that uses "out" ports (such
+		  as FlashDisk RAID Disk Array) and is connected to
+		  single-initiator SCSI buses, connect terminators to the "out"
+		  ports to terminate the buses.</TD
+><TD
+>Only for parallel SCSI configurations and only as
+		  necessary for termination</TD
+></TR
+><TR
+><TD
+>Fibre Channel hub or switch</TD
+><TD
+>One or two</TD
+><TD
+>A Fibre Channel hub or switch may be required.</TD
+><TD
+>Only for some Fibre Channel configurations</TD
+></TR
+><TR
+><TD
+>Fibre Channel cable</TD
+><TD
+>As required by hardware configuration</TD
+><TD
+>A Fibre Channel cable connects a host bus adapter to a
+		  storage enclosure port, a Fibre Channel hub, or a Fibre
+		  Channel switch. If a hub or switch is used, additional cables
+		  are needed to connect the hub or switch to the storage adapter
+		  ports.</TD
+><TD
+>Only for Fibre Channel configurations</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-7. Shared Disk Storage Hardware Table</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-UPS"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Hardware</TH
+><TH
+>Quantity</TH
+><TH
+>Description</TH
+><TH
+>Required</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>UPS system</TD
+><TD
+>One or more</TD
+><TD
+><I
+CLASS="FIRSTTERM"
+>Uninterruptible power supply</I
+> (UPS)
+		      systems protect against downtime if a power outage
+		      occurs. UPS systems are highly recommended for cluster
+		      operation.  Connect the power cables for the shared
+		      storage enclosure and both power switches to redundant UPS
+		      systems. Note that a UPS system must be able to provide
+		      voltage for an adequate period of time, and should be
+		      connected to its own power circuit.</TD
+><TD
+>Strongly recommended for availability</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-8. UPS System Hardware Table</B
+></P
+></DIV
+><DIV
+CLASS="TABLE"
+><A
+NAME="TB-HARDWARE-CONSOLE"
+></A
+><TABLE
+BORDER="1"
+BGCOLOR="#DCDCDC"
+CELLSPACING="0"
+CELLPADDING="4"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+>Hardware</TH
+><TH
+>Quantity</TH
+><TH
+>Description</TH
+><TH
+>Required</TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+>Terminal server</TD
+><TD
+>One</TD
+><TD
+>A terminal server enables you to manage many nodes
+		      remotely.
+		</TD
+><TD
+>No</TD
+></TR
+><TR
+><TD
+>KVM switch</TD
+><TD
+>One</TD
+><TD
+>A KVM switch enables multiple nodes to share one keyboard,
+		  monitor, and mouse. Cables for connecting nodes to the
+		  switch depend on the type of KVM switch.</TD
+><TD
+>No</TD
+></TR
+></TBODY
+></TABLE
+><P
+><B
+>Table 2-9. Console Switch Hardware Table</B
+></P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-hardware.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-hardware-cluster.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Hardware Installation and Operating System Configuration</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-hardware.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Setting Up the Nodes</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

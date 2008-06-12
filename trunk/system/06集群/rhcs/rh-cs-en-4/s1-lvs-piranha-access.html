@@ -1,0 +1,336 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Limiting Access To the Piranha Configuration Tool</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Initial LVS Configuration"
+HREF="ch-initial-setup.html"><LINK
+REL="PREVIOUS"
+TITLE="Starting the Piranha Configuration Tool Service"
+HREF="s1-lvs-piranha-service.html"><LINK
+REL="NEXT"
+TITLE="Turning on Packet Forwarding"
+HREF="s1-lvs-forwarding.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-piranha-service.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 8. Initial LVS Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-forwarding.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-PIRANHA-ACCESS"
+>8.4. Limiting Access To the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></A
+></H1
+><P
+>	The <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> prompts for a valid username
+	and password combination. However, because all of the data passed to the
+	<B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> is in plain text, it is recommended
+	that you restrict access only to trusted networks or to the local
+	machine.
+      </P
+><P
+>	The easiest way to restrict access is to use the Apache HTTP Server's built in
+	access control mechanisms by editing
+	<TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/web/secure/.htaccess</TT
+>. After
+	altering the file you do not have to restart the
+	<TT
+CLASS="COMMAND"
+>piranha-gui</TT
+> service because the server checks the
+	<TT
+CLASS="FILENAME"
+>.htaccess</TT
+> file each time it accesses the directory.
+      </P
+><P
+>	By default, the access controls for this directory allow
+	anyone to view the contents of the directory. Here is what the
+	default access looks like:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>Order deny,allow
+Allow from all</PRE
+></TD
+></TR
+></TABLE
+><P
+>	To limit access of the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> to only the
+	localhost change the <TT
+CLASS="FILENAME"
+>.htaccess</TT
+> file to allow access
+	from only the loopback device (127.0.0.1). For more information on the
+	loopback device, see the chapter titled <I
+CLASS="CITETITLE"
+>Network
+	Scripts</I
+> in the <I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux Reference Guide</I
+>.
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>Order deny,allow
+Deny from all
+Allow from 127.0.0.1</PRE
+></TD
+></TR
+></TABLE
+><P
+>	You can also allow specific hosts or subnets as seen in this example:
+      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+>Order deny,allow
+Deny from all
+Allow from 192.168.1.100
+Allow from 172.16.57</PRE
+></TD
+></TR
+></TABLE
+><P
+>	In this example, only Web browsers from the machine with the IP
+	address of 192.168.1.100 and machines on the 172.16.57/24 network can
+	access the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>.
+      </P
+><DIV
+CLASS="CAUTION"
+><P
+></P
+><TABLE
+CLASS="CAUTION"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/caution.png"
+HSPACE="5"
+ALT="Caution"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Caution</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	  Editing the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>
+	  <TT
+CLASS="FILENAME"
+>.htaccess</TT
+> file limits access to the configuration
+	  pages in the <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/web/secure/</TT
+>
+	  directory but not to the login and the help pages in
+	  <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/web/</TT
+>. To limit access to this
+	  directory, create a <TT
+CLASS="FILENAME"
+>.htaccess</TT
+> file in the
+	  <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/web/</TT
+> directory with
+	  <KBD
+CLASS="USERINPUT"
+>order</KBD
+>, <KBD
+CLASS="USERINPUT"
+>allow</KBD
+>, and
+	  <KBD
+CLASS="USERINPUT"
+>deny</KBD
+> lines identical to
+	  <TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/web/secure/.htaccess</TT
+>.
+	</P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-piranha-service.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-forwarding.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Starting the <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> Service</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-initial-setup.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Turning on Packet Forwarding</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,656 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>FTP In an LVS Cluster</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Setting Up a Red Hat Enterprise Linux LVS Cluster"
+HREF="ch-lvs-setup.html"><LINK
+REL="PREVIOUS"
+TITLE="Multi-port Services and LVS Clustering"
+HREF="s1-lvs-multi.html"><LINK
+REL="NEXT"
+TITLE="Saving Network Packet Filter Settings"
+HREF="s1-lvs-fwm-sav.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-multi.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 9. Setting Up a Red Hat Enterprise Linux LVS Cluster</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-fwm-sav.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-FTP"
+>9.4. FTP In an LVS Cluster</A
+></H1
+><P
+>      File Transport Protocol (FTP) is an old and complex multi-port protocol
+      that presents a distinct set of challenges to a clustered environment. To
+      understand the nature of these challenges, you must first understand some
+      key things about how FTP works.
+    </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-FTP-PROTO"
+>9.4.1. How FTP Works</A
+></H2
+><P
+>	  With most other server client relationships, the client machine opens
+	  up a connection to the server on a particular port and the server then
+	  responds to the client on that port. When an FTP client connects to an
+	  FTP server it opens a connection to the FTP control port 21. Then the
+	  <I
+CLASS="EMPHASIS"
+>client</I
+> tells the FTP <I
+CLASS="EMPHASIS"
+>server</I
+>
+	  whether to establish an <I
+CLASS="FIRSTTERM"
+>active</I
+> or
+	  <I
+CLASS="FIRSTTERM"
+>passive</I
+> connection. The type of connection
+	  chosen by the client determines how the server responds and on what
+	  ports transactions will occur.
+	</P
+><P
+>	  The two types of data connections are:
+	</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+>Active Connections</DT
+><DD
+><P
+>When an active connection is established, the
+		<I
+CLASS="EMPHASIS"
+>server</I
+> opens a data connection to the
+		client from port 20 to a high range port on the client
+		machine. All data from the server is then passed over this
+		connection.
+	      </P
+></DD
+><DT
+>Passive Connections</DT
+><DD
+><P
+>When a passive connection is established, the
+	      <I
+CLASS="EMPHASIS"
+>client</I
+> asks the FTP server to establish a
+	      passive connection port, which can be on any port higher than
+	      10,000. The server then binds to this high-numbered port for this
+	      particular session and relays that port number back to the
+	      client. The client then opens the newly bound port for the data
+	      connection. Each data request the client makes results in a
+	      separate data connection. Most modern FTP clients attempt to
+	      establish a passive connection when requesting data from servers.
+	      </P
+></DD
+></DL
+></DIV
+><P
+>	  The two important things to note about all of this in regards to
+	  clustering is:
+	</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>The <I
+CLASS="EMPHASIS"
+>client</I
+> determines the type of
+	      connection, not the server. This means, to effectively cluster FTP,
+	      you must configure the LVS routers to handle both active and passive
+	      connections.
+	    </P
+></LI
+><LI
+><P
+>The FTP client/server relationship can potentially open a
+	      large number of ports that the
+	      <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> and IPVS do not know about.
+	    </P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-FTP"
+>9.4.2. How This Affects LVS Routing</A
+></H2
+><P
+>	  IPVS packet forwarding only allows connections in and out of the
+	  cluster based on it recognizing its port number or its firewall
+	  mark. If a client from outside the cluster attempts to open a port
+	  IPVS is not configured to handle, it drops the connection. Similarly,
+	  if the real server attempts to open a connection back out to the
+	  Internet on a port IPVS does not know about, it drops the
+	  connection. This means <I
+CLASS="EMPHASIS"
+>all</I
+> connections from FTP
+	  clients on the Internet <I
+CLASS="EMPHASIS"
+>must</I
+> have the same
+	  firewall mark assigned to them and all connections from the FTP server
+	  <I
+CLASS="EMPHASIS"
+>must</I
+> be properly forwarded to the Internet using
+	  network packet filtering rules.
+	</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-FWM-FTP"
+>9.4.3. Creating Network Packet Filter Rules</A
+></H2
+><P
+>	  Before assigning any <TT
+CLASS="COMMAND"
+>iptables</TT
+> rules for FTP
+	  service, review the information in <A
+HREF="s1-lvs-multi.html#S2-LVS-FWM"
+>Section 9.3.1 <I
+>Assigning Firewall Marks</I
+></A
+>
+	  concerning multi-port services and techniques for checking the
+	  existing network packet filtering rules.
+	</P
+><P
+>	  Below are rules which assign the same firewall mark, 21, to FTP
+	  traffic. For these rules to work properly, you must also use the
+	  <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> subsection of
+	  <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+> to configure a virtual server
+	  for port 21 with a value of <KBD
+CLASS="USERINPUT"
+>21</KBD
+> in the
+	  <B
+CLASS="GUILABEL"
+>Firewall Mark</B
+> field. See <A
+HREF="s1-piranha-virtservs.html#S2-PIRANHA-VIRTSERV-SUB"
+>Section 10.6.1 <I
+>The <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> Subsection</I
+></A
+> for details.
+	</P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-MASQ-ACTIVE"
+>9.4.3.1. Rules for Active Connections</A
+></H3
+><P
+>	    The rules for active connections tell the kernel to accept and
+	    forward connections coming to the <I
+CLASS="EMPHASIS"
+>internal</I
+>
+	    floating IP address on port 20 &#8212; the FTP data port.
+	  </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="COMMAND"
+>iptables</TT
+></DT
+><DD
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/iptables -t nat -A POSTROUTING -p tcp \
+               -s <VAR
+CLASS="REPLACEABLE"
+>n.n.n</VAR
+>.0/24 --sport 20 -j MASQUERADE</TT
+></PRE
+></TD
+></TR
+></TABLE
+></DD
+></DL
+></DIV
+><P
+>	    In the above <TT
+CLASS="COMMAND"
+>iptables</TT
+> commands,
+	  <VAR
+CLASS="REPLACEABLE"
+>n.n.n</VAR
+> should be replaced with the first
+	  three values for the floating IP for the NAT interface's internal
+	  network interface defined in the <B
+CLASS="GUILABEL"
+>GLOBAL SETTINGS</B
+>
+	  panel of <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>. The command allows the
+	  LVS router to accept outgoing connections from the real servers that
+	  IPVS does not know about.
+	</P
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-FWM-PASSIVE"
+>9.4.3.2. Rules for Passive Connections</A
+></H3
+><P
+>	    The rules for passive connections assign the appropriate firewall
+	    mark to connections coming in from the Internet to the floating IP
+	    for the service on a wide range of ports &#8212; 10,000 to
+	    20,000.
+	  </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	      If you are limiting the port range for passive connections, you
+	      must also configure the VSFTP server to use a matching port
+	      range. This can be accomplished by adding the following
+	      lines to <TT
+CLASS="FILENAME"
+>/etc/vsftpd.conf</TT
+>:
+	    </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>pasv_min_port=10000
+pasv_max_port=20000</KBD
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>You must also control the address that the server displays to
+	      the client for passive FTP connections. In a NAT routed LVS
+	      system, add the following line to
+	      <TT
+CLASS="FILENAME"
+>/etc/vsftpd.conf</TT
+> to override the real server
+	      IP address to the VIP, which is what the client sees upon
+	      connection. For example:
+	    </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><KBD
+CLASS="USERINPUT"
+>pasv_address=<VAR
+CLASS="REPLACEABLE"
+>X.X.X.X</VAR
+></KBD
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>Replace <VAR
+CLASS="REPLACEABLE"
+>X.X.X.X</VAR
+> with the VIP
+	    address of the LVS system.
+	    </P
+><P
+>	      For configuration of other FTP servers, consult the respective
+	      documentation.
+	    </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	    This range should be a wide enough for most situations;
+	    however, you can increase this number to include all available
+	    non-secured ports by changing
+	    <SAMP
+CLASS="COMPUTEROUTPUT"
+>10000:20000</SAMP
+> in the commands below
+	    to <SAMP
+CLASS="COMPUTEROUTPUT"
+>1024:65535</SAMP
+>.
+	  </P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><DL
+><DT
+><TT
+CLASS="COMMAND"
+>iptables</TT
+></DT
+><DD
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/iptables -t mangle -A PREROUTING -p tcp \
+               -d <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+>/32  \
+               --dport 21 -j MARK --set-mark 21</TT
+>
+<TT
+CLASS="COMMAND"
+>/sbin/iptables -t mangle -A PREROUTING -p tcp \
+               -d <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+>/32 \ 
+               --dport 10000:20000 -j MARK --set-mark 21</TT
+></PRE
+></TD
+></TR
+></TABLE
+></DD
+></DL
+></DIV
+><P
+>	    In the above <TT
+CLASS="COMMAND"
+>iptables</TT
+> commands,
+	    <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+> should be replaced with the
+	    floating IP for the FTP virtual server defined in the
+	    <B
+CLASS="GUILABEL"
+>VIRTUAL SERVER</B
+> subsection of
+	    <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>. These commands have the net
+	    effect of assigning any traffic addressed to the floating IP on the
+	    appropriate ports a firewall mark of 21, which is in turn recognized
+	    by IPVS and forwarded appropriately.
+	  </P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	      The commands above take effect immediately, but do not
+	      persist through a reboot of the system. To ensure network packet
+	      filter settings are restored after a reboot, see
+	      <A
+HREF="s1-lvs-fwm-sav.html"
+>Section 9.5 <I
+>Saving Network Packet Filter Settings</I
+></A
+>
+	    </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	    Finally, you need to be sure that the appropriate service is set to
+	    activate on the proper runlevels. For more on this, refer to <A
+HREF="ch-initial-setup.html#S1-LVS-DAEMONS"
+>Section 8.1 <I
+>Configuring Services on the LVS Routers</I
+></A
+>.
+	  </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-multi.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-fwm-sav.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Multi-port Services and LVS Clustering</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-setup.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Saving Network Packet Filter Settings</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

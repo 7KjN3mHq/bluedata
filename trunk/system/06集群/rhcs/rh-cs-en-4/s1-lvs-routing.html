@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Routing Methods</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Linux Virtual Server Overview"
+HREF="ch-lvs-overview.html"><LINK
+REL="PREVIOUS"
+TITLE="LVS Scheduling Overview"
+HREF="s1-lvs-scheduling.html"><LINK
+REL="NEXT"
+TITLE="Persistence and Firewall Marks"
+HREF="s1-lvs-persistance.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-scheduling.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 7. Linux Virtual Server Overview</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-persistance.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-ROUTING"
+>7.4. Routing Methods</A
+></H1
+><P
+>	Red Hat Enterprise Linux uses <I
+CLASS="FIRSTTERM"
+>Network Address Translation</I
+> or
+	<I
+CLASS="FIRSTTERM"
+>NAT routing</I
+> for LVS clustering, which allows the
+	administrator tremendous flexibility when utilizing available hardware
+	and integrating the cluster into an existing network.
+      </P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-NAT"
+>7.4.1. NAT Routing</A
+></H2
+><P
+>	  <A
+HREF="s1-lvs-routing.html#GR-LVS-NAT"
+>Figure 7-3</A
+>, illustrates an LVS cluster utilizing NAT
+	  routing to move requests between the Internet and a private
+	  network.
+	</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="GR-LVS-NAT"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/ha-lvs-overview/nat-routing.png"></P
+></DIV
+><P
+><B
+>Figure 7-3. An LVS Cluster Implemented with NAT Routing</B
+></P
+></DIV
+><P
+>	  In the example, there are two NICs in the active LVS router. The NIC
+	  for the Internet has a <I
+CLASS="FIRSTTERM"
+>real IP address</I
+> on eth0
+	  and has a floating IP address aliased to eth0:1. The NIC for the
+	  private network interface has a real IP address on eth1 and has a
+	  floating IP address aliased to eth1:1. In the event of failover, the
+	  virtual interface facing the Internet and the private facing virtual
+	  interface are taken-over by the backup LVS router simultaneously. All
+	  of the cluster's real servers located on the private network use the
+	  floating IP for the NAT router as their default route to communicate
+	  with the active LVS router so that their abilities to respond to
+	  requests from the Internet is not impaired.
+	</P
+><P
+>	  In this example, the LVS router's public LVS floating IP address and
+	  private NAT floating IP address are aliased to two physical
+	  NICs. While it is possible to associate each floating IP address to
+	  its own physical device on the LVS router nodes, having more than two
+	  NICs is not a requirement.
+	</P
+><P
+>	  Using this topography, the active LVS router receives the request and
+	  routes it to the appropriate server. The real server then processes
+	  the request and returns the packets to the LVS router which uses
+	  network address translation to replace the address of the real server
+	  in the packets with the LVS routers public VIP address.  This process
+	  is called <I
+CLASS="FIRSTTERM"
+>IP masquerading</I
+> because the actual IP
+	  addresses of the real servers is hidden from the requesting clients.
+	</P
+><P
+>	  Using this NAT routing, the real servers may be any kind of machine
+	  running various operating systems. The main disadvantage is that the
+	  LVS router may become a bottleneck in large cluster deployments
+	  because it must process outgoing as well as incoming requests.
+	</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-lvs-scheduling.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-persistance.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>LVS Scheduling Overview</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-overview.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Persistence and Firewall Marks</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

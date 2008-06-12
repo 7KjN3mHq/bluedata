@@ -1,0 +1,1029 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Setting Up and Connecting the Cluster Hardware</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Hardware Installation and Operating System Configuration"
+HREF="ch-hardware.html"><LINK
+REL="PREVIOUS"
+TITLE="Installing and Configuring Red Hat Enterprise Linux"
+HREF="s1-hardware-linux.html"><LINK
+REL="NEXT"
+TITLE="Installing and Configuring Red Hat Cluster Suite Software"
+HREF="ch-software.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-hardware-linux.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Hardware Installation and Operating System Configuration</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ch-software.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-HARDWARE-CONNECT"
+>2.5. Setting Up and Connecting the Cluster Hardware</A
+></H1
+><P
+>After installing Red Hat Enterprise Linux, set up the cluster hardware components and
+	verify the installation to ensure that the nodes recognize all
+	the connected devices. Note that the exact steps for setting up the
+	hardware depend on the type of configuration. Refer to <A
+HREF="ch-hardware.html#S1-HARDWARE-CHOOSING"
+>Section 2.1 <I
+>Choosing a Hardware Configuration</I
+></A
+> for more information about cluster
+	configurations.</P
+><P
+>To set up the cluster hardware, follow these steps:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Shut down the nodes and disconnect them from their
+	  power source.</P
+></LI
+><LI
+><P
+>When using power switches, set up the switches and connect each
+	    node to a power switch.  Refer to <A
+HREF="s1-hardware-connect.html#S2-HARDWARE-PWRCFG"
+>Section 2.5.2 <I
+>Configuring a Fence Device</I
+></A
+> for more information.</P
+><P
+>In addition, it is recommended to connect each power switch (or
+	    each node's power cord if not using power switches) to a different
+	    UPS system. Refer to <A
+HREF="s1-hardware-connect.html#S2-HARDWARE-UPSCFG"
+>Section 2.5.3 <I
+>Configuring UPS Systems</I
+></A
+> for
+	    information about using optional UPS systems.</P
+></LI
+><LI
+><P
+>Set up shared disk storage according to the vendor instructions
+	    and connect the nodes to the external storage enclosure. Refer to
+	    <A
+HREF="s1-hardware-cluster.html#S2-HARDWARE-STORAGESETUP"
+>Section 2.3.2 <I
+>Shared Storage considerations</I
+></A
+>.</P
+><P
+>In addition, it is recommended to connect the storage enclosure
+	    to redundant UPS systems. Refer to <A
+HREF="s1-hardware-connect.html#S2-HARDWARE-UPSCFG"
+>Section 2.5.3 <I
+>Configuring UPS Systems</I
+></A
+> for more information about using
+	    optional UPS systems.</P
+></LI
+><LI
+><P
+>Turn on power to the hardware, and boot each cluster
+	    node. During the boot-up process, enter the BIOS utility to modify
+	    the node setup, as follows:</P
+><P
+></P
+><UL
+><LI
+><P
+>Ensure that the SCSI identification number used by the host bus adapter
+		is unique for the SCSI bus it is attached to. Refer to <A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-NUM"
+>Section A.3.4 <I
+>SCSI Identification Numbers</I
+></A
+> for more information about performing
+		this task.</P
+></LI
+><LI
+><P
+>Enable or disable the onboard termination for each host bus
+		adapter, as required by the storage configuration. Refer to
+		<A
+HREF="s1-hwinfo-singlesetup.html#S2-HWINFO-SCSIBUS"
+>Section A.3.2 <I
+>SCSI Bus Termination</I
+></A
+> for more information about
+		performing this task.</P
+></LI
+><LI
+><P
+>Enable the node to automatically boot when it is
+	      powered on.</P
+></LI
+></UL
+></LI
+><LI
+><P
+>Exit from the BIOS utility, and continue to boot each
+	    node. Examine the startup messages to verify that the Red Hat Enterprise Linux
+	    kernel has been configured and can recognize the full set of shared
+	    disks. Use the <TT
+CLASS="COMMAND"
+>dmesg</TT
+> command to display console
+	    startup messages. Refer to <A
+HREF="s1-hardware-linux.html#S2-HARDWARE-CONSOLEMSG"
+>Section 2.4.3 <I
+>Displaying Console Startup Messages</I
+></A
+>
+	    for more information about using the <TT
+CLASS="COMMAND"
+>dmesg</TT
+>
+	    command.</P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+><P
+> </P
+></LI
+><LI
+><P
+>Set up the bonded Ethernet channels, if applicable. Refer to
+	  <A
+HREF="s1-hardware-connect.html#S2-HARDWARE-ETHBOND"
+>Section 2.5.1 <I
+>Configuring Ethernet Channel Bonding</I
+></A
+> for more information.</P
+></LI
+><LI
+><P
+>Run the <TT
+CLASS="COMMAND"
+>ping</TT
+> command to verify packet
+	     transmission between <I
+CLASS="EMPHASIS"
+>all</I
+> cluster nodes.</P
+></LI
+></OL
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-ETHBOND"
+>2.5.1. Configuring Ethernet Channel Bonding</A
+></H2
+><P
+>Ethernet channel bonding in a no-single-point-of-failure cluster
+	system allows for a fault tolerant network connection by combining two
+	Ethernet devices into one virtual device. The resulting channel bonded
+	interface ensures that in the event that one Ethernet device fails, the
+	other device will become active. This type of channel bonding, called an
+	<I
+CLASS="FIRSTTERM"
+>active-backup</I
+> policy allows connection of both
+	bonded devices to one switch or can allow each Ethernet device to be
+	connected to separate hubs or switches, which eliminates the
+	single point of failure in the network hub/switch.</P
+><P
+>Channel bonding requires each cluster node to have two Ethernet
+	  devices installed. When it is loaded, the bonding module uses the MAC
+	  address of the first enslaved network device and assigns that MAC
+	  address to the other network device if the first device fails link
+	  detection.
+	</P
+><P
+>To configure two network devices for channel bonding, perform the
+	following:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Create a bonding devices in
+	    <TT
+CLASS="FILENAME"
+>/etc/modprobe.conf</TT
+>. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>alias bond0 bonding
+options bonding miimon=100 mode=1</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>This loads the bonding device with the
+	    <SAMP
+CLASS="COMPUTEROUTPUT"
+>bond0</SAMP
+> interface name, as well as
+	    passes options to the bonding driver to configure it as an
+	    active-backup master device for the enslaved network interfaces.
+	    </P
+></LI
+><LI
+><P
+>Edit the
+	    <TT
+CLASS="FILENAME"
+>/etc/sysconfig/network-scripts/ifcfg-eth<VAR
+CLASS="REPLACEABLE"
+>X</VAR
+></TT
+>
+	    configuration file for both eth0 and eth1 so that the files show
+	    identical contents. For example:
+	    </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>DEVICE=eth<VAR
+CLASS="REPLACEABLE"
+>X</VAR
+>
+USERCTL=no
+ONBOOT=yes
+MASTER=bond0
+SLAVE=yes
+BOOTPROTO=none</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>This will enslave eth<VAR
+CLASS="REPLACEABLE"
+>X</VAR
+>
+	    (replace <VAR
+CLASS="REPLACEABLE"
+>X</VAR
+> with the assigned number of
+	    the Ethernet devices) to the bond0 master device.</P
+></LI
+><LI
+><P
+>Create a network script for the bonding device (for example,
+	    <TT
+CLASS="FILENAME"
+>/etc/sysconfig/network-scripts/ifcfg-bond0</TT
+>),
+	    which would appear like the following example:
+	    </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>DEVICE=bond0
+USERCTL=no
+ONBOOT=yes
+BROADCAST=192.168.1.255
+NETWORK=192.168.1.0
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+IPADDR=192.168.1.10</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Reboot the system for the changes to take effect.
+	  </P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-PWRCFG"
+>2.5.2. Configuring a Fence Device</A
+></H2
+><P
+>Fence devices enable a node to power-cycle another node before
+	  restarting its services as part of the failover process. The ability
+	  to remotely disable a node ensures data integrity is maintained under
+	  any failure condition. Deploying a cluster in a production environment
+	  <I
+CLASS="EMPHASIS"
+>requires</I
+> the use of a fence device. Only
+	  development (test) environments should use a configuration without a
+	  fence device. Refer to <A
+HREF="ch-hardware.html#S2-HARDWARE-PWRCTRL"
+>Section 2.1.2 <I
+>Choosing the Type of Fence Device</I
+></A
+> for a
+	  description of the various types of power switches.
+	</P
+><P
+>In a cluster configuration that uses fence devices such as power
+	  switches, each node is connected to a switch through either a serial
+	  port (for two-node clusters) or network connection (for multi-node
+	  clusters). When failover occurs, a node can use this connection to
+	  power-cycle another node before restarting its services.</P
+><P
+>Fence devices protect against data corruption if an unresponsive
+	  (or hanging) node becomes responsive after its services have failed
+	  over, and issues I/O to a disk that is also receiving I/O from another
+	  node. In addition, if CMAN detects node failure, the failed node will
+	  be removed from the cluster. If a fence device is not used in the
+	  cluster, then a failed node may result in cluster services being run
+	  on more than one node, which can cause data corruption and possibly
+	  system crashes.</P
+><P
+>A node may appear to <I
+CLASS="FIRSTTERM"
+>hang</I
+> for a few seconds
+	  if it is swapping or has a high system workload. For this reason,
+	  adequate time is allowed prior to concluding that a node has
+	  failed.</P
+><P
+>If a node fails, and a fence device is used in the cluster, the
+	  fencing daemon power-cycles the hung node before restarting its
+	  services.  This causes the hung node to
+	  reboot in a clean state and prevent it from issuing I/O and corrupting
+	  cluster service data.</P
+><P
+>When used, fence devices must be set up according to the vendor
+	  instructions; however, some cluster-specific tasks may be required to
+	  use them in a cluster. Consult the manufacturer documentation on
+	  configuring the fence device. Note that the cluster-specific
+	  information provided in this manual supersedes the vendor
+	  information.</P
+><P
+>When cabling a physical fence device such as a power switch, take
+	  special care to ensure that each cable is plugged into the appropriate
+	  port and configured correctly.  This is crucial because there is no
+	  independent means for the software to verify correct cabling. Failure
+	  to cable correctly can lead to an incorrect node being power cycled,
+	  fenced off from shared storage via fabric-level fencing, or for a node
+	  to inappropriately conclude that it has successfully power cycled a
+	  failed node.</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-HARDWARE-UPSCFG"
+>2.5.3. Configuring UPS Systems</A
+></H2
+><P
+>Uninterruptible power supplies (UPS) provide a highly-available
+	  source of power. Ideally, a redundant solution should be used that
+	  incorporates multiple UPS systems (one per server).  For maximal
+	  fault-tolerance, it is possible to incorporate two UPS systems per
+	  server as well as APC Automatic Transfer Switches to manage the power
+	  and shutdown management of the server.  Both solutions are solely
+	  dependent on the level of availability desired.</P
+><P
+>It is not recommended to use a single UPS infrastructure as the
+	  sole source of power for the cluster.  A UPS solution dedicated to the
+	  cluster is more flexible in terms of manageability and
+	  availability.</P
+><P
+>A complete UPS system must be able to provide adequate voltage and
+	  current for a prolonged period of time.  While there is no single UPS
+	  to fit every power requirement, a solution can be tailored to fit a
+	  particular configuration.</P
+><P
+>If the cluster disk storage subsystem has two power supplies with
+	  separate power cords, set up two UPS systems, and connect one power
+	  switch (or one node's power cord if not using power
+	  switches) and one of the storage subsystem's power cords to each UPS
+	  system. A redundant UPS system configuration is shown in <A
+HREF="s1-hardware-connect.html#FIG-HARDWARE-TWO-UPS"
+>Figure 2-2</A
+>.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-HARDWARE-TWO-UPS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/hardware/two_ups.png"></P
+></DIV
+><P
+><B
+>Figure 2-2. Redundant UPS System Configuration</B
+></P
+></DIV
+><P
+>An alternative redundant power configuration is to connect the
+	  power switches (or the nodes' power cords) and the disk storage
+	  subsystem to the same UPS system. This is the most cost-effective
+	  configuration, and provides some protection against power
+	  failure. However, if a power outage occurs, the single UPS system
+	  becomes a possible single point of failure. In addition, one UPS
+	  system may not be able to provide enough power to all the attached
+	  devices for an adequate amount of time. A single UPS system
+	  configuration is shown in <A
+HREF="s1-hardware-connect.html#FIG-HARDWARE-ONE-UPS"
+>Figure 2-3</A
+>.</P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG-HARDWARE-ONE-UPS"
+></A
+><DIV
+CLASS="MEDIAOBJECT"
+><P
+><IMG
+SRC="./figs/hardware/one_ups.png"></P
+></DIV
+><P
+><B
+>Figure 2-3. Single UPS System Configuration</B
+></P
+></DIV
+><P
+>Many vendor-supplied UPS systems include Red Hat Enterprise Linux applications that
+	  monitor the operational status of the UPS system through a serial port
+	  connection. If the battery power is low, the monitoring software
+	  initiates a clean system shutdown. As this occurs, the cluster
+	  software is properly stopped, because it is controlled by a SysV
+	  runlevel script (for example,
+	  <TT
+CLASS="FILENAME"
+>/etc/rc.d/init.d/rgmanager</TT
+>).</P
+><P
+>Refer to the UPS documentation supplied by the vendor for detailed
+	installation information.</P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-HARDWARE-PARTDISKS"
+>2.5.3.1. Partitioning Disks</A
+></H3
+><P
+>After shared disk storage has been set up, partition the disks
+	    so they can be used in the cluster. Then, create file systems or raw
+	    devices on the partitions.</P
+><P
+>Use <TT
+CLASS="COMMAND"
+>parted</TT
+> to modify a disk partition table
+	    and divide the disk into partitions. While in
+	    <TT
+CLASS="COMMAND"
+>parted</TT
+>, use the <TT
+CLASS="COMMAND"
+>p</TT
+> to display
+	    the partition table and the <TT
+CLASS="COMMAND"
+>mkpart</TT
+> command to
+	    create new partitions. The following example shows how to use
+	    <TT
+CLASS="COMMAND"
+>parted</TT
+> to create a partition on disk:</P
+><P
+></P
+><UL
+><LI
+><P
+>Invoke <TT
+CLASS="COMMAND"
+>parted</TT
+> from the shell
+	    using the command <TT
+CLASS="COMMAND"
+>parted</TT
+> and specifying an
+	    available shared disk device. At the <TT
+CLASS="PROMPT"
+>(parted)</TT
+>
+	    prompt, use the <TT
+CLASS="COMMAND"
+>p</TT
+> to display the current
+	    partition table. The output should be similar to the
+	    following:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>Disk geometry for /dev/sda: 0.000-4340.294 megabytes
+Disk label type: msdos
+Minor    Start       End     Type      Filesystem  Flags</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Decide on how large of a partition is
+		required. Create a partition of this size using the
+		<TT
+CLASS="COMMAND"
+>mkpart</TT
+> command in
+		<TT
+CLASS="COMMAND"
+>parted</TT
+>. Although the
+		<TT
+CLASS="COMMAND"
+>mkpart</TT
+> does not create a file system, it
+		normally requires a file system type at partition creation
+		time. <TT
+CLASS="COMMAND"
+>parted</TT
+> uses a range on the disk to
+		determine partition size; the size is the space between the end
+		and the beginning of the given range. The following example
+		shows how to create two partitions of 20 MB each on an empty
+		disk.</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>(parted) <KBD
+CLASS="USERINPUT"
+>mkpart primary ext3 0 20</KBD
+>
+(parted) <KBD
+CLASS="USERINPUT"
+>mkpart primary ext3 20 40</KBD
+>
+(parted) <KBD
+CLASS="USERINPUT"
+>p</KBD
+>
+Disk geometry for /dev/sda: 0.000-4340.294 megabytes
+Disk label type: msdos
+Minor    Start       End     Type      Filesystem  Flags
+1          0.030     21.342  primary
+2         21.343     38.417  primary</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>When more than four partitions are required on a
+	    single disk, it is necessary to create an <I
+CLASS="EMPHASIS"
+>extended
+	    partition</I
+>. If an extended partition is required, the
+	    <TT
+CLASS="COMMAND"
+>mkpart</TT
+> also performs this task. In this case, it
+	    is not necessary to specify a file system type.</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="90%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/note.png"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Note</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Only one extended partition may be created, and the
+		extended partition <I
+CLASS="EMPHASIS"
+>must</I
+> be one of the four
+		primary partitions.</P
+></TD
+></TR
+></TABLE
+></DIV
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>(parted) <KBD
+CLASS="USERINPUT"
+>mkpart extended 40 2000</KBD
+>
+(parted) <KBD
+CLASS="USERINPUT"
+>p</KBD
+>
+Disk geometry for /dev/sda: 0.000-4340.294 megabytes
+Disk label type: msdos
+Minor    Start       End     Type      Filesystem  Flags
+1          0.030     21.342  primary
+2         21.343     38.417  primary
+3         38.417   2001.952  extended</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>An extended partition allows the creation of
+	    <I
+CLASS="EMPHASIS"
+>logical partitions</I
+>inside of it. The following
+	    example shows the division of the extended partition into two
+	    logical partitions.</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>(parted) <KBD
+CLASS="USERINPUT"
+>mkpart logical ext3 40 1000</KBD
+>
+(parted) <KBD
+CLASS="USERINPUT"
+>p</KBD
+>
+Disk geometry for /dev/sda: 0.000-4340.294 megabytes
+Disk label type: msdos
+Minor    Start       End     Type      Filesystem  Flags
+1          0.030     21.342  primary
+2         21.343     38.417  primary
+3         38.417   2001.952  extended
+5         38.447    998.841  logical
+(parted) <KBD
+CLASS="USERINPUT"
+>mkpart logical ext3 1000 2000</KBD
+>
+(parted) <KBD
+CLASS="USERINPUT"
+>p</KBD
+>
+Disk geometry for /dev/sda: 0.000-4340.294 megabytes
+Disk label type: msdos
+Minor    Start       End     Type      Filesystem  Flags
+1          0.030     21.342  primary
+2         21.343     38.417  primary
+3         38.417   2001.952  extended
+5         38.447    998.841  logical
+6        998.872   2001.952  logical</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>A partition may be removed using
+	    <TT
+CLASS="COMMAND"
+>parted</TT
+>'s <TT
+CLASS="COMMAND"
+>rm</TT
+> command. For
+	    example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>(parted) <KBD
+CLASS="USERINPUT"
+>rm 1</KBD
+>
+(parted) <KBD
+CLASS="USERINPUT"
+>p</KBD
+>
+Disk geometry for /dev/sda: 0.000-4340.294 megabytes
+Disk label type: msdos
+Minor    Start       End     Type      Filesystem  Flags
+2         21.343     38.417  primary
+3         38.417   2001.952  extended
+5         38.447    998.841  logical
+6        998.872   2001.952  logical</SAMP
+> </PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>After all required partitions have been created,
+		exit <TT
+CLASS="COMMAND"
+>parted</TT
+> using the <TT
+CLASS="COMMAND"
+>quit</TT
+>
+		command. If a partition was added, removed, or changed while
+		both nodes are powered on and connected to the shared storage,
+		reboot the other node for it to recognize the
+		modifications. After partitioning a disk, format the partition
+		for use in the cluster. For example, create the file systems for
+		shared partitions. Refer to <A
+HREF="s1-hardware-connect.html#S3-HARDWARE-CREATEFS"
+>Section 2.5.3.2 <I
+>Creating File Systems</I
+></A
+> for more information on
+		configuring file systems.</P
+><P
+>For basic information on
+		partitioning hard disks at installation time, refer to the
+		<I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux Installation Guide</I
+>.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="S3-HARDWARE-CREATEFS"
+>2.5.3.2. Creating File Systems</A
+></H3
+><P
+>Use the <TT
+CLASS="COMMAND"
+>mkfs</TT
+> command to create an ext3 file
+	  system. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>mke2fs -j -b 4096 /dev/sde3</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>For optimal performance of shared file systems, make sure to
+	    specify a 4 KB block size with the <TT
+CLASS="COMMAND"
+>mke2fs -b</TT
+>
+	    command. A smaller block size can cause long <TT
+CLASS="COMMAND"
+>fsck</TT
+>
+	    times.</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-hardware-linux.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ch-software.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Installing and Configuring Red Hat Enterprise Linux</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-hardware.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Installing and Configuring Red Hat Cluster Suite Software</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

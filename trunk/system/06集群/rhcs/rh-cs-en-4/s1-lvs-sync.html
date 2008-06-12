@@ -1,0 +1,539 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Synchronizing Configuration Files</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Configuring the LVS Routers with Piranha Configuration Tool"
+HREF="ch-lvs-piranha.html"><LINK
+REL="PREVIOUS"
+TITLE="VIRTUAL SERVERS"
+HREF="s1-piranha-virtservs.html"><LINK
+REL="NEXT"
+TITLE="Starting the Cluster"
+HREF="s1-lvs-start.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-piranha-virtservs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 10. Configuring the LVS Routers with <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="s1-lvs-start.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-LVS-SYNC"
+>10.7. Synchronizing Configuration Files</A
+></H1
+><P
+>	After configuring the primary LVS router, there are
+	several configuration files that must be copied to the backup LVS
+	router before you start the cluster.
+      </P
+><P
+>	These files include:
+      </P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>/etc/sysconfig/ha/lvs.cf</TT
+> &#8212; the
+	  configuration file for the LVS routers.
+	  </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>/etc/sysctl</TT
+> &#8212; the configuration file
+	  that, among other things, turns on packet forwarding in the kernel.
+	  </P
+></LI
+><LI
+><P
+><TT
+CLASS="FILENAME"
+>/etc/sysconfig/iptables</TT
+> &#8212; If you are
+	  using firewall marks, you should synchronize one of these files based
+	  on which network packet filter you are using.
+	  </P
+></LI
+></UL
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    The <TT
+CLASS="FILENAME"
+>/etc/sysctl.conf</TT
+> and
+	    <TT
+CLASS="FILENAME"
+>/etc/sysconfig/iptables</TT
+> files do <I
+CLASS="EMPHASIS"
+>not
+	    </I
+> change when you configure the cluster using the
+	    <B
+CLASS="APPLICATION"
+>Piranha Configuration Tool</B
+>.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-SYNC-LVS-CF"
+>10.7.1. Synchronizing <TT
+CLASS="FILENAME"
+>lvs.cf</TT
+></A
+></H2
+><P
+>	  Anytime the LVS configuration file,
+	  <SAMP
+CLASS="COMPUTEROUTPUT"
+>/etc/sysconfig/ha/lvs.cf</SAMP
+>, is created
+	  or updated, you must copy it to the backup LVS router node.
+	</P
+><DIV
+CLASS="WARNING"
+><P
+></P
+><TABLE
+CLASS="WARNING"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/warning.png"
+HSPACE="5"
+ALT="Warning"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Warning</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    Both the active and backup LVS router nodes must have identical
+	    <SAMP
+CLASS="COMPUTEROUTPUT"
+>lvs.cf</SAMP
+> files. Mismatched LVS
+	    configuration files between the LVS router nodes can prevent failover.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	  The best way to do this is to use the <TT
+CLASS="COMMAND"
+>scp</TT
+> command.
+	</P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    To use <TT
+CLASS="COMMAND"
+>scp</TT
+> the <TT
+CLASS="COMMAND"
+>sshd</TT
+> must be
+	    running on the backup router, see <A
+HREF="ch-initial-setup.html#S1-LVS-DAEMONS"
+>Section 8.1 <I
+>Configuring Services on the LVS Routers</I
+></A
+> for
+	    details on how to properly configure the necessary services on the LVS
+	    routers.
+	</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>	  Issue the following command as the root user from the primary LVS router
+	  to sync the <KBD
+CLASS="USERINPUT"
+>lvs.cf</KBD
+> files between the router
+	  nodes:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>scp /etc/sysconfig/ha/lvs.cf <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+>:/etc/sysconfig/ha/lvs.cf</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	In the above command, replace <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+> with
+	the real IP address of the backup LVS router.
+      </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-SYNC-SYSCTL"
+>10.7.2. Synchronizing <TT
+CLASS="FILENAME"
+>sysctl</TT
+></A
+></H2
+><P
+>	  The <TT
+CLASS="FILENAME"
+>sysctl</TT
+> file is only modified once in
+	  most situations. This file is read at boot time and tells the
+	  kernel to turn on packet forwarding. 
+	</P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="./stylesheet-images/important.png"
+HSPACE="5"
+ALT="Important"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Important</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>	    If you are not sure whether or not packet forwarding is enabled in
+	    the kernel, see <A
+HREF="s1-lvs-forwarding.html"
+>Section 8.5 <I
+>Turning on Packet Forwarding</I
+></A
+> for instructions
+	    on how to check and, if necessary, enable this key functionality.
+	  </P
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-LVS-SYNC-NET"
+>10.7.3. Synchronizing Network Packet Filtering Rules</A
+></H2
+><P
+>	  If you are using <TT
+CLASS="FILENAME"
+>iptables</TT
+>, you will need to
+	  synchronize the appropriate configuration file on the backup LVS
+	  router.
+	</P
+><P
+>	  If you alter the any network packet filter rules, enter the following
+	command as root from the primary LVS router:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>scp /etc/sysconfig/iptables <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+>:/etc/sysconfig/</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	  In the above command, replace <VAR
+CLASS="REPLACEABLE"
+>n.n.n.n</VAR
+> with
+	the real IP address of the backup LVS router.
+	</P
+><P
+>	  Next either open an <TT
+CLASS="COMMAND"
+>ssh</TT
+> session to the backup
+	  router or log into the machine as root and type the following command:
+	</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>/sbin/service iptables restart</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>	  Once you have copied these files over to the backup router and started
+	  the appropriate services (see <A
+HREF="ch-initial-setup.html#S1-LVS-DAEMONS"
+>Section 8.1 <I
+>Configuring Services on the LVS Routers</I
+></A
+> for more on this
+	  topic) you are ready to start the cluster.
+	</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-piranha-virtservs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="s1-lvs-start.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><B
+CLASS="GUILABEL"
+>VIRTUAL SERVERS</B
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-piranha.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Starting the Cluster</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

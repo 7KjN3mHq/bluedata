@@ -1,0 +1,622 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Installing and Configuring the Apache HTTP Server</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Setting Up Apache HTTP Server"
+HREF="ch-httpd-service.html"><LINK
+REL="PREVIOUS"
+TITLE="Configuring Shared Storage"
+HREF="s1-apache-sharedfs.html"><LINK
+REL="NEXT"
+TITLE="Configuring a Linux Virtual Server Cluster"
+HREF="pt-lvs.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="s1-apache-sharedfs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 5. Setting Up Apache HTTP Server</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-APACHE-INSHTTPD"
+>5.3. Installing and Configuring the Apache HTTP Server</A
+></H1
+><P
+>The Apache HTTP Server must be installed and configured on all nodes in the
+      assigned failover domain, if used, or in the cluster. The basic server
+      configuration must be the same on all nodes on which it runs for the
+      service to fail over correctly. The following example shows a basic
+      Apache HTTP Server installation that includes no third-party modules or performance
+      tuning.</P
+><P
+>On all node in the cluster (or nodes in the failover domain, if used),
+      install the <TT
+CLASS="FILENAME"
+>httpd</TT
+> RPM package.  For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="100%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMMAND"
+>rpm -Uvh httpd-<VAR
+CLASS="REPLACEABLE"
+>&#60;version&#62;</VAR
+>.<VAR
+CLASS="REPLACEABLE"
+>&#60;arch&#62;</VAR
+>.rpm</TT
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>To configure the Apache HTTP Server as a cluster service, perform the following
+    tasks:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Edit the <TT
+CLASS="FILENAME"
+>/etc/httpd/conf/httpd.conf</TT
+>
+	  configuration file and customize the file according to your
+	  configuration. For example:</P
+><P
+></P
+><UL
+><LI
+><P
+>Specify the directory that contains the HTML files.  Also
+	      specify this mount point when adding the service to the cluster
+	      configuration. It is only required to change this field if the
+	      mountpoint for the website's content differs from the default
+	      setting of <TT
+CLASS="FILENAME"
+>/var/www/html/</TT
+>. For example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>DocumentRoot "/mnt/httpdservice/html"</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Specify a unique IP address to which the service will listen
+	      for requests. For example:
+	      </P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>Listen 192.168.1.100:80</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>This IP address then must be configured as a cluster
+		resource for the service using the
+		<B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>.
+	   </P
+></LI
+><LI
+><P
+>If the script directory resides in a non-standard location,
+	      specify the directory that contains the CGI programs. For
+	      example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>ScriptAlias /cgi-bin/ "/mnt/httpdservice/cgi-bin/"</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+></LI
+><LI
+><P
+>Specify the path that was used in the previous step, and set
+	      the access permissions to default to that directory. For
+	      example:</P
+><TABLE
+CLASS="SCREEN"
+BGCOLOR="#DCDCDC"
+WIDTH="90%"
+><TR
+><TD
+><PRE
+CLASS="SCREEN"
+><SAMP
+CLASS="COMPUTEROUTPUT"
+>&#60;Directory /mnt/httpdservice/cgi-bin"&#62;
+AllowOverride None
+Options None 
+Order allow,deny 
+Allow from all 
+&#60;/Directory&#62;</SAMP
+></PRE
+></TD
+></TR
+></TABLE
+><P
+>Additional changes may need to be made to tune the Apache HTTP Server
+		or add module functionality. For information on setting up other
+		options, refer to the <I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux System Administration Guide</I
+> and the
+		<I
+CLASS="CITETITLE"
+>Red Hat Enterprise Linux Reference Guide</I
+>.</P
+></LI
+></UL
+></LI
+><LI
+><P
+>The standard Apache HTTP Server start script,
+	    <TT
+CLASS="FILENAME"
+>/etc/rc.d/init.d/httpd</TT
+> is also used within the
+	    cluster framework to start and stop the Apache HTTP Server on the active
+	    cluster node.  Accordingly, when configuring the service, specify
+	    this script by adding it as a <B
+CLASS="GUILABEL"
+>Script</B
+> resource
+	    in the <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+>.
+	  </P
+></LI
+><LI
+><P
+>Copy the configuration file over to the other nodes of the
+	cluster (or nodes of the failover domain, if configured).</P
+></LI
+></OL
+><P
+>Before the service is added to the cluster configuration, ensure that
+      the Apache HTTP Server directories are not mounted. Then, on one node, invoke the
+      <B
+CLASS="APPLICATION"
+>Cluster Configuration Tool</B
+> to add the service, as
+      follows. This example assumes a failover domain named
+      <TT
+CLASS="FILENAME"
+>httpd-domain</TT
+> was created for this service. </P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Add the init script for the Apache HTTP Server service.</P
+><P
+></P
+><UL
+><LI
+><P
+>Select the <B
+CLASS="GUILABEL"
+>Resources</B
+> tab and
+		click <B
+CLASS="GUIBUTTON"
+>Create a Resource</B
+>. The
+		<B
+CLASS="GUILABEL"
+>Resources Configureation</B
+> properties dialog
+		box is displayed.</P
+></LI
+><LI
+><P
+>Select <B
+CLASS="GUILABEL"
+>Script</B
+> form the drop down
+		menu.</P
+></LI
+><LI
+><P
+>Enter a <B
+CLASS="GUILABEL"
+>Name</B
+> to be associated with the
+		Apache HTTP Server service.
+	      </P
+></LI
+><LI
+><P
+>Specify the path to the Apache HTTP Server init script (for example,
+		<KBD
+CLASS="USERINPUT"
+>/etc/rc.d/init.d/httpd</KBD
+>) in the
+		<B
+CLASS="GUILABEL"
+>File (with path)</B
+> field.</P
+></LI
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>OK</B
+>.
+	      </P
+></LI
+></UL
+></LI
+><LI
+><P
+>Add a device for the Apache HTTP Server content files and/or custom scripts.
+	  </P
+><P
+></P
+><UL
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>Create a Resource</B
+>.</P
+></LI
+><LI
+><P
+>In the <B
+CLASS="GUILABEL"
+>Resource Configuration</B
+> dialog,
+	      select <B
+CLASS="GUILABEL"
+>File System</B
+> from the drop-down menu.
+		</P
+></LI
+><LI
+><P
+>Enter the <B
+CLASS="GUILABEL"
+>Name</B
+> for the resource (for
+		example, <KBD
+CLASS="USERINPUT"
+>httpd-content</KBD
+>.
+	      </P
+></LI
+><LI
+><P
+>Choose <B
+CLASS="GUILABEL"
+>ext3</B
+> from the <B
+CLASS="GUILABEL"
+>File
+	      System Type</B
+> drop-down menu.
+	      </P
+></LI
+><LI
+><P
+>Enter the mount point in the <B
+CLASS="GUILABEL"
+>Mount
+		  Point</B
+> field (for example,
+		<KBD
+CLASS="USERINPUT"
+>/var/www/html/</KBD
+>).</P
+></LI
+><LI
+><P
+>Enter the device special file name in the
+		<B
+CLASS="GUILABEL"
+>Device</B
+> field (for example,
+		<KBD
+CLASS="USERINPUT"
+>/dev/sda3</KBD
+>).</P
+></LI
+></UL
+></LI
+><LI
+><P
+>Add an IP address for the Apache HTTP Server service.
+	  </P
+><P
+></P
+><UL
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>Create a Resource</B
+>.
+	      </P
+></LI
+><LI
+><P
+>Choose <B
+CLASS="GUILABEL"
+>IP Address</B
+> from the
+		drop-down menu.
+		  </P
+></LI
+><LI
+><P
+>Enter the <B
+CLASS="GUILABEL"
+>IP Address</B
+> to be
+		  associatged with the Apache HTTP Server service.</P
+></LI
+><LI
+><P
+>Make sure that the <B
+CLASS="GUILABEL"
+>Monitor Link</B
+>
+		  checkbox is left checked.
+		  </P
+></LI
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>OK</B
+>.
+		  </P
+></LI
+></UL
+></LI
+><LI
+><P
+>Click the <B
+CLASS="GUILABEL"
+>Services</B
+> property.
+	      </P
+></LI
+><LI
+><P
+>Create the Apache HTTP Server service.
+	      </P
+><P
+></P
+><UL
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>Create a Service</B
+>. Type a
+		    <B
+CLASS="GUILABEL"
+>Name</B
+> for the service in the
+		    <B
+CLASS="GUILABEL"
+>Add a Service</B
+> dialog.</P
+></LI
+><LI
+><P
+>In the <B
+CLASS="GUILABEL"
+>Service Management</B
+> dialog,
+		    select a <B
+CLASS="GUILABEL"
+>Failover Domain</B
+> from the
+		    drop-down menu or leave it as <B
+CLASS="GUILABEL"
+>None</B
+>.
+		  </P
+></LI
+><LI
+><P
+>Click the <B
+CLASS="GUIBUTTON"
+>Add a Shared Resource to this
+		  service</B
+> button. From the available list, choose
+		  each resource that you created in the previous steps. Repeat
+		  this step until all resources have been added.</P
+></LI
+><LI
+><P
+>Click <B
+CLASS="GUIBUTTON"
+>OK</B
+>.
+		  </P
+></LI
+></UL
+></LI
+><LI
+><P
+>Choose <B
+CLASS="GUIMENU"
+>File</B
+> =&#62;
+		<B
+CLASS="GUIMENUITEM"
+>Save</B
+> to save your changes.
+	      </P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="s1-apache-sharedfs.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="pt-lvs.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Configuring Shared Storage</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-httpd-service.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configuring a Linux Virtual Server Cluster</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

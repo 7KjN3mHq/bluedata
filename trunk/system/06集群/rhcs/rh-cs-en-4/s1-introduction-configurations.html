@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML
+><HEAD
+><TITLE
+>Basic Configurations</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK
+REL="HOME"
+TITLE="Red Hat Cluster Suite"
+HREF="index.html"><LINK
+REL="UP"
+TITLE="Introduction to Linux Virtual Server"
+HREF="ch-lvs-intro.html"><LINK
+REL="PREVIOUS"
+TITLE="Introduction to Linux Virtual Server"
+HREF="ch-lvs-intro.html"><LINK
+REL="NEXT"
+TITLE="Linux Virtual Server Overview"
+HREF="ch-lvs-overview.html"><LINK
+REL="STYLESHEET"
+TYPE="text/css"
+HREF="rhdocs-man.css"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+SUMMARY="Header navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+>Red Hat Cluster Suite: Configuring and Managing a Cluster</TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="ch-lvs-intro.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 6. Introduction to Linux Virtual Server</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="ch-lvs-overview.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="S1-INTRODUCTION-CONFIGURATIONS"
+>6.2. Basic Configurations</A
+></H1
+><P
+>        While Red Hat Enterprise Linux can be configured in a variety of different ways, the
+        configurations can be broken into two major categories:
+      </P
+><P
+></P
+><UL
+><LI
+><P
+>            High-availability clusters using Red Hat Cluster Manager
+          </P
+></LI
+><LI
+><P
+>            Load-balancing clusters using Linux Virtual Servers
+          </P
+></LI
+></UL
+><P
+>This part explains what a load-balancing cluster system is and how
+	to configure a load-balancing system using <I
+CLASS="FIRSTTERM"
+>Linux Virtual
+	Servers</I
+> on Red Hat Enterprise Linux.</P
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="S2-INTRODUCTION-LVS"
+>6.2.1. Load-Balancing Clusters Using Linux Virtual Servers</A
+></H2
+><P
+>	  To an outside user accessing a hosted service (such as a website or
+          database application), a Linux Virtual Server (LVS) cluster appears as
+          one server. In reality, however, the user is actually accessing a
+          cluster of two or more servers behind a pair of redundant LVS routers
+          that distribute client requests evenly throughout the cluster
+          system. Load-balanced clustered services allow administrators to use
+          commodity hardware and Red Hat Enterprise Linux to create continuous and consistent
+          access to all hosted services while also addressing availability
+          requirements.
+	</P
+><P
+>	  An LVS cluster consists of at least two layers. The first layer is
+	  composed of a pair of similarly configured Linux machines or
+	  <I
+CLASS="FIRSTTERM"
+>cluster members</I
+>. One of these machine acts as
+	  the <I
+CLASS="FIRSTTERM"
+>LVS routers</I
+>, configured to direct requests
+	  from the Internet to the cluster. The second layer consists of a
+	  cluster of machines called <I
+CLASS="FIRSTTERM"
+>real servers</I
+>. The
+	  real servers provide the critical services to the end-user while the
+	  LVS router balances the load on these servers.
+	</P
+><P
+>	  For a detailed overview of LVS clustering, refer to <A
+HREF="ch-lvs-overview.html"
+>Chapter 7 <I
+>Linux Virtual Server Overview</I
+></A
+>.
+	</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="ch-lvs-intro.html"
+ACCESSKEY="P"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.html"
+ACCESSKEY="H"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="ch-lvs-overview.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Introduction to Linux Virtual Server</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="ch-lvs-intro.html"
+ACCESSKEY="U"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Linux Virtual Server Overview</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
