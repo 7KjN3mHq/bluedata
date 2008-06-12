@@ -1,37 +1,32 @@
-CentOS5.1
+CentOS(4.6/5.1)
 
------
+修改系统默认语言编码
 # vi /etc/sysconfig/i18n
 LANG="zh_CN.GBK"
+CentOS4.6 再把如下设置改了：
+SUPPORTED="zh_CN.GBK:zh_CN:zh"
 
-
------
+关闭内核 ipv6 模块
 # vi /etc/modprobe.conf
 alias net-pf-10 off
 
-
------
+修改 hosts 文件（可再添加 IP 对应的主机名）
 # vi /etc/hosts
 127.0.0.1    localhost
+CentOS5.1 再注释掉如下设置：
 #::1            localhost6.localdomain6 localhost6
 
+安装使 yum 支持选择较快镜像的补丁
+# yum -y install yum-plugin-fastestmirror
 
------
-# vi /etc/yum.repos.d/CentOS-Base.repo
-:1,$s/mirrorlist=/#mirrorlist=/g
-:1,$s/#baseurl=/baseurl=/g
-:1,$s/mirror.centos.org\/centos/centos.candishosting.com.cn/g
-:wq
-
-
------
+安装 vim-enhanced （会自动安装所依赖的 vim）
 # yum -y install vim-enhanced
+配置开启语法着色及关闭显示行号
 # vi ~/.vimrc
 syntax on
 set nohlsearch
 
-
------
+常用命令的配置
 # vi ~/.bashrc
 alias h='history 25'
 alias ll='ls -lh --color=tty' 2>/dev/null
@@ -39,11 +34,10 @@ alias vi='vim'
 # source ~/.bash_profile
 # alias -p
 
-
------
-# yum -y install ntp
+使用 ntp 同步时间
 # ntpdate 210.72.145.44
 # hwclock -w
+定时同步（去掉了其它定时执行的任务）
 vi /etc/crontab
 #01 * * * * root run-parts /etc/cron.hourly
 #02 4 * * * root run-parts /etc/cron.daily
@@ -52,29 +46,24 @@ vi /etc/crontab
 
 0 0,12 * * * root ntpdate 210.72.145.44 ; hwclock -w
 
-
------
+去掉不需要启动服务
+# unset LANG
 # ntsysv
 
-# yum update
-
+升级
+# yum -y update
 # init 6
 
+移除不需要的内核（根据实际情况）
 # uname -a
 # rpm -qa | grep kernel
-kernel-2.6.9-55.0.2.EL
-kernel-smp-2.6.9-55.0.2.EL
-kernel-2.6.9-42.EL
-kernel-smp-2.6.9-42.EL
-kernel-utils-2.4-13.1.99
+# yum -y remove kernel-2.6.9-42.EL kernel-2.6.9-42.0.8.EL kernel-smp-2.6.9-42.EL
 
-# rpm -e kernel-2.6.9-42.EL kernel-2.6.9-42.0.8.EL kernel-smp-2.6.9-42.EL
-
-
------
+安装开发工具
 # yum -y install libtool gcc-c++
-## Installed: libtool  gcc-c++
 ## Dependency Installed: autoconf automake cpp libtool-libs glibc-kernheaders
                          glibc-headers glibc-devel gcc libstdc++-devel
+
+清理下载的包
 # yum -e 0 -d 0 clean packages
 # yum clean all

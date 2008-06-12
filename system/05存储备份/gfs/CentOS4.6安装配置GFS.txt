@@ -1,0 +1,104 @@
+CentOS4.6 安装配置 GFS
+
+在 /etc/hosts 文件添加：
+192.168.0.171   centos4-1
+192.168.0.172   centos4-2
+
+添加 yum 源
+cd /etc/yum.repos.d/
+wget http://mirror.centos.org/centos/4/csgfs/CentOS-csgfs.repo
+
+更新系统
+yum -y update
+
+安装 Red Hat Cluster Suite with DLM 所需要的包：
+yum install ccs cman-kernel-smp dlm dlm-kernel-smp fence iddev magma magma-plugins gulm perl-Net-Telnet
+
+安装 Red Hat GFS 所需要的包：
+yum install GFS GFS-kernel-smp lvm2-cluster
+
+配置 cluster
+vi /etc/cluster/cluster.conf
+<?xml version="1.0"?>
+<cluster name="alpha_cluster" config_version="1">
+
+<cman two_node="1" expected_votes="1">
+</cman>
+
+<clusternodes>
+<clusternode name="centos4-1" votes="1">
+<fence>
+<method name="single">
+<device name="human" ipaddr="192.168.0.171"/>
+</method>
+</fence>
+</clusternode>
+
+<clusternode name="centos4-2" votes="1">
+<fence>
+<method name="single">
+<device name="human" ipaddr="192.168.0.172"/>
+</method>
+</fence>
+</clusternode>
+</clusternodes>
+
+<fencedevices>
+<fencedevice name="human" agent="fence_manual"/>
+</fencedevices>
+
+</cluster>
+
+配置 fence
+cd /sbin
+mv fence_manual fence_manual~
+vi /sbin/fence_manual
+#!/bin/sh
+exit 0
+
+在集群开始前插入模块
+vi /etc/sysconfig/cluster
+modprobe lock_dlm
+modprobe gfs
+
+启动 cluster
+service ccsd start
+service cman start
+service fenced start
+
+检查一下是否正常
+ccs_tool lsnode
+Cluster name: alpha_cluster, config_version: 1
+
+Nodename                        Votes Nodeid Iface Fencetype
+centos4-1                          1               human
+centos4-2                          1               human
+
+ccs_tool lsfence
+Name             Agent
+human            fence_manual
+
+cman_tool services
+Service          Name                              GID LID State     Code
+Fence Domain:    "default"                           3   2 run       -
+[2 1]
+
+配置 clvm
+vi /etc/lvm/lvm.conf
+locking_type = 3
+
+service clvmd start
+
+设置开机自启动
+ntsysv
+选中 clvmd
+可以把不用的 lock_gulmd 和 scsi_reserve 去掉。
+
+只在一个节点上执行如下操作：
+pvcreate /dev/sda
+vgcreate vg0 /dev/sda
+lvcreate -l 18431 -n lv1 vg0
+gfs_mkfs -j 2 -p lock_dlm -t alpha_cluster:gfs /dev/vg0/lv1
+
+挂载后即可使用
+mount -t gfs /dev/vg0/lv1 /mnt
