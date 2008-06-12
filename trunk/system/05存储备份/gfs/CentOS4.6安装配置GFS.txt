@@ -102,3 +102,4 @@ gfs_mkfs -j 2 -p lock_dlm -t alpha_cluster:gfs /dev/vg0/lv1
 
 挂载后即可使用
 mount -t gfs /dev/vg0/lv1 /mnt
+可以写入 /etc/rc.local 开机自动挂载。
