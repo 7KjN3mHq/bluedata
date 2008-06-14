@@ -1,0 +1,67 @@
+修复 rpmdb
+# rm -f /var/lib/rpm/__db.*
+# rpm -vv --rebuilddb
+
+解开 rpm 包到当前文件夹下面
+rpm2cpio *.rpm | cpio -id
+
+如何取得 spec
+rpm2cpio foo.src.rpm > foo.cpio
+cpio -i < foo.cpio
+
+启动时自动 fsck
+非正常重启后，系统缺省只会提示“Press Y in 5 seconds to force file system integrity check”。
+对于那些无人看守的服务器，系统只会在等待5秒之后继续正常启动而不会做 FSCK 操作。
+解决办法：
+# echo "AUTOFSCK_TIMEOUT=5" > /etc/sysconfig/autofsck
+# echo "AUTOFSCK_DEF_CHECK=yes" >> /etc/sysconfig/autofsck
+
+扩展YUM源（DAG）
+http://dag.wieers.com/rpm/FAQ.php#B
+
+
+YUM 使用 DVD 光盘或 ISO 文件
+先把光盘或 ISO 文件挂载到文件系统：
+# mkdir /media/CentOS
+挂载光盘
+# mount /dev/cdrom /media/CentOS
+或挂载 ISO 文件
+mount -o loop /home/iso/CentOS-5.1-i386-bin-DVD.iso /media/CentOS
+
+然后修改 /etc/yum.repos.d/Centos-Media.repo 文件的内容如下：
+[c5-media]
+name=CentOS-$releasever - Media
+baseurl=file:///media/CentOS/
+gpgcheck=0
+
+再把 Centos-Basic.repo 改名：
+# cd /etc/yum.repos.d
+# mv Centos-Basic.repo Centos-Basic.repo.bak
+
+yum 安装软件时就是使用光盘或者 ISO 文件了。
+
+
+开机自动加载内核模块
+CentOS4(RHEL4) 的 /etc/rc.sysinit 文件中有这样一段：
+# Load modules (for backward compatibility with VARs)
+if [ -f /etc/rc.modules ]; then
+        /etc/rc.modules
+fi
+
+所以，可以创建 /etc/rc.modules 文件来加载模块。如：
+vi /etc/rc.modules
+#!/bin/sh
+#
+# This script will be load other user-defined modules.
+
+modprobe softdog
+
+chmod +x /etc/rc.modules
+
+而在 CentOS5(RHEL5) 的 /etc/rc.sysinit 文件的上述一段之前还有一段：
+# Load other user-defined modules
+for file in /etc/sysconfig/modules/*.modules ; do
+  [ -x $file ] && $file
+done
+
+可以参照 /etc/sysconfig/modules 目录下的 udev-stw.modules 创建一个以 .modules 结尾的可执行文件来加载模块。

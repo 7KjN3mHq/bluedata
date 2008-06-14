@@ -19,7 +19,7 @@ CentOS5.1 再注释掉如下设置：
 安装使 yum 支持选择较快镜像的补丁
 # yum -y install yum-plugin-fastestmirror
 
-安装 vim-enhanced （会自动安装所依赖的 vim）
+安装 vim-enhanced （会自动安装所依赖的 vim-common）
 # yum -y install vim-enhanced
 配置开启语法着色及关闭显示行号
 # vi ~/.vimrc
@@ -35,6 +35,7 @@ alias vi='vim'
 # alias -p
 
 使用 ntp 同步时间
+# yum -y install ntp
 # ntpdate 210.72.145.44
 # hwclock -w
 定时同步（去掉了其它定时执行的任务）
@@ -57,7 +58,7 @@ vi /etc/crontab
 移除不需要的内核（根据实际情况）
 # uname -a
 # rpm -qa | grep kernel
-# yum -y remove kernel-2.6.9-42.EL kernel-2.6.9-42.0.8.EL kernel-smp-2.6.9-42.EL
+# yum -y remove kernel-2.6.9-67.EL kernel-2.6.9-67.0.15.EL kernel-smp-2.6.9-67.EL
 
 安装开发工具
 # yum -y install libtool gcc-c++
