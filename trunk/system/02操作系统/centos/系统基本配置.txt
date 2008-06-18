@@ -19,6 +19,15 @@ CentOS5.1 再注释掉如下设置：
 安装使 yum 支持选择较快镜像的补丁
 # yum -y install yum-plugin-fastestmirror
 
+配置 yum 源。
+# cd /etc/yum.repos.d
+# cp -a CentOS-Base.repo CentOS-Base.repo.bak
+# vi CentOS-Base.repo
+:1,$s/mirrorlist=/#mirrorlist=/g
+:1,$s/#baseurl=/baseurl=/g
+:1,$s/mirror.centos.org\/centos/centos.candishosting.com.cn/g
+:wq
+
 安装 vim-enhanced （会自动安装所依赖的 vim-common）
 # yum -y install vim-enhanced
 配置开启语法着色及关闭显示行号
