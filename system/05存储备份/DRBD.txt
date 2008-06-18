@@ -1,0 +1,182 @@
+yum install kmod-drbd82-smp drbd82
+
+/usr/share/doc/drbd82-8.2.6/drbd.conf
+
+vi /etc/drbd.conf
+resource data {
+    protocol C;
+    net {
+        after-sb-0pri discard-older-primary;
+        after-sb-1pri call-pri-lost-after-sb;
+        after-sb-2pri call-pri-lost-after-sb;
+    }
+    on centos4-1 {
+        device    /dev/drbd0;
+        disk      /dev/hda7;
+        address   192.168.0.171:8000;
+        meta-disk internal;
+    }
+    on centos4-2 {
+        device    /dev/drbd0;
+        disk      /dev/hda7;
+        address   192.168.0.172:8000;
+        meta-disk internal;
+    }
+}
+resource home {
+    protocol C;
+    net {
+        after-sb-0pri discard-older-primary;
+        after-sb-1pri call-pri-lost-after-sb;
+        after-sb-2pri call-pri-lost-after-sb;
+    }
+    on centos4-1 {
+        device    /dev/drbd1;
+        disk      /dev/hda8;
+        address   192.168.0.171:8001;
+        meta-disk internal;
+   }
+   on centos4-2 {
+        device    /dev/drbd1;
+        disk      /dev/hda8;
+        address   192.168.0.172:8001;
+        meta-disk internal;
+   }
+}
+
+两台机器都执行：
+drbdadm create-md data
+drbdadm create-md home
+
+可能会出现这样的错误：
+v08 Magic number not found
+md_offset 3010412544
+al_offset 3010379776
+bm_offset 3010285568
+
+Found ext3 filesystem which uses 2939860 kB
+current configuration leaves usable 2939732 kB
+
+Device size would be truncated, which
+would corrupt data and result in
+'access beyond end of device' errors.
+You need to either
+   * use external meta data (recommended)
+   * shrink that filesystem first
+   * zero out the device (destroy the filesystem)
+Operation refused.
+
+Command 'drbdmeta /dev/drbd0 v08 /dev/hda7 internal create-md' terminated with exit code 40
+drbdadm aborting
+
+解决办法：
+dd if=/dev/zero bs=1M count=1 of=/dev/hda7; sync
+drbdadm create-md data
+
+在其中一个节点上：
+drbdadm adjust data
+drbdsetup /dev/drbd0 primary -o
+
+然后都开启服务：
+/etc/init.d/drbd start
+
+创建文件系统后就可以挂载使用了
+mkfs -t ext3 /dev/drbd0
+
+
+LVM
+vi /etc/drbd.conf
+resource r0 {
+    protocol C;
+    net {
+        after-sb-0pri discard-older-primary;
+        after-sb-1pri call-pri-lost-after-sb;
+        after-sb-2pri call-pri-lost-after-sb;
+    }
+    on centos4-1 {
+        device    /dev/drbd0;
+        disk      /dev/hda7;
+        address   192.168.0.171:7789;
+        meta-disk internal;
+    }
+    on centos4-2 {
+        device    /dev/drbd0;
+        disk      /dev/hda7;
+        address   192.168.0.172:7789;
+        meta-disk internal;
+    }
+}
+
+在两个节点上创建资源并启动 drbd
+drbdadm create-md r0
+/etc/init.d/drbd start
+
+配置 LVM
+vi /etc/lvm/lvm.conf
+# filter = [ "a/.*/" ]
+filter = [ "r|/dev/cdrom|", "r|/dev/hda7|", "a|/dev/drbd0|" ]
+
+把一个节点设置为主节点
+drbdsetup /dev/drbd0 primary -o
+
+然后创建 pv/vg/lv
+pvcreate /dev/drbd0
+vgcreate vg1 /dev/drbd0
+lvcreate -L 4G -n lv1 vg1
+lvcreate -l 1595 -n lv2 vg1
+
+mkfs -t ext3 /dev/vg1/lv1
+mkfs -t ext3 /dev/vg1/lv2
+
+mount -t ext3 /dev/vg1/lv1 /data
+mount -t ext3 /dev/vg1/lv2 /home
+
+cd /data
+echo "test" > test
+
+umount /data
+umount /home
+vgchange -a n vg1
+drbdadm secondary r0
+
+
+drbdadm primary r0
+vgscan    # 第一次需要，以后就不用再 vgscan 了。
+vgchange -a y vg1
+mount -t ext3 /dev/vg1/lv1 /data
+mount -t ext3 /dev/vg1/lv2 /home
+
+cat /data/test
+test
+
+cd /home
+echo "test" > test
+
+交换上面的步骤，在 node1 的 /home 目录下应该也能看到 test 文件。
+
+调整容量：
+umount /data
+umount /home
+lvremove /dev/vg1/lv2
+lvextend -L +1.23G /dev/vg1/lv1
+e2fsck -f /dev/vg1/lv1
+resize2fs /dev/vg1/lv1
+
+lvcreate -l 1280 -n lv2 vg1
+mkfs -t ext3 /dev/vg1/lv2
+
+mount -t ext3 /dev/vg1/lv1 /data
+mount -t ext3 /dev/vg1/lv2 /home
+
+/data 下的 test 文件还在。
+
+进行主从交换。在 node2 上可以看到 /dev/vg1/lv1 的容量已经扩大了。
+
+heartbeat 的配置：
+vi /etc/ha.d/haresources
+centos4-1 \
+IPaddr::192.168.0.170/24/eth0 \
+drbddisk::r0 \
+LVM::vg1 \
+Filesystem::/dev/vg1/lv1::/data::ext3 \
+Filesystem::/dev/vg1/lv2::/home::ext3

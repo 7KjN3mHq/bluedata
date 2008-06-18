@@ -1,3 +1,6 @@
+创建初始账号
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root';
+
 通过 SQL 语句创建表
 CREATE TABLE `temp` SELECT * FROM `supermarket_goods` WHERE `supermarket_id` = 14
 
