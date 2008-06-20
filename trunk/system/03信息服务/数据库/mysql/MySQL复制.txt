@@ -3,10 +3,10 @@ mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%' IDENTIFIED BY 'slave';
 
 修改配置文件：
 ## master
-server-id        = 170
-log-bin          = /home/log-bin/mysql-bin
-binlog-do-db     = test
-binlog-ignore-db = mysql information_schema
+log-bin=mysql-bin
+server-id      = 170
+#binlog-do-db     = test
+#binlog-ignore-db = mysql information_schema
 
 ## slave
 server-id        = 162
@@ -14,10 +14,183 @@ master-host      = 192.168.0.170
 master-port      = 3307
 master-user      = slave
 master-password  = slave
-relay-log        = /home/log-bin/relay-bin
-replicate-do-db  = test
-binlog-ignore-db = mysql information_schema
+relay-log        = /var/log/mysqld/relay-bin
+read-only        = 1
+#replicate-do-db  = test
+#binlog-ignore-db = mysql information_schema
 
 查看信息：
 SHOW MASTER STATUS;
 SHOW SLAVE STATUS;
+
+master.info:
+Line Description
+1 Master_Log_File
+2 Read_Master_Log_Pos
+3 Master_Host
+4 Master_User
+5 Password (not shown by SHOW SLAVE STATUS)
+6 Master_Port
+7 Connect_Retry
+
+
+
+生成新的 binlog 文件：
+1. 执行 mysqladmin refresh
+2. 执行 mysqladmin flush-logs
+3. 执行 FLUSH LOGS;
+4. 重新启动 mysqld
+
+master 上 flush logs; ， slave 上的 relay-bin 也会 flush
+
+
+PURGE MASTER LOGS TO 'mysql-bin.000030';
+即可删除930之前的binlog
+用这个语句可以清除3天前的binlog,
+PURGE MASTER LOGS BEFORE DATE_SUB( NOW( ), INTERVAL 3 DAY);
+所以另外还有个方法定期删除binlog,在contab设置:
+0 1 * * * `mysql -uroot -e 'PURGE MASTER LOGS BEFORE DATE_SUB( NOW( ), INTERVAL 3 DAY);'`
+
+如果主机更新了replication slave user的密码，在SLAVE上执行：
+mysql> STOP SLAVE; -- if replication was running
+mysql> CHANGE MASTER TO MASTER_PASSWORD='new3cret';
+mysql> START SLAVE; -- if you want to restart replication
+
+备份slave数据时，要把这两个文件也备份起来，和中继日志一道。
+想要恢复slave时就用得到它们了。如果丢失了中继日志，但是 `relay-log.info` 文件还存在，那么就可以判断出SQL线程执行了多少master二进制日志。
+然后执行 CHANGE MASTER TO 语句，带上 MASTER_LOG_FILE 和 MASTER_LOG_POS 选项告诉slave要从master的二进制日志哪个位置重新读取。
+当然了，这要求master上相关的二进制日志都还留着。
+CHANGE MASTER TO MASTER_LOG_FILE='mysql-bin.000012' MASTER_LOG_POS='31580904';
+CHANGE MASTER TO
+  RELAY_LOG_FILE='mysql-bin.000021',
+  RELAY_LOG_POS=2225614,
+  MASTER_HOST='192.168.0.170';
+START SLAVE SQL_THREAD;
+
+CHANGE MASTER TO
+  RELAY_LOG_FILE='relay-bin.000003',
+  RELAY_LOG_POS=978504;
+
+更改了 relay-bin 的位置后，需要删除 relay-log.info 文件，再 START SLAVE;
+
+
+mysqlbinlog --stop-date="2005-04-20 9:59:59" /var/log/mysql/bin.123456 | mysql -uroot -ppwd
+该命令将恢复截止到在 --stop-date 选项中以 DATETIME 格式给出的日期和时间的所有数据。
+
+mysqlbinlog --start-date="2005-04-20 10:01:00" /var/log/mysql/bin.123456 | mysql -uroot -ppwd
+在该行中，从上午10:01登录的SQL语句将运行。组合执行前夜的转储文件和mysqlbinlog的两行可以将所有数据恢复到上午10:00前一秒钟。
+
+mysqlbinlog --start-date="2005-04-20 9:55:00" --stop-date="2005-04-20 10:05:00" /var/log/mysql/bin.123456 > /tmp/mysql_restore.sql
+该命令将在/tmp目录创建小的文本文件，将显示执行了错误的SQL语句时的SQL语句。
+
+mysqlbinlog --stop-position="368312" /var/log/mysql/bin.123456 | mysql -u root -pmypwd
+mysqlbinlog --start-position="368315" /var/log/mysql/bin.123456 | mysql -u root -pmypwd
+上面的第1行将恢复到停止位置为止的所有事务。下一行将恢复从给定的起始位置直到二进制日志结束的所有事务。
+
+
+master 断电造成 M-S 数据不同步。
+首先记录下 info 文件内容：
+master.info
+14
+mysql-bin.000002
+1677632
+192.168.0.170
+slave
+slave
+3307
+60
+0
+
+relay-log.info
+/var/log/mysqld/relay-bin.000004
+1677769
+mysql-bin.000002
+1677632
+
+slave pos > master pos
+原因分析：master 内存中的 sql 没有写入磁盘。
+
+解决办法：
+停止 master 和 slave 的 mysqld
+rsync 同步数据库目录
+删除所有 binlog 及 relaylog 和 info 文件
+先启动 master 再启动 slave
+
+
+备份策略：
+1. 获得当前 binlog: curr_binlog=`mysql -uroot -proot -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
+
+2. 先刷新 master 的 binlog 再停止 slave
+master: flush logs; slave: stop slave;
+
+3. 做完整备份 rsync
+
+4. 开始 slave: start slave;
+
+5. 复制 master 的 $curr_binlog 到前一个备份目录然后清除 $curr_binlog
+scp MASTER:/data/$curr_binlog /backup/$data/
+重新获得 $curr_binlog 后执行
+mysql -uroot -proot -hMASTER -e 'purge master logs to "'$curr_binlog'"'
+
+6. 打包备份目录并传送到远程备份主机
+
+
+stop slave io_thread;
+stop slave sql_thread;
+
+
+不停 master 恢复 slave 的尝试：
+stop slave;
+start slave;
+show slave status\G
+
+Slave_IO_Running: No
+
+start slave io_thread;
+不行
+
+mysqld restart
+依然不行
+
+stop slave;
+reset slave;
+start slave;
+
+Slave_SQL_Running: No
+
+出现写入错误，key 已存在，看来是
+Relay_Log_File: relay-bin.000003
+Relay_Log_Pos: 235
+Relay_Master_Log_File: mysql-bin.000001
+的问题，初始化了，重新插入肯定有问题。
+
+设定 relay-bin 的位置：
+stop slave;
+
+CHANGE MASTER TO
+  RELAY_LOG_FILE='relay-bin.000004',
+  RELAY_LOG_POS=1677769;
+
+start slave;
+
+成了：Slave_SQL_Running: No
+
+err.log 有这样的错误：
+[ERROR] Error initializing relay log position: Could not find target log during relay log initialization
+
+stop slave;
+
+CHANGE MASTER TO
+  MASTER_LOG_FILE='mysql-bin.000002',
+  MASTER_LOG_POS=3421;
+
+CHANGE MASTER TO
+  RELAY_LOG_FILE='relay-bin.000005',
+  RELAY_LOG_POS=1677769;
+
+start slave;
+
+Slave_SQL_Running: No
+
+start slave io_thread;
+start slave sql_thread;
