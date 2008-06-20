@@ -3,6 +3,7 @@ http://www.lua.org/
 http://mysql.cdpa.nsysu.edu.tw/Downloads/MySQL-Proxy/
 
 yum -y install readline-devel
+Installing for dependencies: libtermcap-devel
 
 tar zxvf lua-5.1.3.tar.gz
 cd lua-5.1.3
@@ -51,3 +52,121 @@ esac
 exit 0
 
 chmod +x /etc/init.d/mysql-proxy
+
+
+LVS 配置：
+
+yum -y install perl-FCGI perl-DBI perl-DBD-MySQL libdbi-dbd-mysql
+
+perl-DBD-MySQL 依赖 mysql
+libdbi-dbd-mysql 依赖 libdbi mysqlclient10
+
+mysql-i386.conf mysqlclient10-i386.conf
+
+避免和已安装的 MySQL 冲突： mv /etc/my.cnf /etc/my.cnf.bak
+
+使用已经安装的 MySQL 客户端及库：
+echo /usr/local/mysql/lib/mysql > /etc/ld.so.conf.d/mysql.conf
+ldconfig
+
+yum -y install perl-DBI perl-FCGI
+
+http://www.cpan.org/modules/by-module/DBD/
+tar zxvf DBD-mysql-x.xxxx.tar.gz
+cd DBD-mysql*
+perl Makefile.PL --mysql_config=/usr/local/mysql/bin/mysql_config
+make
+make install
+
+
+libdbi
+http://sourceforge.net/project/showfiles.php?group_id=23824
+tar zxvf libdbi-0.8.3.tar.gz
+cd libdbi-0.8.3
+./configure --prefix=/usr
+make
+make install
+
+libdbi-drivers
+http://sourceforge.net/project/showfiles.php?group_id=65979
+tar zxvf libdbi-drivers-0.8.3-1.tar.gz
+cd libdbi-drivers-0.8.3-1
+./configure --prefix=/usr --with-mysql
+make
+make install
+
+
+vi /etc/profile
+PATH=$PATH:$HOME/bin:/usr/local/mysql/bin
+export PATH
+
+source /etc/profile
+
+mkdir /var/lib/mysql
+ln -s /var/run/mysqld/mysql.sock /var/lib/mysql/mysql.sock
+
+vi /etc/ha.d/ldirectord.cf
+quiescent=no
+virtual=192.168.0.160:3307
+        real=192.168.0.161:3307 gate 2
+        real=192.168.0.162:3307 gate 3
+        service=mysql
+        checktype=negotiate
+        login="root"
+        passwd="root"
+        database="lvs"
+        request="SELECT * FROM checknode"
+        scheduler=wrr
+        protocol=tcp
+
+
+vi /etc/ha.d/resource.d/LVS
+#!/bin/sh
+# chkconfig: 2345 90 10
+# description: Preparing for Load Balancer and Real Server switching
+
+. /etc/init.d/functions
+
+unset LANG
+LC_ALL=C
+export LC_ALL
+
+VIP="192.168.0.160"
+IFACE="eth0"
+
+case "$1" in
+    start)
+        echo "Preparing for Load Balancer"
+        sysctl -w net.ipv4.ip_forward=1
+        ifconfig lo:0 down
+        sysctl -w net.ipv4.conf.all.arp_ignore=0
+        sysctl -w net.ipv4.conf.$IFACE.arp_ignore=0
+        sysctl -w net.ipv4.conf.all.arp_announce=0
+        sysctl -w net.ipv4.conf.$IFACE.arp_announce=0
+        ;;
+    stop)
+        echo "Preparing for Real Server"
+        sysctl -w net.ipv4.ip_forward=0
+        ifconfig lo:0 $VIP netmask 255.255.255.255 up
+        sysctl -w net.ipv4.conf.all.arp_ignore=1
+        sysctl -w net.ipv4.conf.$IFACE.arp_ignore=1
+        sysctl -w net.ipv4.conf.all.arp_announce=2
+        sysctl -w net.ipv4.conf.$IFACE.arp_announce=2
+        ;;
+    *)
+        echo "Usage: LVS {start|stop}"
+        exit 1
+esac
+
+realserver 上的设置：
+# vi /etc/rc.local
+ifconfig lo:0 192.168.0.160 netmask 255.255.255.255 up
+
+# vi /etc/sysctl.conf
+net.ipv4.conf.all.arp_ignore = 1
+net.ipv4.conf.eth1.arp_ignore = 1
+net.ipv4.conf.all.arp_announce = 2
+net.ipv4.conf.eth1.arp_announce = 2
+net.ipv4.conf.lo.rp_filter = 0
+
+sysctl -p
