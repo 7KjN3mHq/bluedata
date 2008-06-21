@@ -1,4 +1,4 @@
-yum install kmod-drbd82-smp drbd82
+yum -y install kmod-drbd82-smp drbd82
 
 /usr/share/doc/drbd82-8.2.6/drbd.conf
 

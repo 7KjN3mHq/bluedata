@@ -1,0 +1,12 @@
+tar 备份 Linux 系统的时候用了这样的命令：
+tar -cjpvf /mnt/winh/linux.tar.bz2 / --exclude=/mnt --exclude=/proc --exclude=/lost+found --exclude=/sys --exclude=/tmp
+
+恢复的时候：
+
+tar -xjpvf /mnt/winh/linux.tar.bz2 -C /
+
+使用 rsync 备份目录时也用 --exclude="/sourcedir/tmp" 发现并没有排除掉呢。
+
+还是得用 --exclude "tmp"，路径为相对路径。
+
+rsync -a --exclude "tmp" --exclude "temp" /sourcedir/ /backup/$(date +%Y%m%d --date='1 days ago')

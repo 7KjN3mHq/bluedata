@@ -1,0 +1,71 @@
+安装 JDK
+chmod +x jdk-6u6-linux-x64.bin
+./jdk-6u6-linux-x64.bin
+mv jdk1.6.0_06 /usr/local/
+
+编辑/etc/profile，加入：
+JAVA_HOME=/usr/local/jdk1.6.0_06
+CLASSPATH=${JAVA_HOME}/lib:${JAVA_HOME}/jre/lib:${JAVA_HOME}/lib/lucene-1.4.3.jar:${JAVA_HOME}/lib/luceneChinese.jar:${JAVA_HOME}/lib/mysql-connector-java-3.0.8-stable-bin.jar:${JAVA_HOME}/lib/googleapi.jar:.
+PATH=$PATH:${JAVA_HOME}/bin:${JAVA_HOME}/jre/bin
+export JAVA_HOME CLASSPATH PATH
+
+# source /etc/profile
+# java -version
+普通用户必须重新登陆环境变量才能生效。
+
+
+###
+## Redhat 9 and CentOS 3.x setting
+ln -s /usr/kerberos/include/com_err.h /usr/include/
+ln -s /usr/kerberos/include/krb5.h /usr/include/
+ln -s /usr/kerberos/include/profile.h /usr/include/
+###
+
+tar -zxvf resin-2.1.17.tar.gz
+mv resin-2.1.17 /usr/local/
+cd /usr/local/resin-2.1.17
+./configure --with-java-home=/usr/local/jdk1.6.0_06
+make
+make install
+
+###
+make
+jni_vfs.o: could not read symbols: 错误的值
+###
+
+cp -f /usr/local/resin-2.1.17/contrib/init.resin /etc/init.d/resin
+chmod +x /etc/init.d/resin
+chkconfig resin reset
+chkconfig resin on
+
+
+## configuration
+# vi /etc/profile
+RESIN_HOME=/usr/local/resin-2.1.17
+export RESIN_HOME
+
+# mkdir /var/log/resin
+# vi /usr/local/resin-2.1.17/conf/resin.conf
+<access-log id='/var/log/resin/access.log'
+<error-log id='/var/log/resin/error.log'/>
+
+# vi /etc/init.d/resin
+LANG="zh_CN.GBK"
+JAVA_HOME=/usr/local/jdk1.6.0_06
+RESIN_HOME=/usr/local/resin-2.1.17
+CLASSPATH=${JAVA_HOME}/lib:${JAVA_HOME}/jre/lib:${JAVA_HOME}/lib/lucene-1.4.3.jar:${JAVA_HOME}/lib/luceneChinese.jar:${JAVA_HOME}/lib/mysql-connector-java-3.0.8-stable-bin.jar:.
+PATH=$PATH:${JAVA_HOME}/bin:${JAVA_HOME}/jre/bin
+PID=/var/run/resin.pid
+
+export LANG JAVA_HOME RESIN_HOME CLASSPATH PATH
+
+ARGS="-java_home $JAVA_HOME -resin_home $RESIN_HOME -J-ms1536m -J-mx1536m"
+
+## note
+error:
+Can't connect to X11 window server using ':0.0' as the value of the DISPLAY variable
+# vi /usr/local/resin-2.1.17/bin/wrapper.pl
+change
+$JAVA_ARGS .= " -Dresin.home=$SERVER_ROOT $EXTRA_JAVA_ARGS";
+to
+$JAVA_ARGS .= "-Djava.awt.headless=true -Dresin.home=$SERVER_ROOT $EXTRA_JAVA_ARGS";
