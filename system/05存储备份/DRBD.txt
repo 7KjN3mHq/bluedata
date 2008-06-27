@@ -180,3 +180,22 @@ drbddisk::r0 \
 LVM::vg1 \
 Filesystem::/dev/vg1/lv1::/data::ext3 \
 Filesystem::/dev/vg1/lv2::/home::ext3
+
+
+       wfc-timeout time
+              Wait for connection timeout.  The init script  drbd(8)
+              blocks  the  boot process until the DRBD resources are
+              connected.  This is so when the cluster manager starts
+              later, it does not see a resource with internal split-
+              brain.  In case you want to limit the wait time, do it
+              here.   Default  is  0, which means unlimited. Unit is
+              seconds.
+
+       degr-wfc-timeout time
+              Wait for  connection  timeout,  if  this  node  was  a
+              degraded cluster.  In case a degraded cluster (= clus-
+              ter with only one node left) is rebooted, this timeout
+              value is used instead of wfc-timeout, because the peer
+              is less likely to show up in time, if it had been dead
+              before.  Default is 60, unit is seconds. Value 0 means
+              unlimited.

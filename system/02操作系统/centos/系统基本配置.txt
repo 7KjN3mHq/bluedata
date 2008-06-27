@@ -21,6 +21,7 @@ CentOS5.1 再注释掉如下设置：
 
 配置 yum 源。
 # cd /etc/yum.repos.d
+# mv CentOS-Media.repo CentOS-Media.repo.bak
 # cp -a CentOS-Base.repo CentOS-Base.repo.bak
 # vi CentOS-Base.repo
 :1,$s/mirrorlist=/#mirrorlist=/g
