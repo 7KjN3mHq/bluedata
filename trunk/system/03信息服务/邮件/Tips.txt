@@ -1,0 +1,101 @@
+CentOS4.4 amavisd-new2.4.5 升级到 CentOS4.6 amavisd-new2.5.4 不能本地发信（通过 /usr/sbin/sendmail ）
+
+maillog:
+Jun 25 13:40:46 mail postfix/qmgr[15067]: 6A3907598A: from=<bluedata@jc001.cn>, size=607, nrcpt=2 (queue active)
+
+mailq:
+6A3907598A      607 Wed Jun 25 13:40:46  bluedata@jc001.cn
+(host 127.0.0.1[127.0.0.1] said: 451 4.5.0 Error in processing, id=21605-19, quar+notif FAILED: temporarily unable to quarantine: 451 4.5.0 Local delivery(1) to /var/spool/vscan/virusmails/spam-QqKblBB+1Ibj.gz failed: File /var/spool/vscan/virusmails/spam-QqKblBB+1Ibj.gz exists??? Refuse to overwrite it, \310\250\317\336\262\273\271\273 at (eval 88) line 138, <GEN101> line 44., id=21605-19 at /usr/sbin/amavisd line 10359, <GEN101> line 44. (in reply to end of DATA command))
+                                         bluedata_cn@163.com
+
+
+vi /etc/amavisd.conf
+read_hash(\%whitelist_sender, '/var/spool/vscan/.spamassassin/whitelist');
+read_hash(\%blacklist_sender, '/var/spool/vscan/.spamassassin/blacklist');
+
+cd /var/spool/vscan/.spamassassin/
+touch whitelist
+touch blacklist
+
+/etc/init.d/amavisd restart
+
+
+vi /etc/maildroprc
+#*spam2junk
+if (/^X-Spam-Flag:.*YES/)
+{
+  to "$HOME/Maildir/.Junk/."
+}
+
+
+vi /etc/mail/spamassassin/local.cf
+##################################################
+#Follow is diables some bad rules for chinese mail
+##################################################
+score SUBJ_FULL_OF_8BITS 0.0
+score BASE64_ENC_TEXT 0.0
+score BAYES_99 0.1
+score BAYES_90 0.1
+score BAYES_80 0.1
+score BAYES_70 0.1
+score BAYES_60 0.1
+score FROM_ILLEGAL_CHARS 0.1
+score HEAD_ILLEGAL_CHARS 0.1
+score SUBJ_ILLEGAL_CHARS 0.1
+score MIME_BASE64_TEXT 0.1
+score FAKE_HELO_AOL 0.1
+score NO_RDNS_DOTCOM_HELO 0.1
+score CHINA_HEADER 0.1
+
+
+grep 'X-Envelope-From:' /var/spool/vscan/virusmails.1 | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /var/log/spam/user-`date +%Y%m%d`
+
+grep 'X-Envelope-From:' /var/spool/vscan/virusmails.1 | cut -d '@' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /var/log/spam/user-`date +%Y%m%d`
+
+
+
+
+grep 'X-Envelope-From:' /var/spool/vscan/virusmails | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/user.txt
+
+grep 'X-Envelope-From:' /var/spool/vscan/virusmails | cut -d '@' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/domain.txt
+
+
+
+find `find /home/domains -type d -name ".Junk"` -type f -exec rm {} \;
+
+find `find /home/domains -type d -name "cur"` -type f -atime +90 -exec rm {} \;
+
+
+for x in `find /home/domains -type d -name "cur"` ; do
+find $x -type f -atime +90 -exec rm {} \;
+done
+
+
+cat base64.php
+#!/usr/bin/php
+<?
+#$encode=base64_encode($argv[1]);
+$decode=base64_decode($argv[1]);
+#echo $encode;
+echo $decode;
+?>
+
+
+grep 'blocked by localctrl' /var/log/slockd.log | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/blocked.txt
+
+grep 'OK' /var/log/slockd.log | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/ok.txt
+
+
+动态域名
+/\.88ip.net$/
+/\.kmip.net$/
+/\.dns0755.net$/
+/\.xs4all.nl$/
+/\.k12.wi.us$/
+/\.3322.org$/
+/\.gicp.net$/
+/\.vicp.net$/
+/\.51vip.biz$/
+/\.k12.mo.us$/
+/\.vicp.cc$/
+/\.hinet.net$/

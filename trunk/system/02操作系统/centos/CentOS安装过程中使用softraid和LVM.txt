@@ -1,0 +1,44 @@
+CentOS 安装过程中使用 softraid 和 LVM
+
+磁盘分区设置开始时 Alt+F2 切换到 shell 进行如下操作：
+fdisk /dev/sda
+分两个主分区， sda1 100M ，剩下的全给 sda2 ，并且把分区类型都设为 fd
+/dev/sdb 也做同样操作。 
+
+创建 RAID1
+mdadm -C /dev/md0 -l1 -n2 -c128 /dev/sd[a,b]1
+mdadm -C /dev/md1 -l1 -n2 -c128 /dev/sd[a,b]2
+
+创建 VG
+lvm pvcreate /dev/md1
+lvm vgcreate vg0 /dev/md1
+
+然后 Alt+F1 切换回安装界面继续使用 Disk Druid 进行分区操作：
+编辑 /dev/md0 ，格式化为 ext3 ，挂载点设为 /boot
+在 vg0 上添加逻辑卷挂载根 swap 及其它目录。
+
+安装完成进入系统后执行如下操作：
+grub
+> device (hd0) /dev/sda
+> root (hd0,0)
+> setup (hd0)
+> device (hd1) /dev/sdb
+> root (hd1,0)
+> setup (hd1)
+
+如果不能引导，重新用光盘引导系统， linux rescue 进入修复模式执行以上操作。
+
+更换从盘 sdb ：
+进入系统后执行 fdisk /dev/sdb ，创建和安装系统时一样的分区结构。
+
+然后重新加入 RAID
+mdadm /dev/md0 --add /dev/sdb1
+mdadm /dev/md1 --add /dev/sdb2
+
+再把 grub 写入 MBR
+grub
+> device (hd1) /dev/sdb
+> root (hd1,0)
+> setup (hd1)
+
+更换主盘 sda 需要互换 sda 和 sdb 的数据线接口再进行上述操作。
