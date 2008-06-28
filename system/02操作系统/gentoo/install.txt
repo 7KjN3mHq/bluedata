@@ -1,0 +1,92 @@
+net-setup eth0
+
+/etc/init.d/sshd start
+
+passwd
+
+modprobe raid1
+modprobe dm-mod
+
+fdisk /dev/sda
+fdisk /dev/sdb
+
+fdisk -l /dev/sda
+
+Disk /dev/sda: 343.5 GB, 343597383680 bytes
+255 heads, 63 sectors/track, 41773 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Disk identifier: 0xd1356ef6
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1               1          13      104391   fd  Linux raid autodetect
+/dev/sda2              14         138     1004062+  82  Linux swap / Solaris
+/dev/sda3             139       41773   334433137+  fd  Linux raid autodetect
+
+mknod /dev/md0 b 9 0
+mknod /dev/md1 b 9 1
+
+mdadm -C /dev/md0 -l1 -n2 /dev/sd[a,b]1
+mdadm -C /dev/md1 -l1 -n2 /dev/sd[a,b]3
+
+cat /proc/mdstat
+
+vgscan
+pvcreate /dev/md1
+vgcreate vg0 /dev/md1
+lvcreate -L 1G -n lv1 vg0
+lvcreate -L 1G -n lv2 vg0
+lvcreate -L 5G -n lv3 vg0
+lvcreate -L 2G -n lv4 vg0
+
+mke2fs /dev/md0
+mke2fs -j /dev/vg0/lv1
+mke2fs -j /dev/vg0/lv2
+mke2fs -j /dev/vg0/lv3
+mke2fs -j /dev/vg0/lv4
+
+mkswap /dev/sda2 && mkswap /dev/sdb2
+swapon -p 1 /dev/sda2 && swapon -p 1 /dev/sdb2
+swapon -v -s
+
+mount /dev/vg0/lv1 /mnt/gentoo
+cd /mnt/gentoo
+mkdir boot usr var tmp
+mount /dev/md0 /mnt/gentoo/boot
+mount /dev/vg0/lv2 /mnt/gentoo/tmp
+mount /dev/vg0/lv3 /mnt/gentoo/usr
+mount /dev/vg0/lv4 /mnt/gentoo/var
+chmod 1777 /mnt/gentoo/tmp
+
+
+wget http://www.bluedata.org/software/linux/gentoo/stage3-i686-2008.0_beta2.tar.bz2
+tar xjpf stage3-i686-2008.0_beta2.tar.bz2
+
+cd usr
+http://www.bluedata.org/software/linux/gentoo/portage-latest.tar.bz2
+tar xjf portage-latest.tar.bz2
+
+
+cd /
+mount -t proc proc /mnt/gentoo/proc
+cp -L /etc/resolv.conf /mnt/gentoo/etc/
+chroot /mnt/gentoo /bin/bash
+env-update && source /etc/profile
+
+ls /usr/share/zoneinfo
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+date
+
+nano /etc/hosts
+sed -i -e 's/HOSTNAME.*/HOSTNAME="gentoo"/' /etc/conf.d/hostname
+hostname gentoo
+hostname -f
+
+
+emerge gentoo-sources
+cd /usr/src/linux
+make menuconfig
+make -j2
+make modules_install
+cp arch/i386/boot/bzImage /boot/kernel
+
+nano -w fstab
