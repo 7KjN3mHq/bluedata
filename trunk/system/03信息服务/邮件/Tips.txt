@@ -84,18 +84,3 @@ echo $decode;
 grep 'blocked by localctrl' /var/log/slockd.log | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/blocked.txt
 
 grep 'OK' /var/log/slockd.log | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/ok.txt
-
-
-¶¯Ì¬ÓòÃû
-/\.88ip.net$/
-/\.kmip.net$/
-/\.dns0755.net$/
-/\.xs4all.nl$/
-/\.k12.wi.us$/
-/\.3322.org$/
-/\.gicp.net$/
-/\.vicp.net$/
-/\.51vip.biz$/
-/\.k12.mo.us$/
-/\.vicp.cc$/
-/\.hinet.net$/
