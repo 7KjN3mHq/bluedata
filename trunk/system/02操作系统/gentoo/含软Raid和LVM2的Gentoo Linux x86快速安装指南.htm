@@ -1,0 +1,1277 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0069)http://www.gentoo.org/doc/zh_cn/gentoo-x86+raid+lvm2-quickinstall.xml -->
+<HTML lang=zh-cn><HEAD><TITLE>Gentoo Linux文档 -- 含软Raid和LVM2的Gentoo Linux x86快速安装指南</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=UTF-8"><LINK title=new 
+href="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/main.css" type=text/css 
+rel=stylesheet><LINK href="../../favicon.ico" type=image/x-icon 
+rel="shortcut icon"><LINK title="Gentoo Website" 
+href="http://www.gentoo.org/search/www-gentoo-org.xml" 
+type=application/opensearchdescription+xml rel=search><LINK 
+title="Gentoo Forums" href="http://www.gentoo.org/search/forums-gentoo-org.xml" 
+type=application/opensearchdescription+xml rel=search><LINK 
+title="Gentoo Bugzilla" href="http://www.gentoo.org/search/bugs-gentoo-org.xml" 
+type=application/opensearchdescription+xml rel=search><LINK 
+title="Gentoo Packages" 
+href="http://www.gentoo.org/search/packages-gentoo-org.xml" 
+type=application/opensearchdescription+xml rel=search><LINK 
+title="Gentoo List Archives" 
+href="http://www.gentoo.org/search/archives-gentoo-org.xml" 
+type=application/opensearchdescription+xml rel=search>
+<META content="MSHTML 6.00.2900.3354" name=GENERATOR></HEAD>
+<BODY style="MARGIN: 0px" bgColor=#ffffff>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top bgColor=#45347b height=125><A 
+      href="http://www.gentoo.org/"><IMG alt="Gentoo Logo" 
+      src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/gtop-www.jpg" 
+    border=0></A></TD></TR>
+  <TR>
+    <TD vAlign=top align=right bgColor=#ffffff>
+      <TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD class=content vAlign=top align=left width="99%"><BR>
+            <H1>含软Raid和LVM2的Gentoo Linux x86快速安装指南</H1>
+            <FORM name=contents action=http://www.gentoo.org><B>内容</B>: <SELECT 
+            style="FONT-FAMILY: sans-serif,Arial,Helvetica" 
+            onchange=location.href=form.url.options[form.url.selectedIndex].value 
+            size=1 name=url><OPTION value=#doc_chap1 selected>1. 介绍</OPTION> 
+              <OPTION value=#doc_chap2>2. 快速安装指南</OPTION></SELECT> </FORM>
+            <P class=chaphead><A name=doc_chap1></A><SPAN class=chapnum>1.&nbsp; 
+            </SPAN>介绍</P>
+            <P>本指南包含了完成一次从stage3开始安装Gentoo要用到的所有命令，包括实现建立在软RAID阵列之上的LVM2卷。本指南面向有经验的用户。你需要连接到Internet以下载stage3包和Portage快照。 
+            </P>
+            <P>新手应当阅读<A 
+            href="http://www.gentoo.org/doc/zh_cn/handbook/index.xml">手册</A>，其中有关于安装过程更完整的描述。 
+            </P>
+            <P>所有费时超过两秒的命令都会跟随着在屏幕上打印时间输出。这些命令的耗时是在一台AMD 2000 
+            1.66Ghz的PC上测试的，拥有512MB内存和两个建立了JBOD配置的SATA硬盘（即Gentoo可以看到两个单独的硬盘）。你的主板上可能有集成一个“硬”RAID控制器，但那通常<B>不是</B>真正的硬RAID。 
+            </P><A name=doc_chap1_pre1></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;1.1: 测试机器的规格</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE><SPAN class=code-comment>（下述配置和耗时情况帮你粗略估计完成整个安装过程大概需要的时间）</SPAN>
+
+# <SPAN class=code-input>grep bogo /proc/cpuinfo</SPAN>
+bogomips       : 3337.81
+
+# <SPAN class=code-input>hdparm -tT /dev/sda /dev/sdb</SPAN>
+/dev/sda:
+reads:   1048 MB in  2.00 seconds = 524.00 MB/sec
+ Timing buffered disk reads:  152 MB in  3.01 seconds =  50.50 MB/sec
+
+/dev/sdb:
+ Timing cached reads:   1048 MB in  2.00 seconds = 524.00 MB/sec
+ Timing buffered disk reads:  152 MB in  3.01 seconds =  50.50 MB/sec
+
+# <SPAN class=code-input>grep MemTotal /proc/meminfo</SPAN>
+MemTotal:       509248 kB
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=chaphead><A name=doc_chap2></A><SPAN class=chapnum>2.&nbsp; 
+            </SPAN>快速安装指南</P>
+            <P class=secthead><A name=doc_chap2_sect1>安装介质</A></P>
+            <P>从我们的<A 
+            href="http://www.gentoo.org/main/en/mirrors.xml">镜像</A>下载一张光盘。可以在<SPAN 
+            class=path 
+            dir=ltr>releases/x86/&lt;release&gt;/installcd</SPAN>中找到minimal 
+            CD的ISO文件，或者在<SPAN class=path 
+            dir=ltr>releases/x86/&lt;release&gt;/livecd</SPAN>中找到LiveCD的ISO文件。<SPAN 
+            class=emphasis>minimal</SPAN>安装盘只适用于有网络环境的安装。<SPAN 
+            class=emphasis>LiveCD</SPAN>适用于无网络环境的安装，参考文档<A 
+            href="http://www.gentoo.org/doc/zh_cn/handbook/2008.0/handbook-x86.xml">2008.0 
+            x86安装手册</A>。本指南推荐使用minimal CD。 </P>
+            <P><A 
+            href="http://www.gentoo.org/doc/zh_cn/faq.xml#isoburning">刻制</A>光盘，用它引导机器。 
+            </P>
+            <P class=secthead><A name=doc_chap2_sect2>从光盘启动</A></P>
+            <P>启动时按下<SPAN class=code dir=ltr>F2</SPAN>查看有哪些引导选项。你可以启动<SPAN 
+            class=code dir=ltr>gentoo</SPAN>或者<SPAN class=code 
+            dir=ltr>gentoo-nofb</SPAN>，后者禁用帧缓冲。如果你用LiveCD引导，别忘了添上<SPAN 
+            class=code 
+            dir=ltr>nox</SPAN>选项以防止启动X图形环境。有好几个选项可用于启用或禁用一些特性。正常情况下会检测出你的硬件并装载所有模块。如果内核无法正确引导或是在引导过程中挂机，你可能不得不尝试不同的配置。最安全的办法大概是使用<SPAN 
+            class=code dir=ltr>nodetect</SPAN>选项，然后显式地载入需要的模块。 </P><A 
+            name=doc_chap2_pre1></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.1: 从minimal CD启动</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>Gentoo Linux Installation LiveCD                     http://www.gentoo.org
+Enter to Boot; F1 for kernels  F2 for options.
+boot: <SPAN class=code-input>gentoo-nofb</SPAN>
+<SPAN class=code-comment>（或在有问题的情况下）</SPAN>
+boot: <SPAN class=code-input>gentoo-nofb nodetect</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect3>可选：装载模块</A></P>
+            <P>如果使用了<SPAN class=code 
+            dir=ltr>nodetect</SPAN>选项，就要在启动后载入必要的模块。你还要配置好网络并拥有访问磁盘的权限。<SPAN 
+            class=code dir=ltr>lspci</SPAN>命令能帮助你确认硬件信息。 </P><A 
+            name=doc_chap2_pre2></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.2: 载入必要的模块</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd root # <SPAN class=code-input>lspci</SPAN>
+<SPAN class=code-comment>（根据lspci的输出查看需要哪些模块）</SPAN>
+
+<SPAN class=code-comment>（以下只是个例子，实际以具体硬件为准）</SPAN>
+livecd root # <SPAN class=code-input>modprobe 3w-9xxx</SPAN>
+livecd root # <SPAN class=code-input>modprobe r8169</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect4>网络配置</A></P>
+            <P>如果还没开启网络，可以用<SPAN class=code 
+            dir=ltr>net-setup</SPAN>来配置网络。配置之前可能要先用<SPAN class=code 
+            dir=ltr>modprobe</SPAN>为网卡载入支持模块。如果你有ADSL，请使用<SPAN class=code 
+            dir=ltr>pppoe-setup</SPAN>和<SPAN class=code 
+            dir=ltr>pppoe-start</SPAN>。要支持PPTP，首先编辑<SPAN class=path 
+            dir=ltr>/etc/ppp/chap-secrets</SPAN>和<SPAN class=path 
+            dir=ltr>/etc/ppp/options.pptp</SPAN>，然后使用<SPAN class=code 
+            dir=ltr>pptp &lt;server&nbsp;ip&gt;</SPAN>。 </P>
+            <P>如果是无线连接，用<SPAN class=code 
+            dir=ltr>iwconfig</SPAN>设置无线连接参数，然后再次执行<SPAN class=code 
+            dir=ltr>net-setup</SPAN>或者手动运行<SPAN class=code 
+            dir=ltr>ifconfig</SPAN>、<SPAN class=code 
+            dir=ltr>dhcpcd</SPAN>和/或<SPAN class=code dir=ltr>route</SPAN>。 </P>
+            <P>如果你用代理，不要忘了使用<SPAN class=code dir=ltr>export 
+            http_proxy</SPAN>、<SPAN class=code dir=ltr>ftp_proxy</SPAN>和<SPAN 
+            class=code dir=ltr>RSYNC_PROXY</SPAN>初始化系统环境。 </P><A 
+            name=doc_chap2_pre3></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.3: 通过向导配置网络</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd root # <SPAN class=code-input>net-setup eth0</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>或者，你也可以手动打开网络。下面的例子把你电脑的IP地址配置为192.168.1.10，并把网关和域名服务器设为192.168.1.1。 
+            </P><A name=doc_chap2_pre4></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.4: 手动配置网络</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd root # <SPAN class=code-input>ifconfig eth0 192.168.1.10/24</SPAN>
+livecd root # <SPAN class=code-input>route add default gw 192.168.1.1</SPAN>
+livecd root # <SPAN class=code-input>echo nameserver 192.168.1.1 &gt; /etc/resolv.conf</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>安装盘允许你启动一个<SPAN class=code dir=ltr>sshd</SPAN>服务，添加用户，运行<SPAN 
+            class=code dir=ltr>irssi</SPAN>（一个命令行的客户端聊天工具），还可以使用<SPAN class=code 
+            dir=ltr>lynx</SPAN>或<SPAN class=code dir=ltr>links</SPAN>进行网上冲浪。 
+</P>
+            <P class=secthead><A name=doc_chap2_sect5>可选：通过ssh连接到你的新机器</A></P>
+            <P>最有趣的功能当然是<SPAN class=code 
+            dir=ltr>sshd</SPAN>。启动这个服务，从另一台机器连过来，然后从本指南复制/粘贴命令。 </P><A 
+            name=doc_chap2_pre5></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.5: 启动sshd</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd root # <SPAN class=code-input>time /etc/init.d/sshd start</SPAN>
+ * Generating hostkey ...
+<SPAN class=code-comment>（sshd生成密钥并显示更多输出）</SPAN>
+ * starting sshd ...                            [ok]
+
+real   0m13.688s
+user   0m9.420s
+sys    0m0.090s
+</PRE></TD></TR></TBODY></TABLE>
+            <P>现在设置一下安装盘的root密码，使你能通过另一台电脑连接。请注意正常情况下不推荐你允许root通过ssh连接。如果你的本地网络不太可靠，请设一个又长又复杂的密码。它只能使用一次，因为机器重启后就没掉了。 
+            </P><A name=doc_chap2_pre6></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.6: 设置root密码</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd root # <SPAN class=code-input>passwd</SPAN>
+New UNIX password: <SPAN class=code-comment>输入密码</SPAN>
+Retype new UNIX password: <SPAN class=code-comment>输入密码</SPAN>
+passwd: password updated successfully
+</PRE></TD></TR></TBODY></TABLE>
+            <P>现在就可以在另一台电脑上打开一个终端并连接到你的新机器，在新的窗口中继续本指南接下去的内容，复制/粘贴文中的命令。 </P><A 
+            name=doc_chap2_pre7></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.7: 从另一台电脑连到你的新机器</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE><SPAN class=code-comment>（使用你新机器的IP地址）</SPAN>
+$ <SPAN class=code-input>ssh root@192.168.1.10</SPAN>
+The authenticity of host '192.168.1.10 (192.168.1.10)' can't be established.
+RSA key fingerprint is 96:e7:2d:12:ac:9c:b0:94:90:9f:40:89:b0:45:26:8f.
+Are you sure you want to continue connecting (yes/no)? <SPAN class=code-input>yes</SPAN>
+Warning: Permanently added '192.168.1.10' (RSA) to the list of known hosts.
+Password: <SPAN class=code-comment>输入密码</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect6>准备磁盘</A></P>
+            <P>加载软RAID和LVM2模块。 </P><A name=doc_chap2_pre8></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.8: 加载RAID和LVM2模块</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd ~ # <SPAN class=code-input>modprobe raid0</SPAN>
+livecd ~ # <SPAN class=code-input>modprobe raid1</SPAN>
+<SPAN class=code-comment>（raid5、raid6和raid10也可用）</SPAN>
+
+livecd ~ # <SPAN class=code-input>modprobe dm-mod</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>使用<SPAN class=code dir=ltr>fdisk</SPAN>或者<SPAN class=code 
+            dir=ltr>cfdisk</SPAN>创建分区规划。设备名可能是<SPAN class=path 
+            dir=ltr>/dev/sda</SPAN>或者<SPAN class=path 
+            dir=ltr>/dev/hda</SPAN>，前者为SATA或SCSI硬盘，后者为IDE硬盘。本指南使用下面的规划方案： </P>
+            <TABLE class=ntable>
+              <TBODY>
+              <TR>
+                <TD class=tableinfo></TD>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/dev/sda</SPAN></B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/dev/sdb</SPAN></B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B>Type</B></TH></TR>
+              <TR>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/dev/md1</SPAN></B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/boot</SPAN></B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/boot</SPAN></B></TH>
+                <TD class=tableinfo>Raid-1 (mirroring)</TD></TR>
+              <TR>
+                <TH class=infohead style="TEXT-ALIGN: left"><B></B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B>swap</B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B>swap</B></TH>
+                <TD class=tableinfo>Normal partitions</TD></TR>
+              <TR>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/dev/md3</SPAN></B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/</SPAN></B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/</SPAN></B></TH>
+                <TD class=tableinfo>Raid-1 (mirroring)</TD></TR>
+              <TR>
+                <TH class=infohead style="TEXT-ALIGN: left"><B><SPAN 
+                  class=path dir=ltr>/dev/md4</SPAN></B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left" colSpan=2><B>LVM2 
+                  volumes</B></TH>
+                <TD class=tableinfo>Raid-0 (striped)</TD></TR></TBODY></TABLE>
+            <TABLE class=ncontent cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#ffffbb>
+                  <P class=note><B>重要: 
+                  </B>用于启动的分区绝不能设为striping模式。它不能是raid-5或raid-0。 
+              </P></TD></TR></TBODY></TABLE>
+            <TABLE class=ncontent cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#bbffbb>
+                  <P class=note><B>注意: 
+                  </B>如果你倾向于更好的稳定性，可以考虑将交换分区设为raid-1（或者甚至raid-5）。那样即使驱动器出故障，也不会破坏你的交换分区以及正在使用这个分区的应用程序。或者，如果你倾向于更好的性能，只要让内核使用独立的交换分区，这种分区默认设为striping模式。 
+                  </P></TD></TR></TBODY></TABLE><A name=doc_chap2_pre9></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.9: 创建分区</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd ~ # <SPAN class=code-input>fdisk /dev/sda</SPAN>
+<SPAN class=code-comment>（请确认使用的分区类型为fd）</SPAN>
+
+<SPAN class=code-comment>（本手册接下去使用以下分区规划）</SPAN>
+livecd ~ # <SPAN class=code-input>fdisk -l /dev/sda</SPAN>
+
+Disk /dev/sda: 299.9 GB, 299989204992 bytes
+255 heads, 63 sectors/track, 36471 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1               1          11       88326   fd  Linux raid autodetect
+/dev/sda2              12          61      401625   82  Linux swap / Solaris
+/dev/sda3              62         311     2008125   fd  Linux raid autodetect
+/dev/sda4             312       36471   290455200   fd  Linux raid autodetect
+
+<SPAN class=code-comment> （严格按照第一个磁盘的规划来为第二个磁盘分区）</SPAN>
+livecd ~ # <SPAN class=code-input>fdisk /dev/sdb</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>然后创建RAID节点和设备： </P><A name=doc_chap2_pre10></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.10: 创建节点和设备</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd ~ # <SPAN class=code-input>mknod /dev/md1 b 9 1</SPAN>
+livecd ~ # <SPAN class=code-input>mknod /dev/md3 b 9 3</SPAN>
+livecd ~ # <SPAN class=code-input>mknod /dev/md4 b 9 4</SPAN>
+
+livecd ~ # <SPAN class=code-input>mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sda1 /dev/sdb1</SPAN>
+mdadm: array /dev/md1 started.
+livecd ~ # <SPAN class=code-input>mdadm --create /dev/md3 --level=1 --raid-devices=2 /dev/sda3 /dev/sdb3</SPAN>
+mdadm: array /dev/md3 started.
+livecd ~ # <SPAN class=code-input>mdadm --create /dev/md4 --level=0 --raid-devices=2 /dev/sda4 /dev/sdb4</SPAN>
+mdadm: array /dev/md4 started.
+
+<SPAN class=code-comment>（等待所有单元就绪）</SPAN>
+livecd ~ # <SPAN class=code-input>cat /proc/mdstat</SPAN>
+Personalities : [raid0] [raid1]
+md4 : active raid0 sdb4[1] sda4[0]
+581006592 blocks 64k chunks
+
+md3 : active raid1 sdb3[1] sda3[0]
+1959808 blocks [2/2] [UU]
+
+md1 : active raid1 sdb1[1] sda1[0]
+88256 blocks [2/2] [UU]
+</PRE></TD></TR></TBODY></TABLE>
+            <P>然后在<SPAN class=path 
+            dir=ltr>/dev/md4</SPAN>创建LVM2。以下配置方案仅作为一个<B>例子</B>： </P>
+            <TABLE class=ntable>
+              <TBODY>
+              <TR>
+                <TH class=infohead 
+style="TEXT-ALIGN: left"><B>Directory</B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B>Size</B></TH>
+                <TH class=infohead style="TEXT-ALIGN: left"><B>File 
+                system</B></TH></TR>
+              <TR>
+                <TD class=tableinfo>/usr</TD>
+                <TD class=tableinfo>8 GB</TD>
+                <TD class=tableinfo>ext3</TD></TR>
+              <TR>
+                <TD class=tableinfo>/usr/portage</TD>
+                <TD class=tableinfo>2 GB</TD>
+                <TD class=tableinfo>ext2, small block size, many inodes</TD></TR>
+              <TR>
+                <TD class=tableinfo>/usr/portage/distfiles</TD>
+                <TD class=tableinfo>4 GB</TD>
+                <TD class=tableinfo>ext2, large bock size, less inodes</TD></TR>
+              <TR>
+                <TD class=tableinfo>/home</TD>
+                <TD class=tableinfo>10 GB</TD>
+                <TD class=tableinfo>ext3</TD></TR>
+              <TR>
+                <TD class=tableinfo>/opt</TD>
+                <TD class=tableinfo>4 GB</TD>
+                <TD class=tableinfo>ext3</TD></TR>
+              <TR>
+                <TD class=tableinfo>/var</TD>
+                <TD class=tableinfo>4 GB</TD>
+                <TD class=tableinfo>ext3</TD></TR>
+              <TR>
+                <TD class=tableinfo>/var/tmp</TD>
+                <TD class=tableinfo>6 GB</TD>
+                <TD class=tableinfo>ext2</TD></TR>
+              <TR>
+                <TD class=tableinfo>/tmp</TD>
+                <TD class=tableinfo>2 GB</TD>
+                <TD class=tableinfo>ext2</TD></TR></TBODY></TABLE><A 
+            name=doc_chap2_pre11></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.11: 创建LVM2卷</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd ~ # <SPAN class=code-input>vgscan</SPAN>
+  Reading all physical volumes.  This may take a while...
+  No volume groups found
+livecd ~ # <SPAN class=code-input>vgchange -a y</SPAN>
+  No volume groups found
+
+<SPAN class=code-comment>（创建物理卷，我们的例子中只有一个物理卷）</SPAN>
+livecd ~ # <SPAN class=code-input>pvcreate /dev/md4</SPAN>
+  Physical volume "/dev/md4" successfully created
+
+<SPAN class=code-comment>（创建卷组，我们的例子中也只有一个卷组）</SPAN>
+livecd ~ # <SPAN class=code-input>vgcreate vg /dev/md4</SPAN>
+  Volume group "vg" successfully created
+
+<SPAN class=code-comment>（创建逻辑卷）</SPAN>
+livecd ~ # <SPAN class=code-input>lvcreate -L8G -nusr vg</SPAN>
+  /dev/cdrom: open failed: Read-only file system
+  Logical volume "usr" created <SPAN class=code-comment>（未显示更多类似的信息）</SPAN>
+livecd ~ # <SPAN class=code-input>lvcreate -L2G -nportage vg</SPAN>
+livecd ~ # <SPAN class=code-input>lvcreate -L4G -ndistfiles vg</SPAN>
+livecd ~ # <SPAN class=code-input>lvcreate -L10G -nhome vg</SPAN>
+livecd ~ # <SPAN class=code-input>lvcreate -L4G -nopt vg</SPAN>
+livecd ~ # <SPAN class=code-input>lvcreate -L4G -nvar vg</SPAN>
+livecd ~ # <SPAN class=code-input>lvcreate -L6G -nvartmp vg</SPAN>
+livecd ~ # <SPAN class=code-input>lvcreate -L2G -ntmp vg</SPAN>
+
+<SPAN class=code-comment>（显示卷组和逻辑卷）</SPAN>
+livecd ~ # <SPAN class=code-input>vgs</SPAN>
+  VG   #PV #LV #SN Attr  VSize   VFree
+  vg     1   8   0 wz--n 554.09G 514.09G
+livecd ~ # <SPAN class=code-input>lvs</SPAN>
+  LV        VG   Attr   LSize  Origin Snap%  Move Copy%
+  distfiles vg   -wi-a-  4.00G
+  home      vg   -wi-a- 10.00G
+  opt       vg   -wi-a-  4.00G
+  portage   vg   -wi-a-  2.00G
+  tmp       vg   -wi-a-  2.00G
+  usr       vg   -wi-a-  8.00G
+  var       vg   -wi-a-  4.00G
+  vartmp    vg   -wi-a-  6.00G
+</PRE></TD></TR></TBODY></TABLE>
+            <P>使用<SPAN class=code dir=ltr>mke2fs</SPAN>，<SPAN class=code 
+            dir=ltr>mke2fs -j</SPAN>，<SPAN class=code 
+            dir=ltr>mkreiserfs</SPAN>，<SPAN class=code 
+            dir=ltr>mkfs.xfs</SPAN>和<SPAN class=code 
+            dir=ltr>mkfs.jfs</SPAN>建立文件系统。使用<SPAN class=code 
+            dir=ltr>mkswap</SPAN>和<SPAN class=code dir=ltr>swapon</SPAN>初始化交换分区。 
+            </P><A name=doc_chap2_pre12></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.12: 创建文件系统并激活交换分区</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE><SPAN class=code-comment>（ext2完全满足/boot分区的需要）</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs /dev/md1</SPAN>
+
+<SPAN class=code-comment>（主分区就用ext3吧）</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs -j /dev/md3</SPAN>
+
+<SPAN class=code-comment>（在逻辑卷上创建文件系统）</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs -b 4096 -T largefile /dev/vg/distfiles</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs -j /dev/vg/home</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs -j /dev/vg/opt</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs -b 1024 -N 200000 /dev/vg/portage</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs /dev/vg/tmp</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs -j /dev/vg/usr</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs -j /dev/vg/var</SPAN>
+livecd ~ # <SPAN class=code-input>mke2fs /dev/vg/vartmp</SPAN>
+
+<SPAN class=code-comment>（创建并激活交换分区）</SPAN>
+livecd ~ # <SPAN class=code-input>mkswap /dev/sda2 &amp;&amp; mkswap /dev/sdb2</SPAN>
+livecd ~ # <SPAN class=code-input>swapon -p 1 /dev/sda2 &amp;&amp; swapon -p 1 /dev/sdb2</SPAN>
+<SPAN class=code-comment>（检验所有的交换分区使用相同的优先级）</SPAN>
+livecd ~ # <SPAN class=code-input>swapon -v -s</SPAN>
+Filename                   Type            Size    Used    Priority
+/dev/sda2                  partition       401616  0       1
+/dev/sdb2                  partition       401616  0       1
+</PRE></TD></TR></TBODY></TABLE>
+            <P>把新建的文件系统挂载到<SPAN class=path 
+            dir=ltr>/mnt/gentoo</SPAN>。同时为其它挂载点创建目录并挂载好。 </P><A 
+            name=doc_chap2_pre13></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.13: 挂载文件系统</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd ~ # <SPAN class=code-input>mount /dev/md3 /mnt/gentoo</SPAN>
+livecd ~ # <SPAN class=code-input>cd /mnt/gentoo</SPAN>
+livecd gentoo # <SPAN class=code-input>mkdir boot home usr opt var tmp</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/md1 /mnt/gentoo/boot</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/vg/usr /mnt/gentoo/usr</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/vg/home /mnt/gentoo/home</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/vg/opt /mnt/gentoo/opt</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/vg/tmp /mnt/gentoo/tmp</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/vg/var /mnt/gentoo/var</SPAN>
+livecd gentoo # <SPAN class=code-input>mkdir usr/portage var/tmp</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/vg/vartmp /mnt/gentoo/var/tmp</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/vg/portage /mnt/gentoo/usr/portage</SPAN>
+livecd gentoo # <SPAN class=code-input>mkdir usr/portage/distfiles</SPAN>
+livecd gentoo # <SPAN class=code-input>mount /dev/vg/distfiles /mnt/gentoo/usr/portage/distfiles</SPAN>
+
+<SPAN class=code-comment>（为临时文件夹设置适当的权限）</SPAN>
+livecd gentoo # <SPAN class=code-input>chmod 1777 /mnt/gentoo/tmp /mnt/gentoo/var/tmp</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect7>安装Stage</A></P>
+            <P>首先确保正确设置了日期和时间。执行<SPAN class=code dir=ltr>date 
+            MMDDhhmmYYYY</SPAN>，使用UTC时间。 </P><A name=doc_chap2_pre14></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.14: 设定日期和UTC时间</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE><SPAN class=code-comment>（查看时钟）</SPAN>
+livecd gentoo # <SPAN class=code-input>date</SPAN>
+Mon Mar  6 00:14:13 UTC 2006
+
+<SPAN class=code-comment>（设置当前日期和时间，如果需要的话）</SPAN>
+livecd gentoo # <SPAN class=code-input>date 030600162006</SPAN> <SPAN class=code-comment>（格式为MMDDhhmmYYYY）</SPAN>
+Mon Mar  6 00:16:00 UTC 2006
+</PRE></TD></TR></TBODY></TABLE>
+            <P>接下来，从我们的<A 
+            href="http://www.gentoo.org/main/en/mirrors.xml">镜像</A>下载一份stage包。进入<SPAN 
+            class=path dir=ltr>/mnt/gentoo</SPAN>，执行<SPAN class=code dir=ltr>tar 
+            xjpf &lt;stage3 tarball&gt;</SPAN>解压stage包。 </P><A 
+            name=doc_chap2_pre15></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.15: 下载一份stage3压缩包</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd gentoo # <SPAN class=code-input>links http://www.gentoo.org/main/en/mirrors.xml</SPAN>
+<SPAN class=code-comment>（选一个镜像，进入/x86/2008.0_beta2/stages目录，高亮显示你需要的stage3包，
+即i686 stage3，按下D键下载）</SPAN>
+
+<SPAN class=code-comment>（<B>或者</B>不选择最近的镜像，直接用wget下载）</SPAN>
+livecd gentoo # <SPAN class=code-input>wget ftp://gentoo.osuosl.org/pub/gentoo/releases/x86/2008.0_beta2/stages/stage3-i686*tar.bz2</SPAN>
+</PRE></TD></TR></TBODY></TABLE><A name=doc_chap2_pre16></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.16: 解开stage3压缩包</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd gentoo # <SPAN class=code-input>time tar xjpf stage3*</SPAN>
+
+real  1m14.157s
+user  1m2.920s
+sys   0m7.530s
+</PRE></TD></TR></TBODY></TABLE>
+            <P>安装最新的Portage快照。跟下载stage3压缩包一样：从我们的<A 
+            href="http://www.gentoo.org/main/en/mirrors.xml">列表</A>选择一个最近的镜像，下载最新的快照并解压。 
+            </P><A name=doc_chap2_pre17></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.17: 下载最新的Portage快照</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd gentoo # <SPAN class=code-input>cd /mnt/gentoo/usr</SPAN>
+livecd usr # <SPAN class=code-input>links http://www.gentoo.org/main/en/mirrors.xml</SPAN>
+<SPAN class=code-comment>（选一个镜像，进入snapshots/目录，高亮显示 <B>portage-latest.tar.bz2</B> ，按下D键下载）</SPAN>
+
+<SPAN class=code-comment>（<B>或者</B>不选择最近的镜像，直接用wget下载）</SPAN>
+livecd gentoo # <SPAN class=code-input>cd /mnt/gentoo/usr</SPAN>
+livecd usr # <SPAN class=code-input>wget http://gentoo.osuosl.org/snapshots/portage-latest.tar.bz2</SPAN>
+</PRE></TD></TR></TBODY></TABLE><A name=doc_chap2_pre18></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.18: 解开Portage快照</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd usr # <SPAN class=code-input>time tar xjf portage-lat*</SPAN>
+
+real  0m40.523s
+user  0m28.280s
+sys   0m8.240s
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect8>切换系统</A></P>
+            <P>挂载<SPAN class=path dir=ltr>/proc</SPAN>文件系统，拷贝<SPAN class=path 
+            dir=ltr>/etc/resolv.conf</SPAN>文件，然后chroot到你的Gentoo环境。 </P><A 
+            name=doc_chap2_pre19></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.19: Chroot</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd usr # <SPAN class=code-input>cd /</SPAN>
+livecd / # <SPAN class=code-input>mount -t proc proc /mnt/gentoo/proc</SPAN>
+livecd / # <SPAN class=code-input>cp -L /etc/resolv.conf /mnt/gentoo/etc/</SPAN>
+livecd / # <SPAN class=code-input>chroot /mnt/gentoo /bin/bash</SPAN>
+livecd / # <SPAN class=code-input>env-update &amp;&amp; source /etc/profile</SPAN>
+&gt;&gt;&gt; Regenerating /etc/ld.so.cache...
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect9>设定时区</A></P>
+            <P>设置你的时区信息：使用<SPAN class=path 
+            dir=ltr>/usr/share/zoneinfo</SPAN>中的正确条目。 </P><A 
+            name=doc_chap2_pre20></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.20: 设置时区</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd / # <SPAN class=code-input>ls /usr/share/zoneinfo</SPAN>
+<SPAN class=code-comment>（以上海为例）</SPAN>
+livecd / # <SPAN class=code-input>cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</SPAN>
+livecd / # <SPAN class=code-input>date</SPAN>
+Thu Aug 30 11:03:16 CST 2007
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect10>设定主机名和域名</A></P>
+            <P>在<SPAN class=path dir=ltr>/etc/conf.d/hostname</SPAN>和<SPAN 
+            class=path dir=ltr>/etc/hosts</SPAN>中设置主机名。以下例子中我们用<SPAN class=code 
+            dir=ltr>mybox</SPAN>作为主机名，用<SPAN class=code 
+            dir=ltr>at.myplace</SPAN>作为域名。可以用nano编辑这些配置文件，或者使用下面的命令： </P><A 
+            name=doc_chap2_pre21></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.21: 设置主机名和域名</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd / # <SPAN class=code-input>cd /etc</SPAN>
+livecd etc # <SPAN class=code-input>echo "127.0.0.1 mybox.at.myplace mybox localhost" &gt; hosts</SPAN>
+livecd etc # <SPAN class=code-input>sed -i -e 's/HOSTNAME.*/HOSTNAME="mybox"/' conf.d/hostname</SPAN>
+<SPAN class=code-comment>（使用指定的主机名并检查）</SPAN>
+livecd etc # <SPAN class=code-input>hostname mybox</SPAN>
+livecd etc # <SPAN class=code-input>hostname -f</SPAN>
+mybox.at.myplace
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect11>内核配置</A></P>
+            <P>安装一个内核源码包（通常为<SPAN class=code 
+            dir=ltr>gentoo-sources</SPAN>），配置、编译并拷贝<SPAN class=path 
+            dir=ltr>arch/i386/boot/bzImage</SPAN>文件到<SPAN class=path 
+            dir=ltr>/boot</SPAN>。 </P><A name=doc_chap2_pre22></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.22: 安装内核源码包，编译和安装内核</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd etc # <SPAN class=code-input>time emerge gentoo-sources</SPAN>
+
+real  3m3.110s
+user  1m2.320s
+sys   0m34.990s
+livecd etc # <SPAN class=code-input>cd /usr/src/linux</SPAN>
+livecd linux # <SPAN class=code-input>make menuconfig</SPAN>
+
+<SPAN class=code-comment>（跟往常一样配置内核，确保将必需的raid和lvm模块编译进内核，即<B>不是</B>编译为模块。
+相同的配置应用于磁盘驱动和文件系统。）</SPAN>
+Multi-device support (RAID and LVM)  ---&gt;
+[*] Multiple devices driver support (RAID and LVM)
+  &lt;*&gt;   RAID support
+  &lt; &gt;     Linear (append) mode (NEW)
+  &lt;*&gt;     RAID-0 (striping) mode
+  &lt;*&gt;     RAID-1 (mirroring) mode
+  &lt; &gt;     RAID-10 (mirrored striping) mode (EXPERIMENTAL) (NEW)
+  &lt; &gt;     RAID-4/RAID-5 mode (NEW)
+  &lt; &gt;     RAID-6 mode (NEW)
+  &lt; &gt;     Multipath I/O support (NEW)
+  &lt; &gt;     Faulty test module for MD (NEW)
+  &lt;*&gt;   Device mapper support
+  &lt; &gt;     Crypt target support (NEW)
+  &lt; &gt;     Snapshot target (EXPERIMENTAL) (NEW)
+  &lt; &gt;     Mirror target (EXPERIMENTAL) (NEW)
+  &lt; &gt;     Zero target (EXPERIMENTAL) (NEW)
+  &lt; &gt;     Multipath target (EXPERIMENTAL) (NEW)
+  &lt; &gt;     Bad Block Relocation Device Target (EXPERIMENTAL) (NEW)
+
+livecd linux # <SPAN class=code-input>time make -j2</SPAN>
+
+<SPAN class=code-comment>（所花的时间很大程度上决定于你所选的选项）</SPAN>
+real  5m5.869s
+user  4m32.320s
+sys   0m32.930s
+
+livecd linux # <SPAN class=code-input>make modules_install</SPAN>
+livecd linux # <SPAN class=code-input>cp arch/i386/boot/bzImage /boot/kernel</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect12>配置系统</A></P>
+            <P>编辑<SPAN class=path dir=ltr>/etc/fstab</SPAN>，用实际的分区名代替<SPAN 
+            class=code dir=ltr>BOOT</SPAN>、<SPAN class=code 
+            dir=ltr>ROOT</SPAN>和<SPAN class=code 
+            dir=ltr>SWAP</SPAN>，并添加逻辑卷。记得确认一下文件系统是否与所安装的相匹配。 </P><A 
+            name=doc_chap2_pre23></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.23: fstab范例</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd linux # <SPAN class=code-input>cd /etc</SPAN>
+livecd etc # <SPAN class=code-input>nano -w fstab</SPAN>
+/dev/<SPAN class=code-input>md1</SPAN>          /boot                   ext2  noauto,noatime  1 2
+/dev/<SPAN class=code-input>md3</SPAN>          /                       ext3  noatime         0 1
+/dev/<SPAN class=code-input>sda2</SPAN>         none                    swap  sw,pri=1        0 0
+/dev/<SPAN class=code-input>sdb2</SPAN>         none                    swap  sw,pri=1        0 0
+/dev/vg/usr       /usr                    ext3  noatime         1 2
+/dev/vg/portage   /usr/portage            ext2  noatime         1 2
+/dev/vg/distfiles /usr/portage/distfiles  ext2  noatime         1 2
+/dev/vg/home      /home                   ext3  noatime         1 2
+/dev/vg/opt       /opt                    ext3  noatime         1 2
+/dev/vg/tmp       /tmp                    ext2  noatime         1 2
+/dev/vg/var       /var                    ext3  noatime         1 2
+/dev/vg/vartmp    /var/tmp                ext2  noatime         1 2
+</PRE></TD></TR></TBODY></TABLE>
+            <P>在<SPAN class=path dir=ltr>/etc/conf.d/net</SPAN>中配置网络。把<SPAN 
+            class=code 
+            dir=ltr>net.eth0</SPAN>启动脚本添加到默认运行级别。如果有多张网卡，分别为它们建立符号链接到<SPAN 
+            class=code dir=ltr>net.eth0</SPAN>启动脚本，并一起添加到默认运行级别。用<SPAN 
+            class=code dir=ltr>nano</SPAN>编辑<SPAN class=path 
+            dir=ltr>/etc/conf.d/net</SPAN>，或者使用如下命令： </P><A 
+            name=doc_chap2_pre24></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.24: 配置网络</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd etc # <SPAN class=code-input>cd conf.d</SPAN>
+livecd conf.d # <SPAN class=code-input>echo 'config_eth0=( "192.168.1.10/24" )' &gt;&gt; net</SPAN>
+livecd conf.d # <SPAN class=code-input>echo 'routes_eth0=( "default via 192.168.1.1" )' &gt;&gt; net</SPAN>
+livecd conf.d # <SPAN class=code-input>rc-update add net.eth0 default</SPAN>
+<SPAN class=code-comment>（如果你把网卡驱动编译为模块，
+需要将它添加到/etc/modules.autoload.d/kernel-2.6）</SPAN>
+livecd conf.d # <SPAN class=code-input>echo r8169 &gt;&gt; /etc/modules.autoload.d/kernel-2.6</SPAN>
+<SPAN class=code-comment>（如果希望重启后通过ssh重新连接到新机器）</SPAN>
+livecd conf.d # <SPAN class=code-input>rc-update add sshd default</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <TABLE class=ncontent cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#bbffbb>
+                  <P class=note><B>注意: </B>如果需要支持PCMCIA卡，请emerge <SPAN 
+                  class=code dir=ltr>pcmciautils</SPAN>。 
+</P></TD></TR></TBODY></TABLE>
+            <P>执行<SPAN class=code dir=ltr>passwd</SPAN>设置root密码。 </P><A 
+            name=doc_chap2_pre25></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.25: 设置root密码</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>passwd</SPAN>
+New UNIX password: <SPAN class=code-comment>输入密码</SPAN>
+Retype new UNIX password: <SPAN class=code-comment>再输入密码</SPAN>
+passwd: password updated successfully
+</PRE></TD></TR></TBODY></TABLE>
+            <P>编辑<SPAN class=path dir=ltr>/etc/conf.d/clock</SPAN>以定义前面所使用的时区。 
+            </P><A name=doc_chap2_pre26></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.26: 编辑/etc/conf.d/clock</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>nano -w /etc/conf.d/clock</SPAN>
+TIMEZONE="Asia/Shanghai"
+</PRE></TD></TR></TBODY></TABLE>
+            <P>检查系统配置，查看并编辑这些配置文件：<SPAN class=path dir=ltr>/etc/rc.conf</SPAN>， 
+            <SPAN class=path dir=ltr>/etc/conf.d/rc</SPAN>，<SPAN class=path 
+            dir=ltr>/etc/conf.d/keymaps</SPAN>。 </P><A name=doc_chap2_pre27></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.27: 可选：编辑一些配置文件</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>nano -w /etc/rc.conf</SPAN>
+livecd conf.d # <SPAN class=code-input>nano -w /etc/conf.d/rc</SPAN>
+livecd conf.d # <SPAN class=code-input>nano -w /etc/conf.d/keymaps</SPAN>
+
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect13>安装系统工具</A></P>
+            <P>安装RAID和LVM2实用工具。 </P><A name=doc_chap2_pre28></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.28: 安装RAID &amp; LVM2工具</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>emerge mdadm lvm2</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>安装一个系统日志如<SPAN class=code 
+            dir=ltr>syslog-ng</SPAN>和一个cron守护进程如<SPAN class=code 
+            dir=ltr>vixie-cron</SPAN>，并把它们添加到默认运行级别。 </P>
+            <TABLE class=ncontent cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#bbffbb>
+                  <P class=note><B>注意: </B>Cron守护进程依赖于MTA。<SPAN class=code 
+                  dir=ltr>mail-mta/ssmtp</SPAN>会因依赖性而被一起安装。如果你想使用一种更高级的MTA，可以现在安装它。要是现在没空，暂时先安装ssmtp，以后再卸载并安装你要的MTA。 
+                  </P></TD></TR></TBODY></TABLE><A name=doc_chap2_pre29></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.29: 安装系统日志和cron守护进程</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>time emerge syslog-ng vixie-cron</SPAN>
+
+real  1m54.099s
+user  1m2.630s
+sys   0m34.620s
+livecd conf.d # <SPAN class=code-input>rc-update add syslog-ng default</SPAN>
+livecd conf.d # <SPAN class=code-input>rc-update add vixie-cron default</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>安装必要的文件系统工具（<SPAN class=code dir=ltr>xfsprogs</SPAN>，<SPAN 
+            class=code dir=ltr>reiserfsprogs</SPAN>或<SPAN class=code 
+            dir=ltr>jfsutils</SPAN>）和网络工具（<SPAN class=code 
+            dir=ltr>dhcpcd</SPAN>或<SPAN class=code dir=ltr>ppp</SPAN>）。 </P><A 
+            name=doc_chap2_pre30></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.30: 安装其它工具</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>emerge xfsprogs</SPAN>       <SPAN class=code-comment>（如果使用XFS文件系统）</SPAN>
+livecd conf.d # <SPAN class=code-input>emerge jfsutils</SPAN>       <SPAN class=code-comment>（如果使用JFS文件系统）</SPAN>
+livecd conf.d # <SPAN class=code-input>emerge reiserfsprogs</SPAN>  <SPAN class=code-comment>（如果使用Reiser文件系统）</SPAN>
+livecd conf.d # <SPAN class=code-input>emerge dhcpcd</SPAN>         <SPAN class=code-comment>（如果使用DHCP客户端）</SPAN>
+livecd conf.d # <SPAN class=code-input>emerge ppp</SPAN>            <SPAN class=code-comment>（如果使用PPPoE ADSL连接）</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=grub></A><A 
+            name=doc_chap2_sect14>配置引导程序</A></P>
+            <P>安装并配置<SPAN class=code dir=ltr>grub</SPAN>。 </P><A 
+            name=doc_chap2_pre31></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.31: Emerge 
+grub并编辑它的配置文件</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>time emerge grub</SPAN>
+
+real  1m4.634s
+user  0m39.460s
+sys   0m15.280s
+livecd conf.d # <SPAN class=code-input>nano -w /boot/grub/grub.conf</SPAN>
+</PRE></TD></TR></TBODY></TABLE><A name=doc_chap2_pre32></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.32: grub.conf范例</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>default 0
+timeout 10
+
+title Gentoo
+root (hd0,0)
+kernel /boot/kernel root=/dev/md3
+</PRE></TD></TR></TBODY></TABLE><A name=doc_chap2_pre33></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.33: 在两个磁盘上安装grub</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>grub</SPAN>
+Probing devices to guess BIOS drives. This may take a long time.
+
+grub&gt; <SPAN class=code-input>root (hd0,0)</SPAN>
+ Filesystem type is ext2fs, partition type 0xfd
+
+grub&gt; <SPAN class=code-input>setup (hd0)</SPAN>
+ Checking if "/boot/grub/stage1" exists... yes
+ Checking if "/boot/grub/stage2" exists... yes
+ Checking if "/boot/grub/e2fs_stage1_5" exists... yes
+ Running "embed /boot/grub/e2fs_stage1_5 (hd0)"...  16 sectors are embedded.
+succeeded
+ Running "install /boot/grub/stage1 (hd0) (hd0)1+16 p (hd0,0)/boot/grub/stage2 /boot/
+grub/menu.lst"... succeeded
+Done.
+
+grub&gt; <SPAN class=code-input>root (hd1,0)</SPAN>
+ Filesystem type is ext2fs, partition type 0xfd
+
+grub&gt; <SPAN class=code-input>setup (hd1)</SPAN>
+
+grub&gt; <SPAN class=code-input>quit</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=reboot></A><A 
+            name=doc_chap2_sect15>重启</A></P>
+            <P>退出chroot环境，卸载所有文件系统并重启： </P><A name=doc_chap2_pre34></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.34: 重启</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>livecd conf.d # <SPAN class=code-input>exit</SPAN>
+livecd / # <SPAN class=code-input>umount /mnt/gentoo/usr/portage/distfiles /mnt/gentoo/usr/portage /mnt/gentoo/usr</SPAN>
+livecd / # <SPAN class=code-input>umount /mnt/gentoo/var/tmp /mnt/gentoo/tmp /mnt/gentoo/var /mnt/gentoo/opt</SPAN>
+livecd / # <SPAN class=code-input>umount /mnt/gentoo/proc /mnt/gentoo/home /mnt/gentoo/boot /mnt/gentoo</SPAN>
+livecd / # <SPAN class=code-input>reboot</SPAN>
+<SPAN class=code-comment>（别忘了取出光盘）</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=after-reboot></A><A 
+            name=doc_chap2_sect16>完成安装</A></P>
+            <TABLE class=ncontent cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#bbffbb>
+                  <P class=note><B>注意: </B>在我们这台测试机器上，从minimal 
+                  CD启动显示boot提示符开始，到重启后显示登录提示符， <B>总用时</B>为<B>00:42:31</B> 
+                  。没错，不到一个小时！注意这个时间还包含了stage3包、Portage快照和一些软件包的下载时间，以及配置内核所花的时间。 
+                  </P></TD></TR></TBODY></TABLE>
+            <P>以<SPAN class=code dir=ltr>root</SPAN>身份登录，用<SPAN class=code 
+            dir=ltr>useradd</SPAN>添加一个或多个用户，作为日常使用。 </P><A 
+            name=doc_chap2_pre35></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.35: 从另一台电脑连到你的新机器</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE><SPAN class=code-comment>（清理known_hosts文件中的内容，因为你的新机器已生成一个新的
+通用主机密钥）</SPAN>
+$ <SPAN class=code-input>nano -w ~/.ssh/known_hosts</SPAN>
+<SPAN class=code-comment>（找出新机器的IP并删除那一行，保存并退出nano）</SPAN>
+
+<SPAN class=code-comment>（使用你新机器的IP地址）</SPAN>
+$ <SPAN class=code-input>ssh root@192.168.1.10</SPAN>
+The authenticity of host '192.168.1.10 (192.168.1.10)' can't be established.
+RSA key fingerprint is 96:e7:2d:12:ac:9c:b0:94:90:9f:40:89:b0:45:26:8f.
+Are you sure you want to continue connecting (yes/no)? <SPAN class=code-input>yes</SPAN>
+Warning: Permanently added '192.168.1.10' (RSA) to the list of known hosts.
+Password: <SPAN class=code-comment>输入密码</SPAN>
+</PRE></TD></TR></TBODY></TABLE><A name=doc_chap2_pre36></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.36: 添加一个新用户</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>mybox ~ # <SPAN class=code-input>adduser -g users -G lp,wheel,audio,cdrom,portage,cron -m john</SPAN>
+mybox ~ # <SPAN class=code-input>passwd john</SPAN>
+New UNIX password: <SPAN class=code-comment>设置John的密码</SPAN>
+Retype new UNIX password: <SPAN class=code-comment>再次输入John的密码</SPAN>
+passwd: password updated successfully
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect17>最后涉及的配置</A></P>
+            <P>开始选择最近的镜像，在<SPAN class=path dir=ltr>/etc/make.conf</SPAN>中定义<SPAN 
+            class=code dir=ltr>SYNC</SPAN>变量和<SPAN class=code 
+            dir=ltr>GENTOO_MIRRORS</SPAN>变量，或者也可以使用<SPAN class=code 
+            dir=ltr>mirrorselect</SPAN>。此时你还可以定义并行编译的进程数。 </P><A 
+            name=doc_chap2_pre37></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.37: 
+                使用mirrorselect并设置MAKEOPTS</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>mybox ~ # <SPAN class=code-input>emerge mirrorselect</SPAN>
+mybox ~ # <SPAN class=code-input>mirrorselect -i -o &gt;&gt; /etc/make.conf</SPAN>
+mybox ~ # <SPAN class=code-input>mirrorselect -i -r -o &gt;&gt; /etc/make.conf</SPAN>
+<SPAN class=code-comment>（通常，一个较好的值为处理器数加一）</SPAN>
+mybox ~ # <SPAN class=code-input>echo 'MAKEOPTS="-j2"' &gt;&gt; /etc/make.conf</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>现在是启用或禁用一些USE标记的好时机。运行<SPAN class=code dir=ltr>emerge -vpe 
+            world</SPAN>，列出所有当前已安装的软件包以及它们被启用和禁用的USE标记。编辑<SPAN class=path 
+            dir=ltr>/etc/make.conf</SPAN>或使用下列命令定义USE变量： </P><A 
+            name=doc_chap2_pre38></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.38: 
+查看当前使用的USE标记并启用或禁用一些</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>mybox ~ # <SPAN class=code-input>emerge -vpe world</SPAN>
+<SPAN class=code-comment>（Portage列出软件包和它们的USE标记。作为例子，让我们禁用ipv6和fortran，
+并启用unicode）</SPAN>
+mybox ~ # <SPAN class=code-input>echo 'USE="nptl nptlonly -ipv6 -fortran unicode"' &gt;&gt; /etc/make.conf</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>新版本的glibc使用<SPAN class=path 
+            dir=ltr>/etc/locale.gen</SPAN>来定义语言环境。 </P><A 
+            name=doc_chap2_pre39></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.39: 定义语言环境</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>mybox ~ # <SPAN class=code-input>cd /etc</SPAN>
+mybox etc # <SPAN class=code-input>nano -w locale.gen</SPAN>
+mybox etc # <SPAN class=code-input>locale-gen</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P>最后但并非最轻松的，你可能想修改<SPAN class=path 
+            dir=ltr>/etc/make.conf</SPAN>中的<SPAN class=code 
+            dir=ltr>CFLAGS</SPAN>变量来优化编码，以满足你的特定需要。请注意极少需要一长串的标记列表，那样甚至可能导致系统崩溃。建议通过<SPAN 
+            class=code dir=ltr>march</SPAN>选项指定处理器类型并赋上<SPAN class=code 
+            dir=ltr>-O2 -pipe</SPAN>。 </P>
+            <P>可能你还想转到 
+            <B>~x86</B>。只有当你能够对付那些脆弱不良的ebuild和软件包时才能这么做。如果你倾向于保持系统的稳定性，请<SPAN 
+            class=emphasis>不要</SPAN>添加<SPAN class=code 
+            dir=ltr>ACCEPT_KEYWORDS</SPAN>变量。添加<SPAN class=code 
+            dir=ltr>FEATURES="ccache"</SPAN>却是个好主意。 </P><A 
+            name=doc_chap2_pre40></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.40: 为make.conf作最后的修改</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>mybox etc # <SPAN class=code-input>nano -w make.conf</SPAN>
+<SPAN class=code-comment>（在CFLAGS中将-march设为你的CPU类型）</SPAN>
+CFLAGS="-O2 -march=<SPAN class=code-input>athlon-xp</SPAN> -pipe"
+<SPAN class=code-comment>（添加下面一行）</SPAN>
+FEATURES="ccache"
+<SPAN class=code-comment>（只有清楚自己在干什么才添加下面一行）</SPAN>
+ACCEPT_KEYWORDS="~x86"
+</PRE></TD></TR></TBODY></TABLE>
+            <P>可能你会想重编译整个系统两次，以使你所作的最新配置完全生效。这要花很长的时间来完成，而只能得到微小的速度提升。你可以让系统自己随着以后新软件包的发布而逐步完成优化。不过，站在保持系统一致性的立场来看，重编译仍不失为一个好主意。请参考文档<A 
+            href="http://www.gentoo.org/doc/zh_cn/gcc-upgrading.xml">Gentoo 
+            GCC升级指南</A>，其中讨论了如何搭建一个具有良好一致性的system和world，以及这样做的好处。 </P>
+            <P>只重编译那些因你应用了新的USE标记或受此影响而需要升级的软件包，也要花费不少时间。可能还必须卸载会阻止你升级的软件包。在<SPAN 
+            class=code dir=ltr>emerge -vpuD --newuse world</SPAN>的输出中寻找“[blocks 
+            <FONT color=#ff0000><B>B</B></FONT> ]”，用<SPAN class=code 
+            dir=ltr>emerge -C</SPAN>卸载它们。 </P><A name=doc_chap2_pre41></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.41: 升级软件包</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE><SPAN class=code-comment>（安装ccache）</SPAN>
+mybox etc # <SPAN class=code-input>emerge ccache</SPAN>
+
+<SPAN class=code-comment>（请注意转到~x86会导致很多软件包要升级）</SPAN>
+mybox etc # <SPAN class=code-input>emerge -vpuD --newuse world</SPAN>
+<SPAN class=code-comment>（好好看一看软件包列表和它们的USE标记，
+有阻止的包就先卸载，然后启动漫长的过程）</SPAN>
+mybox etc # <SPAN class=code-input>time emerge -vuD --newuse world</SPAN>
+<SPAN class=code-comment>（（重）编译了79个软件包）</SPAN>
+
+real  180m13.276s
+user  121m22.905s
+sys   36m31.472s
+
+<SPAN class=code-comment>（重编译libtool以避免一些潜在的问题）</SPAN>
+mybox etc # <SPAN class=code-input>emerge --oneshot libtool</SPAN>
+
+<SPAN class=code-comment>（更新配置文件，确保<B>不要</B>让dispatch-conf更新你配置好的文件）</SPAN>
+mybox etc # <SPAN class=code-input>dispatch-conf</SPAN>
+
+<SPAN class=code-comment>（如果升级了perl，应该执行perl-cleaner脚本）</SPAN>
+mybox etc # <SPAN class=code-input>time perl-cleaner all</SPAN>
+real  1m6.495s
+user  0m42.699s
+sys   0m10.641s
+
+<SPAN class=code-comment>（如果升级了python的主要软件包，应该执行python-updater脚本）</SPAN>
+mybox etc # <SPAN class=code-input>python-updater</SPAN>
+</PRE></TD></TR></TBODY></TABLE>
+            <P class=secthead><A name=doc_chap2_sect18>接下来该做什么</A></P>
+            <P>想安装服务器应用程序还是一个桌面系统，取决于你打算让你的新Gentoo做什么。以下仅作为一个例子，统计了<SPAN 
+            class=code dir=ltr>emerge gnome</SPAN>和<SPAN class=code 
+            dir=ltr>emerge kde</SPAN>在~x86系统（按之前的描述安装的）上所花费的时间。两者是在同一起点开始安装的。 
+            </P>
+            <P>去看看我们的<A 
+            href="http://www.gentoo.org/doc/zh_cn/">文档目录</A>，研究一下如何安装和配置你挑选的软件。 
+            </P>
+            <TABLE class=ncontent cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#ffffbb>
+                  <P class=note><B>重要: </B>以下只是举个例子，并不意味着就作为推荐设置。 
+              </P></TD></TR></TBODY></TABLE><A name=doc_chap2_pre42></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.42: Emerge GNOME</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>mybox etc # <SPAN class=code-input>emerge -vp gnome</SPAN>
+<SPAN class=code-comment>（查看软件包列表和它们的USE标记，
+如果需要请编辑make.conf</SPAN>
+mybox etc # <SPAN class=code-input>nano -w /etc/make.conf</SPAN>
+<SPAN class=code-comment>（定义了以下USE标记）</SPAN>
+USE="nptl nptlonly -ipv6 -fortran unicode svg hal dbus \
+     -kde -qt3 -qt4 -arts -eds -esd gnome gstreamer gtk firefox"
+
+mybox etc # <SPAN class=code-input>time emerge gnome</SPAN>
+<SPAN class=code-comment>（安装了326个软件包）</SPAN>
+
+real  520m44.532s
+user  339m21.144s
+sys   146m22.337s
+</PRE></TD></TR></TBODY></TABLE><A name=doc_chap2_pre43></A>
+            <TABLE class=ntable cellSpacing=0 cellPadding=0 width="100%" 
+            border=0>
+              <TBODY>
+              <TR>
+                <TD bgColor=#7a5ada>
+                  <P class=codetitle>代码&nbsp;2.43: Emerge KDE</P></TD></TR>
+              <TR>
+                <TD dir=ltr align=left bgColor=#eeeeff><PRE>mybox etc # <SPAN class=code-input>emerge -vp kde-meta</SPAN>
+<SPAN class=code-comment>（查看软件包列表和它们的USE标记，
+如果需要请编辑make.conf</SPAN>
+mybox etc # <SPAN class=code-input>nano -w /etc/make.conf</SPAN>
+<SPAN class=code-comment>定义了以下USE标记）</SPAN>
+USE="nptl nptlonly -ipv6 -fortran unicode svg hal dbus \
+     kde qt3 qt4 -arts -eds -esd -gnome -gstreamer -gtk -firefox"
+
+mybox etc # <SPAN class=code-input>time emerge kde-meta</SPAN>
+<SPAN class=code-comment>（安装了391个软件包）</SPAN>
+
+real  1171m25.318s
+user  851m26.393s
+sys   281m45.629s
+</PRE></TD></TR></TBODY></TABLE><BR>
+            <P class=copyright>本文档的内容遵循<A 
+            href="http://creativecommons.org/licenses/by-sa/2.5">知识共享-署名-相同方式共享</A>许可协议</P><!--
+  <rdf:RDF xmlns="http://web.resource.org/cc/"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <License rdf:about="http://creativecommons.org/licenses/by-sa/2.5/">
+     <permits rdf:resource="http://web.resource.org/cc/Reproduction" />
+     <permits rdf:resource="http://web.resource.org/cc/Distribution" />
+     <requires rdf:resource="http://web.resource.org/cc/Notice" />
+     <requires rdf:resource="http://web.resource.org/cc/Attribution" />
+     <permits rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+     <requires rdf:resource="http://web.resource.org/cc/ShareAlike" />
+  </License>
+  </rdf:RDF>
+--><BR></TD>
+          <TD vAlign=top width="1%" bgColor=#dddaec>
+            <TABLE cellSpacing=4 cellPadding=4 border=0>
+              <TBODY>
+              <TR>
+                <TD class=topsep align=middle>
+                  <P class=altmenu><A class=altlink title=查看利于打印版本 
+                  href="http://www.gentoo.org/doc/zh_cn/gentoo-x86+raid+lvm2-quickinstall.xml?style=printable">打印</A></P></TD></TR>
+              <TR>
+                <TD class=topsep align=middle>
+                  <P class=alttext>更新于2008年 4月 22日 </P></TD></TR>
+              <TR>
+                <TD class=topsep align=left>
+                  <P class=alttext><B>总结: 
+                  </B>这篇快速安装指南以一种相对简略的方式介绍Gentoo安装过程。目的是让没有太多时间的用户完成基于stage3的安装（含软Raid和LVM2）。想遵循本指南的用户须已有安装Gentoo 
+                  Linux的经验。 </P></TD></TR>
+              <TR>
+                <TD class=topsep align=left>
+                  <P class=alttext><A class=altlink 
+                  href="mailto:neysx@gentoo.org"><B>Xavier Neys</B></A> 
+                  <BR><I>作者</I><BR><BR><A class=altlink 
+                  href="mailto:swift@gentoo.org"><B>Sven Vermeulen</B></A> 
+                  <BR><I>作者</I><BR><BR>Steven Wagner<BR><I>作者</I><BR><BR><A 
+                  class=altlink href="mailto:tysnoo@gmail.com"><B>叶宝泰</B></A> 
+                  <BR><I>译者</I><BR></P></TD></TR>
+              <TR lang=en>
+                <TD class=topsep align=middle>
+                  <P class=alttext><B>Donate</B> to support our development 
+                  efforts. </P>
+                  <FORM action=https://www.paypal.com/cgi-bin/webscr 
+                  method=post><INPUT type=hidden value=_xclick name=cmd><INPUT 
+                  type=hidden value=paypal@gentoo.org name=business><INPUT 
+                  type=hidden value="Gentoo Linux Support" name=item_name><INPUT 
+                  type=hidden value=1000 name=item_number><INPUT type=hidden 
+                  value=/images/paypal.png name=image_url><INPUT type=hidden 
+                  value=1 name=no_shipping><INPUT type=hidden 
+                  value=http://www.gentoo.org name=return><INPUT type=hidden 
+                  value=http://www.gentoo.org name=cancel_return><INPUT 
+                  type=image alt="Donate to Gentoo" 
+                  src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/x-click-but21.gif" 
+                  name=submit> </FORM></TD></TR>
+              <TR lang=en>
+                <TD class=topsep align=middle><A 
+                  href="http://osuosl.org/contribute"><IMG height=50 
+                  alt="Support OSL" 
+                  src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/osuosl.png" 
+                  width=125 border=0></A>
+                  <P class=alttext><A 
+                  href="http://osuosl.org/contribute">Support OSL</A></P></TD></TR>
+              <TR lang=en>
+                <TD class=topsep align=middle><A 
+                  href="http://www.vr.org/"><IMG height=144 
+                  alt="Gentoo Centric Hosting: vr.org" 
+                  src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/vr-ad.png" 
+                  width=125 border=0></A>
+                  <P class=alttext><A href="http://www.vr.org/">VR 
+                Hosted</A></P></TD></TR>
+              <TR lang=en>
+                <TD class=topsep align=middle><A href="http://www.tek.net/" 
+                  target=_top><IMG height=125 alt="Tek Alchemy" 
+                  src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/tek-gentoo.gif" 
+                  width=125 border=0></A>
+                  <P class=alttext><A href="http://www.tek.net/">Tek 
+                  Alchemy</A></P></TD></TR>
+              <TR lang=en>
+                <TD class=topsep align=middle><A href="http://www.sevenl.net/" 
+                  target=_top><IMG height=144 alt=SevenL.net 
+                  src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/sevenl.gif" 
+                  width=125 border=0></A>
+                  <P class=alttext><A 
+                  href="http://www.sevenl.net/">SevenL.net</A></P></TD></TR>
+              <TR lang=en>
+                <TD class=topsep align=middle><A href="http://www.gni.com/" 
+                  target=_top><IMG alt="Global Netoptex Inc." 
+                  src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/gni_logo.png" 
+                  width=125 border=0></A>
+                  <P class=alttext><A href="http://www.gni.com/">Global Netoptex 
+                  Inc.</A></P></TD></TR>
+              <TR lang=en>
+                <TD class=topsep align=middle><A 
+                  href="http://www.bytemark.co.uk/r/gentoo-home" 
+                  target=_top><IMG alt=Bytemark 
+                  src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/bytemark_ad.png" 
+                  width=125 border=0></A>
+                  <P class=alttext><A 
+                  href="http://www.bytemark.co.uk/r/gentoo-home">Bytemark</A></P></TD></TR>
+              <TR lang=en>
+                <TD class=topsep align=middle><A 
+                  href="http://www.linuxworldexpo.com/" target=_top><IMG 
+                  alt="Linux World Expo" 
+                  src="含软Raid和LVM2的Gentoo Linux x86快速安装指南.files/Linuxworld125X125.gif" 
+                  width=125 border=0></A>
+                  <P class=alttext><A 
+                  href="http://www.linuxworldexpo.com/">Linux World 
+                Expo</A></P></TD></TR>
+              <TR>
+                <TD class=topsep 
+        align=middle></TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE></TD></TR>
+  <TR>
+    <TD class=infohead align=right colSpan=2>Copyright 2001-2008 Gentoo 
+      Foundation, Inc. Questions, Comments? <A class=highlight 
+      href="http://www.gentoo.org/main/en/contact.xml">Contact us</A>. 
+  </TD></TR></TBODY></TABLE></BODY></HTML>

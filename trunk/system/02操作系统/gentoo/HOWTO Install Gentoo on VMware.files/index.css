@@ -1,0 +1,57 @@
+TABLE.box {
+	BORDER-RIGHT: #aaaaaa 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #aaaaaa 1px solid; PADDING-LEFT: 5px; FONT-SIZE: 85%; FLOAT: right; PADDING-BOTTOM: 5px; MARGIN-LEFT: 5px; BORDER-LEFT: #aaaaaa 1px solid; WIDTH: 210px; PADDING-TOP: 5px; BORDER-BOTTOM: #aaaaaa 1px solid; BACKGROUND-COLOR: white
+}
+.messagebox {
+	BORDER-RIGHT: #aaaaaa 1px solid; PADDING-RIGHT: 0.2em; BORDER-TOP: #aaaaaa 1px solid; PADDING-LEFT: 0.2em; FONT-SIZE: 90%; PADDING-BOTTOM: 0.2em; MARGIN: 0px auto 1em; BORDER-LEFT: #aaaaaa 1px solid; WIDTH: 85%; PADDING-TOP: 0.2em; BORDER-BOTTOM: #aaaaaa 1px solid; BACKGROUND-COLOR: #f9f9f9; TEXT-ALIGN: justify
+}
+.merge {
+	BORDER-RIGHT: #cf9fff 1px solid; BORDER-TOP: #cf9fff 1px solid; BORDER-LEFT: #cf9fff 1px solid; BORDER-BOTTOM: #cf9fff 1px solid; BACKGROUND-COLOR: #f5edf5; TEXT-ALIGN: center
+}
+.cleanup {
+	BORDER-RIGHT: #9f9fff 1px solid; BORDER-TOP: #9f9fff 1px solid; BORDER-LEFT: #9f9fff 1px solid; BORDER-BOTTOM: #9f9fff 1px solid; BACKGROUND-COLOR: #efefff; TEXT-ALIGN: center
+}
+.standard-talk {
+	BORDER-RIGHT: #c0c090 1px solid; BORDER-TOP: #c0c090 1px solid; BORDER-LEFT: #c0c090 1px solid; BORDER-BOTTOM: #c0c090 1px solid; BACKGROUND-COLOR: #f8eaba
+}
+.infobox {
+	CLEAR: right; BORDER-RIGHT: #aaaaaa 1px solid; PADDING-RIGHT: 0.2em; BORDER-TOP: #aaaaaa 1px solid; PADDING-LEFT: 0.2em; FONT-SIZE: 90%; FLOAT: right; MARGIN-BOTTOM: 0.5em; PADDING-BOTTOM: 0.2em; MARGIN-LEFT: 1em; BORDER-LEFT: #aaaaaa 1px solid; PADDING-TOP: 0.2em; BORDER-BOTTOM: #aaaaaa 1px solid; BACKGROUND-COLOR: #f9f9f9
+}
+DIV.ebuild_list {
+	LIST-STYLE-TYPE: none
+}
+DIV.ebuild_list LI {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 19px; BACKGROUND: url(/images/e/e5/Ebuild_file.png) no-repeat 0px 8px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 6px
+}
+DIV.ebuild_tree UL {
+	MARGIN: 0px; LIST-STYLE-TYPE: none
+}
+DIV.ebuild_tree LI {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 19px; BACKGROUND: url(/images/1/1e/List_folder.png) no-repeat 0px 8px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 6px
+}
+DIV.ebuild_tree UL LI UL LI {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 19px; BACKGROUND: url(/images/e/e5/Ebuild_file.png) no-repeat 0px 8px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 6px
+}
+PRE {
+	OVERFLOW: auto
+}
+DIV.scroll PRE {
+	BORDER-RIGHT: #000000 0px solid; PADDING-RIGHT: 10px; BORDER-TOP: #000000 0px solid; PADDING-LEFT: 10px; PADDING-BOTTOM: 10px; MARGIN: 0px; BORDER-LEFT: #000000 0px solid; PADDING-TOP: 10px; BORDER-BOTTOM: #000000 0px solid; ; HEIGHT: expression(this.scrollHeight > 150 ? "500px" : "auto"); BACKGROUND-COLOR: transparent; max-height: 50em
+}
+#content {
+	BORDER-RIGHT: #aaa 1px solid; BORDER-TOP: #aaa 1px solid; BORDER-LEFT: #aaa 1px solid; BORDER-BOTTOM: #aaa 1px solid
+}
+.portlet {
+	MARGIN: 0px 0px 0.5em 0.2em
+}
+.portlet H5 {
+	FONT-WEIGHT: bold; TEXT-TRANSFORM: capitalize
+}
+INPUT {
+	BORDER-RIGHT: #c3c3c3 1px solid; PADDING-RIGHT: 0.1em; BORDER-TOP: #7c7c7c 1px solid; PADDING-LEFT: 0.1em; FONT-SIZE: 1em; BACKGROUND: url(/images/fieldbg.gif) #f8f8f8 repeat-x 50% top; PADDING-BOTTOM: 0.1em; MARGIN: 2px; BORDER-LEFT: #c3c3c3 1px solid; COLOR: black; LINE-HEIGHT: 1.3em; PADDING-TOP: 0.1em; BORDER-BOTTOM: #ddd 1px solid
+}
+TEXTAREA {
+	BORDER-RIGHT: #c3c3c3 1px solid; PADDING-RIGHT: 0.1em; BORDER-TOP: #7c7c7c 1px solid; PADDING-LEFT: 0.1em; FONT-SIZE: 1em; BACKGROUND: url(/images/fieldbg.gif) #f8f8f8 repeat-x 50% top; PADDING-BOTTOM: 0.1em; MARGIN: 2px; BORDER-LEFT: #c3c3c3 1px solid; COLOR: black; LINE-HEIGHT: 1.3em; PADDING-TOP: 0.1em; BORDER-BOTTOM: #ddd 1px solid
+}
+SELECT {
+	BORDER-RIGHT: #c3c3c3 1px solid; PADDING-RIGHT: 0.1em; BORDER-TOP: #7c7c7c 1px solid; PADDING-LEFT: 0.1em; FONT-SIZE: 1em; BACKGROUND: url(/images/fieldbg.gif) #f8f8f8 repeat-x 50% top; PADDING-BOTTOM: 0.1em; MARGIN: 2px; BORDER-LEFT: #c3c3c3 1px solid; COLOR: black; LINE-HEIGHT: 1.3em; PADDING-TOP: 0.1em; BORDER-BOTTOM: #ddd 1px solid
+}

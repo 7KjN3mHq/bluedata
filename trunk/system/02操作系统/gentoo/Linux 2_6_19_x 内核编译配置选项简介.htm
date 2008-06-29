@@ -1,0 +1,2130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0050)http://lamp.linux.gov.cn/Linux/kernel_options.html -->
+<HTML xml:lang="zh-CN" xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>Linux 2.6.19.x 内核编译配置选项简介【作者：金步国】</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META http-equiv=Content-Language content=zh-CN>
+<STYLE type=text/css media=all>BODY {
+	MARGIN: 10px
+}
+H1 {
+	BACKGROUND: #ddd; TEXT-ALIGN: center
+}
+H2 {
+	BACKGROUND: #ddd; TEXT-ALIGN: center
+}
+H2 {
+	MARGIN: 10px 5%
+}
+H2#auth_name {
+	BACKGROUND: #fff
+}
+DT {
+	FONT: 15px Verdana,宋体,sans-serif
+}
+DD {
+	FONT: 14px Verdana,宋体,sans-serif
+}
+SPAN.little_head {
+	FONT: 14px Verdana,宋体,sans-serif
+}
+DT {
+	MARGIN-LEFT: 0px
+}
+DD {
+	MARGIN-LEFT: 0px
+}
+DD DT {
+	MARGIN-LEFT: 1.3em
+}
+DD DD {
+	MARGIN-LEFT: 1.3em
+}
+DT {
+	MARGIN-TOP: 0.5em
+}
+DT {
+	COLOR: #d11
+}
+DD DT {
+	COLOR: #11e
+}
+DD DD DT {
+	COLOR: #c2c
+}
+DD DD DD DT {
+	COLOR: #360
+}
+DD DD DD DD DT {
+	COLOR: #a50
+}
+DD DD DD DD DD DT {
+	COLOR: #28c
+}
+DT.omit {
+	COLOR: #555
+}
+</STYLE>
+
+<META content="MSHTML 6.00.2900.3354" name=GENERATOR></HEAD>
+<BODY>
+<H1>Linux 2.6.19.x 内核编译配置选项简介</H1>
+<H2 id=auth_name>作者：<STRONG><A 
+href="http://lamp.linux.gov.cn/jinbuguo_florilegium.html">金步国</A></STRONG></H2>
+<HR>
+
+<H3>版权声明</H3>
+<P>本文作者是一位自由软件爱好者，所以本文虽然不是软件，但是本着 GPL 
+的精神发布。任何人都可以自由使用、转载、复制和再分发，但必须保留作者署名，亦不得对声明中的任何条款作任何形式的修改，也不得附加任何其它条件。您可以自由链接、下载、传播此文档，但前提是必须保证全文完整转载，包括完整的版权信息和作译者声明。</P>
+<H3>其他作品</H3>
+<P>本文作者十分愿意与他人共享劳动成果，如果你对我的其他翻译作品或者技术文章有兴趣，可以在如下位置查看现有作品的列表：</P>
+<UL>
+  <LI><A href="http://lamp.linux.gov.cn/jinbuguo_florilegium.html">金步国作品列表</A> 
+  </LI></UL>
+<H3>BUG报告，切磋与探讨</H3>
+<P>由于作者水平有限，因此不能保证作品内容准确无误，请在阅读中自行鉴别。如果你发现了作品中的错误，请您来信指出，哪怕是错别字也好，任何提高作品质量的建议我都将虚心接纳。如果你愿意就作品中的相关内容与我进行进一步切磋与探讨，也欢迎你与我联系。联系方式：Email: 
+csfrank@citiz.net ； QQ: 70171448 ； MSN: csfrank122@hotmail.com</P>
+<HR>
+
+<H2>Code maturity level options<BR>代码成熟度选项</H2>
+<DL>
+  <DT>Prompt for development and/or incomplete code/drivers
+  <DD>显示尚在开发中或尚未完成的代码与驱动.除非你是测试人员或者开发者,否则请勿选择 </DD></DL>
+<H2>General setup<BR>常规设置</H2>
+<DL>
+  <DT>Local version - append to kernel release
+  <DD>在内核版本后面加上自定义的版本字符串(小于64字符),可以用"uname -a"命令看到 
+  <DT>Automatically append version information to the version string
+  <DD>自动在版本字符串后面添加版本信息,编译时需要有perl以及git仓库支持 
+  <DT>Support for paging of anonymous memory (swap)
+  <DD>使用交换分区或者交换文件来做为虚拟内存 
+  <DT>System V IPC
+  <DD>System V进程间通信(IPC)支持,许多程序需要这个功能.必选,除非你知道自己在做什么 
+  <DD>
+  <DL>
+    <DT>IPC Namespaces
+    <DD>IPC命名空间支持,不确定可以不选 </DD></DL>
+  <DT>POSIX Message Queues
+  <DD>POSIX消息队列,这是POSIX IPC中的一部分 
+  <DT>BSD Process Accounting
+  <DD>将进程的统计信息写入文件的用户级系统调用,主要包括进程的创建时间/创建者/内存占用等信息 
+  <DD>
+  <DL>
+    <DT>BSD Process Accounting version 3 file format
+    <DD>使用新的第三版文件格式,可以包含每个进程的PID和其父进程的PID,但是不兼容老版本的文件格式 </DD></DL>
+  <DT>Export task/process statistics through netlink
+  <DD>通过netlink接口向用户空间导出任务/进程的统计信息,与BSD Process 
+  Accounting的不同之处在于这些统计信息在整个任务/进程生存期都是可用的 
+  <DD>
+  <DL>
+    <DT>Enable per-task delay accounting
+    <DD>在统计信息中包含进程等候系统资源(cpu,IO同步,内存交换等)所花费的时间 </DD></DL>
+  <DT>UTS Namespaces
+  <DD>UTS名字空间支持,不确定可以不选 
+  <DT>Auditing support
+  <DD>审计支持,某些内核模块(例如SELinux)需要它,只有同时选择其子项才能对系统调用进行审计 
+  <DD>
+  <DL>
+    <DT>Enable system-call auditing support
+    <DD>支持对系统调用的审计 </DD></DL>
+  <DT>Kernel .config support
+  <DD>把内核的配置信息编译进内核中,以后可以通过scripts/extract-ikconfig脚本来提取这些信息 
+  <DD>
+  <DL>
+    <DT>Enable access to .config through /proc/config.gz
+    <DD>允许通过/proc/config.gz访问内核的配置信息 </DD></DL>
+  <DT>Cpuset support
+  <DD>只有含有大量CPU(大于16个)的SMP系统或NUMA(非一致内存访问)系统才需要它 
+  <DT>Kernel-&gt;user space relay support (formerly relayfs)
+  <DD>在某些文件系统上(比如debugfs)提供从内核空间向用户空间传递大量数据的接口 
+  <DT>Initramfs source file(s)
+  <DD>initrd已经被initramfs取代,如果你不明白这是什么意思,请保持空白 
+  <DT>Optimize for size (Look out for broken compilers!)
+  <DD>编译时优化内核尺寸(使用"-Os"而不是"-O2"参数编译),有时会产生错误的二进制代码 
+  <DT>Enable extended accounting over taskstats
+  <DD>收集额外的进程统计信息并通过taskstats接口发送到用户空间 
+  <DT>Configure standard kernel features (for small systems)
+  <DD>配置标准的内核特性(为小型系统) 
+  <DD>
+  <DL>
+    <DT>Enable 16-bit UID system calls
+    <DD>允许对UID系统调用进行过时的16-bit包装 
+    <DT>Sysctl syscall support
+    <DD>不需要重启就能修改内核的某些参数和变量,如果你也选择了支持/proc,将能从/proc/sys存取可以影响内核行为的参数或变量 
+    <DT>Load all symbols for debugging/kksymoops
+    <DD>装载所有的调试符号表信息,仅供调试时选择 
+    <DD>
+    <DL>
+      <DT>Include all symbols in kallsyms
+      <DD>在kallsyms中包含内核知道的所有符号,内核将会增大300K 
+      <DT>Do an extra kallsyms pass
+      <DD>除非你在kallsyms中发现了bug并需要报告这个bug才打开该选项 </DD></DL>
+    <DT>Support for hot-pluggable devices
+    <DD>支持热插拔设备,如usb与pc卡等,Udev也需要它 
+    <DT>Enable support for printk
+    <DD>允许内核向终端打印字符信息,在需要诊断内核为什么不能运行时选择 
+    <DT>BUG() support
+    <DD>显示故障和失败条件(BUG和WARN),禁用它将可能导致隐含的错误被忽略 
+    <DT>Enable ELF core dumps
+    <DD>内存转储支持,可以帮助调试ELF格式的程序 
+    <DT>Enable full-sized data structures for core
+    <DD>在内核中使用全尺寸的数据结构.禁用它将使得某些内核的数据结构减小以节约内存,但是将会降低性能 
+    <DT>Enable futex support
+    <DD>快速用户空间互斥体可以使线程串行化以避免竞态条件,也提高了响应速度.禁用它将导致内核不能正确的运行基于glibc的程序 
+    <DT>Enable eventpoll support
+    <DD>支持事件轮循的系统调用 
+    <DT>Use full shmem filesystem
+    <DD>完全使用shmem来代替ramfs.shmem是基于共享内存的文件系统(可能用到swap),在启用TMPFS后可以挂载为tmpfs供用户空间使用,它比简单的ramfs先进许多 
+
+    <DT>Use full SLAB allocator
+    <DD>使用SLAB完全取代SLOB进行内存分配,SLAB是一种优秀的内存分配管理器,推荐使用 
+    <DT>Enable VM event counters for /proc/vmstat
+    <DD>允许在/proc/vmstat中包含虚拟内存事件记数器 </DD></DL></DD></DL>
+<H2>Loadable module support<BR>可加载模块支持</H2>
+<DL>
+  <DT>Enable loadable module support
+  <DD>打开可加载模块支持,如果打开它则必须通过"make modules_install"把内核模块安装在/lib/modules/中 
+  <DD>
+  <DL>
+    <DT>Module unloading
+    <DD>允许卸载已经加载的模块 
+    <DD>
+    <DL>
+      <DT>Forced module unloading
+      <DD>允许强制卸载正在使用中的模块(比较危险) </DD></DL>
+    <DT>Module versioning support
+    <DD>允许使用其他内核版本的模块(可能会出问题) 
+    <DT>Source checksum for all modules
+    <DD>为所有的模块校验源码,如果你不是自己编写内核模块就不需要它 
+    <DT>Automatic kernel module loading
+    <DD>让内核通过运行modprobe来自动加载所需要的模块,比如可以自动解决模块的依赖关系 </DD></DL></DD></DL>
+<H2>Block layer<BR>块设备层</H2>
+<DL>
+  <DT>Enable the block layer
+  <DD>块设备支持,使用硬盘/USB/SCSI设备者必选 
+  <DD>
+  <DL>
+    <DT>Support for Large Block Devices
+    <DD>仅在使用大于2TB的块设备时需要 
+    <DT>Support for tracing block io actions
+    <DD>块队列IO跟踪支持,它允许用户查看在一个块设备队列上发生的所有事件,可以通过blktrace程序获得磁盘当前的详细统计数据 
+    <DT>Support for Large Single Files
+    <DD>仅在可能使用大于2TB的文件时需要 
+    <DT>IO Schedulers
+    <DD>IO调度器 
+    <DD>
+    <DL>
+      <DT>Anticipatory I/O scheduler
+      <DD>假设一个块设备只有一个物理查找磁头(例如一个单独的SATA硬盘),将多个随机的小写入流合并成一个大写入流,用写入延时换取最大的写入吞吐量.适用于大多数环境,特别是写入较多的环境(比如文件服务器) 
+
+      <DT>Deadline I/O scheduler
+      <DD>使用轮询的调度器,简洁小巧,提供了最小的读取延迟和尚佳的吞吐量,特别适合于读取较多的环境(比如数据库) 
+      <DT>CFQ I/O scheduler
+      <DD>使用QoS策略为所有任务分配等量的带宽,避免进程被饿死并实现了较低的延迟,可以认为是上述两种调度器的折中.适用于有大量进程的多用户系统 
+      <DT>Default I/O scheduler
+      <DD>默认IO调度器 </DD></DL></DD></DL></DD></DL>
+<H2>Processor type and features<BR>中央处理器(CPU)类型及特性</H2>
+<DL>
+  <DT>Symmetric multi-processing support
+  <DD>对称多处理器支持,如果你有多个CPU或者使用的是多核CPU就选上.此时"Enhanced Real Time Clock 
+  Support"选项必须开启,"Advanced Power Management"选项必须关闭 
+  <DT>Subarchitecture Type
+  <DD>处理器的子架构,大多数人都应当选择"PC-compatible" 
+  <DT>Processor family
+  <DD>处理器系列,请按照你实际使用的CPU选择 
+  <DT>Generic x86 support
+  <DD>通用x86支持,如果你的CPU能够在上述"Processor family"中找到就别选 
+  <DT>HPET Timer Support
+  <DD>HPET是替代8254芯片的新一代定时器,i686及以上级别的主板都支持,可以安全的选上 
+  <DT>Maximum number of CPUs
+  <DD>支持的最大CPU数,每增加一个内核将增加8K体积 
+  <DT>SMT (Hyperthreading) scheduler support
+  <DD>支持Intel的超线程(HT)技术 
+  <DT>Multi-core scheduler support
+  <DD>针对多核CPU进行调度策略优化 
+  <DT>Preemption Model
+  <DD>内核抢占模式 
+  <DD>
+  <DL>
+    <DT>No Forced Preemption (Server)
+    <DD>适合服务器环境的禁止内核抢占 
+    <DT>Voluntary Kernel Preemption (Desktop)
+    <DD>适合普通桌面环境的自愿内核抢占 
+    <DT>Preemptible Kernel (Low-Latency Desktop)
+    <DD>适合运行实时程序的主动内核抢占 </DD></DL>
+  <DT>Preempt The Big Kernel Lock
+  <DD>可以抢占大内核锁,应用于实时要求高的场合,不适合服务器环境 
+  <DT>Machine Check Exception
+  <DD>让CPU检测到系统故障时通知内核,以便内核采取相应的措施(如过热关机等) 
+  <DD>
+  <DL>
+    <DT>Check for non-fatal errors on AMD Athlon/Duron / Intel Pentium 4
+    <DD>每5秒检测一次这些cpu的非致命错误并纠正它们,同时记入日志 
+    <DT>check for P4 thermal throttling interrupt
+    <DD>当P4的cpu过热时显示一条警告消息 </DD></DL>
+  <DT>Enable VM86 support
+  <DD>虚拟X86支持,在DOSEMU下运行16-bit程序或XFree86通过BIOS初始化某些显卡的时候才需要 
+  <DT>Toshiba Laptop support
+  <DD>Toshiba笔记本模块支持 
+  <DT>Dell laptop support
+  <DD>Dell笔记本模块支持 
+  <DT>Enable X86 board specific fixups for reboot
+  <DD>修正某些旧x86主板的重起bug,这种主板基本绝种了 
+  <DT>/dev/cpu/microcode - Intel IA32 CPU microcode support
+  <DD>使用不随Linux内核发行的IA32微代码,你必需有IA32微代码二进制文件,仅对Intel的CPU有效 
+  <DT>/dev/cpu/*/msr - Model-specific register support
+  <DD>在多cpu系统中让特权CPU访问x86的MSR寄存器 
+  <DT>/dev/cpu/*/cpuid - CPU information support
+  <DD>能从/dev/cpu/x/cpuid获得CPU的唯一标识符(CPUID) 
+  <DT>Firmware Drivers
+  <DD>固件驱动程序 
+  <DD>
+  <DL>
+    <DT>BIOS Enhanced Disk Drive calls determine boot disk
+    <DD>有些BIOS支持从某块特定的硬盘启动(如果BIOS不支持则可能无法启动),目前大多数BIOS还不支持 
+    <DT>BIOS update support for DELL systems via sysfs
+    <DD>仅适用于DELL机器 
+    <DT>Dell Systems Management Base Driver
+    <DD>仅适用于DELL机器 </DD></DL>
+  <DT>High Memory Support
+  <DD>最高内存支持,总内存小于等于1G的选"off",大于4G的选"64G" 
+  <DT>Memory split
+  <DD>如果你不是绝对清楚自己在做什么,不要改动这个选项 
+  <DT>Memory model
+  <DD>一般选"Flat Memory",其他选项涉及内存热插拔 
+  <DT>64 bit Memory and IO resources
+  <DD>使用64位的内存和IO资源 
+  <DT>Allocate 3rd-level pagetables from highmem
+  <DD>在内存很多(大于4G)的机器上将用户空间的页表放到高位内存区,以节约宝贵的低端内存 
+  <DT>Math emulation
+  <DD>数学协处理器仿真,486DX以上的cpu就不要选它了 
+  <DT>MTRR (Memory Type Range Register) support
+  <DD>打开它可以提升PCI/AGP总线上的显卡2倍以上的速度,并且可以修正某些BIOS错误 
+  <DT>Boot from EFI support
+  <DD>EFI是一种可代替传统BIOS的技术(目前的Grub/LILO尚不能识别它),但是现在远未普及 
+  <DT>Enable kernel irq balancing
+  <DD>让内核将irq中断平均分配给多个CPU以进行负载均衡,但是要配合irqbanlance守护进程才行 
+  <DT>Use register arguments
+  <DD>使用"-mregparm=3"参数编译内核,将前3个参数以寄存器方式进行参数调用,可以生成更紧凑和高效的代码 
+  <DT>Enable seccomp to safely compute untrusted bytecode
+  <DD>只有嵌入式系统可以不选 
+  <DT>Timer frequency
+  <DD>内核时钟频率,桌面推荐"1000 HZ",服务器推荐"100 HZ"或"250 HZ" 
+  <DT>kexec system call
+  <DD>提供kexec系统调用,可以不必重启而切换到另一个内核 
+  <DT>kernel crash dumps
+  <DD>被kexec启动后产生内核崩溃转储 
+  <DT>Physical address where the kernel is loaded
+  <DD>内核加载的物理地址,除非你知道自己在做什么,否则不要修改.在提供kexec系统调用的情况下可能要修改它 
+  <DT>Support for hot-pluggable CPUs
+  <DD>对热插拔CPU提供支持 
+  <DT>Compat VDSO support
+  <DD>如果Glibc版本大于等于2.3.3就不选,否则就选上 </DD></DL>
+<H2>Power management options<BR>电源管理选项</H2>
+<DL>
+  <DT>Power Management support
+  <DD>电源管理有APM和ACPI两种标准且不能同时使用.即使关闭该选项,X86上运行的Linux也会在空闲时发出HLT指令将CPU进入睡眠状态 
+  <DD>
+  <DL>
+    <DT>Legacy Power Management API
+    <DD>传统的电源管理API,比如软关机和系统休眠等接口 
+    <DT>Power Management Debug Support
+    <DD>仅供调试使用 
+    <DT>Driver model /sys/devices/.../power/state files
+    <DD>内核帮助文档反对使用该选项,即将被废除 </DD></DL>
+  <DT>ACPI (Advanced Configuration and Power Interface) Support
+  <DD>必须运行acpid守护程序ACPI才能起作用.ACPI是为了取代APM而设计的,因此应该尽量使用ACPI而不是APM 
+  <DD>
+  <DL>
+    <DT>AC Adapter
+    <DD>如果你的系统可以在AC和电池之间转换就可以选 
+    <DT>Battery
+    <DD>通过/proc/acpi/battery向用户提供电池状态信息,用电池的笔记本可以选 
+    <DT>Button
+    <DD>守护程序捕获Power,Sleep,Lid按钮事件,并根据/proc/acpi/event做相应的动作,软件控制的poweroff需要它 
+    <DT>Video
+    <DD>仅对集成在主板上的显卡提供ACPI2.0支持,且不是所有集成显卡都支持 
+    <DT>Generic Hotkey
+    <DD>统一的热键驱动,建议不选 
+    <DT>Fan
+    <DD>允许通过用户层的程序来对系统风扇进行控制(开,关,查询状态),支持它的硬件并不多 
+    <DT>Dock
+    <DD>支持由ACPI控制的集线器(docking stations) 
+    <DT>Processor
+    <DD>让ACPI处理空闲状态,并使用ACPI C2和C3处理器状态在空闲时节省电能,同时它还被cpufreq的"Performance-state 
+    drivers"选项所依赖 
+    <DD>
+    <DL>
+      <DT>Thermal Zone
+      <DD>系统温度过高时可以利用ACPI thermal zone及时调整工作状态以避免你的CPU被烧毁 </DD></DL>
+    <DT>ASUS/Medion Laptop Extras
+    <DD>ASUS笔记本专用,以提供额外按钮的支持,用户可以通过/proc/acpi/asus来打开或者关闭LCD的背光/调整亮度/定制LED的闪烁指示等功能 
+
+    <DT>IBM ThinkPad Laptop Extras
+    <DD>IBM ThinkPad专用 
+    <DT>Toshiba Laptop Extras
+    <DD>Toshiba笔记本专用 
+    <DT>Disable ACPI for systems before Jan 1st this year
+    <DD>输入四位数的年份,在该年的1月1日前不使用ACPI的功能("0"表示一直使用) 
+    <DT>Debug Statements
+    <DD>详细的ACPI调试信息,不搞开发就别选 
+    <DT>Power Management Timer Support
+    <DD>这个Timer在所有ACPI兼容的平台上都可用,且不会受PM功能的影响,建议总是启用它.如果你在kernel log中看到了'many lost 
+    ticks'那就必须启用它 
+    <DT>ACPI0004,PNP0A05 and PNP0A06 Container Driver
+    <DD>支持内存和CPU的热插拔 
+    <DT>Smart Battery System
+    <DD>支持依赖于I2C的"智能电池".这种电池非常老旧且罕见,还与当前的ACPI标准兼容性差 </DD></DL>
+  <DT>APM (Advanced Power Management) BIOS Support
+  <DD>APM在SMP机器上必须关闭,一般来说当前的笔记本都支持ACPI,所以应尽量关闭该该选项 
+  <DD>
+  <DL>
+    <DT>Ignore USER SUSPEND
+    <DD>只有NEC Versa M系列的笔记本才需要选择这一项 
+    <DT>Enable PM at boot time
+    <DD>系统启动时即启用APM,选上这个选项能让系统自动的进行电源管理,但常常导致启动时死机 
+    <DT>Make CPU Idle calls when idle
+    <DD>系统空闲时调用空闲指令(halt),只有老式的CPU才需要选它,且对于SMP系统必须关闭 
+    <DT>Enable console blanking using APM
+    <DD>在屏幕空白时关闭LCD背光,事实上对所有的笔记本都无效 
+    <DT>RTC stores time in GMT
+    <DD>将硬件时钟应该设为格林威治时间,否则视为本地时间.建议你使用GMT,这样你无须为时区的改变而担心 
+    <DT>Allow interrupts during APM BIOS calls
+    <DD>允许APM的BIOS调用时中断,IBM Thinkpad的一些新机器需要这项.如果休眠时挂机(包括睡下去就醒不来),可以试试它 
+    <DT>Use real mode APM BIOS call to power off
+    <DD>此驱动为某些有Bug的BIOS准备,如果你的系统不能正常关机或关机时崩溃,可以试试它 </DD></DL>
+  <DT>CPU Frequency scaling
+  <DD>允许动态改变CPU主频,达到省电和降温的目的,必须同时启用下面的一种governor才行 
+  <DD>
+  <DL>
+    <DT>Enable CPUfreq debugging
+    <DD>允许对CPUfreq进行调试 
+    <DT>CPU frequency translation statistics
+    <DD>通过sysfs文件系统输出CPU频率变换的统计信息 
+    <DD>
+    <DL>
+      <DT>CPU frequency translation statistics details
+      <DD>输出详细的CPU频率变换统计信息 </DD></DL>
+    <DT>Default CPUFreq governor
+    <DD>默认的CPU频率调节器 
+    <DT>'performance' governor
+    <DD>'性能'优先,静态的将频率设置为cpu支持的最高频率 
+    <DT>'powersave' governor
+    <DD>'节能'优先,静态的将频率设置为cpu支持的最低频率 
+    <DT>'userspace' governor for userspace frequency scaling
+    <DD>既允许手动调整cpu频率,也允许用户空间的程序动态的调整cpu频率(需要额外的调频软件,比如cpufreqd) 
+    <DT>'ondemand' cpufreq policy governor
+    <DD>'立即响应',周期性的考察CPU负载并自动的动态调整cpu频率(不需要额外的调频软件),适合台式机 
+    <DT>'conservative' cpufreq governor
+    <DD>'保守',和'ondemand'相似,但是频率的升降是渐变式的(幅度不会很大),更适合用于笔记本/PDA/AMD64环境 
+    <DT>ACPI Processor P-States driver
+    <DD>将ACPI2.0的处理器性能状态报告给CPUFreq processor 
+    drivers以决定如何调整频率,该选项依赖于ACPI-&gt;Processor 
+    <DT class=omit>{省略的部分请按照自己实际使用的CPU选择} 
+    <DT>/proc/acpi/processor/../performance interface
+    <DD>内核帮助文档反对使用该选项,即将被废除 
+    <DT>Relaxed speedstep capability checks
+    <DD>放松对系统的speedstep兼容性检查,仅在某些老旧的Intel系统上需要打开 </DD></DL></DD></DL>
+<H2>Bus options (PCI, PCMCIA, EISA, MCA, ISA)<BR>总线选项</H2>
+<DL>
+  <DT>PCI support
+  <DD>PCI支持,如果使用了PCI或PCI Express设备就必选 
+  <DD>
+  <DL>
+    <DT>PCI access mode
+    <DD>PCI访问模式,强列建议选"Any"(系统将优先使用"MMConfig",然后使用"BIOS",最后使用"Direct"检测PCI设备) 
+    <DT>PCI Express support
+    <DD>PCI Express支持(目前主要用于显卡和千兆网卡) 
+    <DD>
+    <DL>
+      <DT>PCI Express Hotplug driver
+      <DD>如果你的主板和设备都支持PCI Express热插拔就可以选上 
+      <DD>
+      <DL>
+        <DT>Use polling mechanism for hot-plug events
+        <DD>对热插拔事件采用轮询机制,仅用于测试目的 </DD></DL>
+      <DT>Root Port Advanced Error Reporting support
+      <DD>由PCI Express AER驱动程序处理发送到Root Port的错误信息 </DD></DL>
+    <DT>Message Signaled Interrupts (MSI and MSI-X)
+    <DD>PCI Express支持两类中断:INTx使用传统的IRQ中断,可以与现行的PCI总线的驱动程序和操作系统兼容;MSI则是通过inbound 
+    Memory Write触发和发送中断,更适合多CPU系统.可以使用"pci=nomsi"内核引导参数关闭MSI 
+    <DT>PCI Debugging
+    <DD>将PCI调试信息输出到系统日志里 
+    <DT>Interrupts on hypertransport devices
+    <DD>允许本地的hypertransport设备使用中断 </DD></DL>
+  <DT>ISA support
+  <DD>现在基本上没有ISA的设备了,如果你有就选吧 
+  <DT>MCA support
+  <DD>微通道总线,老旧的IBM的台式机和笔记本上可能会有这种总线 
+  <DT>NatSemi SCx200 support
+  <DD>在使用AMD Geode处理器的机器上才可能有 
+  <DT>PCCARD (PCMCIA/CardBus) support
+  <DD>PCMCIA卡(主要用于笔记本)支持 
+  <DD>
+  <DL>
+    <DT>Enable PCCARD debugging
+    <DD>仅供调试 
+    <DT>16-bit PCMCIA support
+    <DD>一些老的PCMCIA卡使用16位的CardBus 
+    <DT>32-bit CardBus support
+    <DD>当前的PCMCIA卡基本上都是32位的CardBus 
+    <DT>CardBus yenta-compatible bridge support
+    <DD>使用PCMCIA卡的基本上都需要选择这一项,子项请按照自己实际使用的PCMCIA卡选择 
+    <DT class=omit>{省略的部分请按照自己实际使用的PCMCIA卡选择} </DT></DL>
+  <DT>PCI Hotplug Support
+  <DD>PCI热插拔支持,如果你有这样的设备就到子项中去选吧 </DD></DL>
+<H2>Executable file formats<BR>可执行文件格式</H2>
+<DL>
+  <DT>Kernel support for ELF binaries
+  <DD>ELF是开放平台下最常用的二进制文件格式,支持动态连接,支持不同的硬件平台.除非你知道自己在做什么,否则必选 
+  <DT>Kernel support for a.out and ECOFF binaries
+  <DD>早期UNIX系统的可执行文件格式,目前已经被ELF格式取代 
+  <DT>Kernel support for MISC binaries
+  <DD>允许插入二进制的封装层到内核中,使用Java,.NET,Python,Lisp等语言编写的程序时需要它 </DD></DL>
+<H2>Networking<BR>网络</H2>
+<DL>
+  <DT>Networking options
+  <DD>网络选项 
+  <DD>
+  <DL>
+    <DT>Network packet debugging
+    <DD>在调试不合格的包时加上额外的附加信息,但在遇到Dos攻击时你可能会被日志淹没 
+    <DT>Packet socket
+    <DD>这种Socket可以让应用程序(比如tcpdump,iptables)直接与网络设备通讯,而不通过内核中的其它中介协议 
+    <DD>
+    <DL>
+      <DT>Packet socket: mmapped IO
+      <DD>让Packet socket驱动程序使用IO映射机制以使连接速度更快 </DD></DL>
+    <DT>Unix domain sockets
+    <DD>一种仅运行于本机上的效率高于TCP/IP的Socket,简称Unix 
+    socket.许多程序都使用它在操作系统内部进行进程间通信(IPC),比如X Window和syslog 
+    <DT>Transformation user configuration interface
+    <DD>为IPsec(可在ip层加密)之类的工具提供XFRM用户配置接口支持 
+    <DT>Transformation sub policy support
+    <DD>XFRM子策略支持,仅供开发者使用 
+    <DT>PF_KEY sockets
+    <DD>用于可信任的密钥管理程序和操作系统内核内部的密钥管理进行通信,IPsec依赖于它 
+    <DT>TCP/IP networking
+    <DD>TCP/IP协议当然要选 
+    <DD>
+    <DL>
+      <DT>IP: multicasting
+      <DD>群组广播,似乎与网格计算有关,仅在使用MBONE的时候才需要 
+      <DT>IP: advanced router
+      <DD>高级路由,如果想做一个路由器就选吧 
+      <DT>IP: policy routing
+      <DD>策略路由 
+      <DT>IP: equal cost multipath
+      <DD>用于路由的基于目的地址的负载均衡 
+      <DT>IP: verbose route monitoring
+      <DD>显示冗余的路由监控信息 
+      <DT>IP: kernel level autoconfiguration
+      <DD>在内核启动时自动配置ip地址/路由表等,需要从网络启动的无盘工作站才需要这个东西 
+      <DT>IP: tunneling
+      <DD>IP隧道,将一个IP报文封装在另一个IP报文内的技术 
+      <DT>IP: GRE tunnels over IP
+      <DD>基于IP的GRE(通用路由封装)隧道 
+      <DT>IP: multicast routing
+      <DD>多重传播路由 
+      <DT>IP: ARP daemon support
+      <DD>这东西尚处于试验阶段就已经被废弃了 
+      <DT>IP: TCP syncookie support
+      <DD>抵抗SYN flood攻击的好东西,要启用它必须同时启用/proc文件系统和"Sysctl 
+      support",然后在系统启动并挂载了/proc之后执行"echo 1 
+      &gt;/proc/sys/net/ipv4/tcp_syncookies"命令 
+      <DT>IP: AH transformation
+      <DD>IPsec验证头(AH)实现了数据发送方的验证处理,可确保数据既对于未经验证的站点不可用也不能在路由过程中更改 
+      <DT>IP: ESP transformation
+      <DD>IPsec封闭安全负载(ESP)实现了发送方的验证处理和数据加密处理,用以确保数据不会被拦截/查看或复制 
+      <DT>IP: IPComp transformation
+      <DD>IPComp(IP静荷载压缩协议),用于支持IPsec 
+      <DT>IP: IPsec transport mode
+      <DD>IPsec传输模式,常用于对等通信,用以提供内网安全.数据包经过了加密但IP头没有加密,因此任何标准设备或软件都可查看和使用IP头 
+      <DT>IP: IPsec tunnel mode
+      <DD>IPsec隧道模式,用于提供外网安全(包括虚拟专用网络).整个数据包(数据头和负载)都已经过加密处理且分配有新的ESP头/IP头和验证尾,从而能够隐藏受保护站点的拓扑结构 
+
+      <DT>IP: IPsec BEET mode
+      <DD>IPsec BEET模式 
+      <DT>INET: socket monitoring interface
+      <DD>socket监视接口,一些Linux本地工具(如:包含ss的iproute2)需要使用它 
+      <DT>TCP: advanced congestion control
+      <DD>高级拥塞控制,如果没有特殊需求(比如无线网络)就别选了,内核会自动将默认的拥塞控制设为"Cubic"并将"Reno"作为候补 
+      <DT>IP: Virtual Server Configuration
+      <DD>IP虚拟服务器允许你基于多台物理机器构建一台高性能的虚拟服务器,不玩集群就别选了 
+      <DT>The IPv6 protocol
+      <DD>你要是需要IPv6就选吧 
+      <DT>NetLabel subsystem support
+      <DD>NetLabel子系统为诸如CIPSO与RIPSO之类能够在分组信息上添加标签的协议提供支持,如果你看不懂就别选了 </DD></DL>
+    <DT>Security Marking
+    <DD>对网络包进行安全标记,类似于nfmark,但主要是为安全目的而设计,如果你不明白的话就别选 
+    <DT>Network packet filtering (replaces ipchains)
+    <DD>Netfilter可以对数据包进行过滤和修改,可以作为防火墙("packet 
+    filter"或"proxy-based")或网关(NAT)或代理(proxy)或网桥使用.选中此选项后必须将"Fast 
+    switching"关闭,否则将前功尽弃 
+    <DD>
+    <DL>
+      <DT>Network packet filtering debugging
+      <DD>仅供开发者调试Netfilter使用 
+      <DT>Bridged IP/ARP packets filtering
+      <DD>如果你希望使用一个针对桥接的防火墙就打开它 
+      <DT>Core Netfilter Configuration
+      <DD>核心Netfilter配置(当包流过Chain时如果match某个规则那么将由该规则的target来处理,否则将由同一个Chain中的下一个规则进行匹配,若不match所有规则那么最终将由该Chain的policy进行处理) 
+
+      <DD>
+      <DL>
+        <DT>Netfilter netlink interface
+        <DD>允许Netfilter在与用户空间通信时使用新的netlink接口.netlink 
+        Socket是Linux用户态与内核态交流的主要方法之一,且越来越被重视. 
+        <DD>
+        <DL>
+          <DT>Netfilter NFQUEUE over NFNETLINK interface
+          <DD>通过NFNETLINK接口对包进行排队 
+          <DT>Netfilter LOG over NFNETLINK interface
+          <DD>通过NFNETLINK接口对包记录.该选项废弃了ipt_ULOG和ebg_ulog机制,并打算在将来废弃基于syslog的ipt_LOG和ip6t_LOG模块 
+          </DD></DL>
+        <DT>Layer 3 Independent Connection tracking
+        <DD>独立于第三层的链接跟踪,通过广义化的ip_conntrack支持其它非IP协议的第三层协议 
+        <DT>Netfilter Xtables support
+        <DD>如果你打算使用ip_tables,ip6_tables,arp_tables之一就必须选上 
+        <DD>
+        <DL>
+          <DT>"CLASSIFY" target support
+          <DD>允许为包设置优先级,一些排队规则(atm,cbq,dsmark,pfifo_fast,htb,prio)需要使用它 
+          <DT>"CONNMARK" target support
+          <DD>类似于"MARK",但影响的是连接标记的值 
+          <DT>"DSCP" target support
+          <DD>允许对ip包头部的DSCP(Differentiated Services Codepoint)字段进行修改,该字段常用于Qos 
+          <DT>"MARK" target support
+          <DD>允许对包进行标记(通常配合ip命令使用),这样就可以改变路由策略或者被其它子系统用来改变其行为 
+          <DT>"NFQUEUE" target Support
+          <DD>用于替代老旧的QUEUE(iptables内建的target之一),因为NFQUEUE能支持最多65535个队列,而QUEUE只能支持一个 
+
+          <DT>"NOTRACK" target support
+          <DD>允许规则指定哪些包不进入链接跟踪/NAT子系统 
+          <DT>"SECMARK" target support
+          <DD>允许对包进行安全标记,用于安全子系统 
+          <DT>"CONNSECMARK" target support
+          <DD>针对链接进行安全标记,同时还会将连接上的标记还原到包上(如果链接中的包尚未进行安全标记),通常与SECMARK target联合使用 
+
+          <DT>"comment" match support
+          <DD>允许你在iptables规则集中加入注释 
+          <DT>"connbytes" per-connection counter match support
+          <DD>允许针对单个连接内部每个方向(进/出)匹配已经传送的字节数/包数 
+          <DT>"connmark" connection mark match support
+          <DD>允许针对每个会话匹配先前由"CONNMARK"设置的标记值 
+          <DT>"conntrack" connection tracking match support
+          <DD>连接跟踪匹配,是"state"的超集,它允许额外的链接跟踪信息,在需要设置一些复杂的规则(比如网关)时很有用 
+          <DT>"DCCP" protocol match support
+          <DD>DCCP是打算取代UDP的新传输协议,它在UDP的基础上增加了流控和拥塞控制机制,面向实时业务 
+          <DT>"DSCP" match support
+          <DD>允许对IP包头的DSCP字段进行匹配 
+          <DT>"ESP" match support
+          <DD>允许对IPSec包中的ESP头进行匹配,使用IPsec的话就选上吧 
+          <DT>"helper" match support
+          <DD>加载特定协议的连接跟踪辅助模块,由该模块过滤所跟踪的连接类型的包,比如ip_conntrack_ftp模块 
+          <DT>"length" match support
+          <DD>允许对包的长度进行匹配 
+          <DT>"limit" match support
+          <DD>允许根据包的进出速率进行规则匹配,常和"LOG target"配合使用以抵抗某些Dos攻击 
+          <DT>"mac" address match support
+          <DD>允许根据以太网的MAC进行匹配,常用于无线网络环境 
+          <DT>"mark" match support
+          <DD>允许对先前由"MARK"标记的特定标记值进行匹配 
+          <DT>IPsec "policy" match support
+          <DD>使用IPsec就选上吧 
+          <DT>Multiple port match support
+          <DD>允许对TCP或UDP包同时匹配多个端口(通常情况下只能匹配一个端口) 
+          <DT>"physdev" match support
+          <DD>允许对到达的或将要离开的物理桥端口进行匹配 
+          <DT>"pkttype" packet type match support
+          <DD>允许对封包目的地址类别(广播/群播/直播)进行匹配 
+          <DT>"quota" match support
+          <DD>允许对总字节数的限额值进行匹配 
+          <DT>"realm" match support
+          <DD>允许对iptables中的路由子系统中的realm值进行匹配 
+          <DT>"sctp" protocol match support
+          <DD>流控制传输协议(SCTP),十年以后也许能够普及的东西 
+          <DT>"state" match support
+          <DD>这是对包进行分类的有力工具,它允许利用连接跟踪信息对连接中处于特定状态的包进行匹配 
+          <DT>"statistic" match support
+          <DD>允许根据一个给定的百分率对包进行周期性的或随机性的匹配 
+          <DT>"string" match support
+          <DD>允许根据包所承载的数据中包含的特定字符串进行匹配 
+          <DT>"tcpmss" match support
+          <DD>允许根据TCP SYN包头中的MSS(最大分段长度)选项的值进行匹配 </DD></DL></DD></DL>
+      <DT>IP: Netfilter Configuration
+      <DD>针对IPv4的Netfilter配置 
+      <DD>
+      <DL>
+        <DT>Connection tracking (required for masq/NAT)
+        <DD>链接跟踪.可用于报文伪装或地址转换,也可用于增强包过滤能力 
+        <DD>
+        <DL>
+          <DT>Connection tracking flow accounting
+          <DD>允许针对每个连接记录已经传送的字节/包数,常用于connbytes match 
+          <DT>Connection mark tracking support
+          <DD>允许对连接进行标记,与针对单独的包进行标记的不同之处在于它是针对连接流的.CONNMARK target和connmark 
+          match需要它的支持 
+          <DT>Connection tracking security mark support
+          <DD>允许对连接进行安全标记,通常这些标记包(SECMARK)复制到其所属连接(CONNSECMARK),再从连接复制到其关联的包(SECMARK) 
+
+          <DT>Connection tracking events
+          <DD>连接跟踪事件支持.如果启用这个选项,连接跟踪代码将提供一个notifier链,它可以被其它内核代码用来获知连接跟踪状态的改变 
+          <DT>Connection tracking netlink interface
+          <DD>支持基于netlink的用户空间接口 
+          <DT>SCTP protocol connection tracking support
+          <DD>SCTP是IP网面向多媒体通信的新一代的流控制传输协议 
+          <DT>FTP protocol support
+          <DD>FTP协议 
+          <DT>IRC protocol support
+          <DD>IRC协议是一种用来实时聊天协议,用过mIRC的人应当不陌生 
+          <DT>NetBIOS name service protocol support
+          <DD>NetBIOS名字服务协议 
+          <DT>TFTP protocol support
+          <DD>TFTP是基于UDP的比FTP简单的文件传输协议 
+          <DT>Amanda backup protocol support
+          <DD>Amanda备份协议 
+          <DT>PPTP protocol support
+          <DD>点对点隧道协议(PPTP)是一种支持多协议虚拟专用网络的网络技术,ADSL用户对它应该很熟悉 
+          <DT>H.323 protocol support
+          <DD>ITU-T提出的用于IP电话的协议 
+          <DT>SIP protocol support
+          <DD>IETE提出的用于IP电话的协议 </DD></DL>
+        <DT>IP Userspace queueing via NETLINK
+        <DD>已废弃 
+        <DT>IP tables support (required for filtering/masq/NAT)
+        <DD>要用iptables就肯定要选上 
+        <DD>
+        <DL>
+          <DT>IP range match support
+          <DD>允许对ip地址的范围进行匹配 
+          <DT>TOS match support
+          <DD>允许对ip包头的TOS(Type Of Service)字段进行匹配 
+          <DT>recent match support
+          <DD>可以创建一个或多个刚刚使用过的ip地址列表,然后根据这些列表进行匹配 
+          <DT>ECN match support
+          <DD>允许对TCP/IP包头的ECN(Explicit Congestion 
+          Notification)字段进行匹配.ECN是一种显式拥塞通知技术,它不但要求路由器支持而且要求端到端主机的支持,其基本思想是当路由器发生早期拥塞时不是丢弃包而是尽量对包进行标记,接收方接到带有ECN提示的包时,通知发送方网络即将发生拥塞,也就是它通过对包的标记提示TCP源即将发生拥塞,从而引发拥塞避免算法 
+
+          <DT>AH match support
+          <DD>允许对IPSec包头的AH字段进行匹配 
+          <DT>TTL match support
+          <DD>允许对ip包头的TTL(生存期)字段进行匹配 
+          <DT>Owner match support
+          <DD>允许对本地生成的包按照其宿主(user,group,process,session)进行匹配 
+          <DT>address type match support
+          <DD>允许对地址类型(单播,本地,广播)进行匹配 
+          <DT>hashlimit match support
+          <DD>是limit的升级,它基于你选择的ip地址与/或端口动态的创建以limit为桶(bucket)的哈希表.它可以创建诸如"为每个特定的目标IP分配10kpps"或"允许每个特定的源IP分配500pps"之类的规则 
+
+          <DT>Packet filtering
+          <DD>定义filter表以允许对包进行过滤 
+          <DD>
+          <DL>
+            <DT>REJECT target support
+            <DD>允许返回一个ICMP错误而不是简单的丢弃包 </DD></DL>
+          <DT>LOG target support
+          <DD>允许将符合条件的包头信息通过syslog进行记录 
+          <DT>ULOG target support
+          <DD>透过netlink 
+          socket将符合条件的封包交给用户空间的ulogd守护进程.反对使用该选项,因为它已经被NETFILTER_NETLINK_LOG代替 
+          <DT>TCPMSS target support
+          <DD>允许修改TCP包头中的MSS(最大分段长度)选项值 
+          <DT>Full NAT
+          <DD>允许进行伪装/端口转发以及其它的NAT功能,仅在你需要使用iptables中的nat表时才需要选择 
+          <DT>Packet mangling
+          <DD>在iptables中启用mangle表以便对包进行各种修改,常用于改变包的路由 
+          <DT>raw table support (required for NOTRACK/TRACE)
+          <DD>在iptables中添加一个'raw'表,该表在netfilter框架中非常靠前,并在PREROUTING和OUTPUT链上有钩子,从而可以对收到的数据包在连接跟踪前进行处理 
+          </DD></DL>
+        <DT>ARP tables support
+        <DD>ARP表支持.只有在局域网中才有ARP欺骗问题,另外路由器也会遭到ARP欺骗 
+        <DD>
+        <DL>
+          <DT>ARP packet filtering
+          <DD>ARP包过滤.对于进入和离开本地的ARP包定义一个filter表,在桥接的情况下还可以应用于被转发ARP包 
+          <DT>ARP payload mangling
+          <DD>允许对ARP包的荷载部分进行修改,比如修改源和目标物理地址 </DD></DL></DD></DL>
+      <DT>IPv6: Netfilter Configuration
+      <DD>针对IPv6的Netfilter配置,需要的话可以参考前面IPv4的Netfilter配置进行选择 
+      <DT>DECnet: Netfilter Configuration
+      <DD>针对DECnet的Netfilter配置 
+      <DT>Bridge: Netfilter Configuration
+      <DD>针对桥接的Netfilter配置 </DD></DL>
+    <DT>DCCP Configuration
+    <DD>数据报拥塞控制协议在UDP的基础上增加了流控和拥塞控制机制,使数据报协议能够更好地用于流媒体业务的传输 
+    <DT>SCTP Configuration
+    <DD>流控制传输协议是一种新兴的传输层协议.TCP协议一次只能连接一个IP地址而在SCTP协议一次可以连接多个IP地址且可以自动平衡网络负载,一旦某一个IP地址失效会自动将网络负载转移到其他IP地址上 
+
+    <DT>TIPC Configuration
+    <DD>透明内部进程间通信协议,以共享内存为基础实现任务和资源的调度,专门用于内部集群通信 
+    <DT>Asynchronous Transfer Mode (ATM)
+    <DD>异步传输模式(ATM)支持 
+    <DT>802.1d Ethernet Bridging
+    <DD>802.1d以太网桥 
+    <DT>802.1Q VLAN Support
+    <DD>802.1Q虚拟局域网 
+    <DT>DECnet Support
+    <DD>DECnet是一种很生僻的协议 
+    <DT>ANSI/IEEE 802.2 LLC type 2 Support
+    <DD>看不懂可以不选 
+    <DT>The IPX protocol
+    <DD>IPX协议 
+    <DT>Appletalk protocol support
+    <DD>与Mac机器通信的协议 
+    <DT>CCITT X.25 Packet Layer
+    <DD>大约没人需要这东西 
+    <DT>LAPB Data Link Driver
+    <DD>大约没人需要这东西 
+    <DT>Acorn Econet/AUN protocols
+    <DD>一种被Acorn计算机使用的又老又慢的协议 
+    <DT>WAN router
+    <DD>广域网路由 
+    <DT>QoS and/or fair queueing
+    <DD>如果你需要Qos或公平队列就选吧 
+    <DT>Network testing
+    <DD>网络测试,仅供调试使用 </DD></DL>
+  <DT>Amateur Radio support
+  <DD>业余无线电支持 
+  <DT>IrDA (infrared) subsystem support
+  <DD>红外线支持,比如无线鼠标或无线键盘 
+  <DT>Bluetooth subsystem support
+  <DD>蓝牙支持 
+  <DT>Generic IEEE 802.11 Networking Stack
+  <DD>通用无线局域网(IEEE 802.11系列协议)支持 </DD></DL>
+<H2>Device Drivers<BR>设备驱动程序</H2>
+<DL><!-- 设备驱动程序开始 -->
+  <DT>Generic Driver Options
+  <DD>驱动程序通用选项 
+  <DD>
+  <DL>
+    <DT>Select only drivers that don't need compile-time external firmware
+    <DD>只显示那些不需要内核对外部设备的固件作map支持的驱动程序,除非你有某些怪异硬件,否则请选上 
+    <DT>Prevent firmware from being built
+    <DD>不编译固件.固件一般是随硬件的驱动程序提供的,仅在更新固件的时候才需要重新编译.建议选上 
+    <DT>Userspace firmware loading support
+    <DD>提供某些内核之外的模块需要的用户空间固件加载支持,在内核树之外编译的模块可能需要它 
+    <DT>Driver Core verbose debug messages
+    <DD>让驱动程序核心在系统日志中产生冗长的调试信息,仅供调试 </DD></DL>
+  <DT>Connector - unified userspace &lt;-&gt; kernelspace linker
+  <DD>统一的用户空间和内核空间连接器,工作在netlink socket协议的顶层.不确定可以不选 
+  <DD>
+  <DL>
+    <DT>Report process events to userspace
+    <DD>向用户空间报告进程事件(fork,exec,id变化(uid,gid,suid) </DD></DL>
+  <DT>Memory Technology Devices (MTD)
+  <DD>特殊的存储技术装置,如常用于数码相机或嵌入式系统的闪存卡 
+  <DT>Parallel port support
+  <DD>并口支持(传统的打印机接口) 
+  <DT>Plug and Play support
+  <DD>即插即用支持,若未选则应当在BIOS中关闭"PnP OS".这里的选项与PCI设备无关 
+  <DD>
+  <DL>
+    <DT>PnP Debug Messages
+    <DD>该选项仅供调试使用 
+    <DT>ISA Plug and Play support
+    <DD>ISA设备即插即用支持 
+    <DT>Plug and Play BIOS support
+    <DD>Linux使用"Plug and Play 
+    BIOS"规范v1.0A(1994年)中定义的PNPBIOS自动检测主板上的资源和设备,但是其中的某些特性目前尚未实现,比如:事件通知/扩展坞(Docking 
+    Station)信息/ISAPNP服务.如果你希望由内核检测主板上的设备并为其分配资源(此时BIOS中的"PnP 
+    OS"必须开启)可以选上,此外,PNPBIOS还有助于防止主板上的设备与其他总线设备冲突.不过需要注意的是ACPI将会逐渐取代PNPBIOS(虽然目前两者可以共存),所以如果你的系统不使用ISA设备并且支持ACPI,建议你不要选中该选项并将BIOS中的"PnP 
+    OS"关闭 
+    <DD>
+    <DL>
+      <DT>Plug and Play BIOS /proc interface
+      <DD>该选项仅供调试使用 </DD></DL>
+    <DT>Plug and Play ACPI support
+    <DD>让Linux使用PNPACPI自动检测主板上内建的设备并为其分配资源(即使这些设备已被BIOS禁用),它有助于避免设备之间的资源(如中断)冲突 
+    </DD></DL>
+  <DT>Block devices
+  <DD>块设备 
+  <DD>
+  <DL>
+    <DT>Normal floppy disk support
+    <DD>通用软驱支持 
+    <DT>XT hard disk support
+    <DD>古董级产品 
+    <DT>Parallel port IDE device support
+    <DD>通过并口与计算机连接的IDE设备,比如某些老旧的外接光驱或硬盘之类 
+    <DT>Compaq SMART2 support
+    <DD>基于Compaq SMART2控制器的磁盘阵列卡 
+    <DT>Compaq Smart Array 5xxx support
+    <DD>基于Compaq SMART控制器的磁盘阵列卡 
+    <DT>Mylex DAC960/DAC1100 PCI RAID Controller support
+    <DD>古董级产品 
+    <DT>Micro Memory MM5415 Battery Backed RAM support
+    <DD>一种使用电池做后备电源的内存 
+    <DT>Loopback device support
+    <DD>Loopback是指拿文件来模拟块设备,比如可以将一个iso9660镜像文件挂成一个文件系统 
+    <DD>
+    <DL>
+      <DT>Cryptoloop Support
+      <DD>使用系统提供的加密API对Loopback设备加密,但不能用于日志型文件系统 </DD></DL>
+    <DT>Network block device support
+    <DD>让你的电脑成为网络块设备的客户端 
+    <DT>Promise SATA SX8 support
+    <DD>基于Promise公司的SATA SX8控制器的RAID卡 
+    <DT>Low Performance USB Block driver
+    <DD>它不是用来支持U盘的,不懂的就别选 
+    <DT>RAM disk support
+    <DD>内存中的虚拟磁盘,大小固定(由下面的选项决定,也可给内核传递"ramdisk_size=参数"来决定),它的功能和代码都比shmem简单许多 
+    <DD>
+    <DL>
+      <DT>Default number of RAM disks
+      <DD>默认RAM disk的数量 
+      <DT>Default RAM disk size (kbytes)
+      <DD>仅在你真正知道它的含义时才允许修改 
+      <DT>Default RAM disk block size (bytes)
+      <DD>每一个RAM disk的默认块大小,设为PAGE_SIZE的值时效率最高 </DD></DL>
+    <DT>Initial RAM filesystem and RAM disk (initramfs/initrd) support
+    <DD>如果启动计算机所必须的模块都在内核里的话可以不选此项 
+    <DT>Packet writing on CD/DVD media
+    <DD>CD/DVD刻录支持 
+    <DD>
+    <DL>
+      <DT>Free buffers for data gathering
+      <DD>用于收集写入数据的缓冲区个数(每个占用64Kb内存),缓冲区越多性能越好 
+      <DT>Enable write caching
+      <DD>为CD-R/W设备启用写入缓冲,目前这是一个比较危险的选项 </DD></DL>
+    <DT>ATA over Ethernet support
+    <DD>以太网ATA设备支持 </DD></DL>
+  <DT>Misc devices
+  <DD>杂项设备 
+  <DT>ATA/ATAPI/MFM/RLL support
+  <DD>通常是IDE硬盘和ATAPI光驱.纯SCSI系统且不使用这些接口可以不选 
+  <DD>
+  <DL>
+    <DT>Max IDE interfaces
+    <DD>最大IDE接口数,两个IDE插槽一般相当于4个接口 
+    <DT>Enhanced IDE/MFM/RLL disk/cdrom/tape/floppy support
+    <DD>EIDE支持是当然要选的,否则540MB以上的硬盘都不认识而且不支持主从设备 
+    <DD>
+    <DL>
+      <DT>Support for SATA (deprecated; conflicts with libata SATA driver)
+      <DD>反对使用,该选项与libata SATA驱动有冲突 
+      <DT>Use old disk-only driver on primary interface
+      <DD>没人用这些古董了 
+      <DT>Include IDE/ATA-2 DISK support
+      <DD>ATA-2支持,除非你的硬盘是古董,否则必选 
+      <DT>Use multi-mode by default
+      <DD>如果不确定就别选,除非出现帮助中指出的错误 
+      <DT>PCMCIA IDE support
+      <DD>通过PCMCIA卡与计算机连接的IDE设备,比如某些外置硬盘或光驱 
+      <DT>Include IDE/ATAPI CDROM support
+      <DD>有IDE光驱的就选 
+      <DT>Include IDE/ATAPI TAPE support
+      <DD>有IDE磁带的就选 
+      <DT>Include IDE/ATAPI FLOPPY support
+      <DD>有IDE软驱的就选 
+      <DT>SCSI emulation support
+      <DD>SCSI仿真,以前刻录光碟时需要,现在不需要了 
+      <DT>IDE Taskfile Access
+      <DD>对介质进行直接的原始访问,它是一个复杂且有效的测试和校验硬件的方案,可以在驱动层之下执行数据恢复工作 
+      <DT>generic/default IDE chipset support
+      <DD>通用IDE芯片组支持 
+      <DT>CMD640 chipset bugfix/support
+      <DD>586以前的主板上常用,毛病多多 
+      <DT>PNP EIDE support
+      <DD>外接的即插即用EIDE卡支持 
+      <DT>PCI IDE chipset support
+      <DD>基于PCI总线的IDE芯片组支持,帮助IDE驱动自动检测和配置所有基于PCI的IDE接口 
+      <DD>
+      <DL>
+        <DT>Sharing PCI IDE interrupts support
+        <DD>与其他PCI设备共享中断,一来可能冲突,二来降低性能,不选为妙 
+        <DT>Boot off-board chipsets first support
+        <DD>不使用外接IDE控制器的就别选,使用外接IDE控制器的注意看帮助 
+        <DT>Generic PCI IDE Chipset Support
+        <DD>通用的PCI IDE芯片组支持,如果你的芯片组在下面能找到就别选 
+        <DT>OPTi 82C621 chipset enhanced support
+        <DD>OPTi 82C621 EIDE控制器 
+        <DT>RZ1000 chipset bugfix/support
+        <DD>486/586年代的玩艺 
+        <DT>Generic PCI bus-master DMA support
+        <DD>通用的PCI总线控制器DMA支持,586以上的系统都支持 
+        <DD>
+        <DL>
+          <DT>Force enable legacy 2.0.X HOSTS to use DMA
+          <DD>历史遗留问题,别管它,不选 
+          <DT>Use PCI DMA by default when available
+          <DD>默认启用DMA,586以上的系统都支持,建议选择 
+          <DD>
+          <DL>
+            <DT>Enable DMA only for disks
+            <DD>只对硬盘启用DMA,若你的光驱不支持DMA就选上 </DD></DL>
+          <DT class=omit>{此处省略的部分按照自己主板上实际使用的芯片组进行选择} </DT></DL></DD></DL>
+      <DT>Other IDE chipset support
+      <DD>其它IDE芯片组支持(多数需要在引导时指定特定的内核参数),如果你使用这样的芯片组就按实际情况选择子项吧 
+      <DT>IGNORE word93 Validation BITS
+      <DD>ATA-4和ATA-5规范中对于如何在80针的数据线上探测解释的不明确,导致了两种不同标准的产品同时出现,这可能导致ATA-66/100降低为ATA-33,若出现这个问题,可以打开这个选项忽略这种不同,但是又有可能导致另外的问题 
+
+      <DT>Old hard disk (MFM/RLL/IDE) driver
+      <DD>旧版本的MFM/RLL/IDE驱动,不建议使用 </DD></DL></DD></DL>
+  <DT>SCSI device support
+  <DD>SCSI设备 
+  <DD>
+  <DL>
+    <DT>RAID Transport Class
+    <DD>用于SCSI设备的软件RAID支持,需要配合外部工具 
+    <DT>SCSI device support
+    <DD>有任何SCSI/SATA/USB/光纤/FireWire/IDE-SCSI仿真设备之一就必须选上 
+    <DT>legacy /proc/scsi/ support
+    <DD>一些老的刻录程序可能需要它 
+    <DT>SCSI disk support
+    <DD>SCSI硬盘或U盘 
+    <DT>SCSI tape support
+    <DD>SCSI磁带 
+    <DT>SCSI OnStream SC-x0 tape support
+    <DD>另一种SCSI磁带 
+    <DT>SCSI CDROM support
+    <DD>SCSI CDROM 
+    <DD>
+    <DL>
+      <DT>Enable vendor-specific extensions
+      <DD>仅在古董级的SCSI CDROM设备上才需要 </DD></DL>
+    <DT>SCSI generic support
+    <DD>若有SCSI硬盘/CD-ROM/tape之外的SCSI设备才需要选择 
+    <DT>SCSI media changer support
+    <DD>一种SCSI备份设备 
+    <DT>Probe all LUNs on each SCSI device
+    <DD>在每个SCSI设备上探测逻辑设备数.只在一个SCSI设备上有多个逻辑设备(模拟多个SCSI设备,比如多口读卡器)时才需要选它,一般的SCSI设备不需要 
+
+    <DT>Verbose SCSI error reporting
+    <DD>以易读的方式报告SCSI错误,内核将会增大12K 
+    <DT>SCSI logging facility
+    <DD>启用SCSI日志(默认并不开启,需要在挂载/proc后执行echo "scsi log token [level]" &gt; 
+    /proc/scsi/scsi命令才能打开日志),可用于跟踪和捕获SCSI设备的错误 
+    <DT>SCSI Transports
+    <DD>SCSI接口类型,下面的子项可以全不选,内核中若有其他部分依赖它,会自动选上 
+    <DD>
+    <DL>
+      <DT>Parallel SCSI (SPI) Transport Attributes
+      <DD>传统且常见的并行SCSI(Ultra320/160之类) 
+      <DT>FiberChannel Transport Attributes
+      <DD>光纤通道 
+      <DT>iSCSI Transport Attributes
+      <DD>iSCSI是利用TCP/IP网络传送SCSI命令和数据的I/O技术 
+      <DT>SAS Transport Attributes
+      <DD>串行SCSI传输属性支持(SAS对于的关系SPI犹如SATA对于ATA) 
+      <DT>SAS Domain Transport Attributes
+      <DD>为使用了SAS Domain的驱动程序提供帮助 
+      <DD>
+      <DL>
+        <DT>Compile the SAS Domain Transport Attributes in debug mode
+        <DD>仅供调试使用 </DD></DL></DD></DL>
+    <DT>SCSI low-level drivers
+    <DD>底层SCSI驱动程序,按你实际使用的产品选择 
+    <DD>
+    <DL>
+      <DT>iSCSI Initiator over TCP/IP
+      <DD>用于iSCSI在TCP/IP网络上传播的起动程序 
+      <DT class=omit>{此处省略的部分按照自己实际使用的控制器进行选择,仅用一个例子解说子项} 
+      <DT>Adaptec AIC79xx U320 support
+      <DD>以基于PCI-X的Adaptec Ultra 320 SCSI控制器为例解说子项 
+      <DD>
+      <DL>
+        <DT>Maximum number of TCQ commands per device
+        <DD>每个SCSI设备的标记指令队列的最大长度(上限253).上限越高性能越好,但是对于SCSI设备较多的系统来说可能造成内存分配失败.此值还可以通过tag_info内核引导参数指定 
+
+        <DT>Initial bus reset delay in milli-seconds
+        <DD>初始总线reset之后的延时微秒数(默认5000) 
+        <DT>Enable Read Streaming for All Targets
+        <DD>对所有的标记队列启用Read 
+        Streaming(可以增强效能,但是在一些Adaptec早期的U320产品上有缺陷),此特性还可以通过rd_strm内核引导参数指定 
+        <DT>Compile in Debugging Code
+        <DD>仅用于调试 
+        <DT>Debug code enable mask (16383 for all debugging)
+        <DD>出错代码的掩码,0表示禁止所有,16383表示打开所有 
+        <DT>Decode registers during diagnostics
+        <DD>将出错代码的解释内容编译进去,这样就不需要查看aic7xxx.reg中的出错代码表以确定出错代码的含意了 
+</DD></DL></DD></DL>
+    <DT>PCMCIA SCSI adapter support
+    <DD>通过PCMCIA卡与计算机连接的SCSI设备 </DD></DL>
+  <DT>Serial ATA and Parallel ATA drivers
+  <DD>SATA与PATA设备 
+  <DD>
+  <DL>
+    <DT>ATA device support
+    <DD>SATA或PATA接口的硬盘或光驱等设备 
+    <DD>
+    <DL>
+      <DT>AHCI SATA support
+      <DD>SATA高级主机控制器接口.要使用NCQ功能就必须选中它,另外BIOS中的SATA工作模式亦要选AHCI模式 
+      <DT>Generic ATA support
+      <DD>基于新的ATA层的通用ATA控制器驱动,仅在你的芯片组在列表中找不到时才需要 
+      <DT class=omit>{此处省略的部分按照自己主板上实际使用的芯片组进行选择} </DT></DL></DD></DL>
+  <DT>Old CD-ROM drivers (not SCSI, not IDE)
+  <DD>老旧的CD-ROM驱动,这种CD-ROM既不使用SCSI接口,也不使用IDE接口 
+  <DT>Multi-device support (RAID and LVM)
+  <DD>多设备支持(RAID和LVM).RAID和LVM的功能是使多个物理设备组建成一个单独的逻辑磁盘 
+  <DD>
+  <DL>
+    <DT>RAID support
+    <DD>软件RAID(需要使用外部工具),若你有硬件RAID控制器,可以不选 
+    <DD>
+    <DL>
+      <DT>Linear (append) mode
+      <DD>追加模式(简单的将一个分区追加在另一个分区之后) 
+      <DT>RAID-0 (striping) mode
+      <DD>RAID-0(等量分割)模式 
+      <DT>RAID-1 (mirroring) mode
+      <DD>RAID-1(镜像)模式 
+      <DT>RAID-10 (mirrored striping) mode
+      <DD>RAID 0+1模式 
+      <DT>RAID-4/RAID-5/RAID-6 mode
+      <DD>这些模式比较复杂,一般不用 
+      <DD>
+      <DL>
+        <DT>Support adding drives to a raid-5 array
+        <DD>RAID-5阵列可以通过添加额外的驱动器进行扩展(restriping),这个选项允许在线进行这样的操作,同时要求mdadm的版本大于2.4.1 
+        </DD></DL>
+      <DT>Multipath I/O support
+      <DD>多路IO支持是指在服务器和存储设备之间使用冗余的物理路径组件创建"逻辑路径",如果这些组件发生故障并造成路径失败,多路径逻辑将为I/O使用备用路径以使应用程序仍然可以访问其数据 
+
+      <DT>Faulty test module for MD
+      <DD>用于MD(Multi-device)的缺陷测试模块 </DD></DL>
+    <DT>Device mapper support
+    <DD>Device-mapper是一个底层的卷管理器,不用LVM就别选了 </DD></DL>
+  <DT>Fusion MPT device support
+  <DD>Fusion MPT设备支持 
+  <DT>IEEE 1394 (FireWire) support
+  <DD>IEEE 1394(火线) 
+  <DT>I2O device support
+  <DD>I2O(智能IO)设备使用专门的I/O处理器负责中断处理/缓冲存取/数据传输等烦琐任务以减少CPU占用,一般的主板上没这种东西 
+  <DT>Network device support
+  <DD>网络设备 
+  <DD>
+  <DL>
+    <DT>Network device support
+    <DD>网络设备支持,当然要选啦 
+    <DD>
+    <DL>
+      <DT>Intermediate Functional Block support
+      <DD>这是一个中间层驱动,可以用来灵活的配置资源共享,看不懂的可以不选 
+      <DT>Dummy net driver support
+      <DD>哑接口网络,使用SLIP或PPP传输协议(如ADSL用户)的需要它 
+      <DT>Bonding driver support
+      <DD>将多个以太网通道绑定为一个,也就是两块网卡具有相同的IP地址并且聚合成一个逻辑链路工作,可以用来实现负载均衡或硬件冗余 
+      <DT>EQL (serial line load balancing) support
+      <DD>串行线路的负载均衡.如果有两个MODEM和两条电话线而且用SLIP或PPP协议,该选项可以让您同时使用这两个MODEM以达到双倍速度(在网络的另一端也要有同样的设备) 
+
+      <DT>Universal TUN/TAP device driver support
+      <DD>TUN/TAP可以为用户空间提供包的接收和发送服务,比如可以用来虚拟一张网卡或点对点通道 
+      <DT>General Instruments Surfboard 1000
+      <DD>SURFboard 1000插卡式Cable Medem(ISA接口),这玩意大概早就绝种了 
+      <DT>ARCnet devices
+      <DD>一般人没有ARCnet类型的网卡 
+      <DT>PHY device support
+      <DD>数据链路层芯片简称为MAC控制器,物理层芯片简称之为PHY,通常的网卡把MAC和PHY的功能做到了一颗芯片中,但也有一些仅含PHY的"软网卡" 
+
+      <DT>Ethernet (10 or 100Mbit)
+      <DD>目前最广泛的10/100M网卡 
+      <DT>Ethernet (1000 Mbit)
+      <DD>目前已成装机主流的1000M网卡 
+      <DT>Ethernet (10000 Mbit)
+      <DD>万兆网卡无福消受啦 
+      <DT>Token Ring devices
+      <DD>令牌环网设备 
+      <DT>Wireless LAN (non-hamradio)
+      <DD>无线LAN 
+      <DT>PCMCIA network device support
+      <DD>PCMCIA或CardBus网卡 
+      <DT>Wan interfaces
+      <DD>WAN接口 
+      <DT>ATM drivers
+      <DD>异步传输模式 
+      <DT>FDDI driver support
+      <DD>光纤分布式数据接口 
+      <DT>HIPPI driver support
+      <DD>HIPPI(高性能并行接口)是一个在短距离内高速传送大量数据的点对点协议 
+      <DT>PLIP (parallel port) support
+      <DD>将并口映射成网络设备,这样两台机器即使没有网卡也可以使用并口通过并行线传输IP数据包 
+      <DT>PPP (point-to-point protocol) support
+      <DD>点对点协议,PPP已经基本取代SLIP了,用ADSL的可要仔细选择了 
+      <DD>
+      <DL>
+        <DT>PPP multilink support
+        <DD>多重链路协议(RFC1990)允许你将多个线路(物理的或逻辑的)组合为一个PPP连接一充分利用带宽,这不但需要pppd的支持,还需要ISP的支持 
+
+        <DT>PPP filtering
+        <DD>允许对通过PPP接口的包进行过滤 
+        <DT>PPP support for async serial ports
+        <DD>通过标准异步串口(COM1,COM2)使用PPP,比如使用老式的外置modem(非同步modem或ISDN modem)上网 
+        <DT>PPP support for sync tty ports
+        <DD>通过同步tty设备(比如SyncLink适配器)使用PPP,常用于高速租用线路(比如T1/E1) 
+        <DT>PPP Deflate compression
+        <DD>为PPP提供Deflate(等价于gzip压缩算法)压缩算法支持,需要通信双方的支持才有效 
+        <DT>PPP BSD-Compress compression
+        <DD>为PPP提供BSD(等价于LZW压缩算法,没有gzip高效)压缩算法支持,需要通信双方的支持才有效 
+        <DT>PPP MPPE compression (encryption)
+        <DD>为PPP提供MPPE加密协议支持,它被用于微软的P2P隧道协议中 
+        <DT>PPP over Ethernet
+        <DD>这就是ADSL用户最常见的PPPoE啦,也就是在以太网上跑的PPP协议 
+        <DT>PPP over ATM
+        <DD>在ATM上跑的PPP </DD></DL>
+      <DT>SLIP (serial line) support
+      <DD>一个在串行线上(例如电话线)传输IP数据报的TCP/IP协议.小猫一族的通讯协议,与宽带用户无关 
+      <DD>
+      <DL>
+        <DT>CSLIP compressed headers
+        <DD>CSLIP协议比SLIP快,它将TCP/IP头(而非数据)进行压缩传送,需要通信双方的支持才有效 </DD></DL>
+      <DT>Keepalive and linefill
+      <DD>让SLIP驱动支持RELCOM linefill和keepalive监视,这在信号质量比较差的模拟线路上是个好主意 
+      <DT>Six bit SLIP encapsulation
+      <DD>这种线路非常罕见,不要选它 
+      <DT>Fibre Channel driver support
+      <DD>光纤通道 
+      <DT>Traffic Shaper
+      <DD>流量整形,已废弃 
+      <DT>Network console logging support
+      <DD>通过网络记录内核信息 </DD></DL>
+    <DT>Netpoll support for trapping incoming packets
+    <DD>不知道Netpoll是什么的可以不选 
+    <DT>Netpoll traffic trapping
+    <DD>不知道Netpoll是什么的可以不选 </DD></DL>
+  <DT>ISDN subsystem
+  <DD>综合业务数字网(Integrated Service Digital Network) 
+  <DT>Telephony Support
+  <DD>VoIP支持 
+  <DT>Input device support
+  <DD>输入设备 
+  <DD>
+  <DL>
+    <DT>Generic input layer (needed for keyboard,mouse...)
+    <DD>通用输入层,要使用键盘鼠标的就必选 
+    <DD>
+    <DL>
+      <DT>Support for memoryless force-feedback devices
+      <DD>游戏玩家使用的力反馈设备 
+      <DT>Mouse interface
+      <DD>鼠标接口 
+      <DD>
+      <DL>
+        <DT>Provide legacy /dev/psaux device
+        <DD>仍然支持作为传统的/dev/psaux设备 
+        <DT>Horizontal screen resolution
+        <DD>数字化转换器或图形输入板的水平分辩率 
+        <DT>Vertical screen resolution
+        <DD>数字化转换器或图形输入板的垂直分辨率 </DD></DL>
+      <DT>Joystick interface
+      <DD>游戏杆 
+      <DT>Touchscreen interface
+      <DD>触摸屏 
+      <DT>Event interface
+      <DD>能够利用/dev/input/eventX来存取输入设备的事件 
+      <DT>Event debugging
+      <DD>该选项仅供调试 
+      <DT>Keyboards
+      <DD>键盘驱动,一般选个AT键盘即可 
+      <DT>Mouse
+      <DD>鼠标驱动,一般选个PS/2鼠标即可 
+      <DT>Joysticks
+      <DD>游戏杆驱动 
+      <DT>Touchscreens
+      <DD>触摸屏驱动 
+      <DT>Miscellaneous devices
+      <DD>其他杂项驱动,一般选个PC喇叭即可 </DD></DL>
+    <DT>Hardware I/O ports
+    <DD>硬件I/O端口 
+    <DD>
+    <DL>
+      <DT>Serial I/O support
+      <DD>使用PS/2键盘或鼠标的就必选 
+      <DD>
+      <DL>
+        <DT>i8042 PC Keyboard controller
+        <DD>PS/2接口的键盘和鼠标 
+        <DT>Serial port line discipline
+        <DD>串口键盘或鼠标 
+        <DT>ct82c710 Aux port controller
+        <DD>一种德州仪器TravelMate笔记本上使用QuickPort接口的鼠标 
+        <DT>Parallel port keyboard adapter
+        <DD>并口键盘或鼠标 
+        <DT>PCI PS/2 keyboard and PS/2 mouse controller
+        <DD>接在移动式扩展坞(Docking station)上的键盘或鼠标 
+        <DT>PS/2 driver library
+        <DD>为PS/2接口上的设备提供驱动(比如PS/2鼠标或标准AT键盘) 
+        <DT>Raw access to serio ports
+        <DD>不是hacker就别选了 </DD></DL>
+      <DT>Gameport support
+      <DD>就是早年"小霸王"游戏机上的那种手柄 </DD></DL></DD></DL>
+  <DT>Character devices
+  <DD>字符设备 
+  <DD>
+  <DL>
+    <DT>Virtual terminal
+    <DD>虚拟终端.除非是嵌入式系统,否则必选 
+    <DD>
+    <DL>
+      <DT>Support for console on virtual terminal
+      <DD>内核将一个虚拟终端用作系统控制台(将诸如模块错误/内核错误/启动信息之类的警告信息发送到这里,通常是第一个虚拟终端).除非是嵌入式系统,否则必选 
+
+      <DT>Support for binding and unbinding console drivers
+      <DD>虚拟终端是通过控制台驱动程序与物理终端相结合的,但在某些系统上可以使用多个控制台驱动程序(如framebuffer控制台驱动程序),该选项使得你可以选择其中之一 
+      </DD></DL>
+    <DT>Non-standard serial port support
+    <DD>非标准串口支持.这样的设备早就绝种了 
+    <DT>Serial drivers
+    <DD>串口驱动.如果你有老式的串口鼠标或小猫之类的就选吧 
+    <DT>Unix98 PTY support
+    <DD>伪终端(PTY)可以模拟一个终端,它由slave(等价于一个物理终端)和master(被一个诸如xterms之类的进程用来读写slave设备)两部分组成的软设备.使用telnet或ssh远程登录者必选 
+
+    <DT>Legacy (BSD) PTY support
+    <DD>使用过时的BSD风格的/dev/ptyxx作为master,/dev/ttyxx作为slave,这个方案有一些安全问题,建议不选 
+    <DT>Parallel printer support
+    <DD>并口打印机 
+    <DD>
+    <DL>
+      <DT>Support for console on line printer
+      <DD>允许将内核信息输出到并口,这样就可以打印出来 </DD></DL>
+    <DT>Support for user-space parallel port device drivers
+    <DD>/dev/parport设备支持,比如deviceid之类的程序需要使用它,大部分人可以关闭该选项 
+    <DT>Texas Instruments parallel link cable support
+    <DD>德州仪器生产的一种使用并行电缆的图形计算器,如果你不知道这是什么设备就别选了 
+    <DT>IPMI
+    <DD>可以利用IPMI远程监视服务器的物理特征(温度,电压,风扇,电源,机箱入侵),它是独立于CPU,BIOS,OS的,只要接通电源就可以实现对服务器的监控 
+
+    <DD>
+    <DL>
+      <DT>IPMI top-level message handler
+      <DD>IPMI消息处理器,要启用IPMI远程监视这个就必选 
+      <DD>
+      <DL>
+        <DT>Generate a panic event to all BMCs on a panic
+        <DD>当发生紧急情况(panic)时,IPMI消息处理器将会向每一个已注册的底板管理控制器(BMC)接口生成一个描述该panic的IPMI事件,这些事件可以引发日志记录/报警/重启/关机等动作 
+
+        <DD>
+        <DL>
+          <DT>Generate OEM events containing the panic string
+          <DD>当发生紧急情况(panic)时,IPMI消息处理器将会产生OEM类型的事件 </DD></DL>
+        <DT>Device interface for IPMI
+        <DD>为IPMI消息处理器提供一个IOCTL接口已便用户空间的进程也可以使用IPMI 
+        <DT>IPMI System Interface handler
+        <DD>向系统提供接口(KCS,SMIC),一般你用了IPMI就需要选上 
+        <DT>IPMI Watchdog Timer
+        <DD>启用IPMI Watchdog定时器 
+        <DT>IPMI Poweroff
+        <DD>允许IPMI消息处理器关闭机器 </DD></DL></DD></DL>
+    <DT>Watchdog Cards
+    <DD>能让系统在出现致命故障后自动重启,如果没有硬件Watchdog,建议使用Hangcheck timer而不是软件Watchdog 
+    <DD>
+    <DL>
+      <DT>Watchdog Timer Support
+      <DD>选中它并选中下面的一个Driver之后,再创建一个/dev/watchdog节点即可拥有一只Watchdog了.更多信息请参考内核帮助 
+      <DD>
+      <DL>
+        <DT>Disable watchdog shutdown on close
+        <DD>一旦Watchdog启动后就禁止将其停止 
+        <DT>Software watchdog
+        <DD>软件Watchdog,使用它不需要有任何硬件的支持,但是可靠性没有硬件Watchdog高 
+        <DT class=omit>{此处省略的硬件Watchdog部分请按照自己主板实际使用的芯片(可能在南桥中)进行选择} 
+      </DT></DL></DD></DL>
+    <DT>Hardware Random Number Generator Core support
+    <DD>硬件随机数发生器核心支持 
+    <DD>
+    <DL>
+      <DT>Intel HW Random Number Generator support
+      <DD>Intel芯片组的硬件随机数发生器 
+      <DT>AMD HW Random Number Generator support
+      <DD>AMD芯片组的硬件随机数发生器 
+      <DT>AMD Geode HW Random Number Generator support
+      <DD>AMD Geode LX的硬件随机数发生器 
+      <DT>VIA HW Random Number Generator support
+      <DD>VIA芯片组的硬件随机数发生器 </DD></DL>
+    <DT>/dev/nvram support
+    <DD>直接存取主板上CMOS的接口,太危险了!建议别选 
+    <DT>Enhanced Real Time Clock Support
+    <DD>启用该选项并创建/dev/rtc文件后就可以通过/proc/driver/rtc访问系统的硬件时钟(RTC),众多功能依赖于它(如SMP,IRQ共享,定时器),建议选择 
+
+    <DT>Double Talk PC internal speech card support
+    <DD>由RC Systems公司制造的一种语音合成器 
+    <DT>Siemens R3964 line discipline
+    <DD>与使用西门子R3964协议的设备同步通信,除非你有一些诸如PLC之类的特殊设备,否则别选 
+    <DT>Applicom intelligent fieldbus card support
+    <DD>Applicom international公司生产的用于现场总线连接卡 
+    <DT>Sony Vaio Programmable I/O Control Device support
+    <DD>Sony VAIO笔记本上的东西 
+    <DT>Ftape, the floppy tape device driver
+    <DD>还使用磁带的就选吧 
+    <DT>/dev/agpgart (AGP Support)
+    <DD>AGP总线支持,有AGP显卡的还必须从子项中选取符合自己显卡型号的驱动 
+    <DT>Direct Rendering Manager
+    <DD>DRI允许应用程序以高效安全的方式直接访问图形处理,主要用于硬件3D加速.桌面用户建议选择,同时还必须从子项中选取符合自己显卡型号的驱动 
+    <DT>PCMCIA character devices
+    <DD>使用PCMCIA接口的字符设备,如果你有这种设备就到子项中去选吧 
+    <DT>ACP Modem (Mwave) support
+    <DD>IBM Thinkpad上的一种软猫,古董产品 
+    <DT>NatSemi SCx200 GPIO Support
+    <DD>松下的一种通用输入输出(GPIO)芯片,常用于嵌入式系统 
+    <DT>NatSemi PC8736x GPIO Support
+    <DD>松下的一种通用输入输出(GPIO)芯片,常用于嵌入式系统 
+    <DT>NatSemi Base GPIO Support
+    <DD>松下的一种通用输入输出(GPIO)芯片,常用于嵌入式系统 
+    <DT>AMD CS5535/CS5536 GPIO
+    <DD>常用于AMD Geode的一种通用输入输出(GPIO)芯片,常用于嵌入式系统 
+    <DT>RAW driver (/dev/raw/rawN)
+    <DD>已废弃 
+    <DT>HPET - High Precision Event Timer
+    <DD>高精度事件定时器 
+    <DD>
+    <DL>
+      <DT>Allow mmap of HPET
+      <DD>允许对HPET寄存器进行映射,建议选中 </DD></DL>
+    <DT>Hangcheck timer
+    <DD>宕机检测定时器周期性地检查系统任务调度程序以确定系统的运行状况,如果超过阈值,计算机将重新启动.它通常可以比Watchdog更好地解决可用性和可靠性问题 
+
+    <DT>TPM devices
+    <DD>基于硬件的"可信赖平台模块",与数字霸权管理是一路货,全不选 
+    <DT>Telecom clock driver for MPBL0010 ATCA SBC
+    <DD>没见过这种硬件,不选 </DD></DL>
+  <DT>I2C support
+  <DD>I2C是Philips极力推动的微控制应用中使用的低速串行总线协议,可用于监控电压/风扇转速/温度等.SMBus(系统管理总线)是I2C的子集.除硬件传感器外"Video 
+  For Linux"也需要该模块的支持 
+  <DD>
+  <DL>
+    <DT>I2C device interface
+    <DD>I2C设备接口,允许用户空间的程序通过/dev/i2c-*设备文件使用I2C总线 
+    <DT>I2C Algorithms
+    <DD>I2C算法,可以全不选,若有其他部分依赖其子项时,会自动选上 
+    <DT>I2C Hardware Bus support
+    <DD>按实际硬件情况选对应的子项即可 
+    <DT>Miscellaneous I2C Chip support
+    <DD>其他不常见的产品,按需选择 
+    <DT>I2C Core debugging messages
+    <DD>仅供调试 
+    <DT>I2C Algorithm debugging messages
+    <DD>仅供调试 
+    <DT>I2C Bus debugging messages
+    <DD>仅供调试 
+    <DT>I2C Chip debugging messages
+    <DD>仅供调试 </DD></DL>
+  <DT>SPI support
+  <DD>串行外围接口(SPI)常用于微控制器(MCU)与外围设备(传感器,eeprom,flash,编码器,模数转换器)之间的通信,比如MMC和SD卡就通常需要使用SPI 
+
+  <DT>Dallas's 1-wire bus
+  <DD>一线总线 
+  <DT>Hardware Monitoring support
+  <DD>当前主板大多都有一个监控硬件健康的设备用于监视温度/电压/风扇转速等,请按照自己主板实际使用的芯片选择相应的子项.另外,该功能还需要I2C的支持 
+  <DT>Multimedia devices
+  <DD>多媒体设备 
+  <DD>
+  <DL>
+    <DT>Video For Linux
+    <DD>要使用音频/视频设备或FM收音卡的就必选,此功能还需要I2C的支持 
+    <DT>Enable Video For Linux API 1
+    <DD>使用老旧的V4L第一版API,反对使用 
+    <DT>Enable Video For Linux API 1 compatible Layer
+    <DD>提供对第一版V4L的兼容,建议不选 
+    <DT>Video Capture Adapters
+    <DD>视频捕获卡 
+    <DD>
+    <DL>
+      <DT>Enable advanced debug functionality
+      <DD>该选项仅供调试 
+      <DT>Autoselect pertinent encoders/decoders and other helper chips
+      <DD>为视频卡自动选择所需的编码和解码模块,建议选择 
+      <DT>Virtual Video Driver
+      <DD>虚拟视频卡,仅供测试视频程序和调试 
+      <DT>SAA5246A, SAA5281 Teletext processor
+      <DD>该选项仅对欧洲用户有意义,中国用户不需要 
+      <DT>SAA5249 Teletext processor
+      <DD>该选项仅对欧洲用户有意义,中国用户不需要 
+      <DT class=omit>{此处省略的硬件请按照自己实际使用的芯片进行选择} 
+      <DT>V4L USB devices
+      <DD>使用USB接口的视频卡,子项请按照自己实际使用的视频卡选择 </DD></DL>
+    <DT>Radio Adapters
+    <DD>音频卡,子项请按照自己实际使用的音频卡选择 
+    <DT>Digital Video Broadcasting Devices
+    <DD>数字视频广播设备(DVB卡或机顶盒),子项请按自己实际使用的硬件选择 
+    <DT>DABUSB driver
+    <DD>USB接口的数字音频广播设备接收器 </DD></DL>
+  <DT>Graphics support
+  <DD>图形设备/显卡支持 
+  <DD>
+  <DL>
+    <DT>Enable firmware EDID
+    <DD>允许访问Video BIOS中的扩展显示器识别数据(EDID),使用Matrox显卡的建议关闭,建议桌面用户选择 
+    <DT>Support for frame buffer devices
+    <DD>帧缓冲设备是为了让应用程序使用统一的接口操作显示设备而对硬件进行的抽象,建议桌面用户选择 
+    <DD>
+    <DL>
+      <DT>Enable Video Mode Handling Helpers
+      <DD>使用GTF和EDID来帮助处理显示模式,可以不选,若有其他选项依赖于它时,会自动选上 
+      <DT>Enable Tile Blitting Support
+      <DD>可以不选,若有其他选项依赖于它时,会自动选上 
+      <DT>VGA 16-color graphics support
+      <DD>16色VGA显卡.如果你有这种古董就选吧 
+      <DT>VESA VGA graphics support
+      <DD>符合VESA 2.0标准的显卡的通用驱动,如果显卡芯片在下面能够找到就可以不选 
+      <DT class=omit>{此处省略的硬件请按照自己实际使用的显卡芯片进行选择} </DT></DL>
+    <DT>Virtual Frame Buffer support
+    <DD>仅供调试使用 
+    <DT>Console display driver support
+    <DD>控制台显示驱动 
+    <DD>
+    <DL>
+      <DT>VGA text console
+      <DD>文本控制台,必选 
+      <DD>
+      <DL>
+        <DT>Enable Scrollback Buffer in System RAM
+        <DD>在内存中开辟额外的屏幕缓冲区,这将允许你回滚屏幕 
+        <DD>
+        <DL>
+          <DT>Scrollback Buffer Size (in KB)
+          <DD>在内存中开辟的额外屏幕缓冲区大小 </DD></DL>
+        <DT>Video mode selection support
+        <DD>允许在内核启动时使用"vga="选择文本模式,如果你希望一行能够显示更多字符的话可以打开它 </DD></DL>
+      <DT>MDA text console (dual-headed)
+      <DD>如果你有古董级别的单色显卡并且作为第二块显卡使用以实现双头显示就选上吧 
+      <DT>Framebuffer Console support
+      <DD>基于framebuffer的控制台驱动,服务器可以不选 
+      <DD>
+      <DL>
+        <DT>Framebuffer Console Rotation
+        <DD>显示画面旋转,它可能大大降低显示速度,建议不选 </DD></DL>
+      <DT>Select compiled-in fonts
+      <DD>选择内建字体 
+      <DD>
+      <DL>
+        <DT>VGA 8x8 font
+        <DD>高分辨率下的小字体 
+        <DT>VGA 8x16 font
+        <DD>底分辨率下的大字体 
+        <DT class=omit>{其它字体省略} </DT></DL></DD></DL>
+    <DT>Logo configuration
+    <DD>启动时显示linux的logo(一幅企鹅图像),喜欢炫一下的就选吧 
+    <DT>Backlight &amp; LCD device support
+    <DD>LCD显示器支持,一般无需选择 </DD></DL>
+  <DT>Sound
+  <DD>声卡 
+  <DD>
+  <DL>
+    <DT>Advanced Linux Sound Architecture
+    <DD>使用声卡者必选 
+    <DD>
+    <DL>
+      <DT>Sequencer support
+      <DD>音序器支持(MIDI必需),除非你确定不需要,否则请选上 
+      <DD>
+      <DL>
+        <DT>Sequencer dummy client
+        <DD>除非你要同时连接到多个MIDI设备或应用程序,否则请不要选择 </DD></DL>
+      <DT>OSS Mixer API
+      <DD>OSS混音器API仿真,许多程序目前仍然需要使用它,建议选择 
+      <DT>OSS PCM (digital audio) API
+      <DD>OSS数字录音(PCM)API模拟,许多程序目前仍然需要使用它,建议选择 
+      <DD>
+      <DL>
+        <DT>OSS PCM (digital audio) API - Include plugin system
+        <DD>建议不选 </DD></DL>
+      <DT>OSS Sequencer API
+      <DD>OSS音序器支持,许多程序目前仍然需要使用它,建议选择 
+      <DT>RTC Timer support
+      <DD>为ALSA启用RTC定时器支持,建议选择 
+      <DD>
+      <DL>
+        <DT>Use RTC as default sequencer timer
+        <DD>将RTC当作默认的时序脉冲发生器 </DD></DL>
+      <DT>Dynamic device file minor numbers
+      <DD>仅供拥有多个声卡的用户选择 
+      <DT>Support old ALSA API
+      <DD>支持已被废弃的老版本ALSA API 
+      <DT>Verbose procfs contents
+      <DD>仅供调试使用 
+      <DT>Verbose printk
+      <DD>仅供调试使用 
+      <DT>Debug
+      <DD>仅供调试使用 
+      <DT>Generic devices
+      <DD>通用设备 
+      <DD>
+      <DL>
+        <DT>Dummy (/dev/null) soundcard
+        <DD>仅供调试 
+        <DT>Virtual MIDI soundcard
+        <DD>虚拟MIDI驱动,允许将使用原始MIDI设备的应用程序连接到音序器客户端,如果你不知道MIDI是什么就别选 
+        <DT class=omit>{此处省略的硬件请按照自己实际使用的声卡芯片进行选择} </DT></DL>
+      <DT>PCI devices
+      <DD>PCI接口的声卡,请按实际使用的声卡选择子项 
+      <DT>USB devices
+      <DD>USB接口的声卡,请按实际使用的声卡选择子项 
+      <DT>PCMCIA devices
+      <DD>PCMCIA接口的声卡,请按实际使用的声卡选择子项 </DD></DL>
+    <DT>Open Sound System
+    <DD>反对使用 </DD></DL>
+  <DT>USB support
+  <DD>USB支持 
+  <DD>
+  <DL>
+    <DT>Support for Host-side USB
+    <DD>主机端(Host-side)USB支持.通用串行总线(USB)是一个串行总线子系统规范,它比传统的串口速度更快并且特性更丰富(供电,热插拔,最多可接127个设备等),有望在将来一统PC外设接口.USB的"Host"(主机)被称为"根"(也可以理解为是主板上的USB控制器),外部设备被称为"叶子",而内部的节点则称为"hub"(集线器).基本上只要你想使用任何USB设备都必须选中此项.另外,你还需要从下面选中至少一个"Host 
+    Controller Driver"(HCD),比如适用于USB1.1的"UHCI HCD support"或"OHCI HCD 
+    support",适用于USB2.0的"EHCI HCD (USB 2.0) 
+    support".如果你拿不准的话把他们全部选中一般也不会出问题.如果你的系统有设备端的USB接口(也就是你的系统可以作为"叶子"使用),请到"USB 
+    Gadget"中进行选择. 
+    <DD>
+    <DL>
+      <DT>USB verbose debug messages
+      <DD>仅供调试使用 
+      <DT>USB device filesystem
+      <DD>在/proc/bus/usb里列出当前连接的usb设备(mount -t usbfs none 
+      /proc/bus/usb),这样用户空间的程序就可以直接访问这些USB设备,基本上你要使用USB设备的话就必须选中此项 
+      <DT>Enforce USB bandwidth allocation
+      <DD>执行usb带宽分配限制,禁止打开占用usb总线带宽超过90%的设备,关闭该选项可能会导致某些设备无法正常工作 
+      <DT>Dynamic USB minor allocation
+      <DD>除非你有超过16个同类型的USB设备,否则不要选择 
+      <DT>USB selective suspend/resume and wakeup
+      <DD>usb设备的挂起和恢复,毛病多多且许多设备尚未支持它,建议不选 
+      <DT>EHCI HCD (USB 2.0) support
+      <DD>USB 2.0支持(大多数2002年以后的主板都支持).如果你选中了此项,一般来说你还需要选中OHCI或UHCI驱动 
+      <DD>
+      <DL>
+        <DT>Full speed ISO transactions
+        <DD>由于USB 
+        2.0支持低速(1.5Mbps)/全速(12Mbps)/高速(480Mbps)三种规格的外部设备,为了将全/低速设备对高速设备可用带宽的影响减到最小,在USB2.0集线器中提供了一种事务转换(Transaction 
+        Translator)机制,该机制支持在Hub连接的是全/低速设备的情况下,允许主控制器与Hub之间以高速传输所有设备的数据,从而节省不必要的等待.如果你没有外置的USB集线器就无需选择 
+
+        <DT>Root Hub Transaction Translators
+        <DD>带有USB 2.0接口的主板上都有一个"根集线器"(Root 
+        Hub)以允许在无需额外购买hub的情况下就可以提供多个USB插口,其中的某些产品还在其中集成了事务转换(Transaction 
+        Translator)功能,这样就不需要再额外使用一个兼容OHCI或UHCI的控制器来兼容USB 
+        1.1,即使你不太清楚自己主板上的根集线器是否集成了事务转换功能也可以安全的选中此项 
+        <DT>Improved Transaction Translator scheduling
+        <DD>如果你有一个高速USB 2.0 hub并且某些接在这个hub上的低速或全速设备不能正常工作(显示'cannot submit 
+        datapipe: error -28'或'error -71'错误),可以考虑选上 </DD></DL>
+      <DT>ISP116X HCD support
+      <DD>ISP1160/ISP1161主机USB控制器,是符合USB2.0全速规范的单片主机控制器和设备控制器,支持OHCI标准 
+      <DT>OHCI HCD support
+      <DD>开放主机控制接口(OHCI)是主要针对嵌入式系统的USB 1.1主机控制器规范 
+      <DT>UHCI HCD (most Intel and VIA) support
+      <DD>通用主机控制器接口(UHCI)是主要针对PC机的USB 1.1主机控制器规范.另外,EHCI也可能需要它 
+      <DT>Elan U132 Adapter Host Controller
+      <DD>如果你有这种硬件就选吧 
+      <DT>SL811HS HCD support
+      <DD>如果你有这种硬件就选吧 
+      <DT>USB Bluetooth TTY support
+      <DD>USB蓝牙TTY设备支持 
+      <DT>USB MIDI support
+      <DD>USB MIDI设备支持 
+      <DT>USB Modem (CDC ACM) support
+      <DD>USB接口的猫或ISDN适配器 
+      <DT>USB Printer support
+      <DD>USB打印机 </DD></DL>
+    <DT>USB Mass Storage support
+    <DD>USB存储设备(U盘,USB硬盘,USB软盘,USB CD-ROM,USB磁带,memory 
+    sticks,数码相机,读卡器等等).该选项依赖于'SCSI device support',且大部分情况下还依赖于'SCSI disk 
+    support'(比如U盘或USB硬盘) 
+    <DD>
+    <DL>
+      <DT>USB Mass Storage verbose debug
+      <DD>仅供调试使用 
+      <DT class=omit>{省略的部分请按照自己实际使用的硬件选择(事实上大部分人都没有这些设备,可以全不选)} </DT></DL>
+    <DT>The shared table of common (or usual) storage devices
+    <DD>该模块包含一张记录了常用USB存储设备及其驱动的表格,这样你无需重新编译模块即可在切换这些设备时自动邦定对应的驱动(还需要对/etc/modprobe.conf进行相应的设置).不确定的建议不选 
+
+    <DT>USB Human Interface Device (full HID) support
+    <DD>USB人机界面设备(鼠标/键盘/游戏杆/手写版等人操作计算机的设备),该驱动不能和"USB HID Boot Protocol 
+    drivers"同时使用 
+    <DD>
+    <DL>
+      <DT>HID input layer support
+      <DD>如果你有USB接口的鼠标/键盘/游戏杆/手写板等输入设备就必选 
+      <DD>
+      <DL>
+        <DT>Enable support for iBook/PowerBook special keys
+        <DD>苹果iBooks/PowerBooks键盘上的Fn/Numlock等功能键支持 
+        <DT>Force feedback support
+        <DD>力反馈设备 </DD></DL>
+      <DT>/dev/hiddev raw HID device support
+      <DD>如果你有USB监控装置或不间断电源(UPS)之类的非输入设备就选上 
+      <DT>USB HID Boot Protocol drivers
+      <DD>如果你有绝对的把握确信不为自己的键盘和鼠标使用通常的HID驱动,而要使用Boot Protocol模式的HID驱动(常见于嵌入式环境)就选吧 
+      </DD></DL>
+    <DT>Aiptek 6000U/8000U tablet support
+    <DD>一种手写板 
+    <DT>Wacom Intuos/Graphire tablet support
+    <DD>一种手写/绘图板 
+    <DT>Acecad Flair tablet support
+    <DD>一种数控绘图板 
+    <DT>KB Gear JamStudio tablet support
+    <DD>一种手写/绘图板 
+    <DT>Griffin PowerMate and Contour Jog support
+    <DD>一种具有调节音量/滚动文本/视频快进快退等功能的产品 
+    <DT>USB Touchscreen Driver
+    <DD>USB触摸屏驱动 
+    <DT>Yealink usb-p1k voip phone
+    <DD>一种VoIP电话 
+    <DT>X-Box gamepad support
+    <DD>X-Box游戏板 
+    <DT>ATI / X10 USB RF remote control
+    <DD>一种usb远程控制设备 
+    <DT>ATI / Philips USB RF remote control
+    <DD>一种usb远程控制设备 
+    <DT>Keyspan DMR USB remote control
+    <DD>一种usb远程控制设备 
+    <DT>Apple USB Touchpad support
+    <DD>苹果机上的触摸板 
+    <DT>USB Mustek MDC800 Digital Camera support
+    <DD>一种数码相机 
+    <DT>Microtek X6USB scanner support
+    <DD>一种扫描仪 
+    <DT>USB Network Adapters
+    <DD>USB网络适配器,如果你有这种设备请按自己实际使用的硬件选择子项 
+    <DT>USB Monitor
+    <DD>usb流量监控,一般没必要选它 
+    <DT>USS720 parport driver
+    <DD>一种USB接口转并口的转换设备 
+    <DT>USB Serial Converter support
+    <DD>USB接口转串口的转换设备 
+    <DT>EMI 6|2m USB Audio interface support
+    <DD>一种USB音频设备 
+    <DT>EMI 2|6 USB Audio interface support
+    <DD>一种USB音频设备 
+    <DT>ADU devices from Ontrak Control Systems
+    <DD>Ontrak Control Systems公司的一种自动拨号设备 
+    <DT>USB Auerswald ISDN support
+    <DD>一种ISDN设备 
+    <DT>USB Diamond Rio500 support
+    <DD>一种mp3播放机 
+    <DT>USB Lego Infrared Tower support
+    <DD>一种无线发射机 
+    <DT>USB LCD driver support
+    <DD>USB液晶显示器 
+    <DT>USB LED driver support
+    <DD>USB发光二极管 
+    <DT>Cypress CY7C63xxx USB driver support
+    <DD>德国AK Modul-Bus Computer GmbH公司的一种产品,不知道是用来干什么的 
+    <DT>Cypress USB thermometer driver support
+    <DD>一种温度计?? 
+    <DT>USB Phidgets drivers
+    <DD>来自Phidgets公司的各种USB产品 
+    <DT>Siemens ID USB Mouse Fingerprint sensor support
+    <DD>西门子公司的一种指纹传感器 
+    <DT>Elan PCMCIA CardBus Adapter USB Client
+    <DD>Elan公司的一种USB转PCMCIA的适配器 
+    <DT>Apple Cinema Display support
+    <DD>苹果公司的一种Cinema Display 
+    <DT>USB 2.0 SVGA dongle support (Net2280/SiS315)
+    <DD>一种软件狗 
+    <DT>USB LD driver
+    <DD>USB LD驱动 
+    <DT>PlayStation 2 Trance Vibrator driver support
+    <DD>SONY的PS2上面的"入迷振荡器"(类似于力反馈手柄) 
+    <DT>USB testing driver
+    <DD>测试中的驱动,别选 
+    <DT>USB DSL modem support
+    <DD>USB DSL猫 
+    <DT>USB Gadget Support
+    <DD>其他各种杂七杂八的usb小玩艺 </DD></DL>
+  <DT>MMC/SD Card support
+  <DD>MMC/SD卡支持 
+  <DT>LED devices
+  <DD>发光二级管(LED)设备 
+  <DT>InfiniBand support
+  <DD>InfiniBand是一个通用的高性能I/O规范,它使得存储区域网中以更低的延时传输I/O消息和集群通讯消息并且提供很好的伸缩性.用于Linux服务器集群系统 
+
+  <DT>EDAC - error detection and reporting (RAS)
+  <DD>错误检测与纠正(EDAC)的目标是发现并报告甚至纠正在计算机系统中发生的错误,这些错误是由CPU或芯片组报告的底层错误(内存错误/缓存错误/PCI错误/温度过高,等等),建议选择.如果这些代码报告了一个错误,请到<A 
+  href="http://bluesmoke.sourceforge.net/">http://bluesmoke.sourceforge.net/</A>和<A 
+  href="http://buttersideup.com/edacwiki">http://buttersideup.com/edacwiki</A>查看更多信息 
+
+  <DD>
+  <DL>
+    <DT>Debugging
+    <DD>仅供调试使用 
+    <DT>Main Memory EDAC (Error Detection And Correction) reporting
+    <DD>一些系统能够检测和修正主内存中的错误,EDAC能够报告这些信息(EDAC自己检测到的或者根据ECC得到的).EDAC还会尽量检测这些错误发生在哪里以便于替换损坏的内存.建议选择并按照你实际使用的芯片组选取子项 
+
+    <DT>Error detecting method
+    <DD>错误检测方法,当前只有一个"Poll for errors"(错误轮询)可用 </DD></DL>
+  <DT>Real Time Clock
+  <DD>所有的PC机主板都包含一个电池动力的实时时钟芯片,以便在断电后仍然能够继续保持时间,RTC通常与CMOS集成在一起,因此BIOS可以从中读取当前时间 
+
+  <DD>
+  <DL>
+    <DT>RTC class
+    <DD>通用RTC类支持,选中此项后你就可以在操作系统中使用一个或多个RTC设备(你还必须从下面启用一个或多个RTC接口) 
+    <DD>
+    <DL>
+      <DT>Set system time from RTC on startup
+      <DD>系统启动时使用从指定的RTC设备中读取的时间来设定系统时间,通常这将有助于避免不必要的文件系统检测程序(fsck)的运行,建议选择 
+      <DD>
+      <DL>
+        <DT>The RTC to read the time from
+        <DD>指定具体从哪个RTC设备中读取时间 </DD></DL>
+      <DT>RTC debug support
+      <DD>仅供调试使用 
+      <DT>sysfs
+      <DD>允许通过sysfs接口使用RTC,允许多个RTC设备,也就是/sys/class/rtc/rtc0~N 
+      <DT>proc
+      <DD>允许通过proc接口使用RTC,仅允许一个RTC设备,也就是/proc/driver/rtc 
+      <DT>dev
+      <DD>允许通过dev接口使用RTC,允许多个RTC设备,也就是"udev"设置的/dev/rtc0~N,建议你建立一个指向其中之一的软连接/dev/rtc,某些程序(比如hwclock)需要使用/dev/rtc 
+
+      <DD>
+      <DL>
+        <DT>RTC UIE emulation on dev interface
+        <DD>如果底层rtc芯片驱动没有提供RTC_UIE就仿真一个RTC_UIE.那些请求将产生每秒一次的更新请求以用来同步[这个选项的意思我也搞不清楚究竟时啥意思,翻译的也可能有误] 
+        </DD></DL>
+      <DT class=omit>{此处省略的RTC驱动请按照自己实际使用的RTC芯片进行选择} </DT></DL></DD></DL>
+  <DT>DMA Engine support
+  <DD>从Intel Bensley双核服务器平台开始引入的数据移动加速(Data Movement 
+  Acceleration)引擎,它将某些传输数据的操作从CPU转移到专用硬件,从而可以进行异步传输并减轻CPU负载.Intel已将此项技术变为开放的标准,将来应当会有更多的厂商支持 
+
+  <DD>
+  <DL>
+    <DT>Network: TCP receive copy offload
+    <DD>通过在网络栈中利用DMA引擎来减少接收数据包时的copy-to-user操作以释放CPU资源,这是DMA引擎目前最主要的用途 
+    <DT>Intel I/OAT DMA support
+    <DD>Intel I/O加速技术(Intel I/O Acceleration Technology)中的DMA支持,基于Intel 
+    Bensley的新一代服务器平台都支持它 </DD></DL></DD></DL><!-- 设备驱动程序结束 -->
+<H2>File systems<BR>文件系统<BR><SPAN class=little_head>强烈建议在选择之前先看看<A 
+href="http://www.ibm.com/developerworks/cn/linux/filesystem/">各种文件系统的比较</A></SPAN></H2>
+<DL>
+  <DT>Second extended fs support
+  <DD>Ext2文件系统是Linux的标准文件系统,擅长处理稀疏文件 
+  <DD>
+  <DL>
+    <DT>Ext2 extended attributes
+    <DD>Ext2文件系统扩展属性(与inode关联的name:value对)支持 
+    <DD>
+    <DL>
+      <DT>Ext2 POSIX Access Control Lists
+      <DD>POSIX ACL(访问控制列表)支持,可以更精细的针对每个用户进行访问控制,需要外部库和程序的支持 
+      <DT>Ext2 Security Labels
+      <DD>安全标签允许选择使用不同的安全模型实现(如SELinux)的访问控制模型,如果你没有使用需要扩展属性的安全模型就别选 </DD></DL>
+    <DT>Ext2 execute in place support
+    <DD>程序在写入存储介质时就已经分配好运行时的地址,因此不需要载入内存即可在芯片内执行,一般仅在嵌入式系统上才有这种设备 </DD></DL>
+  <DT>Ext3 journalling file system support
+  <DD>Ext3性能平庸,使用journal日志模式时数据完整性非常好(但怪异的是此时多线程并发读写速度却最快) 
+  <DD>
+  <DL>
+    <DT>Ext3 extended attributes
+    <DD>Ext3文件系统扩展属性(与inode关联的name:value对)支持 
+    <DD>
+    <DL>
+      <DT>Ext3 POSIX Access Control Lists
+      <DD>POSIX ACL(访问控制列表)支持,可以更精细的针对每个用户进行访问控制,需要外部库和程序的支持 
+      <DT>Ext3 Security Labels
+      <DD>安全标签允许选择使用不同的安全模型实现(如SELinux)的访问控制模型,如果你没有使用需要扩展属性的安全模型就别选 
+    </DD></DL></DD></DL>
+  <DT>Ext4dev/ext4 extended fs support
+  <DD>尚处于开发状态的Ext4 
+  <DT>JBD (ext3) debugging support
+  <DD>仅供开发者使用 
+  <DT>JBD2 (ext4dev/ext4) debugging support
+  <DD>仅供开发者使用 
+  <DT>Reiserfs support
+  <DD>性能几乎全面超越Ext2(处理稀疏文件比Ext2慢),小文件(小于4k)性能非常突出,创建和删除文件速度最快,处理大量目录和文件(5k-20k)时仍然非常迅速.日志模式建议使用Ordered,追求极速可使用Writeback模式,追求安全可使用Journal模式.建议使用noatime,notail选项挂载分区以提高速度和避免bug.用于NFS和磁盘限额时需要额外的补丁 
+
+  <DD>
+  <DL>
+    <DT>Enable reiserfs debug mode
+    <DD>启用ReiserFS调试模式,仅供开发者使用 
+    <DT>Stats in /proc/fs/reiserfs
+    <DD>在/proc/fs/reiserfs文件中显示Reiserfs文件系统的状态,仅供开发者使用 
+    <DT>ReiserFS extended attributes
+    <DD>ReiserFS文件系统扩展属性(与inode关联的name:value对)支持 
+    <DD>
+    <DL>
+      <DT>ReiserFS POSIX Access Control Lists
+      <DD>POSIX ACL(访问控制列表)支持,可以更精细的针对每个用户进行访问控制,需要外部库和程序的支持 
+      <DT>ReiserFS Security Labels
+      <DD>安全标签允许选择使用不同的安全模型实现(如SELinux)的访问控制模型,如果你没有使用需要扩展属性的安全模型就别选了 
+    </DD></DL></DD></DL>
+  <DT>JFS filesystem support
+  <DD>IBM的JFS文件系统 
+  <DT>XFS filesystem support
+  <DD>碎片最少,多线程并发读写最佳,大文件(&gt;64k)性能最佳,创建和删除文件速度较慢.由于XFS在内存中缓存尽可能多的数据且仅当内存不足时才会将数据刷到磁盘,所以应当仅在确保电力供应不会中断的情况下才使用XFS 
+
+  <DD>
+  <DL>
+    <DT>Quota support
+    <DD>XFS的磁盘配额支持 
+    <DT>Security Label support
+    <DD>扩展的安全标签支持.SElinux之类的安全系统会使用到这样的扩展安全属性 
+    <DT>POSIX ACL support
+    <DD>POSIX ACL(访问控制列表)支持,可以更精细的针对每个用户进行访问控制,需要外部库和程序的支持 
+    <DT>Realtime support
+    <DD>实时子卷是专门存储文件数据的卷,可以允许将日志与数据分开在不同的磁盘上 </DD></DL>
+  <DT>GFS2 file system support
+  <DD>一种用于集群的文件系统 
+  <DT>OCFS2 file system support
+  <DD>一种用于集群的文件系统 
+  <DT>Minix fs support
+  <DD>老古董文件系统 
+  <DT>ROM file system support
+  <DD>用于嵌入式系统的内存文件系统的支持 
+  <DT>Inotify file change notification support
+  <DD>新式的文件系统的变化通知机制,简洁而强大,用于代替老旧的Dnotify 
+  <DD>
+  <DL>
+    <DT>Inotify support for userspace
+    <DD>用户空间的Inotify支持 </DD></DL>
+  <DT>Quota support
+  <DD>磁盘配额支持,限制某个用户或者某组用户的磁盘占用空间,Ext2/Ext3/Reiserfs都支持它 
+  <DD>
+  <DL>
+    <DT>Old quota format support
+    <DD>老式的配额格式支持 
+    <DT>Quota format v2 support
+    <DD>新的v2格式允许使用32位的UID/GID </DD></DL>
+  <DT>Dnotify support
+  <DD>旧式的基于目录的文件变化的通知机制(新机制是Inotify),目前仍然有一些程序依赖它 
+  <DT>Kernel automounter support
+  <DD>内核自动加载远程文件系统(v3,就算选也不选这个旧的) 
+  <DT>Kernel automounter version 4 support (also supports v3)
+  <DD>新的(v4)的内核自动加载远程文件系统的支持,也支持v3 
+  <DT>Filesystem in Userspace support
+  <DD>FUSE允许在用户空间实现一个文件系统,如果你打算开发一个自己的文件系统或者使用一个基于FUSE的文件系统就选吧 
+  <DT>CD-ROM/DVD Filesystems
+  <DD>CD-ROM/DVD文件系统 
+  <DD>
+  <DL>
+    <DT>ISO 9660 CDROM file system support
+    <DD>CD-ROM的标准文件系统 
+    <DD>
+    <DL>
+      <DT>Microsoft Joliet CDROM extensions
+      <DD>Microsoft对ISO 9660文件系统的Joliet扩展,允许在文件名中使用Unicode字符,也允许长文件名 
+      <DT>Transparent decompression extension
+      <DD>Linux对ISO 9660文件系统的扩展,允许将数据透明的压缩存储在CD上 </DD></DL>
+    <DT>UDF file system support
+    <DD>某些新式CD/DVD上的文件系统,很少见 </DD></DL>
+  <DT>DOS/FAT/NT Filesystems
+  <DD>DOS/Windows的文件系统 
+  <DD>
+  <DL>
+    <DT>MSDOS fs support
+    <DD>古老的MSDOS文件系统 
+    <DT>VFAT (Windows-95) fs support
+    <DD>从Win95开始使用的VFAT文件系统 
+    <DD>
+    <DL>
+      <DT>Default codepage for FAT
+      <DD>默认代码页 
+      <DT>Default iocharset for FAT
+      <DD>默认字符集 </DD></DL>
+    <DT>NTFS file system support
+    <DD>从WinNT开始使用的NTFS文件系统 
+    <DD>
+    <DL>
+      <DT>NTFS debugging support
+      <DD>仅供调试使用 
+      <DT>NTFS write support
+      <DD>NTFS写入支持 </DD></DL></DD></DL>
+  <DT>Pseudo filesystems
+  <DD>伪文件系统 
+  <DD>
+  <DL>
+    <DT>/proc file system support
+    <DD>显示系统状态的虚拟文件系统(irq设置,内存使用,加载的设备驱动器,网络状态等),许多程序依赖于它 
+    <DD>
+    <DL>
+      <DT>/proc/kcore support
+      <DD>系统物理内存的映象 
+      <DT>/proc/vmcore support
+      <DD>以ELF格式转储的已崩溃内核镜像,仅供调试使用 
+      <DT>Sysctl support (/proc/sys)
+      <DD>显示各种不同的内核参数,并让root用户能交互地更改其中的某些内容 </DD></DL>
+    <DT>sysfs file system support
+    <DD>导出内核内部对象及其属性和对象之间的相互关系的文件系统,它把连接在系统上的设备和总线以及驱动程序等组织成为一个分级的文件,内核启动时依靠它挂载根分区,禁用sysfs后必须在内核引导参数中使用设备号指定根分区 
+
+    <DT>Virtual memory file system support (former shm fs)
+    <DD>tmpfs文件系统(以前叫shm[共享内存]文件系统)支持 
+    <DD>
+    <DL>
+      <DT>Tmpfs POSIX Access Control Lists
+      <DD>POSIX ACL(访问控制列表)支持,可以更精细的针对每个用户进行访问控制,需要外部库和程序的支持 </DD></DL>
+    <DT>HugeTLB file system support
+    <DD>大多数现代计算机体系结构提供对多种内存页面大小的支持(比如IA-32结构支持4K和4M(PAE模式为2M)两种页面).TLB(Translation 
+    Lookaside 
+    Buffer)是虚拟地址到物理地址的翻译缓冲区,这种缓冲区在处理器上是很宝贵的,操作系统总是尝试将有限的TLB资源发挥到极致.特别是能够轻松获得若干G内存的时候(&gt;4G),这种优化就显得尤为关键.只有开启此选项之后才能提供hugepage支持. 
+
+    <DT>Userspace-driven configuration filesystem
+    <DD>configfs是用户空间驱动的文件系统,提供与sysfs相反的功能 </DD></DL>
+  <DT>Miscellaneous filesystems
+  <DD>非主流的杂项文件系统 
+  <DT>Network File Systems
+  <DD>网络文件系统 
+  <DT>Partition Types
+  <DD>高级磁盘分区类型,不确定可以全不选 
+  <DT>Native Language Support
+  <DD>本地语言支持.如果你仅仅使用几种主流的Linux文件系统(ext2/3/4,Reiserfs,JFS,XFS),就不需要这个东西.但是如果你需要使用FAT/NTFS分区的话,就需要这个东西了. 
+
+  <DD>
+  <DL>
+    <DT>Base native language support
+    <DD>如果你启用了本地语言支持,那么这个必选 
+    <DD>
+    <DL>
+      <DT>Default NLS Option
+      <DD>默认本地语言,建议使用UTF-8 
+      <DT class=omit>{此处省略的部分请按需选择,一般至少需要CP437,ASCII,ISO-8859-1} 
+</DT></DL></DD></DL>
+  <DT>Distributed Lock Manager
+  <DD>通用的分布式锁管理器,不明白就不选 </DD></DL>
+<H2>Instrumentation Support<BR>分析支持</H2>
+<DL>
+  <DT>Profiling support
+  <DD>对系统的活动进行分析,仅供内核开发者使用 
+  <DT>Kprobes
+  <DD>仅供内核开发者使用 </DD></DL>
+<H2>Kernel hacking<BR>内核hack选项</H2>
+<DL>
+  <DT>Show timing information on printks
+  <DD>在printk的输出中包含时间信息,可以用来分析内核启动过程各步骤所用时间 
+  <DT>Enable __must_check logic
+  <DD>在编译内核的过程中使用"必须检查"的逻辑,禁用它将不会显示某些警告信息 
+  <DT>Magic SysRq key
+  <DD>不懂的千万别选 
+  <DT>Enable unused/obsolete exported symbols
+  <DD>导出无用和废弃的符号,这将使内核不必要的增大 
+  <DT>Kernel debugging
+  <DD>不是内核开发者的别选 
+  <DT>Debug Filesystem
+  <DD>不是内核开发者的别选 
+  <DT>Compile the kernel with frame unwind information
+  <DD>不是内核开发者的别选 
+  <DT>Run 'make headers_check' when building vmlinux
+  <DD>在编译内核时运行'make headers_check'命令检查内核头文件,当你修改了与用户空间相关的内核头文件后建议启用该选项 
+  <DT>Linux Kernel Dump Test Tool Module
+  <DD>不是内核开发者的别选 
+  <DT>Enable doublefault exception handler
+  <DD>允许捕获非常罕见的导致系统无警告重启的doublefault异常,对于调试非常重要 </DD></DL>
+<H2>Security options<BR>安全选项<BR><SPAN 
+class=little_head>这里的选项不明白的建议不要选,否则有可能弄巧成拙.</SPAN></H2>
+<DL>
+  <DT>Enable access key retention support
+  <DD>在内核中保留authentication token和access key 
+  <DD>
+  <DL>
+    <DT>Enable the /proc/keys file by which keys may be viewed
+    <DD>允许有权限的进程通过/proc/keys读取所有的key </DD></DL>
+  <DT>Enable different security models
+  <DD>允许内核选择不同的安全模型,如果未选中则内核将使用默认的安全模型 
+  <DD>
+  <DL>
+    <DT>Socket and Networking Security Hooks
+    <DD>允许安全模型通过Security Hook对Socket与Networking进行访问控制 
+    <DD>
+    <DL>
+      <DT>XFRM (IPSec) Networking Security Hooks
+      <DD>启用XFRM安全Hook </DD></DL>
+    <DT>Default Linux Capabilities
+    <DD>启用与"默认"Linux的兼容性 
+    <DT>Root Plug Support
+    <DD>一个简单的Linux安全模块,在特定的USB设备不存在时它简单的禁止一切egid==0的进程运行 </DD></DL>
+  <DT>NSA SELinux Support
+  <DD>美国国家安全局(NSA)开发的安全增强Linux(SELinux),你还需要进行策略配置(checkpolicy)并且对文件系统进行标记(setfiles) 
+
+  <DD>
+  <DL>
+    <DT>NSA SELinux boot parameter
+    <DD>添加一个内核引导参数以允许在引导时使用'selinux=0'禁用SELinux或'selinux=1'启用SELinux 
+    <DD>
+    <DL>
+      <DT>NSA SELinux boot parameter default value
+      <DD>上述参数的默认值 </DD></DL>
+    <DT>NSA SELinux runtime disable
+    <DD>允许在运行时禁用SELinux 
+    <DT>NSA SELinux Development Support
+    <DD>SELinux开发支持 
+    <DT>NSA SELinux AVC Statistics
+    <DD>搜集存取向量(access 
+    vector)缓冲区的统计信息并在/selinux/avc/cache_stats中显示出来.这些信息可以用avcstat之类的工具查看 
+    <DT>NSA SELinux checkreqprot default value
+    <DD>checkreqprot标志的默认值 
+    <DT>NSA SELinux enable new secmark network controls by default
+    <DD>默认启用新的基于安全标记(secmark)的网络 
+    <DT>NSA SELinux maximum supported policy format version
+    <DD>允许将支持的最高策略格式版本设置为一个特定的数值 
+    <DD>
+    <DL>
+      <DT>NSA SELinux maximum supported policy format version value
+      <DD>支持的最高策略格式版本的数值 </DD></DL></DD></DL></DD></DL>
+<H2>Cryptographic options<BR>加密选项</H2>
+<DL>
+  <DT>Cryptographic API
+  <DD>提供核心的加密API支持.这里的加密算法被广泛的应用于驱动程序通信协议等机制中.子选项可以全不选,内核中若有其他部分依赖它,会自动选上 
+  <DD>
+  <DL>
+    <DT>Cryptographic algorithm manager
+    <DD>创建加密模版实例,必须要选 
+    <DT>HMAC support
+    <DD>为IPSec所必须,可为PPPoE提供压缩支持 
+    <DT>Null algorithms
+    <DD>NULL加密算法(什么也不做),用于IPsec协议的封装安全载荷模块(ESP) 
+    <DT>MD4 digest algorithm
+    <DD>老旧的摘要算法,已经过时 
+    <DT>MD5 digest algorithm
+    <DD>主流摘要算法,128位(已被中国山东大学王小云攻破,可以快速找到碰撞) 
+    <DT>SHA1 digest algorithm
+    <DD>主流摘要算法,160位(已被中国山东大学王小云攻破,可以快速找到碰撞),速度与MD5相当 
+    <DT>SHA256 digest algorithm
+    <DD>更好的摘要算法,256位,速度较SHA1稍慢 
+    <DT>SHA384 and SHA512 digest algorithms
+    <DD>更好的摘要算法,384/512位,速度大约只有SHA1的40-50% 
+    <DT>Whirlpool digest algorithms
+    <DD>最安全的摘要算法,512位,已被列入ISO标准,目前最新版本为3.0(2003年发布) 
+    <DT>Tiger digest algorithms
+    <DD>号称最快的摘要算法,192位,专门为64位CPU进行了优化 
+    <DT>ECB support
+    <DD>电子密码本,最简单的加密方法 
+    <DT>CBC support
+    <DD>密码块链,IPSec需要使用它 
+    <DT>DES and Triple DES EDE cipher algorithms
+    <DD>老迈的(DES)和尚佳的(Triple DES)对称加密算法 
+    <DT>Blowfish cipher algorithm
+    <DD>又老又慢的对称加密算法 
+    <DT>Twofish cipher algorithm
+    <DD>很强的对称加密算法,使用较广 
+    <DT>Twofish cipher algorithms (i586)
+    <DD>很强的对称加密算法,使用较广(针对i586的版本) 
+    <DT>Serpent cipher algorithm
+    <DD>很强的对称加密算法 
+    <DT>AES cipher algorithms
+    <DD>最佳的对称加密算法(Rijndael),128/192/256位,强度最高,快速且节省内存 
+    <DT>AES cipher algorithms (i586)
+    <DD>最佳的对称加密算法(Rijndael),128/192/256位,强度最高,快速且节省内存(针对i586的版本) 
+    <DT>CAST5 (CAST-128) cipher algorithm
+    <DD>对称加密算法 
+    <DT>CAST6 (CAST-256) cipher algorithm
+    <DD>对称加密算法 
+    <DT>TEA, XTEA and XETA cipher algorithms
+    <DD>较弱的对称加密算法 
+    <DT>ARC4 cipher algorithm
+    <DD>脆弱的流对称加密算法 
+    <DT>Khazad cipher algorithm
+    <DD>对称加密算法 
+    <DT>Anubis cipher algorithm
+    <DD>对称加密算法 
+    <DT>Deflate compression algorithm
+    <DD>压缩算法,当在IPSec中使用IPCOMP协议时才需要 
+    <DT>Michael MIC keyed digest algorithm
+    <DD>摘要算法,仅仅用于校验iSCSI设备传输的数据,因为算法本身比较脆弱 
+    <DT>CRC32c CRC algorithm
+    <DD>摘要算法,可用于校验iSCSI设备传输的数据 
+    <DT>Testing module
+    <DD>快速且丑陋的测试模块 
+    <DT>Hardware crypto devices
+    <DD>仅有VIA C7系列处理器支持硬件加密(VIA PadLock高级加密引擎) </DD></DL></DD></DL>
+<H2>Library routines<BR>库子程序<BR><SPAN 
+class=little_head>仅有那些不包含在内核原码中的第三方内核模块才可能需要,可以全不选,内核中若有其他部分依赖它,会自动选上</SPAN></H2>
+<DL>
+  <DT>CRC-CCITT functions
+  <DD>传送8-bit字符,欧洲标准 
+  <DT>CRC16 functions
+  <DD>传送8-bit字符,美国标准 
+  <DT>CRC32 functions
+  <DD>用于点对点的同步数据传输中,传输网络数据包所必须的 
+  <DT>CRC32c (Castagnoli, et al) Cyclic Redundancy-Check
+  <DD>用于点对点的同步数据传输中,比如iSCSI设备 </DD></DL>
+<HR>
+
+<DL>
+  <DT>Load an Alternate Configuration File
+  <DD>读入一个外部配置文件 
+  <DT>Save Configuration to an Alternate File
+  <DD>将配置保存到一个外部文件 </DD></DL></BODY></HTML>

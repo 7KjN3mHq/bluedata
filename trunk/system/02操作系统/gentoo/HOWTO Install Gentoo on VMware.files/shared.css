@@ -1,0 +1,99 @@
+.mw-plusminus-null {
+	COLOR: #aaa
+}
+.texvc {
+	DIRECTION: ltr; unicode-bidi: embed
+}
+IMG.tex {
+	VERTICAL-ALIGN: middle
+}
+SPAN.texhtml {
+	FONT-FAMILY: serif
+}
+#toolbar {
+	CLEAR: both
+}
+#wpTextbox1 {
+	CLEAR: both
+}
+DIV#mw-js-message {
+	BORDER-RIGHT: #ddd 1px solid; PADDING-RIGHT: 2.5%; BORDER-TOP: #ddd 1px solid; PADDING-LEFT: 2.5%; PADDING-BOTTOM: 0.5em; MARGIN: 1em 5%; BORDER-LEFT: #ddd 1px solid; PADDING-TOP: 0.5em; BORDER-BOTTOM: #ddd 1px solid; BACKGROUND-COLOR: #fcfcfc
+}
+.editsection {
+	FLOAT: right; MARGIN-LEFT: 5px
+}
+TABLE.filehistory {
+	BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid; BORDER-COLLAPSE: collapse
+}
+TABLE.filehistory TH {
+	BORDER-RIGHT: #ccc 1px solid; PADDING-RIGHT: 0.2em; BORDER-TOP: #ccc 1px solid; PADDING-LEFT: 0.2em; PADDING-BOTTOM: 0px; VERTICAL-ALIGN: top; BORDER-LEFT: #ccc 1px solid; PADDING-TOP: 0px; BORDER-BOTTOM: #ccc 1px solid
+}
+TABLE.filehistory TD {
+	BORDER-RIGHT: #ccc 1px solid; PADDING-RIGHT: 0.2em; BORDER-TOP: #ccc 1px solid; PADDING-LEFT: 0.2em; PADDING-BOTTOM: 0px; VERTICAL-ALIGN: top; BORDER-LEFT: #ccc 1px solid; PADDING-TOP: 0px; BORDER-BOTTOM: #ccc 1px solid
+}
+TABLE.filehistory TH {
+	TEXT-ALIGN: left
+}
+TABLE.filehistory TD.mw-imagepage-filesize {
+	WHITE-SPACE: nowrap
+}
+TABLE.filehistory TH.mw-imagepage-filesize {
+	WHITE-SPACE: nowrap
+}
+LI SPAN.deleted {
+	COLOR: #888; FONT-STYLE: italic; TEXT-DECORATION: line-through
+}
+SPAN.history-deleted {
+	COLOR: #888; FONT-STYLE: italic; TEXT-DECORATION: line-through
+}
+BODY.ltr TD.mw-label {
+	TEXT-ALIGN: right
+}
+BODY.ltr TD.mw-input {
+	TEXT-ALIGN: left
+}
+BODY.ltr TD.mw-submit {
+	TEXT-ALIGN: left
+}
+BODY.rtl TD.mw-label {
+	TEXT-ALIGN: left
+}
+BODY.rtl TD.mw-input {
+	TEXT-ALIGN: right
+}
+BODY.rtl TD.mw-submit {
+	TEXT-ALIGN: right
+}
+TD.mw-label {
+	VERTICAL-ALIGN: top
+}
+TD.mw-submit {
+	WHITE-SPACE: nowrap
+}
+BODY.rtl .thumbcaption {
+	TEXT-ALIGN: right
+}
+BODY.rtl .magnify {
+	FLOAT: left
+}
+BODY.ltr .thumbcaption {
+	TEXT-ALIGN: left
+}
+BODY.ltr .magnify {
+	FLOAT: right
+}
+.mw-hidden-cats-hidden {
+	DISPLAY: none
+}
+.catlinks-allhidden {
+	DISPLAY: none
+}
+P.mw-ipb-conveniencelinks {
+	FONT-SIZE: 90%; FLOAT: right
+}
+P.mw-filedelete-editreasons {
+	FONT-SIZE: 90%; FLOAT: right
+}
+P.mw-delete-editreasons {
+	FONT-SIZE: 90%; FLOAT: right
+}

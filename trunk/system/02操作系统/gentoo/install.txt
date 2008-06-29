@@ -1,9 +1,13 @@
+gentoo-nofb
+
 net-setup eth0
 
 /etc/init.d/sshd start
 
 passwd
 
+
+----------------------------------------------------------------------------------------------------
 modprobe raid1
 modprobe dm-mod
 
@@ -56,13 +60,51 @@ mount /dev/vg0/lv2 /mnt/gentoo/tmp
 mount /dev/vg0/lv3 /mnt/gentoo/usr
 mount /dev/vg0/lv4 /mnt/gentoo/var
 chmod 1777 /mnt/gentoo/tmp
+----------------------------------------------------------------------------------------------------
+
+fdisk -l /dev/sda
+
+Disk /dev/sda: 38.6 GB, 38654705664 bytes
+255 heads, 63 sectors/track, 4699 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Disk identifier: 0xf35ffb47
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sda1               1           9       72261   83  Linux
+/dev/sda2              10         259     2008125   82  Linux swap / Solaris
+/dev/sda3             260         384     1004062+  83  Linux
+/dev/sda4             385        4699    34660237+  8e  Linux LVM
+
+vgscan
+pvcreate /dev/sda4
+vgcreate vg /dev/sda4
+lvcreate -L 1G -n tmp vg
+lvcreate -L 4G -n usr vg
+lvcreate -L 2G -n var vg
+
+mke2fs /dev/sda1
+mke2fs -j /dev/sda3
+mke2fs /dev/vg/tmp
+mke2fs -j /dev/vg/usr
+mke2fs -j /dev/vg/var
+
+mkswap /dev/sda2 && swapon /dev/sda2
+
+mount /dev/sda3 /mnt/gentoo
+cd /mnt/gentoo
+mkdir boot tmp usr var
+mount /dev/sda1 /mnt/gentoo/boot
+mount /dev/vg/tmp /mnt/gentoo/tmp
+mount /dev/vg/usr /mnt/gentoo/usr
+mount /dev/vg/var /mnt/gentoo/var
+chmod 1777 /mnt/gentoo/tmp
 
 
 wget http://www.bluedata.org/software/linux/gentoo/stage3-i686-2008.0_beta2.tar.bz2
 tar xjpf stage3-i686-2008.0_beta2.tar.bz2
 
 cd usr
-http://www.bluedata.org/software/linux/gentoo/portage-latest.tar.bz2
+wget http://www.bluedata.org/software/linux/gentoo/portage-latest.tar.bz2
 tar xjf portage-latest.tar.bz2
 
 
@@ -72,7 +114,6 @@ cp -L /etc/resolv.conf /mnt/gentoo/etc/
 chroot /mnt/gentoo /bin/bash
 env-update && source /etc/profile
 
-ls /usr/share/zoneinfo
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 date
 
@@ -81,12 +122,180 @@ sed -i -e 's/HOSTNAME.*/HOSTNAME="gentoo"/' /etc/conf.d/hostname
 hostname gentoo
 hostname -f
 
+echo 'MAKEOPTS="-j2"' >> /etc/make.conf
+echo 'USE="-ipv6"' >> /etc/make.conf
+echo 'GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/"' >> /etc/make.conf
 
 emerge gentoo-sources
 cd /usr/src/linux
 make menuconfig
-make -j2
+
+General setup
+ - Prompt for development and/or incomplete code/drivers      
+
+Enable loadable module support
+ + Module unloading
+ + Automatic kernel module loading
+
+- Power management options
+
+Bus options (PCI etc.)
+ + ISA support
+
+Networking options
+ TCP/IP networking
+ - IP: multicasting
+ - IP: kernel level autoconfiguration
+ + IP: TCP syncookie support (disabled per default)
+ - INET: socket monitoring interface
+ - The IPv6 protocol
+ + Network packet filtering framework (Netfilter)
+  Core Netfilter Configuration  --->
+   <M> Netfilter connection tracking support
+     + Connection tracking flow accounting
+     + Connection mark tracking support
+     <M> FTP protocol support
+   <M> Netfilter Xtables support (required for ip_tables)
+     全部选为模块
+  IP: Netfilter Configuration  --->
+   <M> IPv4 connection tracking support (required for NAT)
+   <M> IP tables support (required for filtering/masq/NAT)
+     全部选为模块
+   <M> ARP tables support
+     全部选为模块
+
+Block devices
+ - Normal floppy disk support
+
+Device Drivers
+ Network device support
+  - Netdevice multiple hardware queue support
+  + Ethernet (10 or 100Mbit)
+   + EISA, VLB, PCI and on board controllers
+   + AMD PCnet32 PCI support
+  - Ethernet (1000 Mbit)
+  - Ethernet (10000 Mbit)
+
+ SCSI device support
+  - SCSI CDROM support
+  - SCSI generic support
+  + SCSI low-level drivers
+   + SYM53C8XX Version 2 SCSI support
+
+ Fusion MPT device support
+  + Fusion MPT ScsiHost drivers for SPI
+
+ - Serial ATA (prod) and Parallel ATA (experimental) drivers
+
+ - Macintosh device drivers
+
+ Firmware Drivers
+  - Export DMI identification via sysfs to userspace
+
+ Multimedia devices
+ - DAB adapters
+
+ - Sound card support
+
+ - HID Devices
+ - USB support
+
+File systems
+ + Quota support
+ - Print quota warnings to console (OBSOLETE)
+  CD-ROM/DVD Filesystems
+  + Microsoft Joliet CDROM extensions
+ Native language support
+  Default NLS Option
+  UTF-8
+  <M> Simplified Chinese charset (CP936, GB2312)
+  - NLS ISO 8859-15
+
+- Instrumentation Support
+
+Kernel hacking
+ - Enable __deprecated logic
+ - Magic SysRq key
+ - Enable unused/obsolete exported symbols
+ - Kernel debugging
+
+
+make
 make modules_install
 cp arch/i386/boot/bzImage /boot/kernel
 
+cd /etc
 nano -w fstab
+/dev/sda1         /boot                   ext2    noauto,noatime     1 2
+/dev/sda2         none                    swap    sw                 0 0
+/dev/sda3         /                       ext3    noatime            0 1
+/dev/vg/tmp       /tmp                    ext2    noatime            1 2
+/dev/vg/usr       /usr                    ext3    noatime            1 2
+/dev/vg/var       /var                    ext3    noatime            1 2
+
+cd conf.d
+echo 'config_eth0=( "202.75.216.170/28" )' >> net
+echo 'routes_eth0=( "default via 202.75.216.161" )' >> net
+
+rc-update add sshd default
+
+passwd
+
+nano -w /etc/conf.d/clock
+TIMEZONE="Asia/Shanghai"
+
+nano -w /etc/rc.conf
+nano -w /etc/conf.d/rc
+nano -w /etc/conf.d/keymaps
+
+emerge lvm2
+
+emerge syslog-ng
+rc-update add syslog-ng default
+
+emerge vixie-cron
+rc-update add vixie-cron default
+
+emerge reiserfsprogs
+
+emerge grub
+nano -w /boot/grub/grub.conf
+default 0
+timeout 5
+
+title Gentoo
+root (hd0,0)
+kernel /boot/kernel root=/dev/sda3
+
+grub
+root (hd0,0)
+setup (hd0)
+quit
+
+exit
+umount /mnt/gentoo/proc /mnt/gentoo/boot /mnt/gentoo/tmp /mnt/gentoo/usr /mnt/gentoo/var /mnt/gentoo
+reboot
+
+nano -w /etc/locale.gen
+zh_CN.UTF-8 UTF-8
+locale-gen
+
+nano -w /etc/conf.d/clock
+CLOCK="local"
+
+emerge mirrorselect
+mirrorselect -i -o >> /etc/make.conf
+mirrorselect -i -r -o >> /etc/make.conf
+
+nano -w /etc/make.conf
+FEATURES="ccache"
+
+emerge ccache
+
+emerge -vpuD --newuse world
+
+emerge -vuD --newuse world
+emerge --oneshot libtool
+dispatch-conf
+perl-cleaner all
+python-updater

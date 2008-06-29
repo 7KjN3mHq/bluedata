@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0054)http://www.flmnh.ufl.edu/linux/linux_software_raid.htm -->
+<HTML><HEAD><TITLE>Linux Software RAID on CentOS 4.x</TITLE>
+<META http-equiv=content-type content="text/html; charset=ISO-8859-1"><LINK 
+href="Linux Software RAID on CentOS 4_x.files/linuxpagesstyle.css" 
+rel=stylesheet>
+<META content="MSHTML 6.00.2900.3354" name=GENERATOR></HEAD>
+<BODY>
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD>
+      <H3>Office of Museum Technology</H3>
+      <H2>FLMNH Linux Pages</H2></TD>
+    <TD><A href="http://www.flmnh.ufl.edu/"><IMG 
+      alt="Florida Museum of Natural History" 
+      src="Linux Software RAID on CentOS 4_x.files/Logo_Spot_sm_80pixels.png" 
+      border=none></A><BR><BR><A href="http://www.ufl.edu/"><IMG 
+      alt="University of Florida" 
+      src="Linux Software RAID on CentOS 4_x.files/ufblogo.gif" 
+      border=none></A><BR></TD></TR></TBODY></TABLE>
+<HR>
+
+<H2>Setting up Linux Software RAID on CentOS</H2>
+<P><B>* * RAID is not a substitute for data backups! Always backup your data! * 
+*</B> </>
+<P>This document describes how to configure your system for Software RAID1 
+(mirroring) during the CentOS 4.x clean install. We will mirror data between two 
+hard drives to prevent data loss in the event of a single hard drive failure. 
+</P>
+<P>The first section shows how to do a basic setup without LVM. The second 
+section shows how to do LVM on top of software RAID. </P>
+<H3>Software RAID setup during CentOS installation</H3>For this procedure, we 
+will go with a somewhat simplified setup that includes a single root filesytem 
+and a swap partition. This is similar to the disk layout of a CentOS Automatic 
+partitioning scheme. <BR><BR>Steps 3 and 4 (below) will create the device that 
+will hold the root filesystem.<BR>Steps 5 and 6 (below) will create the swap 
+partition.<BR><BR>Note: This document uses sda/sdb as the hard drive device 
+names. On most GNU/Linux systems this will be true for SCSI or SATA drives. PATA 
+IDE drives will be named hda/hdb. 
+<OL>
+  <LI>When you get to the Disk Partitioning Setup screen, select:<BR>Manually 
+  partition with Disk Druid<BR><BR><IMG alt="Disk Partitioning Setup Screen" 
+  src="Linux Software RAID on CentOS 4_x.files/screenshot_setup_disk_druid1.png"> 
+  <BR>
+  <LI>Highlight and Delete each partition, Logical Volume, and Volume Group 
+  until all of the existing partitions have been removed. When finished you 
+  should only have "Free Space" in the Type column.<BR><BR>
+  <LI>Add the first Software RAID member by clicking the "New" button.<BR>- 
+  Select File System Type = software RAID<BR>- uncheck the Allowable Drives 
+  until only the first hard drive is selected (probably sda)<BR>- enter the size 
+  in MB. Must leave enough space for Swap partition (1000 MB), and probably want 
+  to leave a little fudge factor in case a replacment drive is not quite the 
+  same size. For example, an "80 GB" drive might actually have 76000 MB, but a 
+  future replacement drive from a different vendor might only have 75000 MB, so 
+  we create a software RAID partition of 73000 MB.<BR>- check the box "Force to 
+  be a primary partition" because this helps Disk Druid remember to keep the 
+  root volume at the front of the hard drive.<BR><BR>
+  <LI>Add the second Software RAID member by clicking the "New" button.<BR>- 
+  Select File System Type = software RAID<BR>- uncheck the Allowable Drives 
+  until only the second hard drive is selected (probably sdb)<BR>- enter the 
+  size in MB. This should be the same size as entered in step 3 above. <BR>
+  <LI>Add the first Software RAID member that will be used as Swap partition by 
+  clicking the "New" button.<BR>- Select File System Type = software RAID<BR>- 
+  uncheck the Allowable Drives until only the first hard drive is selected 
+  (probably sda)<BR>- enter the size in MB. My rule of thumb is to create a swap 
+  partition that is "twice the size of the amount of RAM in the system" plus 512 
+  MB. If I have 512 MB of RAM, my swap partition would be 1 GB.<BR><BR>
+  <LI>Add the second Software RAID member that will be used as Swap partition by 
+  clicking the "New" button.<BR>- Select File System Type = software RAID<BR>- 
+  uncheck the Allowable Drives until only the second hard drive is selected 
+  (probably sdb)<BR>- enter the size in MB. This should be the same size as 
+  entered in step 5 above. <BR>
+  <LI>Create the first RAID device. Click the "RAID" button. Select "Create a 
+  RAID device [default=/dev/md0]."<BR><PRE>  Mount Point:           /
+  File System Type:      ext3
+  RAID Device:           md0
+  RAID Level:            RAID1
+  RAID Members:          sda1, sdb1     (these are the members created in steps 3 and 4)
+  Number of spares:      0
+</PRE><BR>
+  <LI>Create the second RAID device. Click the "RAID" button. Select "Create a 
+  RAID device [default=/dev/md1]."<BR><PRE>  Mount Point:           <NOT applicable>
+  File System Type:      swap
+  RAID Device:           md1
+  RAID Level:            RAID1
+  RAID Members:          sda2, sdb2     (these are the members created in steps 5 and 6)
+  Number of spares:      0
+</PRE><BR>
+  <LI>Once the disks are formated and files are being copied from the CD, switch 
+  to a virtual console (CTRL-ALT-F1) to install grub on both disks. If you fail 
+  to do this, you will need to boot from the install disk and use rescue mode to 
+  make your system bootable.<BR><PRE>grub
+&gt; device (hd0) /dev/sda
+&gt; root (hd0,0)
+&gt; setup (hd0)
+&gt; device (hd1) /dev/sdb
+&gt; root (hd1,0)
+&gt; setup (hd1)
+</PRE>
+  <P>This makes sure that the grub boot loader is installed on both physical 
+  drives and that the system will be bootable even if one of the drives 
+  fails.</P><BR>
+  <LI>Done! <BR></LI></OL>
+<P>We have chosen to install linux in one big partition. Many people like to 
+create smaller partitions (such as a separate partition for /usr). To do this, 
+you would just need to create additional idential Software RAID members on each 
+disk, and an additional RAID device.</P>Here is the finished setup: <BR><PRE># cat /proc/mdstat
+Personalities : [raid1]
+md1 : active raid1 sdb2[1] sda2[0]
+      4297280 blocks [2/2] [UU]
+
+md0 : active raid1 sdb1[1] sda1[0]
+      235520832 blocks [2/2] [UU] 
+unused devices: <NONE>
+</PRE>
+<P>Failed Drives</P>In this case, we simulate a drive failure by forcing one of 
+the software raid members into a failed state. <PRE># mdadm /dev/md0 --fail /dev/sda1
+mdadm: set /dev/sda1 faulty in /dev/md0
+</PRE>A failed drive looks like this: <PRE># cat /proc/mdstat
+Personalities : [raid1]
+md1 : active raid1 sdb2[1] sda2[0]
+      4297280 blocks [2/2] [UU]
+
+md0 : active raid1 sdb1[1]
+      235520832 blocks [2/1] [_U] 
+</PRE>Get more info on the array by asking for details: <PRE># mdadm --detail /dev/md0
+</PRE>We then remove the failed member from the array. <PRE># mdadm /dev/md0 --remove /dev/sda1
+mdadm: hot removed /dev/sda1
+</PRE>
+<P>After replacing the failed drive, you add a "hot spare" and the system will 
+automatically rebuild the failed md device(s).</P><PRE># mdadm /dev/md0 --add /dev/sda1
+mdadm: hot added /dev/sda1
+
+# cat /proc/mdstat
+Personalities : [raid1]
+md1 : active raid1 sdb2[1] sda2[0]
+      4297280 blocks [2/2] [UU]
+
+md0 : active raid1 sda1[2] sdb1[1]
+      235520832 blocks [2/1] [_U]
+      [=&gt;...................]  recovery =  6.4% (15183872/235520832)
+finish=79.6min speed=46101K/sec
+unused devices: <NONE>
+
+</PRE>
+<H3>LVM on top of Linux Software RAID (coming in the future!)</H3>* * * This 
+section is under construction. * * * <BR><!--<ol>
+
+
+
+<li>When you get to the Disk Partitioning Setup screen, select:<br />
+
+Manually partition with Disk Druid
+
+</li>
+--><BR>
+<UL></UL>
+<HR style="WIDTH: 100%; HEIGHT: 2px">
+Last Update 11/28/2006 by Dan Stoner<SPAN style="FONT-WEIGHT: bold"></SPAN><BR>
+<HR>
+
+<TABLE>
+  <TBODY>
+  <TR>
+    <TD>Send us an email:<BR><A 
+      href="mailto:linuxpages-at-flmnh.ufl.edu?subject=LinuxPages Comment or Question">linuxpages-at-flmnh.ufl.edu</A><BR><I>(Replace 
+      '-at-' with '@')</I> </TD>
+    <TD><A href="http://www.flmnh.ufl.edu/linux">FLMNH Linux Pages 
+    Home</A><BR></TD>
+    <TD><A href="http://www.flmnh.ufl.edu/omt">OMT Home</A><BR></TD><!--
+      <td><a
+ href="http://www.flmnh.ufl.edu" alt="FLMNH Home"><img src="/images/LogoHeadColorSm.jpg"><br>FLMNH Home</a><br>
+      </td>
+      <td><a
+ href="http://www.ufl.edu" alt="University of Florida home page">
+<img src="/images/ufblogo.gif"></a>
+</a><br>
+      </td>
+--></TR></TBODY></TABLE><BR></BODY></HTML>
