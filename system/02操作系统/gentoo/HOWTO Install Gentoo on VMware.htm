@@ -1,0 +1,1165 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3c.org/TR/1999/REC-html401-19991224/loose.dtd">
+<!-- saved from url=(0073)http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP -->
+<HTML lang=en dir=ltr xml:lang="en" 
+xmlns="http://www.w3.org/1999/xhtml"><HEAD><TITLE>HOWTO Install Gentoo on VMware - Gentoo Linux Wiki</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=UTF-8">
+<META 
+content="HOWTO Install Gentoo on VMware,HOWTO Configure a dual boot windows linux to be able to open each os in vmware,HOWTO Install VMware Tools in Gentoo,LiveCD,Operating System,HOWTO Install Gentoo on VMware in Windows NT/2K/XP,HOWTO" 
+name=keywords><LINK href="/favicon.ico" rel="shortcut icon"><LINK 
+title="Gentoo Linux Wiki (en)" href="/opensearch_desc.php" 
+type=application/opensearchdescription+xml rel=search><LINK 
+title="Gentoo Linux Wiki RSS Feed" 
+href="http://gentoo-wiki.com/index.php?title=Special:Recentchanges&amp;feed=rss" 
+type=application/rss+xml rel=alternate><LINK title="Gentoo Linux Wiki Atom Feed" 
+href="http://gentoo-wiki.com/index.php?title=Special:Recentchanges&amp;feed=atom" 
+type=application/atom+xml rel=alternate>
+<STYLE type=text/css media="screen, projection">@import url( /skins/common/shared.css?121 );
+@import url( /skins/monobook/main.css?121 );
+</STYLE>
+<LINK media=print href="HOWTO Install Gentoo on VMware.files/commonPrint.css" 
+type=text/css rel=stylesheet><!--[if lt IE 5.5000]><style type="text/css">@import "/skins/monobook/IE50Fixes.css?121";</style><![endif]--><!--[if IE 5.5000]><style type="text/css">@import "/skins/monobook/IE55Fixes.css?121";</style><![endif]--><!--[if IE 6]>
+<STYLE type=text/css>@import url( /skins/monobook/IE60Fixes.css?121 );
+</STYLE>
+<![endif]--><!--[if IE 7]><style type="text/css">@import "/skins/monobook/IE70Fixes.css?121";</style><![endif]--><!--[if lt IE 7]>
+<SCRIPT src="HOWTO Install Gentoo on VMware.files/IEFixes.js" 
+type=text/javascript></SCRIPT>
+
+<META http-equiv=imagetoolbar content=no><![endif]-->
+<SCRIPT type=text/javascript>/*<![CDATA[*/
+var skin = "monobook";
+var stylepath = "/skins";
+var wgArticlePath = "/$1";
+var wgScriptPath = "";
+var wgScript = "/index.php";
+var wgVariantArticlePath = false;
+var wgActionPaths = [];
+var wgServer = "http://gentoo-wiki.com";
+var wgCanonicalNamespace = "";
+var wgCanonicalSpecialPageName = false;
+var wgNamespaceNumber = 0;
+var wgPageName = "HOWTO_Install_Gentoo_on_VMware";
+var wgTitle = "HOWTO Install Gentoo on VMware";
+var wgAction = "view";
+var wgArticleId = "10974";
+var wgIsArticle = true;
+var wgUserName = null;
+var wgUserGroups = null;
+var wgUserLanguage = "en";
+var wgContentLanguage = "en";
+var wgBreakFrames = false;
+var wgCurRevisionId = "132663";
+var wgVersion = "1.13alpha";
+var wgEnableAPI = true;
+var wgEnableWriteAPI = false;
+var wgRestrictionEdit = [];
+var wgRestrictionMove = [];
+/*]]>*/</SCRIPT>
+
+<SCRIPT src="HOWTO Install Gentoo on VMware.files/wikibits.js" 
+type=text/javascript><!-- wikibits js --></SCRIPT>
+<!-- Head Scripts -->
+<SCRIPT src="HOWTO Install Gentoo on VMware.files/ajax.js" 
+type=text/javascript></SCRIPT>
+
+<SCRIPT src="HOWTO Install Gentoo on VMware.files/index.php" 
+type=text/javascript><!-- site js --></SCRIPT>
+
+<STYLE type=text/css>@import url( /index.php?title=MediaWiki:Common.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000 );
+@import url( /index.php?title=MediaWiki:Monobook.css&usemsgcache=yes&action=raw&ctype=text/css&smaxage=18000 );
+@import url( /index.php?title=-&action=raw&gen=css&maxage=18000 );
+</STYLE>
+
+<META content="MSHTML 6.00.2900.3354" name=GENERATOR></HEAD>
+<BODY class="mediawiki ns-0 ltr page-HOWTO_Install_Gentoo_on_VMware">
+<DIV id=globalWrapper>
+<DIV id=column-content>
+<DIV 
+style="PADDING-RIGHT: 0px; MARGIN-TOP: 35px; PADDING-LEFT: 0px; RIGHT: 0px; FLOAT: right; PADDING-BOTTOM: 0px; WIDTH: 160px; PADDING-TOP: 0px; HEIGHT: 1px; positon: absolute">
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-3996301520685260";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+//2007-10-16: Skyscraper
+google_ad_channel = "1221213758";
+google_ui_features = "rc:10";
+//-->
+</SCRIPT>
+
+<SCRIPT src="HOWTO Install Gentoo on VMware.files/show_ads.js" 
+type=text/javascript>
+</SCRIPT>
+</DIV>
+<DIV id=content style="MARGIN-RIGHT: 163px"><A id=top name=top></A>
+<H1 class=firstHeading>HOWTO Install Gentoo on VMware</H1>
+<DIV id=bodyContent>
+<H3 id=siteSub>From Gentoo Linux Wiki</H3>
+<DIV id=contentSub>(Redirected from <A 
+title="HOWTO Install Gentoo on VMware in Windows NT/2K/XP" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP&amp;redirect=no">HOWTO 
+Install Gentoo on VMware in Windows NT/2K/XP</A>)</DIV>
+<DIV id=jump-to-nav>Jump to: <A 
+href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#column-one">navigation</A>, 
+<A 
+href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#searchInput">search</A></DIV><!-- start content -->
+<TABLE 
+style="MARGIN-TOP: 0px; BORDER-LEFT-WIDTH: 0px; MARGIN-BOTTOM: 10px; WIDTH: 100%; BORDER-RIGHT-WIDTH: 0px" 
+cellSpacing=0 cellPadding=3>
+  <TBODY>
+  <TR>
+    <TD style="BACKGROUND: #efefef">
+      <CENTER><SMALL>This article is part of the <B><A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO">HOWTO</A></B> 
+      series.</SMALL></CENTER></TD></TR>
+  <TR>
+    <TD align=middle><A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Installation_Methods">Installation</A> 
+      <B>•</B> <A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Kernel_.26_Hardware">Kernel &amp; 
+      Hardware</A> <B>•</B> <A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Networks_.26_Services">Networks</A> 
+      <B>•</B> <A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Portage">Portage</A> <B>•</B> <A 
+      title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Software">Software</A> <B>•</B> 
+      <A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#System_Related">System</A> 
+      <B>•</B> <A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#X_Server">X Server</A> <B>•</B> 
+      <A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Gaming">Gaming</A> <B>•</B> <A 
+      title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Specific_to_non-x86_architecture">Non-x86</A> 
+      <B>•</B> <A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Emulators">Emulators</A> <B>•</B> 
+      <A title=Index:HOWTO 
+      href="http://gentoo-wiki.com/Index:HOWTO#Miscellaneous">Misc</A> 
+  </TD></TR></TBODY></TABLE>
+<TABLE class=toc id=toc summary=Contents>
+  <TBODY>
+  <TR>
+    <TD>
+      <DIV id=toctitle>
+      <H2>Contents</H2></DIV>
+      <UL>
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Introduction"><SPAN 
+        class=tocnumber>1</SPAN> <SPAN class=toctext>Introduction</SPAN></A> 
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Using_Preinstalled_Images"><SPAN 
+        class=tocnumber>2</SPAN> <SPAN class=toctext>Using Preinstalled 
+        Images</SPAN></A> 
+        <UL>
+          <LI class=toclevel-2><A 
+          href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#LivePC_Version"><SPAN 
+          class=tocnumber>2.1</SPAN> <SPAN class=toctext>LivePC 
+          Version</SPAN></A> 
+          <LI class=toclevel-2><A 
+          href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#VMWare_Virtual_Appliance"><SPAN 
+          class=tocnumber>2.2</SPAN> <SPAN class=toctext>VMWare Virtual 
+          Appliance</SPAN></A> 
+          <LI class=toclevel-2><A 
+          href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Alternate_Guides"><SPAN 
+          class=tocnumber>2.3</SPAN> <SPAN class=toctext>Alternate 
+          Guides</SPAN></A> </LI></UL>
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Scope"><SPAN 
+        class=tocnumber>3</SPAN> <SPAN class=toctext>Scope</SPAN></A> 
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Reading_this_How_to"><SPAN 
+        class=tocnumber>4</SPAN> <SPAN class=toctext>Reading this How 
+        to</SPAN></A> 
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Preparing_Virtual_Machine"><SPAN 
+        class=tocnumber>5</SPAN> <SPAN class=toctext>Preparing Virtual 
+        Machine</SPAN></A> 
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Installing_Gentoo_Linux"><SPAN 
+        class=tocnumber>6</SPAN> <SPAN class=toctext>Installing Gentoo 
+        Linux</SPAN></A> 
+        <UL>
+          <LI class=toclevel-2><A 
+          href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Booting_LiveCD_Image"><SPAN 
+          class=tocnumber>6.1</SPAN> <SPAN class=toctext>Booting LiveCD 
+          Image</SPAN></A> </LI></UL>
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#2.6.x_Kernel_Configuration"><SPAN 
+        class=tocnumber>7</SPAN> <SPAN class=toctext>2.6.x Kernel 
+        Configuration</SPAN></A> 
+        <UL>
+          <LI class=toclevel-2><A 
+          href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Finding_your_devices"><SPAN 
+          class=tocnumber>7.1</SPAN> <SPAN class=toctext>Finding your 
+          devices</SPAN></A> 
+          <LI class=toclevel-2><A 
+          href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Kernel_Options"><SPAN 
+          class=tocnumber>7.2</SPAN> <SPAN class=toctext>Kernel 
+          Options</SPAN></A> 
+          <UL>
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#VMWare_Tools"><SPAN 
+            class=tocnumber>7.2.1</SPAN> <SPAN class=toctext>VMWare 
+            Tools</SPAN></A> 
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Intel_PCI.2FISA_Bridge"><SPAN 
+            class=tocnumber>7.2.2</SPAN> <SPAN class=toctext>Intel PCI/ISA 
+            Bridge</SPAN></A> 
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#SCSI_Controller"><SPAN 
+            class=tocnumber>7.2.3</SPAN> <SPAN class=toctext>SCSI 
+            Controller</SPAN></A> 
+            <UL>
+              <LI class=toclevel-4><A 
+              href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#LSI_Logic"><SPAN 
+              class=tocnumber>7.2.3.1</SPAN> <SPAN class=toctext>LSI 
+              Logic</SPAN></A> 
+              <LI class=toclevel-4><A 
+              href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#BusLogic"><SPAN 
+              class=tocnumber>7.2.3.2</SPAN> <SPAN 
+              class=toctext>BusLogic</SPAN></A> </LI></UL>
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#CDROM"><SPAN 
+            class=tocnumber>7.2.4</SPAN> <SPAN class=toctext>CDROM</SPAN></A> 
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Network"><SPAN 
+            class=tocnumber>7.2.5</SPAN> <SPAN class=toctext>Network</SPAN></A> 
+            <UL>
+              <LI class=toclevel-4><A 
+              href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Intel_EtherPro_Gigabit"><SPAN 
+              class=tocnumber>7.2.5.1</SPAN> <SPAN class=toctext>Intel EtherPro 
+              Gigabit</SPAN></A> 
+              <LI class=toclevel-4><A 
+              href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#AMD_PCnet-PCI_II"><SPAN 
+              class=tocnumber>7.2.5.2</SPAN> <SPAN class=toctext>AMD PCnet-PCI 
+              II</SPAN></A> </LI></UL>
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Audio"><SPAN 
+            class=tocnumber>7.2.6</SPAN> <SPAN class=toctext>Audio</SPAN></A> 
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#udev_Support"><SPAN 
+            class=tocnumber>7.2.7</SPAN> <SPAN class=toctext>udev 
+            Support</SPAN></A> </LI></UL></LI></UL>
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Genkernel"><SPAN 
+        class=tocnumber>8</SPAN> <SPAN class=toctext>Genkernel</SPAN></A> 
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Installing_VMware_Tools"><SPAN 
+        class=tocnumber>9</SPAN> <SPAN class=toctext>Installing VMware 
+        Tools</SPAN></A> 
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Cloning_Your_Virtual_Machine"><SPAN 
+        class=tocnumber>10</SPAN> <SPAN class=toctext>Cloning Your Virtual 
+        Machine</SPAN></A> 
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Troubleshooting"><SPAN 
+        class=tocnumber>11</SPAN> <SPAN class=toctext>Troubleshooting</SPAN></A> 
+
+        <UL>
+          <LI class=toclevel-2><A 
+          href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Kernel_timing_issues_in_2.6.x"><SPAN 
+          class=tocnumber>11.1</SPAN> <SPAN class=toctext>Kernel timing issues 
+          in 2.6.x</SPAN></A> 
+          <UL>
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Timing_issues_fix_on_ESX_server"><SPAN 
+            class=tocnumber>11.1.1</SPAN> <SPAN class=toctext>Timing issues fix 
+            on ESX server</SPAN></A> 
+            <LI class=toclevel-3><A 
+            href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Interface_eth0_does_not_exist"><SPAN 
+            class=tocnumber>11.1.2</SPAN> <SPAN class=toctext>Interface eth0 
+            does not exist</SPAN></A> </LI></UL>
+          <LI class=toclevel-2><A 
+          href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Further_troubleshooting"><SPAN 
+          class=tocnumber>11.2</SPAN> <SPAN class=toctext>Further 
+          troubleshooting</SPAN></A> </LI></UL>
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#VMware_Community_Virtual_Machines"><SPAN 
+        class=tocnumber>12</SPAN> <SPAN class=toctext>VMware Community Virtual 
+        Machines</SPAN></A> 
+        <LI class=toclevel-1><A 
+        href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP#Downloadable_VMs"><SPAN 
+        class=tocnumber>13</SPAN> <SPAN class=toctext>Downloadable 
+        VMs</SPAN></A> </LI></UL></TD></TR></TBODY></TABLE>
+<SCRIPT type=text/javascript> if (window.showTocToggle) { var tocShowText = "show"; var tocHideText = "hide"; showTocToggle(); } </SCRIPT>
+<A name=Introduction></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Introduction" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=1">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Introduction </SPAN></H2>
+<DIV class="thumb tright">
+<DIV class=thumbinner style="WIDTH: 182px"><A class=image 
+title="Gentoo vmware 1.jpg" 
+href="http://gentoo-wiki.com/Image:Gentoo_vmware_1.jpg"><IMG class=thumbimage 
+height=157 alt="" 
+src="HOWTO Install Gentoo on VMware.files/180px-Gentoo_vmware_1.jpg" width=180 
+border=0></A> 
+<DIV class=thumbcaption>
+<DIV class=magnify><A class=internal title=Enlarge 
+href="http://gentoo-wiki.com/Image:Gentoo_vmware_1.jpg"><IMG height=11 alt="" 
+src="HOWTO Install Gentoo on VMware.files/magnify-clip.png" 
+width=15></A></DIV></DIV></DIV></DIV>
+<P>Installing Gentoo can be complicated, perhaps even intimidating, to someone 
+who is new to Linux. To get familiar with what Gentoo has to offer, VMware (and 
+other virtualization software) provide a safe and easy environment for 
+experimenting, as you are free to try any new <A class=mw-redirect 
+title="Operating System" 
+href="http://gentoo-wiki.com/Operating_System">Operating System</A> without 
+interfering with your current setup. </P><A name=Using_Preinstalled_Images></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Using Preinstalled Images" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=2">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Using Preinstalled Images </SPAN></H2>
+<P>If you are interested in just seeing what Gentoo has to offer, using a 
+pre-installed image provides the quickest way of testing out Gentoo without 
+having to attempt to install it. </P><A name=LivePC_Version></A>
+<H3><SPAN class=editsection>[<A title="Edit section: LivePC Version" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=3">edit</A>]</SPAN> 
+<SPAN class=mw-headline>LivePC Version </SPAN></H3>
+<P>You can completely avoid the work of downloading, installing, and initially 
+configuring Gentoo using a new technology, the <A class="external text" 
+title=http://www.moka5.com href="http://www.moka5.com/" rel=nofollow>LivePC 
+Engine</A>, available from moka5. Once you install the LivePC engine, you can 
+download a number of LivePCs based off of Gentoo linux. You can get a basic 
+installation of <A class="external text" title=http://www.moka5.com/node/69 
+href="http://www.moka5.com/node/69" rel=nofollow>Gentoo with X-Windows and the 
+VMWare Tools</A>. More complete installations are available also, and you can 
+post your own LivePC. </P><A name=VMWare_Virtual_Appliance></A>
+<H3><SPAN class=editsection>[<A title="Edit section: VMWare Virtual Appliance" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=4">edit</A>]</SPAN> 
+<SPAN class=mw-headline>VMWare Virtual Appliance </SPAN></H3>
+<P>Gentoo 2006.1 (Barebones) VMWare Appliance. This is a relatively bare bones 
+install of gentoo. Xorg and WM not included. See <A class="external text" 
+title=http://www.gentoovm.com href="http://www.gentoovm.com/" 
+rel=nofollow>GentooVM</A> </P>
+<P>or search.vmware.com for Gentoo Pre-installed VMWare Virtual Machines: <A 
+class="external text" 
+title=http://search.vmware.com/search?q=gentoo&amp;filter=0&amp;btnG=VMTN+Appliance+Search&amp;restrict=&amp;output=xml_no_dtd&amp;sort=date%3AD%3AL%3Ad1&amp;ie=UTF-8&amp;btnG.y=12&amp;client=vmtn_appliance&amp;num=10&amp;btnG.x=15&amp;oe=UTF-8&amp;proxystylesheet=vmtn_appliance&amp;site=vmtn_appliance 
+href="http://search.vmware.com/search?q=gentoo&amp;filter=0&amp;btnG=VMTN+Appliance+Search&amp;restrict=&amp;output=xml_no_dtd&amp;sort=date%3AD%3AL%3Ad1&amp;ie=UTF-8&amp;btnG.y=12&amp;client=vmtn_appliance&amp;num=10&amp;btnG.x=15&amp;oe=UTF-8&amp;proxystylesheet=vmtn_appliance&amp;site=vmtn_appliance" 
+rel=nofollow>search.vmware.com</A> </P><A name=Alternate_Guides></A>
+<H3><SPAN class=editsection>[<A title="Edit section: Alternate Guides" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=5">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Alternate Guides </SPAN></H3>
+<P>For advanced users, if you plan to play with the same Gentoo installation 
+inside a vmware and in native mode, you can have a look to <A 
+title="HOWTO Configure a dual boot windows linux to be able to open each os in vmware" 
+href="http://gentoo-wiki.com/HOWTO_Configure_a_dual_boot_windows_linux_to_be_able_to_open_each_os_in_vmware">HOWTO 
+Configure a dual boot windows linux to be able to open each os in vmware</A> 
+</P><A name=Scope></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Scope" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=6">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Scope </SPAN></H2>
+<P>These instructions range from VMware GSX Server 3.1.0 to VMware 5.5.1. For 
+VMware Workstation 6 the vmware-tools works fine. You just need to create the 
+/etc/rc{0..6}.d directories because the installation script wants to create 
+symlinks to /etc/init.d/vmware-tools. </P>
+<TABLE 
+style="BORDER-RIGHT: #bfffbf 1px solid; BORDER-TOP: #bfffbf 1px solid; BORDER-LEFT: #bfffbf 1px solid; BORDER-BOTTOM: #bfffbf 1px solid; BACKGROUND-COLOR: #f2fff2" 
+cellSpacing=0 cellPadding=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #a0ffa0 1px solid; BORDER-TOP: #a0ffa0 1px solid; BORDER-LEFT: #a0ffa0 1px solid; BORDER-BOTTOM: #888 1px solid; BACKGROUND-COLOR: #c1ffc1"><FONT 
+      size=-1><B>Code:</B> create rcX.d directories</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE># mkdir /etc/rc{0..6}.d
+</PRE></DIV></TD></TR></TBODY></TABLE>
+<P>When the installation is finished, you can remove them and add the real 
+links. </P>
+<TABLE 
+style="BORDER-RIGHT: #bfffbf 1px solid; BORDER-TOP: #bfffbf 1px solid; BORDER-LEFT: #bfffbf 1px solid; BORDER-BOTTOM: #bfffbf 1px solid; BACKGROUND-COLOR: #f2fff2" 
+cellSpacing=0 cellPadding=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #a0ffa0 1px solid; BORDER-TOP: #a0ffa0 1px solid; BORDER-LEFT: #a0ffa0 1px solid; BORDER-BOTTOM: #888 1px solid; BACKGROUND-COLOR: #c1ffc1"><FONT 
+      size=-1><B>Code:</B> create startup symlinks</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE># rm -rf /etc/rc{0..6}.d
+# rc-update add vmware-tools default
+</PRE></DIV></TD></TR></TBODY></TABLE>
+<P><BR></P><A name=Reading_this_How_to></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Reading this How to" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=7">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Reading this How to </SPAN></H2>
+<P>For each step where the approach is dependent on the version of VMWare, the 
+latest VMWare version is stated at the beginning. </P>
+<P>Some sections may have a minimal version stated (eg. 4.5.1) but they will 
+still be valid for higher versions. </P>
+<P>Use the instructions pertaining to the closest version <B>at or below</B> 
+your current version. </P>
+<P>If no distinction is made then the procedure is valid for all versions. 
+</P><A name=Preparing_Virtual_Machine></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Preparing Virtual Machine" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=8">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Preparing Virtual Machine </SPAN></H2>
+<P>The first thing to do is, of course, to create a new virtual machine. VMware 
+makes this an easy process. You only have to follow the steps in New Virtual 
+Machine Wizard (<TT>File|New Virtual Machine...</TT>). Here is a summary of the 
+options used to create the virtual machine for this guide. For any options not 
+shown here, their default values were used. </P>
+<UL>
+  <LI>Virtual machine configuration: <B>Custom</B> 
+  <LI>Guest operating system: <B>Linux</B>; Version: <B>Other Linux 2.6.x 
+  kernel</B> 
+  <LI>Virtual machine name: <B>Gentoo Linux</B>; Location: (your choice) 
+  <LI>Memory: Your choice for performance (current Gentoo minimum is 64 
+  megabytes for minimal CD, 128 megabytes for live) 
+  <LI>Network connection: 
+  <UL>
+    <LI>Use <B>NAT</B> networking if you do not need your virtual machine to act 
+    as a server on your network. 
+    <LI>Use <B>Bridged</B> networking if you'd like your virtual machine to have 
+    a distinct IP address on your network. You will need to enable DHCP on your 
+    network (though not necessarily at your host). </LI></UL>
+  <LI>I/O adapter types / SCSI Adapters: 
+  <UL>
+    <LI>Using <B>BusLogic</B> is recommended. 
+    <LI>Support for <B>LSI Logic</B> stopped working with the 2.6.20 kernel and 
+    later. However, if you are using <B>VMWare Workstation 6.x</B>, then the 
+    newer kernels can be used when they are configured correctly. </LI></UL>
+  <LI>Disk: <B>Create a new virtual disk</B> 
+  <LI>Virtual Disk Type: <B>SCSI</B> 
+  <LI>Disk capacity / Disk size (GB): Your choice (current Gentoo minimum is 1.5 
+  gigabytes plus 256 megabytes swap space). Check to <B>Allocate all disk space 
+  now</B> if you want all the disk space to be pre-allocated. </LI></UL><A 
+name=Installing_Gentoo_Linux></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Installing Gentoo Linux" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=9">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Installing Gentoo Linux </SPAN></H2>
+<P>Basically you just follow the instructions in the <A class="external text" 
+title=http://www.gentoo.org/doc/en/handbook/index.xml 
+href="http://www.gentoo.org/doc/en/handbook/index.xml" rel=nofollow>Gentoo 
+Handbook</A> the same way you would install Gentoo normally. Here we outlined 
+the parts, to which you need to pay special attention. Please note that, since 
+VMWare uses SCSI-emulation for the hard drive, the name of your hard drive will 
+be <FONT style="FONT-FAMILY: monospace" color=green>/dev/sda</FONT> rather than 
+<FONT style="FONT-FAMILY: monospace" color=green>/dev/hda</FONT>. </P><A 
+name=Booting_LiveCD_Image></A>
+<H3><SPAN class=editsection>[<A title="Edit section: Booting LiveCD Image" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=10">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Booting LiveCD Image </SPAN></H3>
+<P>Assuming that you have already picked and downloaded a <A title=LiveCD 
+href="http://gentoo-wiki.com/LiveCD">LiveCD</A> image to use, you can now 
+connect CD-ROM device to the LiveCD image file. To do so, you can do the 
+following: </P>
+<OL>
+  <LI>Open up Virtual Machine Settings: <SPAN 
+  style="COLOR: #000000; BACKGROUND-COLOR: #f2f2f2"><TT>VM --&gt; 
+  Settings...</TT></SPAN> 
+  <LI>Select <SPAN style="COLOR: #000000; BACKGROUND-COLOR: #f2f2f2"><TT>CD-ROM 
+  1 (IDE 1:0)</TT></SPAN> from the device list. 
+  <LI>Check the <SPAN 
+  style="COLOR: #000000; BACKGROUND-COLOR: #f2f2f2"><TT>Connect at power 
+  on</TT></SPAN> check box. 
+  <LI>Select <SPAN style="COLOR: #000000; BACKGROUND-COLOR: #f2f2f2"><TT>Use ISO 
+  image</TT></SPAN>. 
+  <LI>Browse and choose the LiveCD image file you downloaded. 
+  <LI>Press <SPAN 
+  style="COLOR: #000000; BACKGROUND-COLOR: #f2f2f2"><TT>OK</TT></SPAN> to 
+  finalize the changes. </LI></OL>
+<P>Now start the virtual machine. Since there is no partition on the virtual 
+disk yet, your virtual machine should automatically boot from the CD-ROM drive. 
+Once the boot screen shows up prompting for kernel and boot options, press enter 
+for default boot. </P>
+<DIV 
+style="BORDER-RIGHT: #a0ffa0 1px solid; PADDING-RIGHT: 0.3em; BORDER-TOP: #a0ffa0 1px solid; PADDING-LEFT: 0.3em; FONT-SIZE: 92%; PADDING-BOTTOM: 0.2em; MARGIN: 0.2em; BORDER-LEFT: #a0ffa0 1px solid; PADDING-TOP: 0.2em; BORDER-BOTTOM: #a0ffa0 1px solid; BACKGROUND-COLOR: #c1ffc1"><B>Note:</B> 
+If you are running in bridged mode with a <B>static</B> IP on the host computer 
+you will need to run "dhcpcd eth0" at the command line in order to get 
+networking functionality.</DIV><A name=2.6.x_Kernel_Configuration></A>
+<H2><SPAN class=editsection>[<A title="Edit section: 2.6.x Kernel Configuration" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=11">edit</A>]</SPAN> 
+<SPAN class=mw-headline>2.6.x Kernel Configuration </SPAN></H2>
+<P>To start configuration: </P><PRE># cd /usr/src/linux
+# make menuconfig
+</PRE><A name=Finding_your_devices></A>
+<H3><SPAN class=editsection>[<A title="Edit section: Finding your devices" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=12">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Finding your devices </SPAN></H3>
+<P>If you want to be very sure about exactly what drives you need the best way 
+is to use some built-in utilities. While in the Gentoo setup chroot press Alt-F2 
+to switch to VC2 and type <FONT style="FONT-FAMILY: monospace" 
+color=green>lspci</FONT>. That command will tell you the particular devices 
+VMWare is using. Type <FONT style="FONT-FAMILY: monospace" 
+color=green>lsmod</FONT> to be very sure because it will tell you what modules 
+the liveCD used to boot up. </P><A name=Kernel_Options></A>
+<H3><SPAN class=editsection>[<A title="Edit section: Kernel Options" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=13">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Kernel Options </SPAN></H3>
+<P>These are specific options needed currently for most VMWare versions. 
+However, the safest way is to verify all of them with the previous "Finding your 
+Devices" step. </P><A name=VMWare_Tools></A>
+<H4><SPAN class=editsection>[<A title="Edit section: VMWare Tools" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=14">edit</A>]</SPAN> 
+<SPAN class=mw-headline>VMWare Tools </SPAN></H4>
+<P>VMware Tools uses <SPAN 
+style="COLOR: #000000; BACKGROUND-COLOR: #f2f2f2"><TT>Kernel Loadable 
+Module</TT></SPAN> support to load and unload its driver(s). </P>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: kernel loadable module support</FONT> 
+    </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Loadable module support  ---&gt;
+  [*] Enable loadable module support
+  [*]   Module unloading
+  [*]   Automatic kernel module loading
+</PRE></DIV></TD></TR></TBODY></TABLE><A name=Intel_PCI.2FISA_Bridge></A>
+<H4><SPAN class=editsection>[<A title="Edit section: Intel PCI/ISA Bridge" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=15">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Intel PCI/ISA Bridge </SPAN></H4>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: Intel PCI/ISA Bridge</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Bus options (PCI etc.) ---&gt;
+  [*] PCI Support
+  [*] ISA Support
+</PRE></DIV></TD></TR></TBODY></TABLE><A name=SCSI_Controller></A>
+<H4><SPAN class=editsection>[<A title="Edit section: SCSI Controller" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=16">edit</A>]</SPAN> 
+<SPAN class=mw-headline>SCSI Controller </SPAN></H4><A name=LSI_Logic></A>
+<H5><SPAN class=editsection>[<A title="Edit section: LSI Logic" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=17">edit</A>]</SPAN> 
+<SPAN class=mw-headline>LSI Logic </SPAN></H5>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: LSI Logic SCSI adapter</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Device Drivers  ---&gt;
+  Fusion MPT device support  ---&gt;
+     &lt;*&gt; Fusion MPT (base + ScsiHost) drivers
+     <B>OR</B>
+     &lt;*&gt; Fusion MPT ScsiHost drivers for SPI [kernel 2.6.13]
+</PRE><PRE>Device Drivers  ---&gt;
+  SCSI device support  ---&gt;
+     &lt;*&gt; SCSI device support
+     &lt;*&gt; SCSI disk support
+         SCSI low-level drivers  ---&gt;
+            &lt;*&gt; SYM53C8XX Version 2 SCSI support
+</PRE></DIV></TD></TR></TBODY></TABLE>
+<DIV 
+style="BORDER-RIGHT: #a0ffa0 1px solid; PADDING-RIGHT: 0.3em; BORDER-TOP: #a0ffa0 1px solid; PADDING-LEFT: 0.3em; FONT-SIZE: 92%; PADDING-BOTTOM: 0.2em; MARGIN: 0.2em; BORDER-LEFT: #a0ffa0 1px solid; PADDING-TOP: 0.2em; BORDER-BOTTOM: #a0ffa0 1px solid; BACKGROUND-COLOR: #c1ffc1"><B>Note:</B> 
+For VMware Server 1.03 (possibly other VMware Workstation products prior to 
+version 6) and kernel versions 2.6.21 and 2.6.22, there's a <A 
+class="external text" 
+title=http://www.vmware.com/community/message.jspa?messageID=663636 
+href="http://www.vmware.com/community/message.jspa?messageID=663636" 
+rel=nofollow>patch</A> for <FONT style="FONT-FAMILY: monospace" 
+color=green>mptbase.c</FONT> as described in the <A class="external text" 
+title=http://forums.gentoo.org/viewtopic-t-574096.html 
+href="http://forums.gentoo.org/viewtopic-t-574096.html" rel=nofollow>Gentoo 
+forums</A>.</DIV><A name=BusLogic></A>
+<H5><SPAN class=editsection>[<A title="Edit section: BusLogic" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=18">edit</A>]</SPAN> 
+<SPAN class=mw-headline>BusLogic </SPAN></H5>
+<P>By default, VMware virtual machines provide a BusLogic SCSI controller and a 
+SCSI hard drive. Your new kernel should have these device drivers for them: </P>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: BusLogic SCSI</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Device Drivers  ---&gt;
+  SCSI device support  ---&gt;
+     &lt;*&gt; SCSI device support
+     &lt;*&gt;   SCSI disk support
+           SCSI low-level drivers  ---&gt;
+              &lt;*&gt; BusLogic SCSI support
+</PRE></DIV></TD></TR></TBODY></TABLE><A name=CDROM></A>
+<H4><SPAN class=editsection>[<A title="Edit section: CDROM" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=19">edit</A>]</SPAN> 
+<SPAN class=mw-headline>CDROM </SPAN></H4>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: Intel PIIXn chipset and ISO9660 File 
+      System</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Device Drivers  ---&gt;
+  ATA/ATAPI/MFM/RLL support  ---&gt;
+     &lt;*&gt; Enhanced IDE/MFM/RLL disk/cdrom/tape/floppy support
+     &lt;*&gt;   Include IDE/ATAPI CDROM support
+     [*]   PCI IDE chipset support
+     [*]   Generic PCI bus-master DMA support
+     &lt;*&gt;     Intel PIIXn chipsets support
+</PRE><PRE>File systems  ---&gt;
+  CD-ROM/DVD Filesystems  ---&gt;
+    &lt;*&gt; ISO 9660 CDROM file system support
+    [*]   Microsoft Joliet CDROM extensions
+</PRE></DIV></TD></TR></TBODY></TABLE><A name=Network></A>
+<H4><SPAN class=editsection>[<A title="Edit section: Network" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=20">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Network </SPAN></H4>
+<P>You will need to enable the following to get basic packet and TCP/IP support. 
+</P>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: Network</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Networking   ---&gt;
+  [*] Networking support
+      Networking options  ---&gt;
+        &lt;*&gt; Packet socket
+        &lt;*&gt; Unix domain sockets
+        [*] TCP/IP networking
+</PRE></DIV></TD></TR></TBODY></TABLE><A name=Intel_EtherPro_Gigabit></A>
+<H5><SPAN class=editsection>[<A title="Edit section: Intel EtherPro Gigabit" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=21">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Intel EtherPro Gigabit </SPAN></H5>
+<P>VMWare Workstation 5.5 and 6.5 seem to use the e1000 Intel EtherPro Gigabit 
+driver. </P>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: Network</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Device Drivers  ---&gt;
+  Network Device support  ---&gt;
+     [*] Network device support
+           Ethernet (1000Mbit)  ---&gt;
+              [*] Intel(R) PRO/1000 Gigabit Ethernet support
+</PRE></DIV></TD></TR></TBODY></TABLE><A name=AMD_PCnet-PCI_II></A>
+<H5><SPAN class=editsection>[<A title="Edit section: AMD PCnet-PCI II" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=22">edit</A>]</SPAN> 
+<SPAN class=mw-headline>AMD PCnet-PCI II </SPAN></H5>
+<P>Other VMWare Workstations versions, such as Version 6, use AMD PCnet-PCI II 
+ethernet adaptor. </P>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: Network</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Device Drivers  ---&gt;
+  Network Device support  ---&gt;
+     [*] Network device support
+           Ethernet (10 or 100Mbit)  ---&gt;
+              [*] Ethernet (10 or 100Mbit)
+              [*] EISA, VLB, PCI and on board controllers
+              &lt;*&gt;   AMD PCnet32 PCI support
+</PRE></DIV></TD></TR></TBODY></TABLE><A name=Audio></A>
+<H4><SPAN class=editsection>[<A title="Edit section: Audio" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=23">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Audio </SPAN></H4>
+<P>VMware virtual machine emulates a Creative Labs Sound Blaster® AudioPCI 
+device. If you like to have sound in your virtual Gentoo Linux, you will need to 
+add support for it. </P>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: Sound</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Device Drivers  ---&gt;
+  Sound  ---&gt;
+     &lt;*&gt; Sound card support
+         Advanced Linux Sound Architecture  ---&gt;
+            &lt;*&gt; Advanced Linux Sound Architecture
+            &lt;*&gt; OSS Mixer API
+            &lt;*&gt; OSS PCM (digital audio) API
+                PCI devices  ---&gt;
+                   &lt;*&gt; (Creative) Ensoniq AudioPCI 1371/1373
+</PRE></DIV></TD></TR></TBODY></TABLE>
+<P>Please refer to <A class="external text" 
+title=http://www.gentoo.org/doc/en/alsa-guide.xml 
+href="http://www.gentoo.org/doc/en/alsa-guide.xml" rel=nofollow>Gentoo Linux 
+ALSA Guide</A> for more details on configuring ALSA sound support. </P><A 
+name=udev_Support></A>
+<H4><SPAN class=editsection>[<A title="Edit section: udev Support" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=24">edit</A>]</SPAN> 
+<SPAN class=mw-headline>udev Support </SPAN></H4>
+<P>These other things might be useful for <A class="external text" 
+title=http://www.gentoo.org/doc/en/udev-guide.xml 
+href="http://www.gentoo.org/doc/en/udev-guide.xml" rel=nofollow>udev</A>. </P>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: Miscellaneous Things</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>File Systems  ---&gt;
+  Pseudo filesystems  ---&gt;
+    &lt;*&gt; /proc file system support
+    &lt; &gt;   /proc/kcore support
+    &lt;*&gt;   Sysctl support (/proc/sys)
+    &lt;*&gt; sysfs file system support
+    &lt;*&gt; Virtual memory file system support (former shm fs)
+</PRE></DIV></TD></TR></TBODY></TABLE>
+<DIV 
+style="BORDER-RIGHT: #a0ffa0 1px solid; PADDING-RIGHT: 0.3em; BORDER-TOP: #a0ffa0 1px solid; PADDING-LEFT: 0.3em; FONT-SIZE: 92%; PADDING-BOTTOM: 0.2em; MARGIN: 0.2em; BORDER-LEFT: #a0ffa0 1px solid; PADDING-TOP: 0.2em; BORDER-BOTTOM: #a0ffa0 1px solid; BACKGROUND-COLOR: #c1ffc1"><B>Note:</B> 
+If your kernel has problems mounting udev, you may need to emerge <A class=extiw 
+title=ebuild:sys-apps/portage 
+href="http://gentoo-portage.com/Search?search=sys-apps/portage">sys-apps/portage</A>, 
+<A class=extiw title=ebuild:sys-fs/baselayout 
+href="http://gentoo-portage.com/Search?search=sys-fs/baselayout">sys-fs/baselayout</A>, 
+and <A class=extiw title=ebuild:sys-fs/udev 
+href="http://gentoo-portage.com/Search?search=sys-fs/udev">sys-fs/udev</A> to 
+their most current stable versions.</DIV><A name=Genkernel></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Genkernel" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=25">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Genkernel </SPAN></H2>
+<P>The latest vmware VM appears to use a different scsi driver which can lead to 
+problems. I used genkernel method (genkernel --menuconfig all) and set all the 
+above options. I found that /dev/sda3 could not be mounted as root device, i.e. 
+the kernel did not boot successfully. </P>
+<P>I found instructions in <A class="external text" 
+title=http://www.linuxforums.org/forum/gentoo-linux-help/12419-mounting-dev-sda3-root-device-problems.html 
+href="http://www.linuxforums.org/forum/gentoo-linux-help/12419-mounting-dev-sda3-root-device-problems.html" 
+rel=nofollow>mounting /dev/sda3 as root device problems</A>. </P>
+<P>In older versions of genkernel, it was necessary to add mptbase and mptscsih 
+to MODULES_SCSI in the x86 architecture's modules_load file (<FONT 
+style="FONT-FAMILY: monospace" 
+color=green>/usr/share/genkernel/x86/modules_load</FONT>) but that file now has 
+the correct entries. </P>
+<P>The kernel config of the Gentoo 2006.1 minimal boot disk (and presumably 
+earlier versions) has all the necessary options set to start drivers for CD-ROM 
+and network, so you can <FONT style="FONT-FAMILY: monospace" color=green>zcat 
+/proc/config.gz &gt;/usr/share/genkernel/x86/kernel-config-2.6</FONT> as the 
+Gentoo handbook says, however apparently it's still necessary to compile MPT 
+support into the kernel when you boot from a virtual SCSI disk in VMWare. </P>
+<TABLE 
+style="BORDER-RIGHT: #bfffbf 1px solid; BORDER-TOP: #bfffbf 1px solid; BORDER-LEFT: #bfffbf 1px solid; BORDER-BOTTOM: #bfffbf 1px solid; BACKGROUND-COLOR: #f2fff2" 
+cellSpacing=0 cellPadding=0 width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #a0ffa0 1px solid; BORDER-TOP: #a0ffa0 1px solid; BORDER-LEFT: #a0ffa0 1px solid; BORDER-BOTTOM: #888 1px solid; BACKGROUND-COLOR: #c1ffc1"><FONT 
+      size=-1><B>Code:</B> rerun genkernel as</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>genkernel --no-clean --no-mrproper --menuconfig --install all
+</PRE></DIV></TD></TR></TBODY></TABLE>
+<TABLE 
+style="BORDER-RIGHT: #7070ff 4px solid; BORDER-TOP: #7070ff 4px solid; MARGIN: 1em 0px; BORDER-LEFT: #7070ff 4px solid; BORDER-BOTTOM: #7070ff 4px solid; BACKGROUND-COLOR: #faebd7" 
+width="100%">
+  <TBODY>
+  <TR>
+    <TD 
+    style="BORDER-RIGHT: #0000ff 1px solid; BORDER-TOP: #0000ff 1px solid; BORDER-LEFT: #0000ff 1px solid; COLOR: #ffffff; BORDER-BOTTOM: #0000ff 1px solid; BACKGROUND-COLOR: #7070ff"><FONT 
+      size=-1>Linux Kernel Configuration: Compile Fusion MPT support into the 
+      kernel</FONT> </TD></TR>
+  <TR>
+    <TD>
+      <DIV class=scroll><PRE>Device Drivers  ---&gt;
+  Fusion MPT device support  ---&gt;
+     &lt;*&gt; Fusion MPT ScsiHost drivers for SPI
+</PRE></DIV></TD></TR></TBODY></TABLE><A name=Installing_VMware_Tools></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Installing VMware Tools" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=26">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Installing VMware Tools </SPAN></H2>
+<P>If you want to install VMware Tools, please see the <A 
+title="HOWTO Install VMware Tools in Gentoo" 
+href="http://gentoo-wiki.com/HOWTO_Install_VMware_Tools_in_Gentoo">Install 
+VMware Tools in Gentoo</A> article. </P>
+<DIV 
+style="BORDER-RIGHT: #a0ffa0 1px solid; PADDING-RIGHT: 0.3em; BORDER-TOP: #a0ffa0 1px solid; PADDING-LEFT: 0.3em; FONT-SIZE: 92%; PADDING-BOTTOM: 0.2em; MARGIN: 0.2em; BORDER-LEFT: #a0ffa0 1px solid; PADDING-TOP: 0.2em; BORDER-BOTTOM: #a0ffa0 1px solid; BACKGROUND-COLOR: #c1ffc1"><B>Note:</B> 
+Installing VMWare Tools is a pain and results may vary a lot between VMWare 
+products versions, I do recommend to use open-vm-tools in place, it is much more 
+easier.<BR>
+<P>For that, just do&nbsp;:<BR><B>emerge -av app-emulation/open-vm-tools</B> 
+<BR><B>rc-update add vmware-tools default</B><BR><BR>app-emulation/open-vm-tools 
+might be masked, just add it to your /etc/portage/package.keywords 
+file&nbsp;:<BR></P><B>echo "app-emulation/open-vm-tools" &gt;&gt; 
+/etc/portage/package.keywords</B></DIV><A name=Cloning_Your_Virtual_Machine></A>
+<H2><SPAN class=editsection>[<A 
+title="Edit section: Cloning Your Virtual Machine" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=27">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Cloning Your Virtual Machine </SPAN></H2>
+<P>When you make a copy of your virtual machine, either through the interface or 
+simply by copying the files, VMWare will detect this change and ask you if you'd 
+like to assign a new Unique ID to the new copy. If you choose 'not' to keep the 
+existing ID, but create a new one, VMWare will assign new unique IDs to hardware 
+such as the virtual network card's MAC address. If you have software that relies 
+on these IDs, you must be careful to update them as well. </P>
+<P>In particular, udev is confused by changing the MAC address on the card, and 
+won't be able to find the network interface (eth0) even though the driver loads 
+properly. See the udev documentation on how to update the files, or to modify 
+the udev scripts to handle this case. </P><A name=Troubleshooting></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Troubleshooting" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=28">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Troubleshooting </SPAN></H2><A 
+name=Kernel_timing_issues_in_2.6.x></A>
+<H3><SPAN class=editsection>[<A 
+title="Edit section: Kernel timing issues in 2.6.x" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=29">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Kernel timing issues in 2.6.x </SPAN></H3>
+<P>Timing code in Linux kernel 2.6.x were revised so much that it causes problem 
+when running inside VMware virtual machine. I have searched the Web, tried many 
+suggestions, and read the kernel source code. Yet so far I can't find a 
+satisfactory solution. If any body has been running kernel 2.6.x without timing 
+problem, please help provide a solution here. </P>
+<P>I think this has to do with the kernel itself. I just noticed suck errors 
+with 2.6.11 vivid sources. I do not recall this error in the 2.6.9 or 2.6.10 
+builds. </P>
+<P><I>I was running a 2.6 kernel before in VMware (and have been since 2.6.0 
+came out) but I've only resently noticed timing problems after following the 
+NPTL and Reiser4 HOWTOs (using the 2.6.10-mm1 kernel) Alas, I don't have a 
+solution, but I will be trying an older 2.6 to see if I still get the timing 
+issues.</I> </P>
+<P>Try this: <FONT style="FONT-FAMILY: monospace" 
+color=green>/usr/src/linux/include/asm-i386/param.h</FONT>: </P><PRE>   #define HZ 1000
+</PRE>
+<P>Change the value of HZ from 1000 to 100: </P><PRE>   #define HZ 100
+</PRE>
+<P>VMware has a <A class="external text" 
+title=http://www.vmware.com/support/kb/enduser/std_adp.php?p_faqid=1420 
+href="http://www.vmware.com/support/kb/enduser/std_adp.php?p_faqid=1420" 
+rel=nofollow>KB entry</A> on Linux guest timing problems. It mentions the above 
+"#define HZ 1000" timer interrupt rate fix—which is only for <I>slow</I> guest 
+clocks—as well as some fixes for Linux guest clocks that run too fast. </P>
+<P>VMware has also this <A class="external text" 
+title=http://www.vmware.com/support/kb/enduser/std_adp.php?p_sid=VLxROd7i&amp;p_lva=&amp;p_faqid=916&amp;p_created=1043790571&amp;p_sp=cF9zcmNoPSZwX2dyaWRzb3J0PWZhcXMuZmFxX2lkJnBfcm93X2NudD0xMjgxJnBfcGFnZT0xMw**&amp;p_li= 
+href="http://www.vmware.com/support/kb/enduser/std_adp.php?p_sid=VLxROd7i&amp;p_lva=&amp;p_faqid=916&amp;p_created=1043790571&amp;p_sp=cF9zcmNoPSZwX2dyaWRzb3J0PWZhcXMuZmFxX2lkJnBfcm93X2NudD0xMjgxJnBfcGFnZT0xMw**&amp;p_li=" 
+rel=nofollow>entry</A> </P>
+<P>Another problem that you can encounter is when the hosts hardware has a power 
+saving mode that changes the physical cpu's clock speed. The fix for this 
+problem can be found here: <A class="external text" 
+title=http://kb.vmware.com/selfservice/dynamickc.do?externalId=1227&amp;sliceId=1&amp;command=show&amp;forward=nonthreadedKC&amp;kcId=1227 
+href="http://kb.vmware.com/selfservice/dynamickc.do?externalId=1227&amp;sliceId=1&amp;command=show&amp;forward=nonthreadedKC&amp;kcId=1227" 
+rel=nofollow>Host Power Management Causes Problems with Guest Timekeeping</A> 
+</P>
+<P><BR>2006-12-10: also can try the "vmw" program here: <A 
+class="external autonumber" 
+title=http://chitchat.at.infoseek.co.jp/vmware/vmtools.html#vmw 
+href="http://chitchat.at.infoseek.co.jp/vmware/vmtools.html#vmw" 
+rel=nofollow>[1]</A>. </P><A name=Timing_issues_fix_on_ESX_server></A>
+<H4><SPAN class=editsection>[<A 
+title="Edit section: Timing issues fix on ESX server" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=30">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Timing issues fix on ESX server </SPAN></H4>
+<DIV class="thumb tright">
+<DIV class=thumbinner style="WIDTH: 182px"><A class=image title=Options.png 
+href="http://gentoo-wiki.com/Image:Options.png"><IMG class=thumbimage height=109 
+alt="" src="HOWTO Install Gentoo on VMware.files/180px-Options.png" width=180 
+border=0></A> 
+<DIV class=thumbcaption>
+<DIV class=magnify><A class=internal title=Enlarge 
+href="http://gentoo-wiki.com/Image:Options.png"><IMG height=11 alt="" 
+src="HOWTO Install Gentoo on VMware.files/magnify-clip.png" 
+width=15></A></DIV></DIV></DIV></DIV>
+<DIV class="thumb tright">
+<DIV class=thumbinner style="WIDTH: 182px"><A class=image 
+title=AdvancedSettings.png 
+href="http://gentoo-wiki.com/Image:AdvancedSettings.png"><IMG class=thumbimage 
+height=188 alt="" 
+src="HOWTO Install Gentoo on VMware.files/180px-AdvancedSettings.png" width=180 
+border=0></A> 
+<DIV class=thumbcaption>
+<DIV class=magnify><A class=internal title=Enlarge 
+href="http://gentoo-wiki.com/Image:AdvancedSettings.png"><IMG height=11 alt="" 
+src="HOWTO Install Gentoo on VMware.files/magnify-clip.png" 
+width=15></A></DIV></DIV></DIV></DIV>
+<P>Originally I fixed this with a ntp client. Kind of a kludge but it worked. 
+Eventually I got annoyed enough to locate a <A class="external text" 
+title=http://www.vmware.com/support/kb/enduser/std_adp.php?p_sid=VtxjyIIh&amp;p_lva=&amp;p_faqid=1518&amp;p_created=1103240819&amp;p_sp=cF9zcmNoPTEmcF9ncmlkc29ydD0mcF9yb3dfY250PTEmcF9zZWFyY2hfdGV4dD0zMzMmcF9zZWFyY2hfdHlwZT03JnBfcHJvZF9sdmwxPX5hbnl_JnBfcHJvZF9sdmwyPX5hbnl_JnBfc29ydF9ieT1kZmx0JnBfcGFnZT0x&amp;p_li= 
+href="http://www.vmware.com/support/kb/enduser/std_adp.php?p_sid=VtxjyIIh&amp;p_lva=&amp;p_faqid=1518&amp;p_created=1103240819&amp;p_sp=cF9zcmNoPTEmcF9ncmlkc29ydD0mcF9yb3dfY250PTEmcF9zZWFyY2hfdGV4dD0zMzMmcF9zZWFyY2hfdHlwZT03JnBfcHJvZF9sdmwxPX5hbnl_JnBfcHJvZF9sdmwyPX5hbnl_JnBfc29ydF9ieT1kZmx0JnBfcGFnZT0x&amp;p_li=" 
+rel=nofollow>KB entry</A> that deals with this. Here is how to fix this: From 
+the main page select the "Options" tab. Then select "Advanced Settings" from the 
+right column. </P>
+<P>The real timer hardware is set by default to deliver a maximum of 1000 clock 
+interrupts per second per CPU. Here you'll want to lower this to alow it to keep 
+up with the resolution of the 2.6 clock cycle. Set Misc.TimerHardPeriod to 333. 
+<BR clear=all></P><A name=Interface_eth0_does_not_exist></A>
+<H4><SPAN class=editsection>[<A 
+title="Edit section: Interface eth0 does not exist" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=31">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Interface eth0 does not exist </SPAN></H4>
+<P>If you have copied / downloaded / moved a gentoo vmware, and you no longer 
+have eth0 it will most likely have moved to eth1 if you do a ifconfig -a. This 
+is because of udev and your mac address changing. </P>
+<P>Please see here: <A class="external free" 
+title=http://yoopergeek.blogspot.com/2007/07/vmware-loosing-eth0-after-youve-copied.html 
+href="http://yoopergeek.blogspot.com/2007/07/vmware-loosing-eth0-after-youve-copied.html" 
+rel=nofollow>http://yoopergeek.blogspot.com/2007/07/vmware-loosing-eth0-after-youve-copied.html</A> 
+</P>
+<P>The relevant file is /etc/udev/rules.d/70-persistent-net.rules, update it 
+with the correct mac address (or delete and reboot). </P>
+<P><BR></P><A name=Further_troubleshooting></A>
+<H3><SPAN class=editsection>[<A title="Edit section: Further troubleshooting" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=32">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Further troubleshooting </SPAN></H3>
+<P>If there are further issues, please view the <A class=mw-redirect 
+title="Talk:HOWTO Install Gentoo on VMware in Windows NT/2K/XP" 
+href="http://gentoo-wiki.com/Talk:HOWTO_Install_Gentoo_on_VMware_in_Windows_NT/2K/XP">talk 
+page</A> - this has further information that was removed from the guide. </P><A 
+name=VMware_Community_Virtual_Machines></A>
+<H2><SPAN class=editsection>[<A 
+title="Edit section: VMware Community Virtual Machines" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=33">edit</A>]</SPAN> 
+<SPAN class=mw-headline>VMware Community Virtual Machines </SPAN></H2>
+<P>It would be great to get 1 or more prebuilt Gentoo VM's hosted somewhere and 
+availble through the <A class="external text" 
+title=http://www.vmware.com/vmtn/vm/community.html 
+href="http://www.vmware.com/vmtn/vm/community.html" rel=nofollow>VMware 
+Community Virtual Machines</A> (link broken) site. This would expose Gentoo to 
+an even wider audience. </P><A name=Downloadable_VMs></A>
+<H2><SPAN class=editsection>[<A title="Edit section: Downloadable VMs" 
+href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit&amp;section=34">edit</A>]</SPAN> 
+<SPAN class=mw-headline>Downloadable VMs </SPAN></H2>
+<P>Currently there is this torrent available: <A class="external text" 
+title=http://gentoovm.blogspot.com/ href="http://gentoovm.blogspot.com/" 
+rel=nofollow>Gentoo in a VM</A> It's a base install without desktop. Password 
+for root is 'gentoo'. </P>
+<P>There is also 2007.0 at <A class="external text" 
+title=http://www.gentoovm.com/ href="http://www.gentoovm.com/" 
+rel=nofollow>GentooVM.com</A>. </P>
+<P>Gentoo 2006.1 VMware image with http download: <A class="external free" 
+title=http://www.cs.wisc.edu/~vladimir/gentoo.html 
+href="http://www.cs.wisc.edu/~vladimir/gentoo.html" 
+rel=nofollow>http://www.cs.wisc.edu/~vladimir/gentoo.html</A> </P>
+<P>Released a full Gentoo 2007.0 (codename 'Secret Sauce') at <A 
+class="external text" title=http://www.vmware.com/vmtn/appliances/directory/868 
+href="http://www.vmware.com/vmtn/appliances/directory/868" rel=nofollow>VMware 
+Appliances</A>. The appliance has the latest VMwareTools 6.0.0-45731 installed 
+so drag'n drop, cut'n paste between guest/host works. Download the compressed 
+RAR via http here: <A class="external text" title=http://www.bagside.com/bagvapp 
+href="http://www.bagside.com/bagvapp" rel=nofollow>bagside</A>. </P>
+<P><A class="external text" title=http://www.gentoo-vm.net/ 
+href="http://www.gentoo-vm.net/" rel=nofollow>Gentoo-VM.net</A> is at 2007.1, 
+and updated December 9, 2007. </P>
+<HR>
+<!-- 
+NewPP limit report
+Preprocessor node count: 272/1000000
+Post-expand include size: 10740/2097152 bytes
+Template argument size: 4589/2097152 bytes
+--><!-- Saved in parser cache with key wiki_en:pcache:idhash:10974-0!1!0!!en!2 and timestamp 20080629150438 -->
+<DIV class=printfooter>Retrieved from "<A 
+href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware">http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware</A>"</DIV>
+<SCRIPT type=text/javascript><!--
+google_ad_client = "pub-3996301520685260";
+google_ad_width = 300;
+google_ad_height = 250;
+google_ad_format = "300x250_as";
+google_ad_type = "text_image";
+//2007-10-16: rectangle
+google_ad_channel = "4765080522";
+google_ui_features = "rc:10";
+//-->
+</SCRIPT>
+
+<SCRIPT src="HOWTO Install Gentoo on VMware.files/show_ads.js" 
+type=text/javascript>
+</SCRIPT>
+
+<DIV class=catlinks id=catlinks>
+<DIV id=mw-normal-catlinks><A title=Special:Categories 
+href="http://gentoo-wiki.com/Special:Categories">Categories</A>: <SPAN 
+dir=ltr><A title=Category:Installation 
+href="http://gentoo-wiki.com/Category:Installation">Installation</A></SPAN> | 
+<SPAN dir=ltr><A title=Category:VMware 
+href="http://gentoo-wiki.com/Category:VMware">VMware</A></SPAN></DIV><BR>
+<HR>
+<A title="Category:Browse categories" 
+href="http://gentoo-wiki.com/Category:Browse_categories">Browse categories</A> 
+&gt; <A title=Category:Installation 
+href="http://gentoo-wiki.com/Category:Installation">Installation</A><BR><A 
+title="Category:Browse categories" 
+href="http://gentoo-wiki.com/Category:Browse_categories">Browse categories</A> 
+&gt; <A title=Category:Virtualization 
+href="http://gentoo-wiki.com/Category:Virtualization">Virtualization</A> &gt; <A 
+title=Category:VMware 
+href="http://gentoo-wiki.com/Category:VMware">VMware</A></DIV><!-- end content -->
+<DIV class=visualClear></DIV></DIV></DIV></DIV>
+<DIV id=column-one>
+<DIV class=portlet id=p-cactions>
+<H5>Views</H5>
+<DIV class=pBody>
+<UL>
+  <LI class=selected id=ca-nstab-main><A title="View the content page [c]" 
+  accessKey=c 
+  href="http://gentoo-wiki.com/HOWTO_Install_Gentoo_on_VMware">Page</A> 
+  <LI id=ca-talk><A title="Discussion about the content page [t]" accessKey=t 
+  href="http://gentoo-wiki.com/Talk:HOWTO_Install_Gentoo_on_VMware">Discussion 
+  and Bugs</A> 
+  <LI id=ca-edit><A 
+  title="You can edit this page. Please use the preview button before saving. [e]" 
+  accessKey=e 
+  href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=edit">Edit 
+  This Page</A> 
+  <LI id=ca-history><A title="Past versions of this page. [h]" accessKey=h 
+  href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;action=history">History</A> 
+  </LI></UL></DIV></DIV>
+<DIV class=portlet id=p-personal>
+<H5>Personal tools</H5>
+<DIV class=pBody>
+<UL>
+  <LI id=pt-login><A 
+  title="You are encouraged to log in, it is not mandatory however. [o]" 
+  accessKey=o 
+  href="http://gentoo-wiki.com/index.php?title=Special:Userlogin&amp;returnto=HOWTO_Install_Gentoo_on_VMware">Log 
+  in / create account</A> </LI></UL></DIV></DIV>
+<DIV class=portlet id=p-logo><A title="Visit the Main Page [z]" 
+style="BACKGROUND-IMAGE: url(/images/wiki.png)" accessKey=z 
+href="http://gentoo-wiki.com/Main_Page"></A></DIV>
+<SCRIPT type=text/javascript> if (window.isMSIE55) fixalpha(); </SCRIPT>
+
+<DIV class=portlet id=p-navigation>
+<H5>Navigation</H5>
+<DIV class=pBody>
+<UL>
+  <LI id=n-mainpage><A title="Visit the Main Page [z]" accessKey=z 
+  href="http://gentoo-wiki.com/Main_Page">Main Page</A> 
+  <LI id=n-currentevents><A 
+  title="Find background information on current events" 
+  href="http://gentoo-wiki.com/News">Wiki News</A> 
+  <LI id=n-recentchanges><A title="The list of recent changes in the wiki. [r]" 
+  accessKey=r href="http://gentoo-wiki.com/Special:Recentchanges">Recent 
+  changes</A> 
+  <LI id=n-randompage><A title="Load a random page [x]" accessKey=x 
+  href="http://gentoo-wiki.com/Special:Random">Random page</A> 
+  <LI id=n-help><A title="The place to find out." 
+  href="http://gentoo-wiki.com/Help:Contents">Help</A> </LI></UL></DIV></DIV>
+<DIV class=portlet id=p-search>
+<H5><LABEL for=searchInput>Search</LABEL></H5>
+<DIV class=pBody id=searchBody>
+<FORM id=searchform action=/Special:Search>
+<DIV><INPUT id=searchInput title="Search Gentoo Linux Wiki [f]" accessKey=f 
+name=search> <INPUT class=searchButton id=searchGoButton title="Go to a page with this exact name if exists" type=submit value=Go name=go>&nbsp; 
+<INPUT class=searchButton id=mw-searchButton title="Search the pages for this text" type=submit value=Search name=fulltext> 
+</DIV></FORM></DIV></DIV>
+<DIV class=portlet id=p-ib>
+<H5>Indexes</H5>
+<DIV class=pBody>
+<UL>
+  <LI><A title=Index:HOWTO href="http://gentoo-wiki.com/Index:HOWTO">HOWTO 
+  Index</A> 
+  <LI><A title=Index:TIP href="http://gentoo-wiki.com/Index:TIP">Tips &amp; 
+  Tricks</A> 
+  <LI><A title=Index:MAN href="http://gentoo-wiki.com/Index:MAN">MAN Pages</A> 
+  <LI><A title=Index:Hardware 
+  href="http://gentoo-wiki.com/Index:Hardware">Hardware</A> 
+  <LI><A title=Index:Security 
+  href="http://gentoo-wiki.com/Index:Security">Security</A> 
+  <LI><A title=Index:FAQ href="http://gentoo-wiki.com/Index:FAQ">FAQ</A> 
+  <LI><A title=Index:Screenshots 
+  href="http://gentoo-wiki.com/Index:Screenshots">Screenshots</A> 
+  <LI><A title=Index:Misc href="http://gentoo-wiki.com/Index:Misc">Misc</A> 
+  <LI><A title=Index:Index href="http://gentoo-wiki.com/Index:Index">Other 
+  Indexes</A> </LI></UL>
+<HR>
+
+<UL>
+  <LI><A title=Help:Contents href="http://gentoo-wiki.com/Help:Contents">Wiki 
+  Pages</A> 
+  <LI><A class=mw-redirect title=Wanted 
+  href="http://gentoo-wiki.com/Wanted">Wanted Articles</A> 
+  <LI><A title=Special:Categories 
+  href="http://gentoo-wiki.com/Special:Categories">Categories</A> 
+</LI></UL></DIV></DIV>
+<DIV class=portlet id=p-tb>
+<H5>Toolbox</H5>
+<DIV class=pBody>
+<UL>
+  <LI id=t-whatlinkshere><A title="List of all wiki pages that link here [j]" 
+  accessKey=j 
+  href="http://gentoo-wiki.com/Special:Whatlinkshere/HOWTO_Install_Gentoo_on_VMware">What 
+  links here</A> 
+  <LI id=t-recentchangeslinked><A 
+  title="Recent changes in pages linked from this page [k]" accessKey=k 
+  href="http://gentoo-wiki.com/Special:Recentchangeslinked/HOWTO_Install_Gentoo_on_VMware">Related 
+  changes</A> 
+  <LI id=t-upload><A title="Upload files [u]" accessKey=u 
+  href="http://gentoo-wiki.com/Special:Upload">Upload file</A> 
+  <LI id=t-specialpages><A title="List of all special pages [q]" accessKey=q 
+  href="http://gentoo-wiki.com/Special:Specialpages">Special pages</A> 
+  <LI id=t-print><A title="Printable version of this page [p]" accessKey=p 
+  href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;printable=yes">Printable 
+  version</A> 
+  <LI id=t-permalink><A title="Permanent link to this version of the page" 
+  href="http://gentoo-wiki.com/index.php?title=HOWTO_Install_Gentoo_on_VMware&amp;oldid=132663">Permanent 
+  link</A> </LI></UL></DIV></DIV>
+<DIV class=portlet id=p-lang>
+<H5>In other languages</H5>
+<DIV class=pBody>
+<UL>
+  <LI class=interwiki-de><A 
+  href="http://de.gentoo-wiki.com/Gentoo_in_VMware">Deutsch</A> 
+  <LI class=interwiki-fr><A 
+  href="http://fr.gentoo-wiki.com/HOWTO_Installer_Gentoo_sur_VMWare_depuis_WindowsNT">Français</A> 
+
+  <LI class=interwiki-nl><A 
+  href="http://nl.gentoo-wiki.com/HOWTO_Installeer_Gentoo_op_VMware_4_in_Windows_NT/2K/XP">Nederlands</A> 
+  </LI></UL></DIV></DIV></DIV><!-- end of the left (by default at least) column -->
+<DIV class=visualClear></DIV>
+<DIV id=footer>
+<DIV id=f-poweredbyico><A href="http://www.mediawiki.org/"><IMG 
+alt="Powered by MediaWiki" 
+src="HOWTO Install Gentoo on VMware.files/poweredby_mediawiki_88x31.png"></A></DIV>
+<UL id=f-list>
+  <LI id=lastmod>This page was last modified 08:26, 13 May 2008. 
+  <LI id=viewcount>This page has been accessed 13,495 times. 
+  <LI id=privacy><A title="Gentoo Linux Wiki:Privacy policy" 
+  href="http://gentoo-wiki.com/Gentoo_Linux_Wiki:Privacy_policy">Privacy 
+  policy</A> 
+  <LI id=about><A title="Gentoo Linux Wiki:About" 
+  href="http://gentoo-wiki.com/Gentoo_Linux_Wiki:About">About Gentoo Linux 
+  Wiki</A> 
+  <LI id=disclaimer><A title="Gentoo Linux Wiki:General disclaimer" 
+  href="http://gentoo-wiki.com/Gentoo_Linux_Wiki:General_disclaimer">Disclaimers</A> 
+  </LI></UL></DIV>
+<SCRIPT type=text/javascript>if (window.runOnloadHook) runOnloadHook();</SCRIPT>
+</DIV><!-- Served in 0.226 secs. -->
+<SCRIPT type=text/javascript>
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</SCRIPT>
+
+<SCRIPT type=text/javascript>
+var pageTracker = _gat._getTracker("UA-1984894-7");
+pageTracker._initData();
+pageTracker._trackPageview();
+</SCRIPT>
+</BODY></HTML>

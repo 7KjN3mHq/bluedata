@@ -1,0 +1,267 @@
+BODY {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; FONT-SIZE: 0.8em; BACKGROUND: white; PADDING-BOTTOM: 0px; COLOR: black; PADDING-TOP: 0px; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.dochead {
+	MARGIN-TOP: 1.5em; FONT-WEIGHT: bold; FONT-SIZE: 1.7em
+}
+.chaphead {
+	FONT-WEIGHT: bold; FONT-SIZE: 1.3em
+}
+DT {
+	FONT-WEIGHT: bold
+}
+.chapnum {
+	FONT-SIZE: 0.85em
+}
+.secthead {
+	FONT-WEIGHT: bold; FONT-SIZE: 1.1em; BACKGROUND: white; COLOR: #5a3aca; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.subsecthead {
+	FONT-WEIGHT: bold; FONT-SIZE: 1em; BACKGROUND: white; COLOR: #7a5ada; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+A.highlight:link {
+	COLOR: #00ff00; TEXT-DECORATION: none
+}
+A.highlight:visited {
+	COLOR: #00ff00; TEXT-DECORATION: none
+}
+A.highlight:hover {
+	COLOR: #00ff00; TEXT-DECORATION: underline
+}
+A.highlight:active {
+	COLOR: #00ff00; TEXT-DECORATION: underline
+}
+A.menulink:link {
+	COLOR: #a0a0f0; TEXT-DECORATION: none
+}
+A.menulink:visited {
+	COLOR: #a0a0f0; TEXT-DECORATION: none
+}
+A.menulink:hover {
+	COLOR: #00ff00; TEXT-DECORATION: underline
+}
+A.menulink:active {
+	COLOR: #00ff00; TEXT-DECORATION: underline
+}
+A.altlink:link {
+	COLOR: #7a5ada; TEXT-DECORATION: none
+}
+A.altlink:visited {
+	COLOR: #5a3aba; TEXT-DECORATION: none
+}
+A.altlink:hover {
+	COLOR: #7a5ada; TEXT-DECORATION: underline
+}
+A.altlink:active {
+	COLOR: #7a5ada; TEXT-DECORATION: underline
+}
+A:link {
+	COLOR: #0000ff
+}
+A:visited {
+	COLOR: #52188c
+}
+A IMG {
+	VERTICAL-ALIGN: text-bottom; BORDER-TOP-STYLE: none; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; TEXT-DECORATION: none; BORDER-BOTTOM-STYLE: none
+}
+.menu {
+	PADDING-RIGHT: 1em; PADDING-LEFT: 1em; FONT-WEIGHT: bold; FONT-SIZE: 1em; MARGIN-BOTTOM: 0px; PADDING-BOTTOM: 0.5em; COLOR: #ffffff; LINE-HEIGHT: 1.6em; PADDING-TOP: 0.5em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+LI {
+	MARGIN-BOTTOM: 5px
+}
+OL {
+	MARGIN-TOP: 5px
+}
+UL {
+	MARGIN-TOP: 5px
+}
+.altmenu {
+	PADDING-RIGHT: 1em; MARGIN-TOP: 0px; PADDING-LEFT: 1em; FONT-WEIGHT: bold; FONT-SIZE: 0.85em; MARGIN-BOTTOM: 0px; COLOR: #000000; LINE-HEIGHT: 1.4em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.alttext {
+	MARGIN-TOP: 0px; FONT-SIZE: 0.85em; MARGIN-BOTTOM: 0px; COLOR: #000000; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.infotab {
+	PADDING-RIGHT: 0.5em; MARGIN-TOP: 1em; PADDING-LEFT: 0.5em; MARGIN-BOTTOM: 1em; PADDING-BOTTOM: 0.5em; MARGIN-LEFT: 1em; PADDING-TOP: 0.5em
+}
+.codetitle {
+	PADDING-RIGHT: 0.25em; MARGIN-TOP: 0px; PADDING-LEFT: 0.25em; FONT-WEIGHT: bold; FONT-SIZE: 0.9em; MARGIN-BOTTOM: 0px; PADDING-BOTTOM: 0.25em; MARGIN-LEFT: 1em; COLOR: #ffffff; PADDING-TOP: 0.25em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.infohead {
+	PADDING-RIGHT: 1em; PADDING-LEFT: 1em; FONT-WEIGHT: bold; FONT-SIZE: 0.8em; PADDING-BOTTOM: 0.2em; MARGIN-LEFT: 1em; COLOR: #ffffff; PADDING-TOP: 0.2em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica; BACKGROUND-COLOR: #7a5ada
+}
+.infosub {
+	PADDING-RIGHT: 0em; PADDING-LEFT: 0em; FONT-WEIGHT: bold; PADDING-BOTTOM: 0em; MARGIN: 0.25em 0.5em 0.15em 0em; PADDING-TOP: 0em
+}
+.infolist {
+	PADDING-RIGHT: 0em; PADDING-LEFT: 0em; PADDING-BOTTOM: 0em; MARGIN: 0.05em 0.5em 0.05em 1em; PADDING-TOP: 0.3em
+}
+.infogfx {
+	PADDING-RIGHT: 0em; PADDING-LEFT: 0em; PADDING-BOTTOM: 0em; PADDING-TOP: 0em
+}
+.infotext {
+	FONT-SIZE: 0.85em; MARGIN-LEFT: 1.5em; COLOR: #320f61; MARGIN-RIGHT: 1.5em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.copyright {
+	FONT-SIZE: 0.85em; MARGIN: 2em 2em 0.4em; COLOR: #404040; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica; TEXT-ALIGN: center
+}
+.copyright A:link {
+	COLOR: #404040; TEXT-DECORATION: underline
+}
+.copyright A:visited {
+	COLOR: #404040; TEXT-DECORATION: underline
+}
+.copyright A:hover {
+	COLOR: #4040f0; TEXT-DECORATION: underline
+}
+.subhead {
+	FONT-WEIGHT: bold; FONT-SIZE: 1.2em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.content {
+	PADDING-RIGHT: 1em; PADDING-LEFT: 1em; FONT-SIZE: 1em; PADDING-TOP: 0em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.ntable {
+	PADDING-RIGHT: 0em; MARGIN-TOP: 0.5em; PADDING-LEFT: 0em; MARGIN-BOTTOM: 0.5em; PADDING-BOTTOM: 0em; PADDING-TOP: 0em
+}
+.ncontent {
+	PADDING-RIGHT: 0em; MARGIN-TOP: 0.5em; PADDING-LEFT: 0em; FONT-SIZE: 0.9em; MARGIN-BOTTOM: 0.5em; PADDING-BOTTOM: 0em; PADDING-TOP: 0em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+PRE {
+	PADDING-RIGHT: 0.5em; MARGIN-TOP: 0px; PADDING-LEFT: 0.5em; FONT-SIZE: 0.9em; MARGIN-BOTTOM: 0px; PADDING-BOTTOM: 0.5em; OVERFLOW: auto; COLOR: #000000; PADDING-TOP: 0.5em; FONT-FAMILY: monospace, "Courier New"
+}
+.news {
+	PADDING-RIGHT: 1em; PADDING-LEFT: 1em; FONT-SIZE: 1em; MARGIN: 10px; COLOR: black; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica; BACKGROUND-COLOR: white; TEXT-ALIGN: justify
+}
+.newsicon {
+	FLOAT: left; MARGIN-BOTTOM: 8px; MARGIN-RIGHT: 12px
+}
+.newshead {
+	CLEAR: both; PADDING-RIGHT: 1em; PADDING-LEFT: 1em; PADDING-BOTTOM: 0.4em; COLOR: white; PADDING-TOP: 0.4em; BACKGROUND-COLOR: #7a5ada; TEXT-ALIGN: left
+}
+.newsitem {
+	TEXT-ALIGN: justify
+}
+.spacer {
+	CLEAR: both
+}
+.code-input {
+	COLOR: #0000c8
+}
+.code-comment {
+	COLOR: #d80000
+}
+.code-constant {
+	COLOR: #f000f0
+}
+.code-identifier {
+	COLOR: #209090
+}
+.code-statement {
+	COLOR: #982424
+}
+.code-variable {
+	COLOR: #b89b1c
+}
+.code-keyword {
+	COLOR: #0c680c
+}
+.code {
+	FONT-SIZE: 1em; COLOR: #0000c8; FONT-FAMILY: monospace, "Courier New"
+}
+.path {
+	FONT-SIZE: 1em; FONT-FAMILY: monospace, "Courier New"
+}
+.emphasis {
+	FONT-STYLE: italic
+}
+.missing-value {
+	FONT-WEIGHT: lighter; COLOR: #a06060; FONT-STYLE: italic; TEXT-DECORATION: line-through
+}
+P.note {
+	PADDING-RIGHT: 0.5em; MARGIN-TOP: 0px; PADDING-LEFT: 0.5em; MARGIN-BOTTOM: 0px; PADDING-BOTTOM: 0.5em; PADDING-TOP: 0.5em
+}
+P.impo {
+	PADDING-RIGHT: 0.5em; MARGIN-TOP: 0px; PADDING-LEFT: 0.5em; PADDING-BOTTOM: 0.5em; PADDING-TOP: 0.5em
+}
+P.warn {
+	PADDING-RIGHT: 0.5em; MARGIN-TOP: 0px; PADDING-LEFT: 0.5em; PADDING-BOTTOM: 0.5em; PADDING-TOP: 0.5em
+}
+P.epigraph {
+	MARGIN: 1em 15% 1em 4em; FONT-STYLE: italic; TEXT-ALIGN: justify
+}
+P.epigraph BR {
+	LINE-HEIGHT: 0.8em
+}
+SPAN.episig {
+	FONT-STYLE: normal
+}
+SUP {
+	FONT-SIZE: xx-small
+}
+SUB {
+	FONT-SIZE: xx-small
+}
+.contentbox {
+	PADDING-RIGHT: 0.8em; PADDING-LEFT: 0.8em; PADDING-BOTTOM: 0.8em; MARGIN: 2% 5%; PADDING-TOP: 0.8em
+}
+.logobg {
+	BACKGROUND: #45347b
+}
+.top {
+	PADDING-RIGHT: 0em; PADDING-LEFT: 0em; FONT-SIZE: 0.85em; BACKGROUND: black; PADDING-BOTTOM: 0em; MARGIN: 0em; COLOR: #c0c0c0; PADDING-TOP: 0em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.topnews {
+	BACKGROUND: #5f4e4e; COLOR: white
+}
+.tophead {
+	FONT-WEIGHT: bold; MARGIN: 0em; COLOR: #a7f3fe
+}
+.tableinfo {
+	PADDING-RIGHT: 1em; PADDING-LEFT: 1em; FONT-WEIGHT: bold; FONT-SIZE: 0.75em; BACKGROUND: #ddddff; PADDING-BOTTOM: 0.2em; VERTICAL-ALIGN: top; PADDING-TOP: 0.2em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.toptext {
+	MARGIN-BOTTOM: 7px; COLOR: #ffffff
+}
+.toptext A:hover {
+	COLOR: #00ff00
+}
+.toptext A:link {
+	COLOR: #00dd00; FONT-STYLE: normal
+}
+.bartext {
+	PADDING-RIGHT: 0em; PADDING-LEFT: 0em; FONT-SIZE: 0.8em; PADDING-BOTTOM: 0em; COLOR: #40ff00; PADDING-TOP: 0em; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.docs-index {
+	BORDER-RIGHT: white 3px solid; BORDER-TOP: white 3px solid; MARGIN: 0em 0em 0em 20px; BORDER-LEFT: white 3px solid; LINE-HEIGHT: 1.25em; BORDER-BOTTOM: white 3px solid; FONT-FAMILY: sans-serif, Verdana, Arial, Helvetica
+}
+.docs-index .emphasis {
+	FONT-WEIGHT: bold; FONT-STYLE: normal
+}
+.topsep {
+	BORDER-TOP: black 1px solid; PADDING-TOP: 0.5em
+}
+.topsep IMG {
+	MARGIN-BOTTOM: 8px
+}
+.topsep FORM {
+	MARGIN-BOTTOM: 0px
+}
+#devlinks {
+	FONT-SIZE: smaller
+}
+#devlinks TR {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; BORDER-TOP-STYLE: none; PADDING-TOP: 0px; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+#devlinks TD {
+	PADDING-RIGHT: 4px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; BORDER-TOP-STYLE: none; PADDING-TOP: 0px; BORDER-RIGHT-STYLE: none; BORDER-LEFT-STYLE: none; BORDER-BOTTOM-STYLE: none
+}
+#devlinks A {
+	TEXT-DECORATION: none
+}
+#devlinks A:hover {
+	COLOR: #c02020
+}
+TD.leftmenu P.altmenu A.altlink:unknown {
+	COLOR: #301060; content: "??"
+}
