@@ -1,0 +1,21 @@
+emerge --pretend --verbose mysql
+
+echo "dev-db/mysql -berkdb -perl -ssl" >> /etc/portage/package.use
+
+emerge mysql
+
+emerge --config =dev-db/mysql-5.0.54
+
+vi /etc/mysql/my.cnf
+
+/etc/init.d/mysql start
+
+rc-update add mysql default
+
+emerge --unmerge ssmtp
+echo "mail-mta/ssmtp" >> /etc/portage/package.mask
+
+
+tar xjvf ispcp-omega-1.0.0-rc5.tar.bz2
+cd ispcp-omega-1.0.0
+emerge -ua `cat ./docs/Gentoo/gentoo-packages`

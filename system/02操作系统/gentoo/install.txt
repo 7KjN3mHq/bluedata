@@ -130,94 +130,341 @@ emerge gentoo-sources
 cd /usr/src/linux
 make menuconfig
 
-General setup
- - Prompt for development and/or incomplete code/drivers      
 
-Enable loadable module support
- + Module unloading
- + Automatic kernel module loading
+        General setup  --->
+         [ ] Prompt for development and/or incomplete code/drivers
+         [*] Automatically append version information to the version strin
+         [*] Support for paging of anonymous memory (swap)
+         [*] System V IPC
+         <*> Kernel .config support
+         [*]   Enable access to .config through /proc/config.gz
+         (18) Kernel log buffer size (16 => 64KB, 17 => 128KB)
+         [*] Fair group CPU scheduler (NEW)
+               Basis for grouping tasks
+                (X) user id
+         [*] Create deprecated sysfs files
+         [*] Kernel->user space relay support (formerly relayfs)
+         [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support
+             Choose SLAB allocator
+              (X) SLUB (Unqueued Allocator)
 
-- Power management options
+    [*] Enable loadable module support
+     [*]   Module unloading
+    +[*]   Automatic kernel module loading
 
-Bus options (PCI etc.)
- + ISA support
+    -*- Enable the block layer  --->
+     [*]   Support for Large Block Devices
 
-Networking options
- TCP/IP networking
- - IP: multicasting
- - IP: kernel level autoconfiguration
- + IP: TCP syncookie support (disabled per default)
- - INET: socket monitoring interface
- - The IPv6 protocol
- + Network packet filtering framework (Netfilter)
-  Core Netfilter Configuration  --->
-   <M> Netfilter connection tracking support
-     + Connection tracking flow accounting
-     + Connection mark tracking support
-     <M> FTP protocol support
-   <M> Netfilter Xtables support (required for ip_tables)
-     全部选为模块
-  IP: Netfilter Configuration  --->
-   <M> IPv4 connection tracking support (required for NAT)
-   <M> IP tables support (required for filtering/masq/NAT)
-     全部选为模块
-   <M> ARP tables support
-     全部选为模块
+        Processor type and features  --->
+         [*] Tickless System (Dynamic Ticks)
+         [*] High Resolution Timer Support
+         [*] Symmetric multi-processing support
+             Subarchitecture Type
+              (X) Generic architecture (Summit, bigsmp, ES7000, default)
+         [*] Single-depth WCHAN output (NEW)
+             Processor family
+              (X) Pentium-III/Celeron(Coppermine)/Pentium-III Xeon
+         [*] Generic x86 support
+         [*] HPET Timer Support
+         (32) Maximum number of CPUs (2-255)
+         [*] SMT (Hyperthreading) scheduler support
+         [*] Multi-core scheduler support
+             Preemption Model
+              (X) No Forced Preemption (Server)
+         [ ] Preempt The Big Kernel Lock
+         [*] Machine Check Exception
+         <*>   Check for non-fatal errors on AMD Athlon/Duron / Pentium 4
+         [*]   check for P4 thermal throttling interrupt.
+         <*> /dev/cpu/microcode - Intel IA32 CPU microcode support
+         <*> /dev/cpu/*/msr - Model-specific register support
+         <*> /dev/cpu/*/cpuid - CPU information support
+             High Memory Support
+              (X) off
+         [*] MTRR (Memory Type Range Register) support
+         [*] Enable seccomp to safely compute untrusted bytecode
+         [ ] Compat VDSO support
 
-Block devices
- - Normal floppy disk support
+        Power management options  --->
+         [*] Power Management support
+         [ ]   Legacy Power Management API (DEPRECATED)
+         [ ] Suspend to RAM and standby
+         [*] ACPI (Advanced Configuration and Power Interface) Support  --->
+          [ ]   Deprecated power /proc/acpi folders (NEW)
+          [ ]   Future power /sys interface (NEW)
+          [ ]   Deprecated /proc/acpi/event support (NEW)
+          < >   AC Adapter
+          < >   Battery
+          < >   Button
+          < >   Fan
+          < >   Processor
+             CPU Frequency scaling  --->
+              [ ] CPU Frequency scaling
+          
 
-Device Drivers
- Network device support
-  - Netdevice multiple hardware queue support
-  + Ethernet (10 or 100Mbit)
-   + EISA, VLB, PCI and on board controllers
-   + AMD PCnet32 PCI support
-  - Ethernet (1000 Mbit)
-  - Ethernet (10000 Mbit)
+        Bus options (PCI etc.)  --->
+         [*] PCI support
+               PCI access mode
+                (X) Any
+         [*] Message Signaled Interrupts (MSI and MSI-X)
+         [*] Enable deprecated pci_find_* API
+        +[*] ISA support
 
- SCSI device support
-  - SCSI CDROM support
-  - SCSI generic support
-  + SCSI low-level drivers
-   + SYM53C8XX Version 2 SCSI support
+        Executable file formats / Emulations  --->
+         [*] Kernel support for ELF binaries
 
- Fusion MPT device support
-  + Fusion MPT ScsiHost drivers for SPI
+        Networking  --->
+         -*- Networking support
+               Networking options  --->
+                <*> Packet socket
+                <*> Unix domain sockets
+                [*] TCP/IP networking
+                [*]   IP: multicasting
+               +[*]   IP: advanced router
+                        Choose IP: FIB lookup algorithm
+                         (X) FIB_HASH
+               +[*]   IP: policy routing
+                [ ]   IP: kernel level autoconfiguration
+                <M>   IP: tunneling
+                <M>   IP: GRE tunnels over IP
+                [*]   IP: TCP syncookie support (disabled per default)
+                < >   IP: IPsec transport mode
+                < >   IP: IPsec tunnel mode
+                <*>   INET: socket monitoring interface
+               +<M>   IP virtual server support (EXPERIMENTAL)  --->
+                 (12)  IPVS connection table size (the Nth power of 2)
+                       *** IPVS scheduler ***
+                 <M>   round-robin scheduling
+                 <M>   weighted round-robin scheduling
+                 <M>   least-connection scheduling
+                 <M>   weighted least-connection scheduling
+                 <M>   locality-based least-connection scheduling
+                 <M>   locality-based least-connection with replication scheduling
+                 <M>   destination hashing scheduling
+                 <M>   source hashing scheduling
+                 <M>   shortest expected delay scheduling
+                 <M>   never queue scheduling
+                       *** IPVS application helper ***
+                 <M>   FTP protocol helper
+                < >   The IPv6 protocol
+               +[*] Network packet filtering framework (Netfilter)  --->
+                 Core Netfilter Configuration  --->
+                  <M> Netfilter netlink interface
+                   <M>   Netfilter NFQUEUE over NFNETLINK interface
+                   <M>   Netfilter LOG over NFNETLINK interface
+                  <M> Netfilter connection tracking support
+                   [*] Connection tracking flow accounting
+                   [*] Connection mark tracking support
+                   <M> Amanda backup protocol support
+                   <M> FTP protocol support
+                   <M> IRC protocol support
+                   <M> PPtP protocol support
+                  <M> Netfilter Xtables support (required for ip_tables)
+                   <M>   "CLASSIFY" target support
+                   <M>   "MARK" target support
+                   <M>   "NFQUEUE" target Support
+                   <M>   "NFLOG" target support
+                   <M>   "TCPMSS" target support
+                   <M>   "comment" match support
+                   <M>   "connbytes" per-connection counter match support
+                   <M>   "connlimit" match support" 
+                   <M>   "connmark" connection mark match support
+                   <M>   "conntrack" connection tracking match support
+                   <M>   "DCCP" protocol match support
+                   <M>   "DSCP" match support
+                   <M>   "ESP" match support
+                   <M>   "helper" match support
+                   <M>   "length" match support
+                   <M>   "limit" match support
+                   <M>   "mac" address match support
+                   <M>   "mark" match support
+                   <M>   Multiple port match support
+                   <M>   "pkttype" packet type match support
+                   <M>   "quota" match support
+                   <M>   "realm" match support
+                   <M>   "state" match support
+                   <M>   "statistic" match support
+                   <M>   "string" match support
+                   <M>   "tcpmss" match support
+                   <M>   "time" match support
+                   <M>   "u32" match support
+                   <M>   "hashlimit" match support
+                 IP: Netfilter Configuration  --->
+                  <M> IPv4 connection tracking support (required for NAT)
+                   [*]   proc/sysctl compatibility with old connection tracking
+                  <M> IP tables support (required for filtering/masq/NAT)
+                   <M>   IP range match support
+                   <M>   TOS match support
+                   <M>   recent match support
+                   <M>   ECN match support
+                   <M>   AH match support
+                   <M>   TTL match support
+                   <M>   Owner match support
+                   <M>   address type match support
+                   <M>   Packet filtering
+                   <M>     REJECT target support
+                   <M>   LOG target support
+                   <M>   ULOG target support
+                   <M>   Full NAT
+                   <M>     MASQUERADE target support
+                   <M>     REDIRECT target support
+                   <M>     NETMAP target support
+                   <M>   Packet mangling
+                   <M>     TOS target support
+                   <M>     ECN target support
+                   <M>     TTL target support
+                   <M>   raw table support (required for NOTRACK/TRACE)
+                   <M> ARP tables support
+                   <M>   ARP packet filtering
+                   <M>   ARP payload mangling
 
- - Serial ATA (prod) and Parallel ATA (experimental) drivers
+        Device Drivers  --->
+         [*] Block devices  --->
+          < >   Normal floppy disk support
+          <*>   Loopback device support
+          <*>   RAM disk support
+          (16)    Default number of RAM disks
+          (4096)  Default RAM disk size (kbytes)
+          (1024)  Default RAM disk block size (bytes)
+         [ ] Misc devices  --->
+         <*> ATA/ATAPI/MFM/RLL support  --->
+          <*>   Enhanced IDE/MFM/RLL disk/cdrom/tape/floppy support
+          < >     Include IDE/ATA-2 DISK support
+          [ ]     Use multiple sector mode for Programmed Input/Output by default
+          <*>     Include IDE/ATAPI CDROM support
+          [ ]     legacy /proc/ide/ support
+                  *** IDE chipset support/bugfixes ***
+          < >     generic/default IDE chipset support
+          < >     AMD and nVidia IDE support
+          <*>     Intel PIIXn chipsets support
+             SCSI device support  --->
+              -*- SCSI device support
+              <*> SCSI disk support
+              < > SCSI CDROM support
+              <*> SCSI generic support
+              [*] SCSI low-level drivers (NEW)  --->
+               < >   3ware 5/6/7/8xxx ATA-RAID support
+               < >   Adaptec AIC7xxx Fast -> U160 support (New Driver)
+               < >   Adaptec AIC79xx U320 support
+              +<*>   SYM53C8XX Version 2 SCSI support
+               (1)     DMA addressing mode (NEW)
+               (16)    Default tagged command queue depth (NEW)
+               (64)    Maximum number of queued commands (NEW)
+               [*]     Use memory mapped IO
+         < > Serial ATA (prod) and Parallel ATA (experimental) drivers
+         [*] Multiple devices driver support (RAID and LVM)  --->
+          <*>   Device mapper support
+         [*] Fusion MPT device support  --->
+          <*>   Fusion MPT ScsiHost drivers for SPI
+                IEEE 1394 (FireWire) support  --->
+                 < > IEEE 1394 (FireWire) support
+         [ ] Macintosh device drivers  --->
+         [*] Network device support  --->
+          [ ]   Netdevice multiple hardware queue support
+          <M>   Bonding driver support
+          [*]   Ethernet (10 or 100Mbit)  --->
+           [ ]   3COM cards
+           [ ]   "Tulip" family network device support  --->
+           [*]   EISA, VLB, PCI and on board controllers
+            <*>     AMD PCnet32 PCI support
+           < >   Broadcom 440x/47xx ethernet support
+           < >   nForce Ethernet support
+           < >   Intel(R) PRO/100+ support
+           < >   RealTek RTL-8129/8130/8139 PCI Fast Ethernet Adapter support
+          [ ]   Ethernet (1000 Mbit)  --->
+          [ ]   Ethernet (10000 Mbit)  --->
+             Input device support  --->
+              [ ]     Provide legacy /dev/psaux device
+              < >   Event interface
+              -*-   Keyboards  --->
+               <*>   AT keyboard
+              [ ]   Mice  --->
+              Hardware I/O ports  --->
+               -*- Serial I/O support
+             Character devices  --->
+              -*- Virtual terminal
+              [ ] Legacy (BSD) PTY support
+              <*> Hardware Random Number Generator Core support
+              <*>   Intel HW Random Number Generator support
+              < >   AMD HW Random Number Generator support
+              < >   AMD Geode HW Random Number Generator support
+              < >   VIA HW Random Number Generator suppor
+              <*> Enhanced Real Time Clock Support
+              <M> RAW driver (/dev/raw/rawN)
+              (256) Maximum number of RAW devices to support (1-8192)
+              <M> Hangcheck timer
+          [*] Watchdog Timer Support  --->
+           <M>   Software watchdog
+              Multimedia devices  --->
+               [ ] DAB adapters
+              Graphics support  --->
+               <*> /dev/agpgart (AGP Support)  --->
+                < >   AMD Opteron/Athlon64 on-CPU GART support
+                < >   Intel 440LX/BX/GX, I8xx and E7x05 chipset support
+               Console display driver support  --->
+                [*]   Enable Scrollback Buffer in System RAM
+                (128)   Scrollback Buffer Size (in KB)
+                [*]   Video mode selection support
+              Sound  --->
+               < > Sound card support
+          [ ] HID Devices  --->
+          [ ] USB support  --->
+          [ ] Virtualization  --->
 
- - Macintosh device drivers
+        Firmware Drivers  --->
+         [ ] Export DMI identification via sysfs to userspace
 
- Firmware Drivers
-  - Export DMI identification via sysfs to userspace
+        File systems  --->
+         <*> Second extended fs support
+         [*]   Ext2 extended attributes
+         [*]     Ext2 POSIX Access Control Lists
+         <*> Ext3 journalling file system support
+         [*]   Ext3 extended attributes
+         [*]     Ext3 POSIX Access Control Lists
+         <*> Reiserfs support
+         [*]   ReiserFS extended attributes
+         [*]     ReiserFS POSIX Access Control Lists
+         [*] Inotify file change notification support
+         [*]   Inotify support for userspace
+        +[*] Quota support
+         [*] Dnotify support
+         < > Kernel automounter version 4 support (also supports v3)
+             CD-ROM/DVD Filesystems  --->
+              <*> ISO 9660 CDROM file system support
+              [*]   Microsoft Joliet CDROM extensions
+             DOS/FAT/NT Filesystems  --->
+              < > MSDOS fs support
+              < > VFAT (Windows-95) fs support
+             Pseudo filesystems  --->
+              -*- /proc file system support
+              [ ]   /proc/kcore support
+              [*] Virtual memory file system support (former shm fs)
+              [*]   Tmpfs POSIX Access Control Lists
+              [*] HugeTLB file system support
+         [*] Network File Systems  --->
+          <*>   NFS file system support
+          [*]     Provide NFSv3 client support
+          <*>   NFS server support
+          [*]     Provide NFSv3 server support
+          [*]     Provide NFS server over TCP support
+         <*> Native language support  --->
+          (utf8) Default NLS Option
+          <*>   Codepage 437 (United States, Canada)
+         +<M>   Simplified Chinese charset (CP936, GB2312)
+          <*>   ASCII (United States)
+          <*>   NLS ISO 8859-1  (Latin 1; Western European Languages)
+          < >   NLS ISO 8859-15 (Latin 9; Western European Languages with Euro
+          <*>   NLS UTF-8
 
- Multimedia devices
- - DAB adapters
+        [ ] Instrumentation Support  --->
 
- - Sound card support
+            Kernel hacking  --->
+             [ ] Enable __deprecated logic
+             [ ] Magic SysRq key
+             [ ] Enable unused/obsolete exported symbols
+             [ ] Kernel debugging
 
- - HID Devices
- - USB support
-
-File systems
- + Quota support
- - Print quota warnings to console (OBSOLETE)
-  CD-ROM/DVD Filesystems
-  + Microsoft Joliet CDROM extensions
- Native language support
-  Default NLS Option
-  UTF-8
-  <M> Simplified Chinese charset (CP936, GB2312)
-  - NLS ISO 8859-15
-
-- Instrumentation Support
-
-Kernel hacking
- - Enable __deprecated logic
- - Magic SysRq key
- - Enable unused/obsolete exported symbols
- - Kernel debugging
+            Library routines  --->
+             -*- CRC32 functions
 
 
 make
@@ -236,6 +483,8 @@ nano -w fstab
 cd conf.d
 echo 'config_eth0=( "202.75.216.170/28" )' >> net
 echo 'routes_eth0=( "default via 202.75.216.161" )' >> net
+
+rc-update add net.eth0 default
 
 rc-update add sshd default
 
@@ -267,6 +516,17 @@ title Gentoo
 root (hd0,0)
 kernel /boot/kernel root=/dev/sda3
 
+
+----------------------------------------------------------------------------------------------------
+grub
+root (hd0,0)
+setup (hd0)
+root (hd1,0)
+setup (hd1)
+quit
+----------------------------------------------------------------------------------------------------
+
+
 grub
 root (hd0,0)
 setup (hd0)
@@ -275,10 +535,6 @@ quit
 exit
 umount /mnt/gentoo/proc /mnt/gentoo/boot /mnt/gentoo/tmp /mnt/gentoo/usr /mnt/gentoo/var /mnt/gentoo
 reboot
-
-nano -w /etc/locale.gen
-zh_CN.UTF-8 UTF-8
-locale-gen
 
 nano -w /etc/conf.d/clock
 CLOCK="local"
@@ -299,3 +555,61 @@ emerge --oneshot libtool
 dispatch-conf
 perl-cleaner all
 python-updater
+
+
+基本配置
+emerge --sync
+
+emerge gentoolkit
+
+emerge --search ntp
+
+###
+mkdir /etc/portage
+echo "net-misc/ntpclient ~x86" >> /etc/portage/package.keywords
+
+nano -w /etc/conf.d/ntp-client
+NTPCLIENT_CMD="ntpdate"
+NTPCLIENT_OPTS="-b 210.72.145.44"
+
+rc-update add ntp-client
+
+emerge --unmerge ntpclient
+###
+
+emerge ntp
+equery files ntp
+
+ntpdate 210.72.145.44 ; hwclock -w
+
+nano -w /etc/crontab
+0 0,12 * * * root ntpdate 210.72.145.44 ; hwclock -w
+
+emerge vim
+vi /etc/rc.conf
+#EDITOR="/bin/nano"
+EDITOR="/usr/bin/vim"
+
+vi /etc/vim/vimrc
+" set ai
+"  set hlsearch
+
+vi ~/.bash_profile
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias h='history 25'
+alias ll='ls -lh'
+
+vi /etc/ssh/sshd_config
+UseDNS no
+
+vi /etc/init.d/sshd
+use logger
+#need net
+
+## One of the files in /etc/{conf.d,init.d} or /etc/rc.conf has a modification time in the future!
+find /etc | xargs touch
+
+
+rc-update -v show

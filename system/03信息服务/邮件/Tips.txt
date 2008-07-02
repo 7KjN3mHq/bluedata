@@ -81,6 +81,15 @@ echo $decode;
 ?>
 
 
-grep 'blocked by localctrl' /var/log/slockd.log | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/blocked.txt
+grep 'blocked by localctrl' /var/log/slockd.log.1 | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/blocked.txt
 
-grep 'OK' /var/log/slockd.log | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/ok.txt
+grep 'OK' /var/log/slockd.log.1 | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/ok.txt
+
+
+mailq 
+postqueue -p
+
+maildrop: Unable to open mailbox.
+.Junk
+
+postsuper -d ALL
