@@ -108,8 +108,8 @@ ln -s /var/run/mysqld/mysql.sock /var/lib/mysql/mysql.sock
 vi /etc/ha.d/ldirectord.cf
 quiescent=no
 virtual=192.168.0.160:3307
-        real=192.168.0.161:3307 gate 2
-        real=192.168.0.162:3307 gate 3
+        real=192.168.0.11:3307 gate 2
+        real=192.168.0.12:3307 gate 3
         service=mysql
         checktype=negotiate
         login="root"
@@ -131,7 +131,7 @@ unset LANG
 LC_ALL=C
 export LC_ALL
 
-VIP="192.168.0.160"
+VIP="192.168.0.10"
 IFACE="eth0"
 
 case "$1" in
@@ -160,7 +160,7 @@ esac
 
 realserver …œµƒ…Ë÷√£∫
 # vi /etc/rc.local
-ifconfig lo:0 192.168.0.160 netmask 255.255.255.255 up
+ifconfig lo:0 192.168.0.10 netmask 255.255.255.255 up
 
 # vi /etc/sysctl.conf
 net.ipv4.conf.all.arp_ignore = 1
