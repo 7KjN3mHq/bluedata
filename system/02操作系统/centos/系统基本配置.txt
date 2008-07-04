@@ -26,7 +26,7 @@ CentOS5.1 再注释掉如下设置：
 # vi CentOS-Base.repo
 :1,$s/mirrorlist=/#mirrorlist=/g
 :1,$s/#baseurl=/baseurl=/g
-:1,$s/mirror.centos.org\/centos/centos.candishosting.com.cn/g
+:1,$s/mirror.centos.org\/centos/mirror.be10.com\/centos/g
 :wq
 
 安装 vim-enhanced （会自动安装所依赖的 vim-common）

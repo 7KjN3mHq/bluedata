@@ -93,58 +93,59 @@ resource r0 {
         after-sb-1pri call-pri-lost-after-sb;
         after-sb-2pri call-pri-lost-after-sb;
     }
-    on centos4-1 {
+    on app1 {
         device    /dev/drbd0;
-        disk      /dev/hda7;
-        address   192.168.0.171:7789;
+        disk      /dev/cciss/c0d0p7;
+        address   192.168.0.201:7789;
         meta-disk internal;
     }
-    on centos4-2 {
+    on app2 {
         device    /dev/drbd0;
-        disk      /dev/hda7;
-        address   192.168.0.172:7789;
+        disk      /dev/cciss/c0d0p7;
+        address   192.168.0.202:7789;
         meta-disk internal;
     }
 }
 
 在两个节点上创建资源并启动 drbd
+dd if=/dev/zero bs=1M count=1 of=/dev/cciss/c0d0p7 ; sync
 drbdadm create-md r0
 /etc/init.d/drbd start
 
 配置 LVM
 vi /etc/lvm/lvm.conf
 # filter = [ "a/.*/" ]
-filter = [ "r|/dev/cdrom|", "r|/dev/hda7|", "a|/dev/drbd0|" ]
+filter = [ "r|/dev/cdrom|", "r|/dev/cciss/c0d0p7|", "a|/dev/drbd0|" ]
 
 把一个节点设置为主节点
 drbdsetup /dev/drbd0 primary -o
 
 然后创建 pv/vg/lv
 pvcreate /dev/drbd0
-vgcreate vg1 /dev/drbd0
-lvcreate -L 4G -n lv1 vg1
-lvcreate -l 1595 -n lv2 vg1
+vgcreate vg /dev/drbd0
+lvcreate -L 36G -n data vg
+lvcreate -L 72G -n home vg
 
-mkfs -t ext3 /dev/vg1/lv1
-mkfs -t ext3 /dev/vg1/lv2
+mkfs -t ext3 /dev/vg/data
+mkfs -t ext3 /dev/vg/home
 
-mount -t ext3 /dev/vg1/lv1 /data
-mount -t ext3 /dev/vg1/lv2 /home
+mount -t ext3 /dev/vg/data /data
+mount -t ext3 /dev/vg/home /home
 
 cd /data
 echo "test" > test
 
 umount /data
 umount /home
-vgchange -a n vg1
+vgchange -a n vg
 drbdadm secondary r0
 
 
 drbdadm primary r0
 vgscan    # 第一次需要，以后就不用再 vgscan 了。
-vgchange -a y vg1
-mount -t ext3 /dev/vg1/lv1 /data
-mount -t ext3 /dev/vg1/lv2 /home
+vgchange -a y vg
+mount -t ext3 /dev/vg/data /data
+mount -t ext3 /dev/vg/home /home
 
 cat /data/test
 test
@@ -156,30 +157,23 @@ echo "test" > test
 
 调整容量：
 umount /data
-umount /home
-lvremove /dev/vg1/lv2
-lvextend -L +1.23G /dev/vg1/lv1
-e2fsck -f /dev/vg1/lv1
-resize2fs /dev/vg1/lv1
+lvextend -L +18G /dev/vg/data
+e2fsck -f /dev/vg/data
+resize2fs /dev/vg/data
 
-lvcreate -l 1280 -n lv2 vg1
-mkfs -t ext3 /dev/vg1/lv2
-
-mount -t ext3 /dev/vg1/lv1 /data
-mount -t ext3 /dev/vg1/lv2 /home
-
+mount -t ext3 /dev/vg/data /data
 /data 下的 test 文件还在。
 
-进行主从交换。在 node2 上可以看到 /dev/vg1/lv1 的容量已经扩大了。
+进行主从交换。在 node2 上可以看到 /dev/vg/data 的容量已经扩大了。
 
 heartbeat 的配置：
 vi /etc/ha.d/haresources
-centos4-1 \
-IPaddr::192.168.0.170/24/eth0 \
+app1 \
+IPaddr::192.168.0.250/24/eth1 \
 drbddisk::r0 \
-LVM::vg1 \
-Filesystem::/dev/vg1/lv1::/data::ext3 \
-Filesystem::/dev/vg1/lv2::/home::ext3
+LVM::vg \
+Filesystem::/dev/vg/data::/data::ext3 \
+Filesystem::/dev/vg/home::/home::ext3
 
 
        wfc-timeout time
@@ -199,3 +193,7 @@ Filesystem::/dev/vg1/lv2::/home::ext3
               is less likely to show up in time, if it had been dead
               before.  Default is 60, unit is seconds. Value 0 means
               unlimited.
+
+
+/home 192.168.0.0/24(rw,no_root_squash,async)
+/usr/local/resin-2.1.17 192.168.0.0/24(rw,no_root_squash,async)

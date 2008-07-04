@@ -1,52 +1,65 @@
 -----
-# vi /etc/apt/sources.list
-deb http://debian.cn99.com/debian testing main non-free contrib
-deb http://debian.cn99.com/debian-non-US sarge/non-US main contrib non-free
-deb ftp://mirrors.geekbone.org/debian sarge main non-free contrib
-deb ftp://mirrors.geekbone.org/debian-non-US sarge/non-US main contrib non-free
-deb ftp://mirrors.geekbone.org/debian-security sarge/updates main contrib non-free
-deb http://security.debian.org/ stable/updates main contrib non-free
+vi /etc/apt/sources.list
+deb http://debian.cn99.com/debian etch main non-free contrib
+deb http://debian.cn99.com/debian etch-proposed-updates main contrib non-free
+deb http://debian.cn99.com/debian-security etch/updates main contrib non-free
 
-
-#deb http://debian.cn99.com/debian testing main non-free contrib
-#deb http://debian.cn99.com/debian proposed-updates main contrib non-free
-deb http://mirrors.geekbone.org/debian testing main non-free contrib
-deb http://mirrors.geekbone.org/debian proposed-updates main contrib non-free
-deb http://mirrors.geekbone.org/debian-security testing/updates main contrib non-free
-
+deb http://mirrors.shlug.org/debian/ etch main contrib non-free
+deb http://mirrors.shlug.org/debian-security etch/updates main contrib non-free
+deb http://mirrors.shlug.org/debian/ proposed-updates main non-free contrib
 
 -----
-# unset LANG
-# apt-get update
-# apt-get install ssh
+dpkg -P zhcon
 
+apt-get update && apt-get upgrade
+apt-get install ssh vim
+
+vi /etc/vim/vimrc
+syntax on
+set noai
 
 -----
 # vi /etc/network/interfaces
+auto lo
+iface lo inet loopback
+
 auto eth0
 iface eth0 inet static
-        address 192.168.0.242
-        netmask 255.255.255.0
-        network 192.168.0.0
-        broadcast 192.168.0.255
-        gateway 192.168.0.1
+        address 202.75.216.168
+        netmask 255.255.255.240
+        network 202.75.216.160
+        broadcast 202.75.216.175
+        gateway 202.75.216.161
 
-auto eth1
-iface eth1 inet static
-        address 192.168.0.234
-        netmask 255.255.255.0
-        network 192.168.0.0
-        broadcast 192.168.0.255
+auto eth0:0
+iface eth0:0 inet static
+        address 202.91.231.168
+        netmask 255.255.255.240
+        network 202.91.231.160
+        broadcast 202.91.231.175
+        gateway 202.91.231.161
 
+-----
+vi /etc/modprobe.d/blacklist
+blacklist ipv6
 
 -----
 # vi /etc/hosts
-127.0.0.1       localhost
-192.168.0.242   debian-2
-
+#::1     ip6-localhost ip6-loopback
+#fe00::0 ip6-localnet
+#ff00::0 ip6-mcastprefix
+#ff02::1 ip6-allnodes
+#ff02::2 ip6-allrouters
+#ff02::3 ip6-allhosts
 
 -----
-# vi /etc/modprobe.d/aliases
-#alias net-pf-10 ipv6
-alias net-pf-10 off
-alias ipv6 off
+vi ~/.bashrc
+export LS_OPTIONS='--color=auto'
+eval "`dircolors`"
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -lh'
+alias l='ls $LS_OPTIONS -lA'
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
