@@ -1,0 +1,26 @@
+开源的主机管理系统/虚拟主机控制面板
+
+GNU Hosting Helper
+http://hostingsoftware.net/
+
+IspCP
+http://isp-control.net/
+
+SysCP
+http://www.syscp.de/
+
+web-cp
+http://www.web-cp.net/
+
+ZPanel (Windows)
+http://www.thezpanel.com/
+
+
+商业软件
+
+Plesk
+http://www.parallels.com/en/products/plesk/
+http://www.parallels.com.cn/CN/products/plesk/plesk.html
+
+cPanel
+http://www.cpanel.net/
