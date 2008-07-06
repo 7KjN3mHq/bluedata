@@ -9,14 +9,19 @@ deb http://mirrors.shlug.org/debian-security etch/updates main contrib non-free
 deb http://mirrors.shlug.org/debian/ proposed-updates main non-free contrib
 
 -----
+apt-get install ssh vim
 dpkg -P zhcon
 
 apt-get update && apt-get upgrade
-apt-get install ssh vim
 
 vi /etc/vim/vimrc
 syntax on
 set noai
+
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+    \| exe "normal g'\"" | endif
+endif
 
 -----
 # vi /etc/network/interfaces
@@ -61,5 +66,3 @@ alias ll='ls $LS_OPTIONS -lh'
 alias l='ls $LS_OPTIONS -lA'
 
 alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'

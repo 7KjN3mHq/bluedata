@@ -1,4 +1,4 @@
-CentOS(4.6/5.1)
+CentOS(4.6/5.2)
 
 修改系统默认语言编码
 # vi /etc/sysconfig/i18n
@@ -10,14 +10,16 @@ SUPPORTED="zh_CN.GBK:zh_CN:zh"
 # vi /etc/modprobe.conf
 alias net-pf-10 off
 
+CentOS5.2 禁用 SELinux
+vi /etc/sysconfig/selinux
+SELINUX=disabled
+#SELINUXTYPE=targeted
+
 修改 hosts 文件（可再添加 IP 对应的主机名）
 # vi /etc/hosts
 127.0.0.1    localhost
-CentOS5.1 再注释掉如下设置：
+CentOS5.2 再注释掉如下设置：
 #::1            localhost6.localdomain6 localhost6
-
-安装使 yum 支持选择较快镜像的补丁
-# yum -y install yum-plugin-fastestmirror
 
 配置 yum 源。
 # cd /etc/yum.repos.d
@@ -26,8 +28,11 @@ CentOS5.1 再注释掉如下设置：
 # vi CentOS-Base.repo
 :1,$s/mirrorlist=/#mirrorlist=/g
 :1,$s/#baseurl=/baseurl=/g
-:1,$s/mirror.centos.org\/centos/mirror.be10.com\/centos/g
+:1,$s/mirror.centos.org\/centos/centos.ustc.edu.cn\/centos/g
 :wq
+
+可以安装使 yum 支持选择较快镜像的补丁
+# yum -y install yum-plugin-fastestmirror
 
 安装 vim-enhanced （会自动安装所依赖的 vim-common）
 # yum -y install vim-enhanced
@@ -45,6 +50,8 @@ alias vi='vim'
 # alias -p
 
 使用 ntp 同步时间
+CentOS5.2 先：
+yum -y install vixie-cron crontabs
 # yum -y install ntp
 # ntpdate 210.72.145.44
 # hwclock -w
@@ -58,6 +65,8 @@ vi /etc/crontab
 0 0,12 * * * root ntpdate 210.72.145.44 ; hwclock -w
 
 去掉不需要启动服务
+CentOS5.2 先：
+yum -y install ntsysv
 # unset LANG
 # ntsysv
 
