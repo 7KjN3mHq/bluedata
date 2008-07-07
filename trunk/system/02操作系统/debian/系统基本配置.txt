@@ -9,7 +9,7 @@ deb http://mirrors.shlug.org/debian-security etch/updates main contrib non-free
 deb http://mirrors.shlug.org/debian/ proposed-updates main non-free contrib
 
 -----
-apt-get install ssh vim
+apt-get install ssh vim ntp
 dpkg -P zhcon
 
 apt-get update && apt-get upgrade
