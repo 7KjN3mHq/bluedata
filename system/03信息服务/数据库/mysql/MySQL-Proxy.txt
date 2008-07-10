@@ -29,10 +29,9 @@ fi
 case $mode in
   'start')
 /usr/local/sbin/mysql-proxy --daemon \
---proxy-address=:3306 \
---proxy-backend-addresses=:3307 \
---proxy-read-only-backend-addresses=192.168.0.162:3307 \
---proxy-read-only-backend-addresses=192.168.0.161:3307 \
+--proxy-address=192.168.0.9:3306 \
+--proxy-backend-addresses=192.168.0.250:3306 \
+--proxy-read-only-backend-addresses=192.168.0.10:3306 \
 --proxy-lua-script=/usr/local/share/mysql-proxy/rw-splitting.lua
     ;;
 
@@ -107,9 +106,9 @@ ln -s /var/run/mysqld/mysql.sock /var/lib/mysql/mysql.sock
 
 vi /etc/ha.d/ldirectord.cf
 quiescent=no
-virtual=192.168.0.160:3307
-        real=192.168.0.11:3307 gate 2
-        real=192.168.0.12:3307 gate 3
+virtual=192.168.0.10:3306
+        real=192.168.0.11:3306 gate 2
+        real=192.168.0.12:3306 gate 3
         service=mysql
         checktype=negotiate
         login="root"

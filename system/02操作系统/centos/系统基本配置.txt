@@ -13,7 +13,6 @@ alias net-pf-10 off
 CentOS5.2 禁用 SELinux
 vi /etc/sysconfig/selinux
 SELINUX=disabled
-#SELINUXTYPE=targeted
 
 修改 hosts 文件（可再添加 IP 对应的主机名）
 # vi /etc/hosts

@@ -5,8 +5,8 @@ http://pecl.php.net/package/memcache
 yum -y install libevent-devel
 ## Installing for dependencies: libevent
 
-tar zxvf memcached-1.2.2.tar.gz
-cd memcached-1.2.2
+tar zxvf memcached-1.2.5.tar.gz
+cd memcached-1.2.5
 ./configure --prefix=/usr/local/memcached
 make
 make install
@@ -15,7 +15,7 @@ make install
 /usr/local/memcached/bin/memcached -l 192.168.0.11 -u nobody -d -m 4096 -vv >> /var/log/memcached.log
 启动的这个 memcached 为一个后台守护进程模式(-d)， 然后缓存的空间为 4096M(-m), 监听(-l)服务器 192.168.0.11 的默认端口(11211)，将日志写到 /var/log/memcached.log (-vv) 。
 /usr/local/memcached/bin/memcached -h
-memcached 1.2.2
+memcached 1.2.5
 -p <num>      TCP port number to listen on (default: 11211)
 -U <num>      UDP port number to listen on (default: 0, off)
 -s <file>     unix socket path to listen on (disables network support)
