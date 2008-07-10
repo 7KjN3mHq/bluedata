@@ -4,14 +4,14 @@ mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%' IDENTIFIED BY 'slave';
 ÐÞ¸ÄÅäÖÃÎÄ¼þ£º
 ## master
 log-bin=mysql-bin
-server-id      = 170
+server-id      = 250
 #binlog-do-db     = test
 #binlog-ignore-db = mysql information_schema
 
 ## slave
-server-id        = 162
-master-host      = 192.168.0.170
-master-port      = 3307
+server-id        = 12
+master-host      = 192.168.0.250
+master-port      = 3306
 master-user      = slave
 master-password  = slave
 relay-log        = /var/log/mysqld/relay-bin
