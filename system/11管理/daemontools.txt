@@ -1,0 +1,40 @@
+mkdir /package
+cd /package
+wget http://www.bluedata.org/software/linux/extqmail/daemontools-0.76.tar.gz
+wget http://www.bluedata.org/software/linux/extqmail/patches/daemontools-0.76.errno.patch
+tar zxvf daemontools-0.76.tar.gz
+cd admin/daemontools-0.76/src
+patch < ../../../daemontools-0.76.errno.patch
+cd ..
+package/install
+
+rm -rf /command
+cd command
+sed -e 's|/command:||' \
+    -e 's|command|usr/local/bin|' \
+    -e 's|/service|/etc/service|g' svscanboot > svscanboot~
+mv -f svscanboot~ svscanboot
+chmod 755 svscanboot
+cp -af * /usr/local/bin/
+sed 's|command|usr/local/bin|' /etc/inittab > /etc/inittab~
+mv -f /etc/inittab~ /etc/inittab
+mkdir /etc/service
+telinit q
+rm -rf /service /package
+
+mkdir /etc/service/mysql-proxy
+vi /etc/service/mysql-proxy/run
+#!/bin/sh
+export LUA_PATH=/usr/local/share/mysql-proxy/?.lua
+/usr/local/sbin/mysql-proxy \
+--proxy-address=:3306 \
+--proxy-backend-addresses=192.168.0.250:3306 \
+--proxy-read-only-backend-addresses=192.168.0.10:3307 \
+--proxy-lua-script=/usr/local/share/mysql-proxy/rw-splitting.lua
+
+chmod 755 /etc/service/mysql-proxy/run
+
+supervise /etc/service/mysql-proxy
+
+vi /etc/inittab
+#SV:123456:respawn:/usr/local/bin/svscanboot
