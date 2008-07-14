@@ -1,0 +1,130 @@
+下载所需软件：
+http://www.nagios.org/download/
+
+安装 Nagios
+groupadd nagios
+useradd -g nagios -d /usr/local/nagios -s /sbin/nologin nagios
+
+创建一个 nagcmd 组用于从 Web 接口执行外部命令，并将 nagios 用户和 Apache 用户都加到这个组中
+groupadd nagcmd
+usermod -G nagcmd nagios
+usermod -G nagcmd nobody
+
+tar zxvf nagios-3.0.3.tar.gz
+cd nagios-3.0.3
+./configure \
+--prefix=/usr/local/nagios \
+--with-command-group=nagcmd
+
+make all
+
+make install
+make install-init
+make install-config
+make install-commandmode
+
+安装 Nagios 的 WEB 配置文件到 Apache 的 /etc/httpd/conf.d 目录下
+make install-webconf
+
+如果是编译安装的 Apache ，可以手动添加一下配置
+cat sample-config/httpd.conf >> /usr/local/apache/conf/httpd.conf
+
+
+创建 Nagios Web 接口登录的用户
+htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+确认加载了 cgi_module 和 alias_module ，然后重启 Apache
+service httpd restart
+
+
+安装 Nagios 插件
+tar zxvf nagios-plugins-1.4.12.tar.gz
+cd nagios-plugins-1.4.12
+./configure \
+--prefix=/usr/local/nagios \
+--with-nagios-group=nagcmd
+
+make
+make install
+
+
+chkconfig --add nagios
+chkconfig nagios on
+
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+
+service nagios start
+
+
+配置 Nagios
+cd /usr/local/nagios/etc
+vi nagios.cfg
+#cfg_file=/usr/local/nagios/etc/objects/localhost.cfg
+cfg_dir=/usr/local/nagios/etc/servers
+
+command_check_interval=10s
+
+
+通过 smtp 发送邮件
+下载 sendmail
+http://caspian.dotconf.net/menu/Software/SendEmail/
+tar zxvf sendEmail-v1.54.tar.gz
+cd sendEmail-v1.54
+mv sendEmail /usr/local/bin/
+
+cd objects
+vi commands.cfg
+把 notify-host-by-email 和 notify-service-by-email 的邮件发送部分改为：
+/usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s mail.test.com -u "** $NOTIFICATIONTYPE$ alert - $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" -xu nagios -xp password
+
+替换其中的邮箱名、用户、密码等为正确的设置。
+
+设置联系人
+vi contacts.cfg
+define contact {
+        contact_name                   nagiosadmin
+        alias                          System Administrator
+        host_notification_period       24x7
+        service_notification_period    24x7
+        host_notification_options      d,u,r
+        service_notification_options   w,u,c,r
+        host_notification_commands     host-notify-by-email
+        service_notification_commands  service-notify-by-email
+        email                          bluedata@jc001.cn
+        }
+
+添加主机配置
+vi servers/ld2.cfg
+define host {
+       host_name              ld2
+       alias                  ld2
+       address                192.168.0.200
+       contact_groups         admins
+       check_command          check-host-alive
+       max_check_attempts     5
+       notification_interval  10
+       notification_period    24x7
+       notification_options   d,u,r
+       }
+
+define service {
+        host_name             ld2
+        service_description   check_tcp 80
+        check_period          24x7
+        max_check_attempts    4
+        normal_check_interval 3
+        retry_check_interval  2
+        contact_groups        admins
+        notification_interval 10
+        notification_period   24x7
+        notification_options  w,u,c,r
+        check_command         check_tcp!80
+        }
+
+添加组配置
+vi servers/hostgroups.cfg
+define hostgroup{
+        hostgroup_name  servers
+        alias           Servers
+        members         ld1,ld2
+        }
