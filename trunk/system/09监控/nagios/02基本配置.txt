@@ -1,0 +1,40 @@
+objects/contacts.cfg 用来定义联系人
+define contact {
+contact_name sa
+alias System Administrator
+service_notification_period 24x7
+host_notification_period 24x7
+service_notification_options w,u,c,r
+host_notification_options d,u,r
+service_notification_commands notify-service-by-email
+host_notification_commands notify-host-by-email
+email admin@test.com
+}
+
+再定义联系人组
+define contactgroup {
+contactgroup_name Administrators
+alias Administrator Group
+members sa,na
+}
+
+提醒功能的配置
+所有提醒任务首先要查看 hosts.cfg 或者 services.cfg ，在这两个文件中有如下几个参数关系到提醒：
+notifications_enabled: 是否开启提醒功能。1为开启，0为禁用。注，一般，这个选项会在主配置文件 (nagios.cfg) 中定义，效果相同。
+contact_groups: 定义接受提醒的联系人组，如果 hosts.cfg 文件中所有的条件都符合，那么提醒任务将会继续检查 contactgroup.cfg 文件。
+notification_interval: 重复发送提醒信息的最短间隔时间。默认间隔时间是 60 分钟。如果这个值设置为 0 ，将不会发送重复提醒。
+notification_period: 发送提醒的时间段。非常重要的主机（服务）定义为 24x7 ，一般的主机（服务）就定义为上班时间。如果不在定义的时间段内，无论什么问题发生，都不会发送提醒。
+notification_options: 这个参数定义了发送提醒包括的情况： d = 状态为 DOWN , u = 状态为 UNREACHABLE , r = 状态恢复为 OK , f = flapping , n = 不发送提醒。
+
+objects/commands.cfg 中有邮件提醒命令的设置
+如要通过 smtp 发送邮件，可以使用 sendEmail
+http://caspian.dotconf.net/menu/Software/SendEmail/
+tar zxvf sendEmail-v1.54.tar.gz
+cd sendEmail-v1.54
+mv sendEmail /usr/local/bin/
+
+vi objects/commands.cfg
+把 notify-host-by-email 和 notify-service-by-email 的邮件发送部分改为：
+/usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s mail.test.com -u "** $NOTIFICATIONTYPE$ alert - $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" -xu nagios -xp password
+
+sendEmail -f bluedata@jc001.cn -t bluedata@139.com -s mx1.jc001.cn -u "ld1 down" -xu bluedata@jc001.cn -xp fanssoft -m "ld1 down :("

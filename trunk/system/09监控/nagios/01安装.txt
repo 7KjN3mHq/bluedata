@@ -1,0 +1,60 @@
+下载所需软件：
+http://www.nagios.org/download/
+
+创建 nagios 用户和组
+groupadd nagios
+useradd -g nagios -d /usr/local/nagios -s /sbin/nologin nagios
+
+创建一个 nagcmd 组用于从 Web 接口执行外部命令，并将 nagios 用户和 Apache 用户都加到这个组中
+groupadd nagcmd
+usermod -G nagcmd nagios
+usermod -G nagcmd nobody
+
+tar zxvf nagios-3.0.3.tar.gz
+cd nagios-3.0.3
+./configure \
+--prefix=/usr/local/nagios \
+--with-command-group=nagcmd
+
+make all
+
+make install
+make install-init
+make install-config
+make install-commandmode
+
+安装 Nagios 的 WEB 配置文件到 Apache 的 /etc/httpd/conf.d 目录下
+make install-webconf
+
+如果是编译安装的 Apache ，可以手动添加一下配置
+cat sample-config/httpd.conf >> /usr/local/apache/conf/httpd.conf
+
+创建 Nagios Web 接口登录的用户
+htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+确认加载了 cgi_module 和 alias_module ，然后重启 Apache
+service httpd restart
+
+
+安装 Nagios 插件
+tar zxvf nagios-plugins-1.4.12.tar.gz
+cd nagios-plugins-1.4.12
+./configure \
+--prefix=/usr/local/nagios \
+--with-nagios-group=nagcmd
+
+make
+make install
+
+添加 nagios 服务
+chkconfig --add nagios
+chkconfig nagios on
+
+检查配置文件是否有错误
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+
+启动
+service nagios start
+
+通过 http://IP/nagios 输入用户名密码就可以打开 nagios 的页面了。
+此时还只能简单的查看 localhost 的状态。
