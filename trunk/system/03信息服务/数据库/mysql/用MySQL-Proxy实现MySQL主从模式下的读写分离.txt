@@ -38,7 +38,7 @@ case "$1" in
         killall mysql-proxy
         ;;
     *)
-        echo "Usage: LVS {start|stop}"
+        echo "Usage: mysql-proxy {start|stop}"
         exit 1
 esac
 
@@ -76,7 +76,7 @@ telinit q
 
 应该可以看到 svscan 进程了：
 ps -ef | grep svscan
-root      2269     1  0 08:03 ?        00:00:00 svscan /service
+root      2269     1  0 21:25 ?        00:00:00 svscan /service
 
 创建 mysql-proxy 运行脚本：
 mkdir /service/mysql-proxy
@@ -85,7 +85,7 @@ vi /service/mysql-proxy/run
 export LUA_PATH=/usr/local/share/mysql-proxy/?.lua
 /usr/local/sbin/mysql-proxy \
 --proxy-address=:3306 \
---proxy-backend-addresses=192.168.0.250:3306 \
+--proxy-backend-addresses=192.168.0.9:3306 \
 --proxy-read-only-backend-addresses=192.168.0.10:3307 \
 --proxy-lua-script=/usr/local/share/mysql-proxy/rw-splitting.lua
 
@@ -93,13 +93,13 @@ chmod 755 /service/mysql-proxy/run
 
 马上就可以看到 mysql-proxy 进程被启动了，并且是由 supervise 管理的：
 ps -ef | grep mysql-proxy
-root      2309  2269  0 08:03 ?        00:00:00 supervise mysql-proxy
-root     29442 29441 32 21:27 ?        00:00:00 /usr/local/sbin/mysql-proxy --proxy-address=:3306 --proxy-backend-addresses=192.168.0.250:3306 --proxy-read-only-backend-addresses=192.168.0.10:3307 --proxy-lua-script=/usr/local/share/mysql-proxy/rw-splitting.lua
+root      2309  2269  0 21:27 ?        00:00:00 supervise mysql-proxy
+root     29442 29441 32 21:27 ?        00:00:00 /usr/local/sbin/mysql-proxy --proxy-address=:3306 --proxy-backend-addresses=192.168.0.9:3306 --proxy-read-only-backend-addresses=192.168.0.10:3307 --proxy-lua-script=/usr/local/share/mysql-proxy/rw-splitting.lua
 
 杀死 mysql-proxy 进程再查看：
 killall mysql-proxy 
 ps -ef | grep mysql-proxy
-root      2309  2269  0 08:03 ?        00:00:00 supervise mysql-proxy
-root     29640 29639 36 21:31 ?        00:00:01 /usr/local/sbin/mysql-proxy --proxy-address=:3306 --proxy-backend-addresses=192.168.0.250:3306 --proxy-read-only-backend-addresses=192.168.0.10:3307 --proxy-lua-script=/usr/local/share/mysql-proxy/rw-splitting.lua
+root      2309  2269  0 21:27 ?        00:00:00 supervise mysql-proxy
+root     29640 29639 36 21:31 ?        00:00:01 /usr/local/sbin/mysql-proxy --proxy-address=:3306 --proxy-backend-addresses=192.168.0.9:3306 --proxy-read-only-backend-addresses=192.168.0.10:3307 --proxy-lua-script=/usr/local/share/mysql-proxy/rw-splitting.lua
 
 可以看到，mysql-proxy 进程依然还在，不过 PID 已经变了。
