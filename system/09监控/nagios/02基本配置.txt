@@ -1,3 +1,7 @@
+主配置文件 nagios.cfg 需要更改的地方
+interval_length=10  ; 间隔时间基准由 60s 改为 10s
+command_check_interval=10s  ; 命令检查时间间隔，-1 表示尽可能频繁的进行检查
+
 objects/contacts.cfg 用来定义联系人
 define contact {
 contact_name sa
@@ -38,3 +42,6 @@ vi objects/commands.cfg
 /usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s mail.test.com -u "** $NOTIFICATIONTYPE$ alert - $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" -xu nagios -xp password
 
 sendEmail -f bluedata@jc001.cn -t bluedata@139.com -s mx1.jc001.cn -u "ld1 down" -xu bluedata@jc001.cn -xp fanssoft -m "ld1 down :("
+
+批量替换
+find `pwd` -name "*.cfg" -exec perl -p -i -e 's/Administrators/admins/g' {} \;
