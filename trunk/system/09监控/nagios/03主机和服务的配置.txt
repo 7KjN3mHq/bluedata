@@ -27,8 +27,18 @@ notification_interval  ÕûÊı    ; ¸æ¾¯ÁÙ½çÖµ¡£´ïµ½´Ë´ÎÊıÖ®ºó£¬²Å»á·¢ËÍ¸Ã»úµÄ±¨¾¯Ì
 notification_period timeperiod_name   ; ¸Ã»úµÄ¸æ¾¯Ê±¼ä¶Î¡£
 notification_options [d,u,r,f]    ; ¸Ã»ú¸æ¾¯°üÀ¨µÄ×´Ì¬±ä»¯½á¹û¡£
 notifications_enabled [0/1]    ; ÊÇ·ñÆôÓÃ¸æ¾¯ÌáĞÑ¹¦ÄÜ¡£
-stalking_options [o,d,u]    ; ³ÖĞø×´Ì¬¼ì²â²ÎÊı£¬o = ³ÖĞøµÄUP×´Ì¬, d = ³ÖĞøµÄDOWN×´Ì¬, and u = ³ÖĞøµÄUNREACHABLE×´Ì¬¡£
+stalking_options [o,d,u]    ; ³ÖĞø×´Ì¬¼ì²â²ÎÊı£¬o = ³ÖĞøµÄUP×´Ì¬ , d = ³ÖĞøµÄDOWN×´Ì¬ , u = ³ÖĞøµÄUNREACHABLE×´Ì¬¡£
 }
+
+ÔÚÅäÖÃÎÄ¼şÑ¡ÏîÖĞÓĞ¼¸¸öĞèÒª×¢ÒâµÄÑ¡Ïî£º
+notification_interval Í¨Öª¼ä¸ô£¬µ¥Î»:Ãë
+check_interval ¼ì²é¼ä¸ô£¬µ¥Î»:Ãë
+retry_interval ÖØÊÔ¼ì²é¼ä¸ô£¬µ¥Î»:Ãë
+ÒÔÉÏÈı¸öÊ±¼ä¼ä¸ôµÄ¼ÆËã·½·¨Îª£ºÈç¹ûÔÚ Nagios Ö÷ÅäÖÃÎÄ¼şÖĞÓĞ interval_length=10 £¨µ¥Î»Ãë£© ÅäÖÃÏî£¬ÄÇÃ´ÒÔÉÏÈı¸öÊ±¼ä¼ä¸ô¼ÆËã·½·¨Îª£º
+notification_interval x interval_length
+check_interval x interval_length
+retry_interval x interval_length
+
 
 Ò»¸öÅäÖÃµÄÀı×Ó
 define host {
@@ -51,19 +61,27 @@ host_name web1
 service_description check_http
 check_period 24x7
 max_check_attempts 2
-normal_check_interval 3
-contact_groups Administrators
-retry_check_interval 2
-notification_interval 10
+normal_check_interval 30
+contact_groups admins
+retry_check_interval 120
+notification_interval 3600
 notification_period 24x7
 notification_options w,u,c,r
 check_command check_http
 }
 
-ÅäÖÃ½âÊÍ£ºËæÊ±¼à¿Ø web1 Ö÷»úÉÏµÄ HTTP ·şÎñ£¬·¢ÉúÁ½´Î²»ÄÜ·ÃÎÊ¾ÍÈÏ¶¨ÊÇ·¢Éú¹ÊÕÏ£¬¹ÊÕÏÀÛ¼ÆÈı´Î¸æ¾¯¡£
-ÁªÏµÈË×éÊÇ Administrators £¬¸æ¾¯Ö®ºóÃ¿Á½·ÖÖÓÔÙ½øĞĞÒ»´Î¼ì²é£¬Èç¹ûÊ®·ÖÖÓÖ®ºóÈÔÈ»Ã»ÓĞ»Ö¸´£¬ÔÙ·¢ËÍÒ»´Î¸æ¾¯¡£
+ÅäÖÃ½âÊÍ£º 24x7 ¼à¿Ø web1 Ö÷»úÉÏµÄ HTTP ·şÎñ£¬¼ì²é¼ä¸ôÎª normal_check_interval x interval_length Ãë£¬ ·¢ÉúÁ½´Î²»ÄÜ·ÃÎÊ¾ÍÈÏ¶¨ÊÇ·¢Éú¹ÊÕÏ²¢¸æ¾¯¡£
+ÁªÏµÈË×éÊÇ admins £¬¸æ¾¯Ö®ºóÃ¿ retry_check_interval x interval_length ÃëÔÙ½øĞĞÒ»´Î¼ì²é¡£
+Èç¹û·şÎñÈÔÈ»Ã»ÓĞ»Ö¸´£¬Ã¿ notification_interval x interval_length Ãë·¢ËÍÒ»´Î¾¯¸æ¡£
 
 Èç¹ûÒª¼ì²âÆäËû·şÎñ£¬ÀıÈç£¬Òª¼ì²é ssh ·şÎñÊÇ·ñ¿ªÆô£¬¸ü¸ÄÈçÏÂÁ½ĞĞ
 service_description check_ssh
 check_command check_ssh
 
+
+Ö÷»ú×éÅäÖÃÎÄ¼ş objects/hostgroups.cfg £¬ÕâÊÇÒ»¸ö¿ÉÑ¡µÄÏîÄ¿£¬Æä¸ñÊ½ÈçÏÂ£º
+define hostgroup {
+hostgroup_name cache-servers
+alias Cache Servers
+members cache1,cache2
+}
