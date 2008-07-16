@@ -1,6 +1,7 @@
 Ö÷ÅäÖÃÎÄ¼ş nagios.cfg ĞèÒª¸ü¸ÄµÄµØ·½
 interval_length=10  ; ¼ä¸ôÊ±¼ä»ù×¼ÓÉ 60s ¸ÄÎª 10s
 command_check_interval=10s  ; ÃüÁî¼ì²éÊ±¼ä¼ä¸ô£¬-1 ±íÊ¾¾¡¿ÉÄÜÆµ·±µÄ½øĞĞ¼ì²é
+date_format=iso8601
 
 objects/contacts.cfg ÓÃÀ´¶¨ÒåÁªÏµÈË
 define contact {
@@ -29,19 +30,6 @@ contact_groups: ¶¨Òå½ÓÊÜÌáĞÑµÄÁªÏµÈË×é£¬Èç¹û hosts.cfg ÎÄ¼şÖĞËùÓĞµÄÌõ¼ş¶¼·ûºÏ£¬Ä
 notification_interval: ÖØ¸´·¢ËÍÌáĞÑĞÅÏ¢µÄ×î¶Ì¼ä¸ôÊ±¼ä¡£Ä¬ÈÏ¼ä¸ôÊ±¼äÊÇ 60 ·ÖÖÓ¡£Èç¹ûÕâ¸öÖµÉèÖÃÎª 0 £¬½«²»»á·¢ËÍÖØ¸´ÌáĞÑ¡£
 notification_period: ·¢ËÍÌáĞÑµÄÊ±¼ä¶Î¡£·Ç³£ÖØÒªµÄÖ÷»ú£¨·şÎñ£©¶¨ÒåÎª 24x7 £¬Ò»°ãµÄÖ÷»ú£¨·şÎñ£©¾Í¶¨ÒåÎªÉÏ°àÊ±¼ä¡£Èç¹û²»ÔÚ¶¨ÒåµÄÊ±¼ä¶ÎÄÚ£¬ÎŞÂÛÊ²Ã´ÎÊÌâ·¢Éú£¬¶¼²»»á·¢ËÍÌáĞÑ¡£
 notification_options: Õâ¸ö²ÎÊı¶¨ÒåÁË·¢ËÍÌáĞÑ°üÀ¨µÄÇé¿ö£º d = ×´Ì¬Îª DOWN , u = ×´Ì¬Îª UNREACHABLE , r = ×´Ì¬»Ö¸´Îª OK , f = flapping , n = ²»·¢ËÍÌáĞÑ¡£
-
-objects/commands.cfg ÖĞÓĞÓÊ¼şÌáĞÑÃüÁîµÄÉèÖÃ
-ÈçÒªÍ¨¹ı smtp ·¢ËÍÓÊ¼ş£¬¿ÉÒÔÊ¹ÓÃ sendEmail
-http://caspian.dotconf.net/menu/Software/SendEmail/
-tar zxvf sendEmail-v1.54.tar.gz
-cd sendEmail-v1.54
-mv sendEmail /usr/local/bin/
-
-vi objects/commands.cfg
-°Ñ notify-host-by-email ºÍ notify-service-by-email µÄÓÊ¼ş·¢ËÍ²¿·Ö¸ÄÎª£º
-/usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s mail.test.com -u "** $NOTIFICATIONTYPE$ alert - $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" -xu nagios -xp password
-
-sendEmail -f bluedata@jc001.cn -t bluedata@139.com -s mx1.jc001.cn -u "ld1 down" -xu bluedata@jc001.cn -xp fanssoft -m "ld1 down :("
 
 ÅúÁ¿Ìæ»»
 find `pwd` -name "*.cfg" -exec perl -p -i -e 's/Administrators/admins/g' {} \;
