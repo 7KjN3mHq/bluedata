@@ -125,6 +125,7 @@ hostname -f
 echo 'MAKEOPTS="-j2"' >> /etc/make.conf
 echo 'USE="-ipv6"' >> /etc/make.conf
 echo 'GENTOO_MIRRORS="http://ftp.iij.ad.jp/pub/linux/gentoo/"' >> /etc/make.conf
+http://ftp.jaist.ac.jp/pub/Linux/Gentoo/
 
 emerge gentoo-sources
 cd /usr/src/linux

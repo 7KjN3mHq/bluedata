@@ -31,10 +31,10 @@ stalking_options [o,d,u]    ; 持续状态检测参数，o = 持续的UP状态 , d = 持续的DOW
 }
 
 在配置文件选项中有几个需要注意的选项：
-notification_interval 通知间隔，单位:秒
-check_interval 检查间隔，单位:秒
-retry_interval 重试检查间隔，单位:秒
-以上三个时间间隔的计算方法为：如果在 Nagios 主配置文件中有 interval_length=10 （单位秒） 配置项，那么以上三个时间间隔计算方法为：
+notification_interval 通知间隔
+check_interval 检查间隔
+retry_interval 重试检查间隔
+如果在 Nagios 主配置文件中有 interval_length=60 （单位秒） 配置项，那么以上三个时间间隔计算方法为：
 notification_interval x interval_length
 check_interval x interval_length
 retry_interval x interval_length
