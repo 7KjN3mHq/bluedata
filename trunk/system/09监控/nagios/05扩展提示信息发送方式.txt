@@ -7,7 +7,7 @@ cd sendEmail-v1.54
 mv sendEmail /usr/local/bin/
 
 发送邮件的示例：
-sendEmail -f bluedata@jc001.cn -t bluedata@139.com -s mx1.jc001.cn -u "ld1 down" -xu bluedata@jc001.cn -xp fanssoft -m "ld1 down :("
+sendEmail -f bluedata@jc001.cn -t bluedata@139.com -s mx1.jc001.cn -u "ld1 down" -xu bluedata@jc001.cn -xp password -m "ld1 down :("
 
 vi objects/commands.cfg
 把 notify-host-by-email 和 notify-service-by-email 的邮件发送部分改为：
@@ -34,20 +34,49 @@ http://perl-xml.sourceforge.net/faq/#parserdetails.ini
 执行
 perl -MXML::SAX -e "XML::SAX->add_parser(q(XML::SAX::PurePerl))->save_parsers()"
 
+mkdir /usr/local/nagios/lib
+mv lib /usr/local/nagios/lib/msn
+chown -R nagios:nagios /usr/local/nagios/lib
+
+vi msn_send.pl
+#!/usr/bin/perl
+use lib "/usr/local/nagios/lib/msn";
+my $handle = 'bluedata@live.cn';
+my $password = 'password';
+
+chown nagios:nagios msn_send.pl
+chmod +x msn_send.pl
+mv msn_send.pl /usr/local/nagios/libexec/
+
+vi /usr/local/nagios/etc/objects/commands.cfg
+
+
 
 发送 短信 提醒
 http://www.it-adv.net/
 
-安装
-tar zxvf fetion20080618002-linux.tar.gz
-
-vi /etc/ld.so.conf.d/fetion-i386.conf
-/usr/local/fetion/lib
-
-ldconfig
-
+###
 http://ftp.gnu.org/gnu/glibc/
 mkdir /usr/src/glibc-build
 tar zxvf glibc-2.7.tar.bz2 -C /usr/src/
 cd /usr/src/glibc-build
 ../glibc-2.7/configure --prefix=/usr/local/glibc-2.7
+###
+
+注意：依赖 glibc-2.4 ，CentOS4/RHEL4, Debian Etch 不能使用。
+
+安装
+tar zxvf lib.tar.gz
+mv lib /usr/lib/fetion
+
+vi /etc/ld.so.conf.d/fetion-i386.conf
+/usr/lib/fetion
+
+ldconfig
+
+tar zxvf fetion_linux_20080402.tar.gz -C /usr/local/bin/
+
+vi /usr/local/bin/sms.sh
+#!/bin/sh
+/usr/local/bin/sms -f 15982058812 -p password -t $1 -m "$2"
+
