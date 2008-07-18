@@ -1,0 +1,82 @@
+使用 smtp 发送邮件
+objects/commands.cfg 中有邮件提醒命令的设置
+如要通过 smtp 发送邮件，可以使用 sendEmail
+http://caspian.dotconf.net/menu/Software/SendEmail/
+tar zxvf sendEmail-v1.54.tar.gz
+cd sendEmail-v1.54
+mv sendEmail /usr/local/bin/
+
+发送邮件的示例：
+sendEmail -f bluedata@jc001.cn -t bluedata@139.com -s mx1.jc001.cn -u "ld1 down" -xu bluedata@jc001.cn -xp password -m "ld1 down :("
+
+vi objects/commands.cfg
+把 notify-host-by-email 和 notify-service-by-email 的邮件发送部分改为：
+/usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s mail.test.com -u "** $NOTIFICATIONTYPE$ alert - $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" -xu nagios -xp password
+
+
+发送 msn 提醒
+http://blog.chinaunix.net/u/24312/showart_1076329.html
+
+yum install perl-XML-Simple
+yum install perl-Hash-Merge
+perl -MCPAN -e 'install Net::MSN'
+cd msn
+修改一下 hello.pl 的 $handle 和 $password
+chmod +x hello.pl
+
+把发送者和接收者互相加为好友，然后发个测试信息试试：
+./hello.pl admin@test.com hello
+
+第一次运行时发现这样的错误提示：
+could not find ParserDetails.ini in /usr/lib/perl5/vendor_perl/5.8.5/XML/SAX
+在这里有相关说明：
+http://perl-xml.sourceforge.net/faq/#parserdetails.ini
+执行
+perl -MXML::SAX -e "XML::SAX->add_parser(q(XML::SAX::PurePerl))->save_parsers()"
+
+mkdir /usr/local/nagios/lib
+mv lib /usr/local/nagios/lib/msn
+chown -R nagios:nagios /usr/local/nagios/lib
+
+vi msn_send.pl
+#!/usr/bin/perl
+use lib "/usr/local/nagios/lib/msn";
+my $handle = 'bluedata@live.cn';
+my $password = 'password';
+
+chown nagios:nagios msn_send.pl
+chmod +x msn_send.pl
+mv msn_send.pl /usr/local/nagios/libexec/
+
+vi /usr/local/nagios/etc/objects/commands.cfg
+
+
+
+发送 短信 提醒
+http://www.it-adv.net/
+
+###
+http://ftp.gnu.org/gnu/glibc/
+mkdir /usr/src/glibc-build
+tar zxvf glibc-2.7.tar.bz2 -C /usr/src/
+cd /usr/src/glibc-build
+../glibc-2.7/configure --prefix=/usr/local/glibc-2.7
+###
+
+注意：依赖 glibc-2.4 ，CentOS4/RHEL4, Debian Etch 不能使用。
+
+安装
+tar zxvf lib.tar.gz
+mv lib /usr/lib/fetion
+
+vi /etc/ld.so.conf.d/fetion-i386.conf
+/usr/lib/fetion
+
+ldconfig
+
+tar zxvf fetion_linux_20080402.tar.gz -C /usr/local/bin/
+
+vi /usr/local/bin/sms.sh
+#!/bin/sh
+/usr/local/bin/sms -f 15982058812 -p password -t $1 -m "$2"
+

@@ -1,0 +1,22 @@
+http://www.pnp4nagios.org/pnp/start
+
+安装
+./configure
+make all
+make install
+
+配置
+编辑主配置文件 nagios.cfg
+process_performance_data=1
+service_perfdata_command=process-service-perfdata
+
+再把 commands.cfg 文件的 command_line 行替换为
+command_line /usr/local/nagios/libexec/process_perfdata.pl
+
+###
+host 或者 service 定义中加入
+process_perf_data 1
+###
+
+浏览
+http://IP/nagios/pnp/
