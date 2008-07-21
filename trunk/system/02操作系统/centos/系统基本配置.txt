@@ -27,7 +27,7 @@ CentOS5.2 再注释掉如下设置：
 # vi CentOS-Base.repo
 :1,$s/mirrorlist=/#mirrorlist=/g
 :1,$s/#baseurl=/baseurl=/g
-:1,$s/mirror.centos.org\/centos/centos.ustc.edu.cn\/centos/g
+:1,$s/mirror.centos.org\/centos/centos.candishosting.com.cn/g
 :wq
 
 可以安装使 yum 支持选择较快镜像的补丁
@@ -52,16 +52,11 @@ alias vi='vim'
 CentOS5.2 先：
 yum -y install vixie-cron crontabs
 # yum -y install ntp
-# ntpdate 210.72.145.44
-# hwclock -w
-定时同步（去掉了其它定时执行的任务）
-vi /etc/crontab
-#01 * * * * root run-parts /etc/cron.hourly
-#02 4 * * * root run-parts /etc/cron.daily
-#22 4 * * 0 root run-parts /etc/cron.weekly
-#42 4 1 * * root run-parts /etc/cron.monthly
+vi /etc/ntp.conf
+server 210.72.145.44
 
-0 0,12 * * * root ntpdate 210.72.145.44 ; hwclock -w
+vi /etc/sysconfig/ntpd
+SYNC_HWCLOCK=yes
 
 去掉不需要启动服务
 CentOS5.2 先：
