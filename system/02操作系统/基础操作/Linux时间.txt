@@ -8,6 +8,8 @@ server 210.72.145.44
 vi /etc/sysconfig/ntpd
 SYNC_HWCLOCK=yes
 
+ntpstat
+
 ntpq -p
 remote：亦即是 NTP 主機的 IP 或主機名稱囉～注意最左邊的符號， 如果有『+』代表目前正在作用當中的上層 NTP ，如果是『*』代表也有連上線，不過是作為次要連線的 NTP 主機。 
 refid：參考的上一層 NTP 主機的位址 

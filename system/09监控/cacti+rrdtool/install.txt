@@ -17,8 +17,9 @@ access  notConfigGroup ""      any       noauth    exact  systemview none none
 #view all    included  .1                               80
 将该行前面的"#"去掉.
 
-启动 snmpd ：
-# /etc/init.d/snmpd start
+启动 snmpd:
+chkconfig snmpd on
+/etc/init.d/snmpd start
 
 
 在监控端，需要安装 net-snmp-utils 和 rrdtool
