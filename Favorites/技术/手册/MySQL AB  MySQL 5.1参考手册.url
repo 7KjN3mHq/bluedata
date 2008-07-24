@@ -1,0 +1,7 @@
+[DEFAULT]
+BASEURL=http://dev.mysql.com/doc/refman/5.1/zh/index.html
+[InternetShortcut]
+URL=http://dev.mysql.com/doc/refman/5.1/zh/index.html
+Modified=00EC0E26690CC7015D
+IconFile=http://dev.mysql.com/common/favicon.ico
+IconIndex=1

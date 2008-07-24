@@ -1,0 +1,9 @@
+[DEFAULT]
+BASEURL=http://newhouse.cd.soufun.com/house/3210095481.htm
+[DOC#1017_mapifm0]
+BASEURL=http://mapd.mapabc.com/mapabcEngine/ime/mapabcmap.jsp
+[DOC#1017_mapifm0_Gime_mapipost]
+BASEURL=http://mapd.mapabc.com/mapabc/zp
+[InternetShortcut]
+URL=http://newhouse.cd.soufun.com/house/3210095481.htm
+Modified=C0CBEDBEBC92C6014B

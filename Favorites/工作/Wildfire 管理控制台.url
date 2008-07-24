@@ -1,0 +1,5 @@
+[DEFAULT]
+BASEURL=http://server:9090/login.jsp?url=%2Findex.jsp
+[InternetShortcut]
+URL=http://server:9090/login.jsp?url=%2Findex.jsp
+Modified=70AAFEB008F1C60188

@@ -1,0 +1,7 @@
+[DEFAULT]
+BASEURL=http://trac.lighttpd.net/trac/wiki/
+[InternetShortcut]
+URL=http://trac.lighttpd.net/trac/wiki/#ReferenceDocumentation
+Modified=A0931FAF9508C70166
+IconFile=http://trac.lighttpd.net/trac/chrome/common/trac.ico
+IconIndex=1
