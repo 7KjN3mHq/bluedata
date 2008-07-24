@@ -1,0 +1,5 @@
+[DEFAULT]
+BASEURL=http://services.nexodyne.com/email/index.php
+[InternetShortcut]
+URL=http://services.nexodyne.com/email/index.php
+Modified=F0B104E26030C601DE
