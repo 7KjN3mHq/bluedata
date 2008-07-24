@@ -67,10 +67,10 @@ cd /usr/src/glibc-build
 
 °²×°
 tar zxvf lib.tar.gz
-mv lib /usr/lib/fetion
+mv lib /usr/local/lib/fetion
 
 vi /etc/ld.so.conf.d/fetion-i386.conf
-/usr/lib/fetion
+/usr/local/lib/fetion
 
 ldconfig
 
@@ -80,3 +80,11 @@ vi /usr/local/bin/sms.sh
 #!/bin/sh
 /usr/local/bin/sms -f 15982058812 -p password -t $1 -m "$2"
 
+chmod +x /usr/local/bin/sms.sh
+
+
+Debian Etch:
+sed -e 's|etch|testing|g' /etc/apt/sources.list > /etc/apt/sources.list~
+mv /etc/apt/sources.list~ /etc/apt/sources.list
+apt-get update
+apt-get dist-upgrade
