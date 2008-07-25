@@ -14,3 +14,11 @@ tar -zxvf xxl.tar.gz ./ xxl/date/test.sql
 这时候在当前目录下面产生一个文件夹/xxl/date，里面就会有我想要的文件test.sql了，这样我就不需要对整个tar包来解包了，还可以解压指定的文件到指定的文件夹
 tar -zxvf xxl.tar.gz -C /home/xxl1/ /xxl/date/test.sql
 这是我们要的文件test.sql就会在/home/xxl1文件夹下面
+
+安装新的 glibc
+http://ftp.gnu.org/gnu/glibc/
+mkdir /usr/src/glibc-build
+tar zxvf glibc-2.7.tar.bz2 -C /usr/src/
+cd /usr/src/glibc-build
+../glibc-2.7/configure --prefix=/usr/local/glibc-2.7
+make && make install
