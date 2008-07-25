@@ -1,4 +1,4 @@
-使用 smtp 发送邮件
+1. 使用 smtp 发送邮件
 objects/commands.cfg 中有邮件提醒命令的设置
 如要通过 smtp 发送邮件，可以使用 sendEmail
 http://caspian.dotconf.net/menu/Software/SendEmail/
@@ -7,14 +7,15 @@ cd sendEmail-v1.54
 mv sendEmail /usr/local/bin/
 
 发送邮件的示例：
-sendEmail -f bluedata@jc001.cn -t bluedata@139.com -s mx1.jc001.cn -u "ld1 down" -xu bluedata@jc001.cn -xp password -m "ld1 down :("
+sendEmail -f nagios@test.com -t admin@test.com -s smtp.test.com -u "test" -xu nagios@test.com -xp password -m "test."
 
 vi objects/commands.cfg
 把 notify-host-by-email 和 notify-service-by-email 的邮件发送部分改为：
-/usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s mail.test.com -u "** $NOTIFICATIONTYPE$ alert - $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" -xu nagios -xp password
+/usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s smtp.test.com -u "$HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$" -xu nagios@test.com -xp password
 
 
-发送 msn 提醒
+2. 发送 msn 提醒
+这里有个 perl 写的程序：
 http://blog.chinaunix.net/u/24312/showart_1076329.html
 
 yum install perl-XML-Simple
@@ -41,49 +42,51 @@ chown -R nagios:nagios /usr/local/nagios/lib
 vi msn_send.pl
 #!/usr/bin/perl
 use lib "/usr/local/nagios/lib/msn";
-my $handle = 'bluedata@live.cn';
+my $handle = 'nagios@live.cn';
 my $password = 'password';
 
 chown nagios:nagios msn_send.pl
 chmod +x msn_send.pl
 mv msn_send.pl /usr/local/nagios/libexec/
 
+添加 MSN 提醒执行的命令：
 vi /usr/local/nagios/etc/objects/commands.cfg
+define command{
+        command_name    notify-host-by-msn
+        command_line    /usr/local/nagios/libexec/msn_send.pl $CONTACTEMAIL$ "`/usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\nHost: $HOSTNAME$\nState: $HOSTSTATE$\nAddress: $HOSTADDRESS$\nInfo: $HOSTOUTPUT$\n\nDate/Time: $LONGDATETIME$\n"`"
+        }
+
+define command{
+        command_name    notify-service-by-msn
+        command_line    /usr/local/nagios/libexec/msn_send.pl $CONTACTEMAIL$ "`/usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$"`"
+        }
 
 
+3. 发送 短信 提醒
+简单的，在 www.139.com 注册移动的邮箱，设置邮件短信提醒。这样就可以发送邮件的标题到注册的手机号码上。
 
-发送 短信 提醒
+还有利用飞信实现的：
 http://www.it-adv.net/
+依赖 glibc-2.4 。 CentOS4/RHEL4, Debian Etch 不能使用。
 
-###
-http://ftp.gnu.org/gnu/glibc/
-mkdir /usr/src/glibc-build
-tar zxvf glibc-2.7.tar.bz2 -C /usr/src/
-cd /usr/src/glibc-build
-../glibc-2.7/configure --prefix=/usr/local/glibc-2.7
-###
-
-注意：依赖 glibc-2.4 ，CentOS4/RHEL4, Debian Etch 不能使用。
-
-安装
+安装所依赖的库：
 tar zxvf lib.tar.gz
 mv lib /usr/local/lib/fetion
-
-vi /etc/ld.so.conf.d/fetion-i386.conf
-/usr/local/lib/fetion
-
+echo "/usr/local/lib/fetion" > /etc/ld.so.conf.d/fetion-i386.conf
 ldconfig
 
+再安装飞信的命令行客户端：
 tar zxvf fetion_linux_20080402.tar.gz -C /usr/local/bin/
 
 vi /usr/local/bin/sms.sh
 #!/bin/sh
-/usr/local/bin/sms -f 15982058812 -p password -t $1 -m "$2"
+/usr/local/bin/sms -f 159xxxxxxxx -p password -t $1 -m "$2"
 
 chmod +x /usr/local/bin/sms.sh
 
+如添加 MSN 提醒命令那样添加短信提醒的命令就可以了。
 
-Debian Etch:
+Debian Etch 可以升级到 testing ， glibc 也就更新到 2.4 了。
 sed -e 's|etch|testing|g' /etc/apt/sources.list > /etc/apt/sources.list~
 mv /etc/apt/sources.list~ /etc/apt/sources.list
 apt-get update

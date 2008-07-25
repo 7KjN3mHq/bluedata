@@ -1,0 +1,52 @@
+#!/bin/sh
+
+unset LANG
+LC_ALL=C
+export LC_ALL
+PATH=$PATH:/usr/local/mysql/bin
+export PATH
+
+user=root
+password=PASSWORD
+master_host="192.168.0.250"
+port=3307
+master_port=3306
+datadir="/data"
+backup_path="/backup"
+backup_dir=`date +%Y%m%d`
+backup_dir_pre=`date +%Y%m%d --date='1 days ago'`
+backup_dir_expire=`date +%Y%m%d --date='5 days ago'`
+remote_backup_host="192.168.0.104"
+remote_backup_path="/data/databases"
+remote_backup_name="`date +%w --date='1 days ago'`.tar.bz2"
+
+## 获得当前备份需要的 binlog
+backup_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
+
+## 刷新 master 的 binlog
+mysql -u$user -p$password -h$master_host -P$master_port -e 'flush logs'
+
+## 停止 slave
+mysql -u$user -p$password -P$port -e 'stop slave'
+
+## 做完整备份
+rsync -a $datadir/ $backup_path/$backup_dir/
+
+## 开始 slave
+mysql -u$user -p$password -P$port -e 'start slave'
+
+## 复制 master 的 $backup_binlog 到前一个备份目录
+scp $master_host:$datadir/$backup_binlog $backup_path/$backup_dir_pre/binlog_$backup_dir_pre
+
+## 获得当前 binlog
+curr_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
+
+## 清除已备份的 binlog
+mysql -u$user -p$password -h$master_host -P$master_port -e 'purge master logs to "'$curr_binlog'"'
+
+## 打包前一个备份目录并传送到远程备份主机
+cd $backup_path
+tar -cjpf - $backup_dir_pre | ssh $remote_backup_host "cat > $remote_backup_path/$remote_backup_name"
+
+## 删除过期备份
+rm -rf $backup_dir_expire
