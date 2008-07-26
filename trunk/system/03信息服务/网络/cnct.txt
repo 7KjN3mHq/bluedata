@@ -19,3 +19,18 @@ ip route replace default via 192.168.6.2
 
 
 route add -host 219.153.20.171 eth2
+
+
+电信的数据从电信的回来，网通的从网通的回来
+ETH0=192.168.0.x
+ETH1=192.168.0.y
+GATEWAY=192.168.0.z
+
+/sbin/route  add  -net  0.0.0.0  netmask  0.0.0.0  gw  $GATEWAY  dev  eth0
+/sbin/route  add  -net  0.0.0.0  netmask  0.0.0.0  gw  $GATEWAY  dev  eth1
+
+/sbin/ip  route  add  to  0.0.0.0/0  via  $GATEWAY  dev  eth0  table  10
+/sbin/ip  rule  add  from  $ETH0/32  table  10                          
+
+/sbin/ip  route  add  to  0.0.0.0/0  via  $GATEWAY  dev  eth1  table  20
+/sbin/ip  rule  add  from  $ETH1/32  table  20
