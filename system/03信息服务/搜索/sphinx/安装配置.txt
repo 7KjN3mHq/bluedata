@@ -1,0 +1,18 @@
+./configure \
+--prefix=/usr/local/sphinx \
+--with-mysql=/usr/local/mysql
+make
+make install
+
+vi /etc/ld.so.conf
+/usr/local/mysql/lib/mysql
+
+cd /usr/local/sphinx/etc
+cp sphinx.conf.dist sphinx.conf
+
+/usr/local/sphinx/bin/indexer --config /usr/local/sphinx/etc/sphinx.conf --all
+
+/usr/local/sphinx/bin/search test
+
+/usr/local/sphinx/bin/searchd  --config /usr/local/sphinx/etc/sphinx.conf
+
