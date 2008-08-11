@@ -1,0 +1,14 @@
+Centos 5.1 installed mogileFS
+To install a tracker:
+
+rpm -Uvh http://download.fedora.redhat.co ... ease-5-2.noarch.rpm
+
+yum -y install mogilefsd perl-MogileFS-Client perl-MogileFS-Utils
+
+To install a storage node:
+
+rpm -Uvh  ttp://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-2.noarch.rpm
+
+yum -y install mogstored mogstored-backend-perlbal
+mogstored-backend-lighttpd mogstored-backend-apache perl-MogileFS-Client
+perl-MogileFS-Utils
