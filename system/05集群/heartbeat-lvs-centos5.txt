@@ -1,0 +1,208 @@
+系统：CentOS5.2
+软件：heartbeat heartbeat-ldirectord ipvsadm
+
+
+机器：2台
+IP 分布：
+ld1(主调度器), ip: 192.168.1.240
+ld2(辅调度器), ip: 192.168.1.250
+VIP(虚拟 IP), ip: 192.168.1.246
+
+
+LVS/DR 模式
+
+
+1. 安装：
+yum -y install heartbeat heartbeat-ldirectord
+yum 会自动解决依赖性问题，包括安装 ipvsadm 。
+
+
+2. 配置：
+a) authkeys
+auth 1
+1 crc
+#2 sha1 sha1_any_password
+#3 md5 md5_any_password
+# chmod 600 authkeys
+
+b) ha.cf
+mcast eth0 225.0.0.1 694 1 0
+auto_failback off
+node ld1
+node ld2
+ping 202.75.216.161
+
+## softdog
+## ha.cf : watchdog /dev/watchdog
+# modprobe softdog
+## /etc/modules.conf : alias watchdog softdog
+
+c) haresources
+master:
+ld1 \
+IPaddr::202.75.216.172/28/eth0 \
+IPaddr::202.75.216.173/28/eth0 \
+IPaddr::202.91.231.173/28/eth0 \
+ldirectord
+
+backup:
+ld2 \
+LVS \
+IPaddr::202.75.216.172/28/eth0 \
+IPaddr::202.75.216.173/28/eth0 \
+IPaddr::202.91.231.173/28/eth0 \
+ldirectord
+
+注：202.75.216.172 为 HA DNS 的 IP 。
+
+d) ldirectord.cf
+quiescent=no
+
+virtual=202.75.216.173:80
+        fallback=127.0.0.1:80
+        real=202.75.216.163:80 gate 7
+        real=202.75.216.164:80 gate 9
+        real=202.75.216.165:80 gate 8
+        real=202.75.216.166:80 gate 6
+        real=202.75.216.167:80 gate 5
+        service=http
+        request="checknode.lvs"
+        receive="ok"
+        scheduler=wrr
+#        persistent=1
+        protocol=tcp
+
+virtual=202.91.231.173:80
+        fallback=127.0.0.1:80
+        real=202.91.231.163:80 gate 7
+        real=202.91.231.164:80 gate 9
+        real=202.91.231.165:80 gate 8
+        real=202.91.231.166:80 gate 6
+        real=202.91.231.167:80 gate 5
+        service=http
+        request="checknode.lvs"
+        receive="ok"
+        scheduler=wrr
+#        persistent=1
+        protocol=tcp
+
+e) LVS
+# vi /etc/ha.d/resource.d/LVS
+#!/bin/sh
+# chkconfig: 2345 90 10
+# description: Preparing for Load Balancer and Real Server switching.
+
+. /etc/init.d/functions
+
+unset LANG
+LC_ALL=C
+export LC_ALL
+
+VIP1="202.75.216.173"
+VIP2="202.91.231.173"
+IFACE="eth0"
+
+case "$1" in
+    start)
+        echo "Preparing for Load Balancer"
+        sysctl -w net.ipv4.ip_forward=1
+        ifconfig lo:0 down
+        ifconfig lo:1 down
+        sysctl -w net.ipv4.conf.all.arp_ignore=0
+        sysctl -w net.ipv4.conf.$IFACE.arp_ignore=0
+        sysctl -w net.ipv4.conf.all.arp_announce=0
+        sysctl -w net.ipv4.conf.$IFACE.arp_announce=0
+        sysctl -w net.ipv4.conf.lo.rp_filter=1
+        ;;
+    stop)
+        echo "Preparing for Real Server"
+        sysctl -w net.ipv4.ip_forward=0
+        ifconfig lo:0 $VIP1 netmask 255.255.255.255 up
+        ifconfig lo:1 $VIP2 netmask 255.255.255.255 up
+        sysctl -w net.ipv4.conf.all.arp_ignore=1
+        sysctl -w net.ipv4.conf.$IFACE.arp_ignore=1
+        sysctl -w net.ipv4.conf.all.arp_announce=2
+        sysctl -w net.ipv4.conf.$IFACE.arp_announce=2
+        sysctl -w net.ipv4.conf.lo.rp_filter=0
+        ;;
+    *)
+        echo "Usage: LVS {start|stop}"
+        exit 1
+esac
+
+# chmod +x /etc/ha.d/resource.d/LVS
+
+f) Other Configs
+# vi /etc/hosts
+202.75.216.162  ld1
+202.75.216.163  ld2
+
+# uname -n
+# hostname ld1
+
+# cat /etc/sysconfig/network
+NETWORKING=yes
+HOSTNAME=ld1
+
+# vi /etc/sysconfig/network-scripts/ifcfg-eth1
+GATEWAY=202.75.216.161
+
+# vi /etc/sysconfig/network-scripts/ifcfg-eth0:0
+GATEWAY=202.91.231.161
+
+# chkconfig --level 2345 heartbeat on
+# chkconfig heartbeat reset
+## fix bug
+# cd /etc/rc.d
+# for i in `find rc[2-5].d -name S99heartbeat` ; do
+t=`echo $i|sed s/99/75/`
+mv $i $t
+done
+
+# for i in `find rc[0,1,6].d -name K01heartbeat` ; do
+t=`echo $i|sed s/01/05/`
+mv $i $t
+done
+
+g) real server
+# vi /etc/rc.local
+ifconfig lo:0 202.75.216.173 netmask 255.255.255.255 up
+ifconfig lo:1 202.91.231.173 netmask 255.255.255.255 up
+
+# vi /etc/sysctl.conf
+net.ipv4.conf.all.arp_ignore = 1
+net.ipv4.conf.eth0.arp_ignore = 1
+net.ipv4.conf.all.arp_announce = 2
+net.ipv4.conf.eth0.arp_announce = 2
+net.ipv4.conf.lo.rp_filter = 0
+
+
+3. 其它
+a) 网络调整
+# vi /etc/rc.local
+echo "900" > /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_established
+
+这里把 ip_conntrack_tcp_timeout_established 调整为和 lvs 的默认 timeout 一样。
+# ipvsadm -Ln --timeout
+可以通过 ipvsadm --set tcp tcpfin udp 来调整 TCP 和 UDP 的超时。
+
+b) 手动重载 /etc/ha.d/ldirectord.cf
+# /etc/ha.d/resource.d/ldirectord restart
+
+c) 查看统计信息：
+ipvsadm -L -n --stats
+Prot LocalAddress:Port Conns InPkts OutPkts InBytes OutBytes
+                      连接数 输入包 输出包 输入流量 输出流量
+
+watch "ipvsadm -L -n"
+
+/etc/ha.d/resource.d/LVSSyncDaemonSwap master status
+/etc/ha.d/resource.d/LVSSyncDaemonSwap backup status
+
+d) MySQL
+If you wish to use ldirectord to monitor a MySQL service using a connect check,
+you will need the following packages from Red Hat:
+perl-DBI, libdbi, perl-CGI, mysql, libdbi-dbd-mysql and perl-DBD-MySQL.
+
+CentOS3.x: perl-CGI
+CentOS4.x: perl-FCGI

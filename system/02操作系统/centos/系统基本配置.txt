@@ -11,7 +11,7 @@ SUPPORTED="zh_CN.GBK:zh_CN:zh"
 alias net-pf-10 off
 
 CentOS5.2 禁用 SELinux
-vi /etc/sysconfig/selinux
+# vi /etc/sysconfig/selinux
 SELINUX=disabled
 
 修改 hosts 文件（可再添加 IP 对应的主机名）
@@ -52,15 +52,15 @@ alias vi='vim'
 CentOS5.2 先：
 yum -y install vixie-cron crontabs
 # yum -y install ntp
-vi /etc/ntp.conf
+# vi /etc/ntp.conf
 server 210.72.145.44
 
-vi /etc/sysconfig/ntpd
+# vi /etc/sysconfig/ntpd
 SYNC_HWCLOCK=yes
 
 去掉不需要启动服务
 CentOS5.2 先：
-yum -y install ntsysv
+# yum -y install ntsysv
 # unset LANG
 # ntsysv
 
@@ -74,7 +74,7 @@ yum -y install ntsysv
 # yum -y remove kernel-2.6.9-67.EL kernel-2.6.9-67.0.15.EL kernel-smp-2.6.9-67.EL
 
 安装开发工具
-# yum -y install libtool gcc-c++
+# yum -y install libtool gcc-c++ make
 ## Dependency Installed: autoconf automake cpp libtool-libs glibc-kernheaders
                          glibc-headers glibc-devel gcc libstdc++-devel
 
