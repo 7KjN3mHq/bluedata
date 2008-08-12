@@ -73,14 +73,8 @@ anongid=xxx：指定NFS服务器/etc/passwd文件中匿名用户的GID
 
 另外，还需要查看系统的iptables、/etc/hosts.allow、/etc/hosts.deny是否设置了正确的NFS访问规则。
 
-参考：
-nfs-howto
 
-关键词： nfs优化                                           
-
-今天逛承老大的blog(http://www.raidcheng.net)，从上面看到一篇介绍nfs优化的，觉得非常不错，于是转载过来，也算自己收藏一份
-
-
+nfs优化                                           
 
 1.设置块大小
 mount命令的risize和wsize指定了server端和client端的传输的块大小。
@@ -155,4 +149,3 @@ net.core.wmmem_default=数目
 net.core.rmmem_max=数目 
 net.core.wmmem_max=数目
 #service nfs restart
-
