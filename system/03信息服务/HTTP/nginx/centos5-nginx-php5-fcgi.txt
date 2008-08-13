@@ -69,37 +69,18 @@ cp -a src/spawn-fcgi /usr/local/php-fcgi/bin/
 cd ..
 
 
-安装 Nginx
-下载：http://nginx.net/
-yum -y install pcre-devel zlib-devel
-tar zxvf nginx-0.6.32.tar.gz
-cd nginx-0.6.32
-./configure \
---user=nobody \
---group=nobody \
---prefix=/usr/local/nginx \
---with-http_stub_status_module
-make
-make install
-cd ..
-
-
 配置 PHP
 vi /usr/local/php-fcgi/etc/php.ini
 # 最大执行时间
 max_execution_time = 5
-# 打开全局变量兼容老程序
-register_globals = On
-# 默认编码
-default_charset = "gbk"
 # 扩展模块的目录
-extension_dir = "/usr/local/php-fcgi/lib/php/extensions/no-debug-non-zts-20020429"
+extension_dir = "/usr/local/php-fcgi/lib/php/extensions/no-debug-non-zts-20060613"
 # 关闭 mysql 持久连接。高访问量下会把数据库可用连接用完。
 mysql.allow_persistent = Off
-# 降低连接超时时间
+# 缩短连接超时时间
 mysql.connect_timeout = 10
 # session 文件存储目录，这里为两级目录，需要手动创建。
-session.save_path = "2;/tmpfs/phpsession"
+session.save_path = "2;/home/phpsession"
 # session 过期时间设为一小时。
 session.gc_maxlifetime = 3600
 # 关闭
@@ -135,9 +116,55 @@ zend_extension=/usr/local/Zend/lib/ZendExtensionManager.so
 [memcache]
 extension=memcache.so
 
+用 tmpfs 提升性能
+mkdir /tmpfs
+在 /etc/fstab 中加入
+tmpfs                   /tmpfs              tmpfs   size=256m,mode=1777        0 0
+
+mount -a
+
+mkdir /tmpfs/eaccelerator
+chown -R nobody:nobody /tmpfs/eaccelerator
+chmod -R 1777 /tmpfs/eaccelerator
+
+vi mkdir.sh
+#/bin/sh
+
+I="0 1 2 3 4 5 6 7 8 9 a b c d e f"
+for acm in $I;
+do
+for x in $I;
+do
+mkdir -p /home/phpsession/$acm/$x;
+done;
+done
+chown -R nobody:nobody /home/phpsession
+chmod -R 1777 /home/phpsession
+
+chmod +x mkdir.sh
+./mkdir.sh
+
+
+安装 Nginx
+下载：http://nginx.net/
+yum -y install pcre-devel zlib-devel
+tar zxvf nginx-0.6.32.tar.gz
+cd nginx-0.6.32
+./configure \
+--user=nobody \
+--group=nobody \
+--prefix=/usr/local/nginx \
+--with-http_stub_status_module
+make
+make install
+cd ..
+
 
 配置 Nginx
-建立相应目录
+创建相关目录
+mkdir /tmp/nginx
+chown -R nobody:nobody /tmp/nginx
+chmod -R 1777 /tmp/nginx
 mkdir /var/log/nginx
 cd /usr/local/nginx
 mv logs conf/vhosts
@@ -164,14 +191,14 @@ events {
 
 http {
 # 包含 mime types 的配置文件
-    include       conf/mime.types;
+    include       mime.types;
 # 默认类型
     default_type  application/octet-stream;
 
 # 定义 temp 的路径
-    client_body_temp_path  /tmpfs/nginx/client_body_temp;
-    proxy_temp_path        /tmpfs/nginx/proxy_temp;
-    fastcgi_temp_path      /tmpfs/nginx/fastcgi_temp;
+    client_body_temp_path  /tmp/nginx/client_body_temp;
+    proxy_temp_path        /tmp/nginx/proxy_temp;
+    fastcgi_temp_path      /tmp/nginx/fastcgi_temp;
 
 # 如果 server_name 定义的域名过多，需要增大这个值
     server_names_hash_bucket_size  128;
@@ -214,14 +241,14 @@ http {
 # 监听端口
         listen       80;
 # 匹配所有域名
-        server_name  _ *;
+        server_name  _;
 # 默认首页
         index  index.php;
 # 根目录路径
         root  /home/www;
 # 执行 php 程序文件的设置
         location ~ .*\.php?$ {
-            include  conf/fcgi.conf;
+            include  fcgi.conf;
         }
 # 对于以下文件不记录访问日志
         location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico)$ {
@@ -230,12 +257,12 @@ http {
     }
 
 # 包含其它虚拟主机的配置
-    include  conf/vhosts/*.conf;
+    include  vhosts/*.conf;
 }
 
 
-vi fcgi.conf
-fastcgi_pass  127.0.0.1:10080;
+vi php-fcgi.conf
+fastcgi_pass   php-fcgi;
 
 fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
 fastcgi_param  SERVER_SOFTWARE    nginx;
@@ -258,7 +285,6 @@ fastcgi_param  SERVER_ADDR        $server_addr;
 fastcgi_param  SERVER_PORT        $server_port;
 fastcgi_param  SERVER_NAME        $server_name;
 
-# PHP only, required if PHP was built with --enable-force-cgi-redirect
 fastcgi_param  REDIRECT_STATUS    200;
 
 
@@ -326,42 +352,8 @@ vi vhosts/main.conf
     }
 
 
-用 tmpfs 提升性能
-mkdir /tmpfs
-在 /etc/fstab 中加入
-tmpfs                   /tmpfs              tmpfs   size=256m,mode=1777        0 0
-
-mount -a
-
-创建相关目录
-vi /usr/local/sbin/mkdir.sh
-#/bin/sh
-
-mkdir /tmpfs/nginx
-chown -R nobody:nobody /tmpfs/nginx
-chmod -R 1777 /tmpfs/nginx
-
-mkdir /tmpfs/eaccelerator
-chown -R nobody:nobody /tmpfs/eaccelerator
-chmod -R 1777 /tmpfs/eaccelerator
-
-I="0 1 2 3 4 5 6 7 8 9 a b c d e f"
-for acm in $I;
-do
-for x in $I;
-do
-mkdir -p /tmpfs/phpsession/$acm/$x;
-done;
-done
-chown -R nobody:nobody /tmpfs/phpsession
-chmod -R 1777 /tmpfs/phpsession
-
-chmod +x /usr/local/sbin/mkdir.sh
-mkdir.sh
-
-
 启动 PHP 和 Nginx
-/usr/local/php-fcgi/bin/spawn-fcgi -a 127.0.0.1 -p 10080 -C 32 -u nobody -g nobody -f /usr/local/php-fcgi/bin/php
+/usr/local/php-fcgi/bin/spawn-fcgi -a 192.168.0.241 -p 10080 -C 32 -u nobody -g nobody -f /usr/local/php-fcgi/bin/php-cgi
 监听在 127.0.0.1 的 10080 端口并开启 32 个进程，使用和 Nginx 一样的 nobody 用户。（PHP5 的执行程序是 php-cgi）
 /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
 重启 PHP 进程可以先 killall php 再启动。
@@ -378,7 +370,7 @@ vi /etc/crontab
 配置开机自启动
 vi /etc/rc.local
 /usr/local/sbin/mkdir.sh
-/usr/local/php-fcgi/bin/spawn-fcgi -a 127.0.0.1 -p 10080 -C 32 -u nobody -g nobody -f /usr/local/php-fcgi/bin/php
+/usr/local/php-fcgi/bin/spawn-fcgi -a 192.168.0.241 -p 10080 -C 32 -u nobody -g nobody -f /usr/local/php-fcgi/bin/php-cgi
 /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
 
 
