@@ -1,0 +1,69 @@
+限制每个IP一个线程，每个线程20K/s带宽；
+
+下载限制：
+http {
+        limit_zone one $binary_remote_addr 10m;
+        server {
+                location /upload/ {
+                      limit_conn one 1;
+                      limit_rate 20k;
+                }
+       }
+}
+
+参考： http://wiki.codemongers.com/NginxHttpLimitZoneModule
+
+
+防止图片盗链，将盗链的URL显示为指定图片：
+location /upload/ {
+                valid_referers  none  blocked  server_names  *.www.wp1998.cn;
+                if ($invalid_referer) {
+                    rewrite  ^/  http://www.wp1998.cn/images/error.gif
+                    #return   403;
+                }
+}
+
+
+利用 nginx 的第三方模块 ngx_http_accesskey_module 来实现下载文件的防盗链
+description:
+比如我的 download 目录下有一个 file.zip 的文件。对应的URI 是http://example.com/download/file.zip
+使用ngx_http_accesskey_module  模块后http://example.com/download/file.zip?key=09093abeac094. 只有给定的key值正确了，才能够下载 download 目录下的 file.zip
+而且 key 值是根据用户的 Ip 有关的，这样就可以避免被盗链了。
+安装模块方法
+下载源文件: nginx-accesskey-2.0.3.tar.gz 
+解压，然后在编译nginx的时候加上:
+    ./configure --addon-module=path/to/nginx-accesskey 
+开发者:  OWOX project   http://www.owoxengine.com/
+
+
+配置方法
+
+需要在nginx的配置文件里面添加
+    location /download {        accesskey             on;        accesskey_hashmethod md5;        accesskey_arg         "key";        accesskey_signature   "mypass$remote_addr";    } 
+
+
+语法:
+accesskey [on|off]
+默认是off。
+用 on 开启这个功能。
+
+accesskey_arg "string"
+默认是 key，就是用于http://example.com/download/file.zip?key=09093abeac094 里面的 key。
+如果使用 accesskey_arg "string"
+要下载就应该是 http://example.com/download/file.zip?string=09093abeac094
+
+accesskey_hashmethod [md5|sha1]
+默认是 md5.
+这里是选择哈希的类型。随便用哪个都可以。不过在生成下载 uri 的时候需要使用相应的哈希方法。
+
+accesskey_signature "string"
+默认是accesskey_signature "$remote_addr"
+这里是被签名（哈希）的字符串。
+$remote_addr 表示用户的 ip。
+为了很好的防盗链，这里应该给用户ip加上噪声。让别人无法猜到。
+比如accesskey_signature " myPassWord $remote_addr"
+
+
+生成下载URI 的方法。
+假设    location /download {        accesskey             on;        accesskey_hashmethod md5;        accesskey_arg         "key";        accesskey_signature   "mypass$remote_addr";    }Php:
+http://example.com/download/file.zip?key=<?php echo md5(“mypass “.$_SERVER['REMOTE_ADDR']); ?>

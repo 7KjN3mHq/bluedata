@@ -1,0 +1,32 @@
+连接数限制
+maxconn ACL 指来自客户IP 地址的大量同时连接。某些squid 管理员发现这是个有用的方法，用以阻止用户滥用代理或者消耗过多资源。
+maxconn ACL 在请求超过指定的数量时，会匹配这个请求。因为这个理由，你应该仅仅在deny 规则里使用maxconn。考虑如下例子：
+acl OverConnLimit maxconn 4
+http_access deny OverConnLimit 
+在该情况中，squid 允许来自每个IP 地址的同时连接数最大为4 个。当某个客户发起第五个连接时，OverConnLimit ACL 被匹配，http_access 规则拒绝该请求。
+
+
+带宽限制
+--enable-delay-pools
+delay_pools 1 #定义一个池 
+delay_class 1 1 #池为1类型 
+delay_access 1 allow all #允许类型1的所有请求访问 
+delay_parameters 1 128000/128000 #限制访问的128k/s 
+delay_initial_bucket_level 50 #Squid启动时，初始化池所用的带宽数量。
+
+
+下面几个配置标记采用系统默认配置。 
+{ maximum_object_size 4096 KB 
+{ 超过此尺寸的对象将不缓存。 
+{ minimum_object_size 0 KB 
+{ 小于此尺寸的对象将不缓存。 
+{ maximum_object_size_in_memory 8 KB 
+{ 内存中能缓存的最大对象尺寸。 
+{ ipcache_size 1024 
+{ 指定IP缓存大小。 
+{ ipcache_low 90 
+{ 缓存IP地址的最低基线。 
+{ ipcache_high 95 
+{ 缓存IP地址的最高极限。 
+{ fqdncache_size 1024 
+{ 缓存DNS全域名解析的尺寸。
