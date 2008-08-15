@@ -9,8 +9,6 @@ cd php-5.2.6
 ./configure \
 --prefix=/usr/local/php-fcgi \
 --enable-fastcgi \
---enable-discard-path \
---enable-force-cgi-redirect \
 --enable-mbstring=all \
 --with-config-file-path=/usr/local/php-fcgi/etc \
 --with-gd \
