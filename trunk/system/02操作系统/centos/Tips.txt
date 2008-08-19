@@ -65,3 +65,8 @@ for file in /etc/sysconfig/modules/*.modules ; do
 done
 
 可以参照 /etc/sysconfig/modules 目录下的 udev-stw.modules 创建一个以 .modules 结尾的可执行文件来加载模块。
+
+
+静态路由
+vi /etc/sysconfig/network-scripts/route-eth0
+10.0.0/24 via 192.168.0.254
