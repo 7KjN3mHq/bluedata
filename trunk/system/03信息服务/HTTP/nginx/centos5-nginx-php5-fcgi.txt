@@ -1,19 +1,25 @@
 CentOS5.2 Nginx PHP5 FastCGI 安装配置记录
 
 安装 PHP
-下载：http://www.php.net/downloads.php
-yum -y install mysql-devel gd-devel libxml2-devel
+下载 PHP: http://www.php.net/downloads.php
+下载 php-fpm: wget http://php-fpm.anight.org/downloads/head/php-5.2.6-fpm-0.5.8.diff.gz
+yum -y install mysql-devel gd-devel libxml2-devel patch
 可根据自己的需要更改编译选项。
 tar jxvf php-5.2.6.tar.bz2
+gzip -cd php-5.2.6-fpm-0.5.8.diff.gz | patch -d php-5.2.6 -p1
 cd php-5.2.6
 ./configure \
 --prefix=/usr/local/php-fcgi \
+--enable-discard-path \
 --enable-fastcgi \
---enable-mbstring=all \
+--enable-fpm \
+--enable-force-cgi-redirect \
+--enable-mbstring \
 --with-config-file-path=/usr/local/php-fcgi/etc \
 --with-gd \
 --with-zlib \
---with-mysql
+--with-mysql \
+--with-mysqli
 make
 make install
 cp -f php.ini-dist /usr/local/php-fcgi/etc/php.ini
@@ -54,6 +60,7 @@ make install
 cd ..
 
 
+###
 安装 Linghttpd's spawn-fcgi
 用 Lighttpd 的 spawn-fcgi 来管理 PHP FastCGI 进程。
 下载 Lighttpd: http://www.lighttpd.net/download
@@ -65,12 +72,15 @@ cd lighttpd-1.4.19
 make
 cp -a src/spawn-fcgi /usr/local/php-fcgi/bin/
 cd ..
+###
 
 
 配置 PHP
 vi /usr/local/php-fcgi/etc/php.ini
 # 最大执行时间
 max_execution_time = 5
+# 关闭错误输出
+display_errors = Off
 # 扩展模块的目录
 extension_dir = "/usr/local/php-fcgi/lib/php/extensions/no-debug-non-zts-20060613"
 # 关闭 mysql 持久连接。高访问量下会把数据库可用连接用完。
@@ -143,6 +153,162 @@ chmod +x mkdir.sh
 ./mkdir.sh
 
 
+vi /usr/local/php-fcgi/etc/php-fpm.conf
+<?xml version="1.0" ?>
+<configuration>
+
+        All relative paths in this config are relative to php's install prefix
+
+        <section name="global_options">
+
+                Pid file
+                <value name="pid_file">/usr/local/php-fcgi/logs/php-fpm.pid</value>
+
+                Error log file
+                <value name="error_log">/usr/local/php-fcgi/logs/php-fpm.log</value>
+
+                Log level
+                <value name="log_level">notice</value>
+
+                When this amount of php processes exited with SIGSEGV or SIGBUS ...
+                <value name="emergency_restart_threshold">10</value>
+
+                ... in a less than this interval of time, a graceful restart will be initiated.
+                Useful to work around accidental curruptions in accelerator's shared memory.
+                <value name="emergency_restart_interval">1m</value>
+
+                Time limit on waiting child's reaction on signals from master
+                <value name="process_control_timeout">5s</value>
+
+                Set to 'no' to debug fpm
+                <value name="daemonize">yes</value>
+
+        </section>
+
+        <workers>
+
+                <section name="pool">
+
+                        Name of pool. Used in logs and stats.
+                        <value name="name">default</value>
+
+                        Address to accept fastcgi requests on.
+                        Valid syntax is 'ip.ad.re.ss:port' or just 'port' or '/path/to/unix/socket'
+                        <value name="listen_address">192.168.0.241:10080</value>
+
+                        <value name="listen_options">
+
+                                Set listen(2) backlog
+                                <value name="backlog">-1</value>
+
+                                Set permissions for unix socket, if one used.
+                                In Linux read/write permissions must be set in order to allow connections from web server.
+                                Many BSD-derrived systems allow connections regardless of permissions.
+                                <value name="owner"></value>
+                                <value name="group"></value>
+                                <value name="mode">0666</value>
+                        </value>
+
+                        Additional php.ini defines, specific to this pool of workers.
+                        <value name="php_defines">
+                                <value name="sendmail_path">/usr/sbin/sendmail -t -i</value>
+                                <value name="display_errors">0</value>
+                        </value>
+
+                        Unix user of processes
+                        <value name="user">nobody</value>
+
+                        Unix group of processes
+                        <value name="group">nobody</value>
+
+                        Process manager settings
+                        <value name="pm">
+
+                                Sets style of controling worker process count.
+                                Valid values are 'static' and 'apache-like'
+                                <value name="style">static</value>
+
+                                Sets the limit on the number of simultaneous requests that will be served.
+                                Equivalent to Apache MaxClients directive.
+                                Equivalent to PHP_FCGI_CHILDREN environment in original php.fcgi
+                                Used with any pm_style.
+                                <value name="max_children">16</value>
+
+                                Settings group for 'apache-like' pm style
+                                <value name="apache_like">
+
+                                        Sets the number of server processes created on startup.
+                                        Used only when 'apache-like' pm_style is selected
+                                        <value name="StartServers">2</value>
+
+                                        Sets the desired minimum number of idle server processes.
+                                        Used only when 'apache-like' pm_style is selected
+                                        <value name="MinSpareServers">4</value>
+
+                                        Sets the desired maximum number of idle server processes.
+                                        Used only when 'apache-like' pm_style is selected
+                                        <value name="MaxSpareServers">16</value>
+
+                                </value>
+
+                        </value>
+
+                        Time limit on waiting execution of single request
+                        Should be used when 'max_execution_time' ini option does not terminate execution for some reason
+                        <value name="request_execution_timeout">31s</value>
+
+                        Set open file desc rlimit
+                        <value name="rlimit_files">51200</value>
+
+                        Set max core size rlimit
+                        <value name="rlimit_core">0</value>
+
+                        Chroot to this directory at the start
+                        <value name="chroot"></value>
+
+                        Chdir to this directory at the start
+                        <value name="chdir"></value>
+
+                        Redirect workers' stdout and stderr into main error log.
+                        If not set, they will be redirected to /dev/null, according to FastCGI specs
+                        <value name="catch_workers_output">yes</value>
+
+                        How much requests each process should execute before respawn.
+                        Useful to work around memory leaks in 3rd party libraries.
+                        For endless request processing please specify 0
+                        Equivalent to PHP_FCGI_MAX_REQUESTS
+                        <value name="max_requests">51200</value>
+
+                        Comma separated list of ipv4 addresses of FastCGI clients that allowed to connect.
+                        Equivalent to FCGI_WEB_SERVER_ADDRS environment in original php.fcgi (5.2.2+)
+                        Makes sense only with AF_INET listening socket.
+                        <value name="allowed_clients">192.168.0.0/24</value>
+
+                        Pass environment variables like LD_LIBRARY_PATH
+                        All $VARIABLEs are taken from current environment
+                        <value name="environment">
+                                <value name="HOSTNAME">$HOSTNAME</value>
+                                <value name="PATH">/usr/local/bin:/usr/bin:/bin</value>
+                                <value name="TMP">/tmp</value>
+                                <value name="TMPDIR">/tmp</value>
+                                <value name="TEMP">/tmp</value>
+                                <value name="OSTYPE">$OSTYPE</value>
+                                <value name="MACHTYPE">$MACHTYPE</value>
+                                <value name="MALLOC_CHECK_">2</value>
+                        </value>
+
+                </section>
+
+        </workers>
+
+</configuration>
+
+
+启动 PHP
+ulimit -SHn 51200
+/usr/local/php-fcgi/sbin/php-fpm start
+
+
 安装 Nginx
 下载：http://nginx.net/
 yum -y install pcre-devel zlib-devel
@@ -179,11 +345,14 @@ error_log  /var/log/nginx/error.log;
 # pid 文件
 pid        /var/run/nginx.pid;
 
+#Specifies the value for maximum file descriptors that can be opened by this process. 
+worker_rlimit_nofile 51200;
+
 events {
 # 使用 epoll(For Linux Kernel 2.6+) 提升 Nginx 性能。
     use  epoll;
 # 最大连接数
-    worker_connections  4096;
+    worker_connections  51200;
 }
 
 
@@ -192,6 +361,8 @@ http {
     include       mime.types;
 # 默认类型
     default_type  application/octet-stream;
+
+    charset  utf-8;
 
 # 定义 temp 的路径
     client_body_temp_path  /tmp/nginx/client_body_temp;
@@ -220,6 +391,15 @@ http {
 
 # 设置保持连接超时时间 和 header 超时时间（单位：秒）
     keepalive_timeout  60 15;
+
+    fastcgi_connect_timeout 60;
+    fastcgi_send_timeout 180;
+    fastcgi_read_timeout 180;
+    fastcgi_buffer_size 128k;
+    fastcgi_buffers 4 128k;
+    fastcgi_busy_buffers_size 128k;
+    fastcgi_temp_file_write_size 128k;
+    fastcgi_temp_path /dev/shm;
 
 # 开启 gzip
     gzip  on;
@@ -283,7 +463,8 @@ fastcgi_param  SERVER_ADDR        $server_addr;
 fastcgi_param  SERVER_PORT        $server_port;
 fastcgi_param  SERVER_NAME        $server_name;
 
-fastcgi_param  REDIRECT_STATUS    200;
+# PHP only, required if PHP was built with --enable-force-cgi-redirect
+#fastcgi_param  REDIRECT_STATUS    200;
 
 
 再来配置 Discuz! 论坛和 SupeSite/X-Space 的虚拟主机
@@ -351,13 +532,22 @@ vi vhosts/main.conf
 
 
 启动 PHP 和 Nginx
+ulimit -SHn 51200
 /usr/local/php-fcgi/bin/spawn-fcgi -a 192.168.0.241 -p 10080 -C 32 -u nobody -g nobody -f /usr/local/php-fcgi/bin/php-cgi
 监听在 127.0.0.1 的 10080 端口并开启 32 个进程，使用和 Nginx 一样的 nobody 用户。（PHP5 的执行程序是 php-cgi）
+/usr/local/nginx/sbin/nginx -t
 /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
 重启 PHP 进程可以先 killall php 再启动。
 重启 Nginx
 kill -HUP `cat /var/run/nginx.pid`
 
+vi /etc/sysctl.conf
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.tcp_keepalive_time = 300
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 1
+net.ipv4.ip_local_port_range = 5000    65000
 
 清除超过一小时没有被访问到的 eAccelerator 缓存文件和创建时间超过一小时的 php session 文件，防止占满空间。
 vi /etc/crontab
