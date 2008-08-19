@@ -17,3 +17,6 @@
 </noframes>
 </frameset>
 </html>
+
+防止电子邮件地址被搜索到
+<SCRIPT language=JavaScript>rewin1="yourname";rewin2="s135";rewin3=".com";document.write(rewin1+'@'+rewin2+rewin3);</SCRIPT>
