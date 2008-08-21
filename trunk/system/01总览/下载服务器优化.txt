@@ -1,0 +1,38 @@
+Squid
+°²×°
+tar jxvf squid-3.0.STABLE8.tar.bz2
+cd squid-3.0.STABLE8
+
+./configure \
+--prefix=/usr/local/squid \
+--enable-dlmalloc \
+--with-pthreads \
+--enable-async-io=80 \
+--enable-storeio=null \
+--enable-removal-policies="heap,lru" \
+--enable-delay-pools \
+--enable-useragent-log \
+--enable-referer-log \
+--disable-wccp \
+--disable-wccpv2 \
+--enable-kill-parent-hack \
+--enable-arp-acl \
+--enable-cache-digests \
+--enable-default-err-languages="Simplify_Chinese" \
+--enable-err-language="Simplify_Chinese" \
+--disable-select \
+--disable-poll \
+--enable-epoll \
+--disable-ident-lookups \
+--enable-truncate \
+--enable-underscore \
+--enable-stacktrace \
+--enable-x-accelerator-vary \
+--enable-follow-x-forwarded-for
+
+make
+make install
+
+
+cat access.log|gawk '{print $11}'|sort|uniq -c|sort -nr
+cat access.log|grep ¡°http://blog¡±|gawk ¡®{print $11}¡¯|sort|uniq -c|sort -nr
