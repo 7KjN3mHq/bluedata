@@ -2,12 +2,11 @@ Squid
 °²×°
 tar jxvf squid-3.0.STABLE8.tar.bz2
 cd squid-3.0.STABLE8
-
 ./configure \
 --prefix=/usr/local/squid \
 --enable-dlmalloc \
 --with-pthreads \
---enable-async-io=80 \
+--enable-async-io=384 \
 --enable-storeio=null \
 --enable-removal-policies="heap,lru" \
 --enable-delay-pools \
@@ -34,5 +33,78 @@ make
 make install
 
 
-cat access.log|gawk '{print $11}'|sort|uniq -c|sort -nr
-cat access.log|grep ¡°http://blog¡±|gawk ¡®{print $11}¡¯|sort|uniq -c|sort -nr
+ÅäÖÃ
+vi /usr/local/squid/etc/squid.conf
+http_port 80 vhost vport
+
+icp_port 0
+
+cache_peer 127.0.0.1 parent 81 0 no-query originserver no-digest
+
+acl Manager proto cache_object
+acl Purge method PURGE
+acl Localhost src 127.0.0.1
+http_access allow Manager Localhost
+http_access deny Manager
+http_access allow Localhost Purge
+http_access deny Purge
+
+acl Safe_ports port 80
+http_access deny !Safe_ports
+http_access allow all
+
+visible_hostname livupdate
+cache_mgr bluedata@gmail.com
+
+cache_effective_user nobody
+cache_effective_group nobody
+
+tcp_recv_bufsize 65535 bytes
+client_persistent_connections off
+server_persistent_connections on
+half_closed_clients off
+
+memory_pools off
+memory_pools_limit none
+cache_mem 1536 MB
+maximum_object_size_in_memory 128 MB
+ipcache_size 1024
+ipcache_low 90
+ipcache_high 95
+fqdncache_size 1024
+memory_replacement_policy lru
+cache_dir null /tmp
+cache_store_log none
+
+refresh_pattern -i \.cab$ 1440 50% 2880 reload-into-ims
+refresh_pattern -i \.dat$ 1440 50% 2880 reload-into-ims
+refresh_pattern -i \.exe$ 1440 50% 2880 reload-into-ims
+refresh_pattern -i \.zip$ 1440 50% 2880 reload-into-ims
+
+forward_timeout 20 seconds
+connect_timeout 15 seconds
+read_timeout 3 minutes
+request_timeout 1 minutes
+persistent_request_timeout 15 seconds
+client_lifetime 15 minutes
+shutdown_lifetime 5 seconds
+negative_ttl 10 seconds
+
+logfile_rotate 3
+emulate_httpd_log on
+logformat combined %>a %ui %un [%tl] "%rm %ru HTTP/%rv" %Hs %<st "%{Referer}>h" "%{User-Agent}>h" %Ss:%Sh
+access_log /var/log/squid/access.log combined
+cache_log /var/log/squid/cache.log
+pid_filename /var/run/squid.pid
+
+acl QUERY urlpath_regex cgi-bin .php .cgi .avi .wmv .rm .ram .mpg .mpeg .aspx .asp .jsp
+cache deny QUERY
+
+acl OverConnLimit maxconn 4
+http_access deny OverConnLimit
+
+acl all src 0.0.0.0/0.0.0.0
+delay_pools 1
+delay_class 1 3
+delay_access 1 allow all
+delay_parameters 1 8000000/8000000 -1/-1 256000/10000000
