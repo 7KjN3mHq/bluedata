@@ -67,19 +67,27 @@ half_closed_clients off
 #memory_pools off
 #memory_pools_limit none
 cache_mem 1536 MB
+cache_swap_low 80
+cache_swap_high 95
+maximum_object_size 128 MB
+minimum_object_size 0 KB
 maximum_object_size_in_memory 128 MB
 ipcache_size 1024
 ipcache_low 90
 ipcache_high 95
 fqdncache_size 1024
+cache_replacement_policy lru
 memory_replacement_policy lru
 cache_dir null /tmp
 cache_store_log none
 
-refresh_pattern -i \.cab$ 1440 50% 2880 reload-into-ims
-refresh_pattern -i \.dat$ 1440 50% 2880 reload-into-ims
-refresh_pattern -i \.exe$ 1440 50% 2880 reload-into-ims
-refresh_pattern -i \.zip$ 1440 50% 2880 reload-into-ims
+range_offset_limit -1
+quick_abort_min -1 KB
+
+refresh_pattern -i \.cab$ 1440 50% 2880 ignore-reload
+refresh_pattern -i \.dat$ 1440 50% 2880 ignore-reload
+refresh_pattern -i \.exe$ 1440 50% 2880 ignore-reload
+refresh_pattern -i \.zip$ 1440 50% 2880 ignore-reload
 
 forward_timeout 20 seconds
 connect_timeout 15 seconds
@@ -96,7 +104,7 @@ negative_ttl 10 seconds
 #access_log /var/log/squid/access.log combined
 #cache_log /var/log/squid/cache.log
 access_log none
-cache_log none
+cache_log /dev/null
 pid_filename /var/run/squid.pid
 
 acl QUERY urlpath_regex cgi-bin .php .cgi .avi .wmv .rm .ram .mpg .mpeg .aspx .asp .jsp
@@ -105,12 +113,21 @@ cache deny QUERY
 acl OverConnLimit maxconn 4
 http_access deny OverConnLimit
 
-acl all src 0.0.0.0/0.0.0.0
-delay_pools 1
-delay_class 1 3
-delay_access 1 allow all
-delay_parameters 1 12000000/12000000 -1/-1 256000/10000000
+#acl all src 0.0.0.0/0.0.0.0
+#delay_pools 1
+#delay_class 1 3
+#delay_access 1 allow all
+#delay_parameters 1 12000000/12000000 -1/-1 256000/10000000
 
+参数解释：
+range_offset_limit -1
+这个值限制多大的range request会触发缓存整个文件，如果这个值过大，会导致小的range请求，无法被缓存，会导致大量的不命中。对于视频设置为-1就可以了。
+
+quick_abort_min -1 KB
+含义就是在用户突然中断请求时，还差多少大小的时候，继续完成全文件的缓存工作。
+
+refresh_pattern -i \.exe$ 1440 50% 2880 ignore-reload
+这个参数的各项含义不详细解释了，ignore-reload很重要，很多浏览器发来的请求都带着no-cache头，所以造成了大量的不命中，这些no- cache毫无疑义，视频文件被修改的几率非常小，如果你的播放器请求又都带着no-cache头。因此增加ignore-reload对于性能提升有非常大的作用。
 
 安装 Nginx
 下载：http://nginx.net/
