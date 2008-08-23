@@ -83,14 +83,14 @@ cache_mem 128 MB
 cache_swap_low 95
 cache_swap_high 98
 maximum_object_size 256 KB
-minimum_object_size 0 KB   
+minimum_object_size 0 KB
 maximum_object_size_in_memory 256 KB
 ipcache_size 1024
 ipcache_low 90
 ipcache_high 95
 fqdncache_size 1024
-memory_replacement_policy lru
 cache_replacement_policy lru
+memory_replacement_policy lru
 cache_dir aufs /tmpfs/squid 1664 16 256
 cache_store_log none
 
