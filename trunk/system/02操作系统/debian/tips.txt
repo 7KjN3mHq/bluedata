@@ -1,150 +1,250 @@
-## adsl
-#!/bin/bash
+更改gdm的登录界面为英文 
+编辑/etc/default/gdm 
+LANG=en_US.UTF-8 
 
-case "$1" in
-  start)
-    echo "starting ADSL service"
-    /usr/bin/pon dsl-provider
-  ;;
-  stop)
-    echo "stop ADSL connection"
-    /usr/bin/poff dsl-provider
-  ;;
-  restart)
-    echo "Stop && Starting ADSL connetion"
-    $0 stop
-    $0 start
-  ;;
-esac
+设置gtk1, gtk2程序的theme 
+#apt-get install gtk-theme-switch 好像arch,gentoo下不是这个玩意吧 
+
+先试试用lftp登录一下FTP，几乎都是乱码(因为绝大多数的FTP用的是GBK编码) 
+编辑~/.lftp/rc 
+set ftp:charset "gbk" 
+set file:charset "UTF-8" 
+好了，再登录一下，一切OK 
+设置代理(如果需要) 
+set http:proxy http://ip:port 
+set hftp:proxy hftp://ip:port 
+
+编辑/etc/environment 
+LANGUAGE="en_CN:en_US:en_GB:en" 
+LANG=en_US.UTF-8 
+
+修改配置文件 /etc/profile 增加如下内容: 
+
+export LANG=zh_CN.GB2312 
+export LC_ALL=zh_CN.GB2312 
+
+#dpkg-reconfigure locales 这招在gentoo,arch下对应的是vim /etc/locale.gen #locale-gen生成 
+
+设置APT代理，有两种方法 
+#export http_proxy=http://ip:port(临时) 
+或者修改/etc/apt/apt.conf，添加 
+Acquire::http::proxy "http://yourproxy:yourport/"; （注意最后面必须用“;”结束） 
+
+gentoo : qfile foo 
+
+debian: dpkg -S foo 
+
+apt-file 这个鸟东东有点历害 
+
+apt-cache search keyword 查找指定软件包信息 
+
+apt-cache show package_name 详细显示指定软件包的信息 
+
+dpkg-reconfigure xserver-xfree86 # 重新配置X参数.重要. 这个不知道怎么对应gentoo的 
+
+tzconfig # 修改系统默认时区 GENTOO下 ln ro cp Asia/Shanghai /etc/localtime 然后对应修改环境变量将时区调整为上海，但debian下对应哪个文件呢？ 
+
+# 安装软件包并且自动检测并安装相关软件. 
+aptitude -R -G install Package 
+
+# 检测软件包的相关资料. 
+# 这里将检测 Package 软件包的信息. 
+aptitude show Package 
+
+# 安装指定软件并且指定安装该软件的版本. 
+# 这里将安装 Packge 软件.版本是2.2.5. 
+aptitude install Package=2.2.5 
+
+# 删除指定软件.但是不会删除配置文件. 
+aptitude remove 
+
+# 删除软件包以及所有配置文件. [完全删除] 
+# 推荐使用.这个命令会自动检测依赖关系. 
+aptitude purge 
+
+/etc/network/interfaces 网络配制 gentoo--> /etc/conf.d/net_xxx 
+
+linux调整系统时间和时区的方法 
+1) 找到相应的时区文件 /usr/share/zoneinfo/Asia/Shanghai 
+
+用这个文件替换当前的/etc/localtime文件。 
+
+2) 修改/etc/sysconfig/clock文件，修改为： 
+
+ZONE="Asia/Shanghai" 
+UTC=false 
+ARC=false 
+
+3) 
+时间设定成2005年8月30日的命令如下： 
+#date -s 08/30/2005 
+
+将系统时间设定成下午6点40分0秒的命令如下。 
+#date -s 18:40:00 
+
+4) 
+同步BIOS时钟，强制把系统时间写入CMOS，命令如下： 
+#clock -w 
+
+更改root用户不能直接远程登录问题: 
+cd /etc 
+cd pam.d 
+vi login 
+注释掉这行 
+#auth required pam_securetty.so //该行注释掉 
+
+更改Linux启动时用图形界面还是字符界面 (以前以为对所有发行版有效，结果。。自己体会吧） 
+cd /etc 
+vi inittab 
+将id:5:initdefault: 其中5表示默认图形界面 
+改id:3: initdefault: 3表示字符界面 
+
+配置smb可以被哪些IP所用. 
+cd /etc/samba 
+Vi smb.conf 
+找到hosts allow = 192.168.1. 192.168.2. 127. 
+修改其为哪些机器所用,注意IP之间用逗号分开 
+举例: 
+hosts allow =192.168.1.110,192.168.1.120 
+
+禁止在后台使用CTRL-ALT-DELETE重起机器 
+cd /etc/inittab 
+vi inittab 在文件找到下面一行 
+# Trap CTRL-ALT-DELETE 
+ca::ctrlaltdel:/sbin/shutdown -t3 -r now （注释掉这一行） 
+如： # Trap CTRL-ALT-DELETE 
+#ca::ctrlaltdel:/sbin/shutdown -t3 -r now 
+
+屏蔽主机的ping 命令，是被别人无法ping你的机器 
+echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all 
+
+不让显示器休眠 
+setterm –blank 0 
+
+更改控制台的分辨率(grub) 
+vi /boot/grub/grub.conf 
+在kernel /vmlinuz-2.4.20-8smp ro root=LABEL=/ 一行后面添加参数vga=792成为 
+kernel /vmlinuz-2.4.20-8smp ro root=LABEL=/ vga=792 
+最后的vga=792表示1024x768，16色 
+具体参数为： 
+depth 640x480 800x600 1024x768 1280x1024 
+8bit 769 771 773 775 
+15bit 784 787 790 793 
+16bit 785 788 791 794 
+24bit 786 789 792 795 
+
+apt-cache show 
+显示 的完整的描述. 
+
+apt-cache showpkg 
+显示 许多细节,以及和其它包裹的关系. 
+
+普通 Dpkg 用法 
+dpkg -i 
+安装一个 Debian 包裹文件;如你手动下载的文件. 
+
+dpkg -c 
+列出 的内容. 
+
+dpkg -I 
+从 中提取包裹信息. 
+
+dpkg -r 
+移除一个已安装的包裹. 
+
+dpkg -P 
+完全清除一个已安装的包裹.和 remove 不同的是, remove 只是删掉数据和可执行文件, purge 另外还删除所有的配制文件. 
+
+dpkg -L 
+列出 安装的所有文件清单.同时请看 dpkg -c 来检查一个 .deb 文件的内容. 
+
+dpkg -s 
+显示已安装包裹的信息.同时请看 apt-cache 显示 Debian 存档中的包裹信息,以及 dpkg -I 来显示从一个 
+.deb 文件中提取的包裹信息. 
+echo " hold" | dpkg --set-selections 
+设置 的状态为 hlod (命令行方式) 
+
+dpkg --get-selections "" 
+取的 的当前状态 (命令行方式) 
+
+dpkg -S 
+在包裹数据库中查找 ,并告诉你哪个包裹包含了这个文件.(注:查找的是事先已经安装的包裹) 
+
+从源码建立deb packages 
+
+apt-get source [-b] 
+下载一个源码的包并解开。 
+你必须在你的/etc/apt/sources.list文件里写入一条 deb-src 的记录才能完成这项工作。 
+如果你输入了一个-b参数，并且是以root的身份，deb包会被自动的创建。 
+
+apt-get build-dep 
+自动下载并安装通过源码创建 时需要的包。 
+只有apt 0.5以上版本才支持这个功能。 
+现在woody和以上版本包含了这个功能。 
+如果你使有一个旧版本的apt，查找依赖性最简单的方法是查看源码包中 debian/control 这个文件， 
+注意这个路径是相对的，是包内的路径。 
+
+普通的用法，结合 apt-get source -b,例子 (as root)： 
+
+apt-get build-dep 
+apt-get source -b 
+
+会下载源码包，建立依赖性，然后尝试编译源码。 
+
+dpkg-source -x 
+如果你手工下载了一个程序的源码包，其中包含了几个类似 .orig.tar.gz , .dsc , 
+以及 .diff.gz 之类的文件， 
+那么你就可以对 .dsc 文件使用这个命令来 unpack 源码包。 
+
+dpkg-buildpackage 
+从 Debian 源码树建立一个deb包。你必须在source tree的主目录才能生效。例如： 
+
+dpkg-buildpackage -rfakeroot -uc -b 
+
+这里 '-rfakeroot' 指定命令使用 fakeroot 程序来模仿 root 权限 (来实现所有者(ownership)目的)， 
+'-uc' 表示 "Don't cryptographically sign the changelog", '-b' 代表只建立二进制包. 
+
+debuild 
+一个快速打包脚本类似 dpkg-buildpackage ,能自动的识别是否使用 fakeroot, 
+同时为你运行 lintian 和 gpg 
+
+.如何维持一个混合的系统 
+鉴于testing版unstable版本比稳定,又比stable版本要新 ,很多人使用testing,可是有些人想运行某个软件的最新版,却又不愿把这个系统升级为unstable,即想使用一个混合的系统,那么可以这样做: 
+在 /etc/apt/apt.conf 加入: 
+APT::Default-Release "testing"; 
+当要安装unstable软件时 加 -t 参数: 
+# apt-get -t unstable install packagename 
+注:不要忘记在/etc/apt/sources.list中加入相应的源 
+
+9.从一个特定的debian版本升级软 
+# apt-get install `apt-show-versions -u -b | grep unstable`件 
+
+10.如何在软件升级时避免特定软件不会被升级 
+如果你使用的bebian版本在2.2以上,仅仅需要修改/etc/apt/preferences 文件 
+格式非常简单: 
+Package: 
+Pin: 
+Priority: 
+
+例如我要保持gaim的0.58版本 只需加上: 
+Package: gaim 
+Pin: version 0.58* 
+统配符 * 指锁定以0.58开头的所有版本 这就是说即使存在0.58-1 或类似 也不会被安装 
+Priority(优先级)是可选项 默认 989 
+<0 此软件永不会被安装 
+0~100 软件不被安装,不是有效的版本 
+>100 此软件会被安装 即 如果有更新版本,软件会被升级 
+100~1000 软件不会被降级安装,例如:我安装的gaim 0.59 , 锁定gaim 0.58 ,优先级为999 
+那么0.58就不会被安装 ,如果要降级安装 则优先级许大于 1000 
 
 
-## sources.list
-deb http://debian.cn99.com/debian sarge main non-free contrib
-deb http://debian.cn99.com/debian-non-US/ sarge/non-US main contrib non-free
-deb http://debian.cn99.com/debian-security sarge/updates main contrib non-free
-deb ftp://mirrors.geekbone.org/debian sarge main non-free contrib
-deb ftp://mirrors.geekbone.org/debian-non-US sarge/non-US main contrib non-free
-deb ftp://mirrors.geekbone.org/debian-security sarge/updates main contrib non-free
-
-
-## 删除内核
-dpkg --purge --force-remove-essential kernel-image-2.6.7-1-686
-apt-get remove --purge kernel-headers-2.6.7-1-686
-
-
-## debian 上使用 rc.local
-touch /etc/init.d/rc.local
-设置可执行：
-chmod +x /etc/init.d/rc.local
-用update-rc.d设置启动级别：
-update-rc.d rc.local start 99 2 3 4 5 . stop 99 0 1 6 .
-为了编辑方便，创建一个链接：
-ln -s /etc/init.d/rc.local /etc/rc.local
-cat /etc/rc.local
-# start apache
-/usr/local/apache/bin/apachectl start
-
-
-## 更改 locale
-dpkg-reconfigure locales
-locale -a
-
-
-## aptinstall
-apt-get install mysql-server-4.1 mysql-client-4.1 libmysqlclient14-dev apache2 apache2-utils libapache2-mod-php4 php4 php4-mysql php4-gd2
-apt-get install nfs-kernel-server nfs-common portmap
-apt-get install make gcc g++ rcconf bzip2 vim wget
-
-
-## profile
-# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
-# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
-
-PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin"
-
-if [ `id -u` = 0 ]; then
-user_tag="#"
-else
-user_tag="$"
-fi
-
-CL="\[\e[0m\]" 
-GREEN="$CL\[\e[0;32m\]" 
-BGREEN="$CL\[\e[0;32;1m\]" 
-XORG="$CL\[\e[0;36m\]" 
-XRED="$CL\[\e[0;35m\]" 
-ORG="$CL\[\e[0;33m\]" 
-
-DARK_GRAY="$CL\[\e[1;30m\]" 
-
-BLUE="$CL\[\e[1;34m\]" 
-
-export PROMPT_COMMAND=' 
-
-LINE="-" 
-#LINE="." 
-#L1h="." 
-#L1h="." 
-#L1e="." 
-#L2h="." 
-#L2e="." 
-L1h="" 
-L1e="" 
-L2h="" 
-L2e="" 
-
-ntty=$(tty | cut -d"/" -f3-4) 
-f1=$(ls | wc -l) 
-f2=$(ls -a | wc -l) 
-
-L1l="$LINE($USER@$HOSTNAME:$ntty)$LINE" 
-l_L1l=`expr length "$L1l"` 
-#echo "$L1l $l_L1l" 
-
-L1r="$LINE($PWD)$LINE($f1/$f2)$LINE" 
-l_L1r=`expr length "$L1r"` 
-l_home_m=`expr match $PWD $HOME` 
-if [ $l_home_m -gt 0 ]; then 
-let l_home_m=l_home_m-1 
-else 
-l_home_m=0 
-fi 
-#echo "$L1r $l_L1r" 
-
-let l_c=COLUMNS-l_L1l-l_L1r+l_home_m 
-
-L1c="" 
-c="$LINE" 
-n="$l_c" 
-#echo "col: $COLUMNS n: $n" 
-
-while [ "$n" -gt 0 ]; do L1c="$c$L1c"; let n=n-1; done 
-
-L1l="$BLUE$LINE($BGREEN\u$GREEN@\H:$ntty$BLUE)$LINE" 
-L1r="$BLUE$LINE($XRED\w$BLUE)$LINE$BLUE($DARK_GRAY$f1/$f2$BLUE)$LINE" 
-L1c="$DARK_GRAY$L1c" 
-
-L2l="$BLUE$LINE(:$ORG\A$BLUE:$XRED$user_tag$BLUE)$LINE$GREEN>$CL " 
-L2r="$GREEN$LINE$BLUE$LINE($ORG\d$BLUE)$LINE" 
-export PS1="$L1l$L1c$L1r\n$L2l" 
-' 
-
-umask 022
-
-alias h='history 25'
-alias ls='ls --color=auto'
-alias la='ls -a'
-alias lf='ls -FA'
-alias ll='ls -lh'
-
-JAVA_HOME=/usr/local/j2sdk1.4.2_05
-export JAVA_HOME
-CLASSPATH=${JAVA_HOME}/lib:${JAVA_HOME}/jre/lib
-export CLASSPATH
-PATH=$PATH:${JAVA_HOME}/bin:${JAVA_HOME}/jre/bin
-export PATH
-
-if [ $USER = "oracle" ]; then
-ulimit -u 16384
-#ulimit -n 65536
-fi
+# apt-get check # 更新缓冲区并检查损坏的软件包
+$ apt-cache search # 按文本描述搜索软件包
+$ apt-cache policy # 软件包的priority/dists信息
+$ apt-cache show -a # 显示所有dists中软件包描述信息
+$ apt-cache showsrc # 显示相应源码包的信息
+$ apt-cache showpkg # 软件包调试信息
+# dpkg --audit|-C # 搜索未完成安装的软件包
+$ dpkg {-s|--status} ... # 已安装软件包描述
+$ dpkg -l ... # 已安装软件包的状态（每个占一行）
+$ dpkg -L ... # 列出软件包安装的文件的名称
