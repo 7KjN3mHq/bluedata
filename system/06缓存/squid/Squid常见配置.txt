@@ -1,0 +1,427 @@
+squid.conf的最初配置如下：
+
+hierarchy_stoplist cgi-bin ?
+
+acl QUERY urlpath_regex cgi-bin \?
+
+no_cache deny QUERY
+
+auth_param basic children 5
+
+auth_param basic realm Squid proxy-caching web server
+
+auth_param basic credentialsttl 2 hours
+
+refresh_pattern ^ftp:        1440    20%    10080
+
+refresh_pattern ^gopher:    1440    0%    1440
+
+refresh_pattern .            0        20%    4320  
+
+acl all src 0.0.0.0/0.0.0.0
+
+acl manager proto cache_object
+
+acl localhost src 127.0.0.1/255.255.255.255
+
+acl to_localhost dst 127.0.0.0/8
+
+acl SSL_ports port 443 563
+
+acl Safe_ports port 80        # http
+
+acl Safe_ports port 21        # ftp
+
+acl Safe_ports port 443 563    # https, snews
+
+acl Safe_ports port 70        # gopher
+
+acl Safe_ports port 210        # wais
+
+acl Safe_ports port 1025-65535    # unregistered ports
+
+acl Safe_ports port 280        # http-mgmt
+
+acl Safe_ports port 488        # gss-http
+
+acl Safe_ports port 591        # filemaker
+
+acl Safe_ports port 777        # multiling http
+
+acl CONNECT method CONNECT
+
+http_access allow manager localhost
+
+http_access deny manager
+
+http_access deny !Safe_ports
+
+http_access deny CONNECT !SSL_ports
+
+http_access allow localhost
+
+http_access deny all
+
+http_reply_access allow all
+
+icp_access allow all
+
+coredump_dir /var/spool/squid
+
+但不同用户对squid有不同的要求，根据需求更改squid.conf的设置：
+
+1、网络选项
+
+tcp_incoming_address
+
+tcp_outgoing_address
+
+udp_incoming_address
+
+udp_outgoing_address
+
+tcp_incoming_address监听来自客户或其他squid代理服务器的绑定ip地址。
+
+tcp_outgoing_address向远程服务器或其他squid代理发起连接的ip地址。
+
+udp_incoming_address为ICP套接字指定接收来自其他squid代理服务器的包的ip地址。
+
+udp_outgoing_address为ICP套接字指定向其他squid server发送包的ip。
+
+默认为没有绑定任何ip地址。该绑定地址可以用ip指定，也可以用完整的域名指定。
+
+2. 交换空间设定选项
+
+cache_swap_low (percent, 0-100)
+
+cache_swap_high (percent, 0-100)
+
+squid使用大量的交换空间来存储对象。过了一定的时间以后，该交换空间就会用完，所以还必须定期的按照某种指标来将低于某个水平线的对象清除。squid使用所谓的“最近最少使用算法”（LRU）来做这一工作。当已使用的交换空间达到cache_swap_high时，squid就根据LRU所计算的得到每个对象的值，将低于某个水平线的对象清除。这种清除工作一进行到已用空间达到cache_swap_low。这两个值用百分比表示，如果所使用的交换空间很大的话，建议减少这两个值得差距，因为这时一个百分点就可能是几百兆空间，这势必影响squid的性能。默认为：
+
+cache_swap_low 90
+
+cache_swap_high 95
+
+? maximum_object_size 大于该值的对象将不被存储。如果想要提高访问速度，就请降低该值；如果想最大限度地节约带宽，降低成本，请增加该值。单位为K，默认值为：maximum_object_size 4096 KB
+
+3. 有关日志的选项
+
+(1) cache_access_log
+
+指定客户请求记录日志的完整路径（包括文件的名称及所在的目录），该请求可以是来自一般用户的HTTP请求或来自邻居的ICP请求。默认值为：cache_access_log /var/log/squid/access.log
+
+如果不需要该日志，可以用以下语句取消：
+
+cache_access_log none
+
+(2) cache_store_log
+
+指定对象存储记录日志的完整路径（包括文件的名称及所在目录），该记录表明哪些对象被写到交换空间，哪些对象被从交换空间清除。
+
+默认路径为：cache_log /var/log/squid/cache.log
+
+如果不需要该日志，可以用以下语句取消：
+
+cache_store_log none
+
+(3) cache_log
+
+指定squid一般信息日志的完整路径（包括文件的名称及所在的目录）。默认路径为：
+
+cache_log /var/log/squid/cache.log
+
+(4) cache_swap_log
+
+该选项指明每个交换空间的swap.log日志的完整路径（包括文件的名称及所在的目录）。该日志文件包含了存储在交换空间里的对象的元数据（metadata）。通常，系统将该文件自动保存在第一个cache_dir说定义的顶级目录里，但是也可以指定其他的路径。如果定义了多个
+
+cache_dir，则相应的日志文件可能是这样的：
+
+cache_swap_log.00
+
+cache_swap_log.01
+
+cache_swap_log.02
+
+后面的数字扩展名与指定的多个 cache_dir一一对应。需要注意的是，最好不要删除这类日志文件，否则squid将不能正常工作。
+
+(5) pid_filename
+
+指定记录squid进程号的日志的完整路径（包括文件的名称及所在的目录）。默认路径为
+
+pid_filename /var/run/squid.pid
+
+如果不需要该文件，可以用以下语句取消：
+
+pid_filename none
+
+(6) debug_options
+
+控制作日志时记录信息的多寡。可以从两个方面控制： section控制从几个方面作记录；level控制每个方面的记录的详细程度。推荐的方式（也是默认方式）是：
+
+debug_options ALL,1
+
+即，对每个方面都作记录，但详细程度为1 (最低)。
+
+(7) log_fqdn on|off
+
+控制在access.log中对用户地址的记录方式。打开该选项时，squid记录客户的完整域名，取消该选项时，squid记录客户的ip地址。注意，如果打开该选项，会增加系统的负担，因为squid还得进行客户ip的DNS查询。默认值为：log_fqdn off。
+
+4. 有关外部支持程序的选项
+
+(1) ftp_user
+
+设置登录匿名f t p服务器时提供的电子邮件地址，登录匿名f t p服务器时要求用电子邮件地址作为登录口令（更多的信息请参看本书的相关章节）。需要注意的是，有的匿名f t p服务器对这一点要求很苛刻，有的甚至会检查电子邮件的有效性。
+
+默认值为： ftp_user Squid@
+
+(2) ftp_list_width
+
+设置ftp列表的宽度，如果设得太小，将不能浏览到长文件名。
+
+默认值为： ftp_list_width 32
+
+(3) cache_dns_program
+
+指定DNS查询程序的完整路径（包括文件的名称及所在的目录）。
+
+默认路径为：cache_dns_program /usr/lib/squid/dnsserver
+
+(4) dns_children
+
+设置DNS查询程序的进程数。对于大型的登录服务器系统，建议该值至少为10。最大值可以是32，默认设置为5个。注意，如果任意地降低该值，可能会使系统性能急剧降低，因为squid主进程要等待域名查询的结果。没有必要减少该值，因为DNS查询进程并不会消耗太多的系统
+
+的资源。
+
+(5) dns_nameservers
+
+指定一个DNS服务器列表，强制squid使用该列表中的DNS服务器而非使用/etc/resolv.conf文件中定义的DNS服务器。可以这样指定多个DNS服务器：dns_nameservers 10.0.0.1 192.172.0.4
+
+默认设置为：dns_nameservers none
+
+(6) unlinkd_program
+
+指定文件删除进程的完整路径。
+
+默认设置为：unlinkd_program /usr/lib/squid/unlinkd
+
+(7) pinger_program
+
+指定ping进程的完整路径。该进程被squid利用来测量与其他邻居的路由距离。该选项只在启用了该功能时有用。
+
+默认为：pinger_program /usr/lib/squid/pinger
+
+(8) authenticate_program
+
+指定用来进行用户认证的外部程序的完整路径。squid的用户认证功能将在后面讲述。默认设置为不认证。
+
+8. 用户访问控制选项
+
+(1) request_size (KB)
+
+设置用户请求通信量的最大允许值(单位为KB)。如果用户用POST方法请求时，应该设一个较大的值。
+
+默认设置为：request_size 100 KB
+
+(2) reference_age
+
+squid根据对象的LRU（最近最少使用算法）来清除对象，squid依据使用磁盘空间的总量动态地计算对象的LRU年龄。我们用reference_age定义对象的最大LRU年龄。如果一个对象在指定的reference_age内没有被访问，squid将删除该对象。默认值为一个月。可以使用如下所示的时间表示方法。
+
+1 week
+
+3.5 days
+
+4 months
+
+2.2 hours
+
+(3) quick_abort_min (KB)
+
+quick_abort_max (KB)
+
+quick_abort_pct (percent)
+
+控制squid是否继续传输被用户中断的请求。当用户中断请求时，squid将检测quick_abort的值。如果剩余部分小于quick_abort_min定的值，squid将继续完成剩余部分的传输；如果剩余部分大于quick_abort_max指定的值，squid将终止剩余部分的传输；如果已完成“quick_abort_pct"指定的百分比，squid将继续完成剩余部分的传输。
+
+默认的设置为：
+
+quick_abort_min 16 KB
+
+quick_abort_max 16 KB
+
+quick_abort_pct 95
+
+6. 各类超时设置选项
+
+(1) negative_ttl time-units
+
+设置消极存储对象的生存时间。所谓的消极存储对象，就是诸如“连接失败”及404 Not Found等一类错误信息。
+
+默认设置为： negative_ttl 5 minutes。
+
+(2) positive_dns_ttl t i m e - u n i t s
+
+设置缓存成功的DNS查询结果的生存时间。默认为6小时。
+
+positive_dns_ttl 6 hours
+
+(3) negative_dns_ttl time-units
+
+设置缓存失败的D N S查询结果的生存时间。默认为5min。
+
+negative_dns_ttl 5 minutes
+
+(4) connect_timeout time-units
+
+说明：设置squid等待连接完成的超时值。默认值为2min。
+
+connect_timeout 120 seconds
+
+(5) read_timeout time-units
+
+如果在指定的时间内squid尚未从被请求的服务器读入任何数据，则squid将终止该客户请求。
+
+默认值为15min。
+
+read_timeout 15 minutes
+
+(6) request_timeout
+
+设置在建立与客户的连接后， squid将花多长时间等待客户发出HTTP请求。默认值为30s。
+
+request_timeout 30 seconds
+
+(7) client_lifetime time-units
+
+设置客户在与squid建立连接后，可以将该连接保持多长时间。
+
+注意，因为客户建立的每个连接都会消耗一定的系统资源，所以如果是为一个大型网络提供代理服务的话，一定要正确地修改该值。因为如果同一时间的连接数量太大的话，可能会消耗大量的系统资源，从而导致服务器宕机。默认值为1天，该值太大了，建议根据自己的情况适当减小该值。
+
+client_lifetime 1 day
+
+(8) half_closed_clients on/off
+
+有时候由于用户的不正常操作，可能会使与squid的TCP连接处于半关闭状态，这时候，该TCP连接的发送端已经关闭，而接收端正常工作。默认时，squid将一直保持这种处于半关闭状态的TCP连接，直到返回套接字的读写错误才将其关闭。如果将该值设为off，则一旦从客户端
+
+返回“no more data to read”的信息，squid就立即关闭该连接。half_closed_clients on
+
+(9) pconn_timeout
+
+设置squid在与其他服务器和代理建立连接后，该连接闲置多长时间后被关闭。默认值为120秒。
+
+pconn_timeout 120 seconds
+
+(10) ident_timeout
+
+设置squid等待用户认证请求的时间。默认值为10s。
+
+i dent_timeout 10 seconds
+
+( 11) shutdown_lifetime time-units
+
+当收到SIGTERM 或者SIGHUP 信号后, squid将进入一种shutdown pending的模式，等待所
+
+有活动的套接字关闭。在过了shutdown_lifetime所定义的时间后，所有活动的用户都将收到一个超时信息。默认值为30s。
+
+shutdown_lifetime 30 seconds
+
+7. 管理参数选项
+
+(1) cache_mgr
+
+设置管理员邮件地址。默认为：cache_mgr root
+
+(2) cache_effective_user
+
+cache_effective_group
+
+如果用root启动squid，squid将变成这两条语句指定的用户和用户组。默认变为squid用户和squid用户组。注意这里指定的用户和用户组必须真是存在于/etc/passwd中。如果用非root账号启动squid，则squid将保持该用户及用户组运行，这时候，不能指定小于1024的http_port。
+
+cache_effective_user squid
+
+cache_effective_group squid
+
+(3) visible_hostname
+
+定义在返回给用户的出错信息中的主机名。
+
+如: visible_hostname www-cache.foo.org
+
+(4) unique_hostname
+
+如果你有一个代理服务器阵列，并且为每个代理服务器指定了同样的“visible_hostname"，则你必须同时为它们指定不同的“unique_hos tname”来避免“forwarding loops”（传输循环）发生。
+
+8. 其他杂项
+
+(1) dns_testnames
+
+设置进行DNS查询测试,如果第一个站点解析成功，则立即结束DNS查询测试。如果不愿意进行DNS查询测试，就不要去掉默认的设置。
+
+#dns_testnames netscape.com internic.net nlanr.net microsoft.com
+
+(2) logfile_rotate
+
+通常， squid会定期的将日志文件更名并打包。比如正在使用的日志文件为access.log,squid会将其更名并打包为access.log.1.gz；过了一定时间后，squid又会将access.log.1.gz更名为access.log.2.gz并将当前的日志文件更名并打包为access.log.1.gz，以此循环。logfile_rotate指定的数字即为打包并备份的文件的数量，当达到这一数目时，squid将删除最老的备份文件。默认值为1 0。如果想手动来进行这些操作，可以用logfile_rotate 0来取消自动操作。
+
+(3) err_html_text
+
+用该语句定义一个字符串变量，可以用％L在返回给用户的错误信息文件中引用。错误信息文件通常在/etc/squid/errors目录中，这是一些用HTML写成的脚本文件，可以自己修改它。
+
+(4) deny_info
+
+可以定制自定义的拒绝访问信息文件，和不同的用户列表相关联。当用户被http_access相关规则拒绝时，squid可以向用户显示你自定义的相应的拒绝访问信息文件。
+
+语法为：Usage: deny_info err_page_name acl
+
+比如：deny_info ERR_CUSTOM_ACCESS_DENIED bad_guys
+
+(5) memory_pools on|off
+
+如果将该项设为on，则squid将保留所有已经分配（但是未使用）的内存池以便在将来使用。
+
+默认为on .
+
+memory_pools on
+
+(6) log_icp_queries on|off
+
+设置是否对ICP请求作日志。如果系统负载很大，可以用off来取消该功能。
+
+默认为:log_icp_queries on
+
+(7) always_direct
+
+该选项允许指定某些用户类，squid将这些用户类的请求直接转发给被请求的服务器。语法为:always_direct allow|deny [!]aclname ...
+
+如：直接转发FTP请求可以这样设置：
+
+acl FTP proto FTP
+
+always_direct allow FTP
+
+(8) never_direct
+
+与always_direct相反。语法为：Usage: never_direct allow|deny [!]aclname ...
+
+比如，为了强制除了本地域的其他用户使用代理服务器，可以这样设置：
+
+acl local-servers dstdomain foo.net
+
+acl all src 0.0.0.0/0.0.0.0
+
+never_direct deny local-servers
+
+never_direct allow all
+
+(9) icon_directory
+
+指明向用户传送错误信息时所用到的图标文件的目录。默认路径为：
+
+icon_directory /usr/lib/squid/icons
+
+(10) error_directory
+
+向用户传送错误信息所用到的错误描述文件的目录。默认路径为：
+
+error_directory /etc/squid/errors
+
+在这里指出一个关于squid的bug：无论logfile_rotate参数的设置为何值，日志文件就是不压缩。在这里期待着新版的squid能弥补这个bug
