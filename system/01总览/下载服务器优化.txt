@@ -110,8 +110,8 @@ pid_filename /var/run/squid.pid
 acl QUERY urlpath_regex cgi-bin .php .cgi .avi .wmv .rm .ram .mpg .mpeg .aspx .asp .jsp
 cache deny QUERY
 
-acl OverConnLimit maxconn 4
-http_access deny OverConnLimit
+#acl OverConnLimit maxconn 4
+#http_access deny OverConnLimit
 
 #acl all src 0.0.0.0/0.0.0.0
 #delay_pools 1
