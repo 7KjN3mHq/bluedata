@@ -50,6 +50,10 @@ dpkg-reconfigure locales
 locale -a
 
 
+deb to rpm
+alien --to-deb package.rpm
+
+
 ## aptinstall
 apt-get install mysql-server-4.1 mysql-client-4.1 libmysqlclient14-dev apache2 apache2-utils libapache2-mod-php4 php4 php4-mysql php4-gd2
 apt-get install nfs-kernel-server nfs-common portmap

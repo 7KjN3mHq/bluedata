@@ -14,3 +14,6 @@ redhat vim 中显示颜色或不显示颜色
 为了方便，把 vi ln 到 vim
 mv /bin/vi /bin/vi.bak
 ln -s /usr/bin/vim /bin/vi
+
+putty 小键盘不能用的问题
+在选项 Terminal(终端) -> Features(特性) 里，找到 Disable application keypad mode(禁止应用小键盘模式)，选上就可以了。
