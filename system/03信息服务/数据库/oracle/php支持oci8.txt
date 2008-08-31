@@ -1,0 +1,62 @@
+autoconf automake libtool flex
+Add the Oracle lib path to the LD_LIBRARY_PATH
+
+cd php-4.x
+./configure --prefix=/tmp/php
+make
+make install
+cd ext/oci8
+/tmp/php/bin/phpize
+./configure --with-php-config=/tmp/php/bin/php-config
+make
+
+cp modules/oci8.so /path/to/php/lib/
+
+vi php.ini , add
+extension=oci8.so
+
+vi apachectl , add
+ORACLE_HOME=/u01/app/oracle/10g
+ORACLE_SID=ora10g
+export NLS_LANGUAGE="SIMPLIFIED CHINESE"
+export ORACLE_HOME ORACLE_SID
+export LD_LIBRARY_PATH=${ORACLE_HOME}/lib:${LD_LIBRARY_PATH}
+
+
+
+PHP:OCI 安装
+OCI8是PHP对ORACLE数据库的支持模块
+安装OCI8之前,需要先装oracle的客户端库文件
+Instant Client Package - Basic
+以及 Instant Client Package - SDK
+安装所有所需文件最方便的方法是使用 Oracle Instant Client,可以从此处得到:http://www.oracle.com/technology/tech/oci/instantclient/instantclient.html.要使 OCI8 模块能工作，”basic” 版的 Oracle Instant Client 已经足够.Instant Client 不需要 ORACLE_SID 或 ORACLE_HOME 环境变量被设定.不过可能还是要设定 LD_LIBRARY_PATH 和 NLS_LANG
+
+rpm -ivh oracle-instantclient-basic-11.1.0.1-1.i386.rpm
+vi /etc/ld.so.conf.d/oracle-lib.conf
+内容如下
+/usr/lib/oracle/11.1.0.1/client/lib
+运行
+ldconfig
+
+rpm -ivh oracle-instantclient-devel-11.1.0.1-1.i386.rpm
+
+确定apache对pthread的支持
+ldd /usr/sbin/httpd | grep libpthread
+如果不支持,需要重新编译apache
+UnixWare等会不支持libpthread,但是支持libthread
+
+进入php代码的ext/oci8目录
+/usr/local/php/bin/phpize
+./configure –with-php-config=/usr/local/php/bin/php-config –with-oci8=/usr/lib/oracle/11.1.0.1/client/
+cp /usr/include/oracle/11.1.0.1/client/* ./
+make
+make install
+将oci8.so复制到php的extension_dir下
+并且在配置文件中加入支持
+
+FAQ:
+Q:configure时报错:checking Oracle version… configure: error: Oracle-OCI8 needed libraries not found
+A:./configure –with-php-config=/usr/local/php/bin/php-config –with-oci8=/usr/lib/oracle/11.1.0.1/client/
+
+Q:make时出错
+A:缺少oracle-instantclient-devel

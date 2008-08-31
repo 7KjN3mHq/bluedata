@@ -1,0 +1,31 @@
+      用PL/SQL连接Oracle，是需要安装Oracle客户端软件的。有没要想过不安装Oracle客户端直接连接Oracle呢？
+
+      其实我一直想这样做，因为这个客户端实在太让人讨厌了！！！不但会安装一个JDK，而且还会把自己放在环境变量的最前面，会造成不小的麻烦。
+
+      其实我之前问过很多人的，但是他们都说一定需要安装Oracle客户端的.......直到昨天无意中发现了以下这个方法：
+
+      只需要在Oracle下载一个叫Instant Client Package的软件就可以了，这个软件不需要安装，只要解压就可以用了，很方便，就算重装了系统还是可以用的。
+
+      下载地址：http://www.oracle.com/technology/software/tech/oci/instantclient/htdocs/winsoft.html
+
+      下载这个，Instant Client Package - Basic包。然后解压到任意目录，在这个目录下建立NETWORK文件夹，接着再这个文件夹下再建立ADMIN文件夹，然后建立tnsnames.ora文件，内容如下：
+
+     oracledata =
+           (DESCRIPTION =
+             (ADDRESS_LIST =
+               (ADDRESS = (PROTOCOL = TCP)(HOST = yourhostIp )(PORT = 1521))
+             )
+             (CONNECT_DATA =
+               (SERVICE_NAME = yourSID   )
+             )
+           )
+    这里根据自己的实际情况配置。接着打开PL/SQL，在perference里面设置OCI Library和Oracle_home，我的设置是OCI Library=C:\Program Files\PLSQL Developer\instantclient_10_2\oci.dll,Oracle_home=C:\Program Files\PLSQL Developer\instantclient_10_2。
+
+     根据自己的实际情况配置，其实就是刚才下载下来的那个包的路径。还有最后一个问题，需要设置一个字符集，这样查询出来的数据才不会是乱码，写一个批处理pldev. bat放到pl安装目录下，内容如下：
+
+    set nls_lang=SIMPLIFIED CHINESE_CHINA.ZHS16GBK
+    PLSQLDev.exe
+
+     这个字符集，指的是服务器端的字符集，请根据实际情况配置。
+
+     最后，只要双击这个批处理，再填写帐号和密码就可以了！
