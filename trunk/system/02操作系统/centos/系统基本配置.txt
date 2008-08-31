@@ -7,8 +7,17 @@ CentOS4.6 再把如下设置改了：
 SUPPORTED="zh_CN.GBK:zh_CN:zh"
 
 关闭内核 ipv6 模块
+CentOS4.6:
 # vi /etc/modprobe.conf
 alias net-pf-10 off
+CentOS5.2:
+# vi /etc/modprobe.d/blacklist
+blacklist ipv6
+
+设置 LVM 扫描的设备
+vi /etc/lvm/lvm.conf
+# filter = [ "a/.*/" ]
+filter = [ "r|/dev/cdrom|", "a|/dev/sda4|" ]
 
 CentOS5.2 禁用 SELinux
 # vi /etc/sysconfig/selinux
@@ -36,7 +45,7 @@ CentOS5.2 再注释掉如下设置：
 安装 vim-enhanced （会自动安装所依赖的 vim-common）
 # yum -y install vim-enhanced
 配置开启语法着色及关闭显示行号
-# vi ~/.vimrc
+# vi /etc/vimrc
 syntax on
 set nohlsearch
 
