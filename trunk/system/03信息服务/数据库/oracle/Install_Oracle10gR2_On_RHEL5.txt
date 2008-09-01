@@ -12,9 +12,9 @@ RHEL 5.2 的安装
 分区如下（安装完成后 df -h 的输出）：
 Filesystem            Size  Used Avail Use% Mounted on
 /dev/sda3             996M  220M  725M  24% /
-/dev/mapper/vg-var    2.0G  113M  1.8G   6% /var
 /dev/mapper/vg-tmp    992M  1.3M  940M   1% /tmp
-/dev/mapper/vg-usr    3.9G  1.6G  2.2G  42% /usr
+/dev/mapper/vg-usr    3.9G  1.5G  2.2G  41% /usr
+/dev/mapper/vg-var    2.0G   96M  1.8G   6% /var
 /dev/sda1             122M  7.0M  109M   6% /boot
 
 /dev/sda2 为 2GB 的 swap 分区，/dev/sda4 为 PV。
@@ -30,7 +30,7 @@ Oracle 10gR2 的安装需要桌面环境。
 安装 Oracle 10gR2 前的系统配置
 配置 Linux 内核参数
 设置共享内存
-设置 SHMMAX 
+设置 SHMMAX
 SHMMAX 参数定义共享内存段的最大大小（以字节为单位）。Oracle SGA 由共享内存组成，且错误设置 SHMMAX 可能会限制 SGA 的大小。
 在设置 SHMMAX 时，切记 SGA 的大小应该适合于一个共享内存段。SHMMAX 设置不足可能会导致以下问题：
 ORA-27123:unable to attach to shared memory segment
@@ -41,7 +41,7 @@ cat /proc/sys/kernel/shmmax
 
 SHMMAX 的默认值为 4GB。这个值对于配置 Oracle SGA 足够了。RHEL3 或 RHEL4 的默认值为 33554432(32MB)，在早期的安装手册中就把这个值调整为了 2147483648(2GB)。
 
-设置 SHMMNI 
+设置 SHMMNI
 这个内核参数用于设置系统范围内共享内存段的最大数量。
 可以通过执行以下命令确定 SHMMNI 的值：
 cat /proc/sys/kernel/shmmni
@@ -49,7 +49,7 @@ cat /proc/sys/kernel/shmmni
 
 SHMMNI 的默认设置足以满足 Oracle 10gR2 安装的需要。
 
-设置 SHMALL 
+设置 SHMALL
 SHMALL 共享内存内核参数。该参数控制系统一次可以使用的共享内存总量（以页为单位）。简言之，该参数的值始终应至少为：ceil(SHMMAX/PAGE_SIZE)
 可以使用以下命令进行查询：
 cat /proc/sys/kernel/shmall
@@ -73,52 +73,96 @@ SEMOPM: 用于控制每个 semop 系统调用可以执行的信号操作数。Oracle 建议将 SEMOPM 设
 
 默认设置满足 Oracle 10gR2 安装的需要。
 
+早期版本的 RHEL 这些参数的默认值较小，所以需要调整的大一些。而在 RHEL 5.2 中，这些参数的默认值就已经满足 Oracle 安装的需求了，也就不需要再做调整了。
+
 
 设置文件句柄
 文件句柄的设置表示 Linux 系统上可以打开的文件数。使用以下命令来确定整个系统中文件句柄的最大数量：
 cat /proc/sys/fs/file-max
-102408
+50660
 
-Oracle 建议将整个系统的文件句柄值至少设置为 65536。默认设置足以满足 Oracle 10gR2 安装的需要。
+Oracle 建议将整个系统的文件句柄值至少设置为 65536
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
 
-早期版本的 RHEL 这些参数的默认值较小，所以需要调整的大一些。而在 RHEL5.2 中，这些参数的默认值就已经满足 Oracle 安装的需求了，也就不需要再做调整了。
+可以使用以下命令查看文件句柄当前的使用情况：
+cat /proc/sys/fs/file-nr
+256    0       65536
+
+增大 file-max 的值，还需要设置 ulimit
+ulimit -a | grep "open files"
+open files                      (-n) 1024
+
+这是 Shell 对一个进程打开的文件句柄数量的限制。
+要增大这个值，可以修改 /etc/security/limits.conf
+echo -ne "
+oracle soft nofile 65536
+oracle hard nofile 65536
+" >> /etc/security/limits.conf
+
+
+设置向外连接的端口范围
+cat /proc/sys/net/ipv4/ip_local_port_range
+32768   61000
+
+可以扩大范围
+echo "net.ipv4.ip_local_port_range = 1024    65000" >> /etc/sysctl.conf
+sysctl -p
 
 
 软件需求
 需要安装以下程序包：
-make-3.81-3.1
+setarch-2.0-1.1
+make-3.81-3.el5
 glibc-2.5-24
-glibc-devel-2.5-24
-glibc-headers-2.5-24
-gcc-4.1.2-42.el5
-compat-db-4.2.52-5.1
+libaio-0.3.106-3.2
+compat-libstdc++-33-3.2.3-61
 compat-gcc-34-3.4.6-4
 compat-gcc-34-c++-3.4.6-4
-compat-libstdc++-33-3.2.3-61
-
+gcc-4.1.2-42.el5
+libXp-1.0.0-8.1.el5
 openmotif-2.3.0-0.5.el5
-setarch-2.0-1.1
+compat-db-4.2.52-5.1
 
 查看系统上安装了这些程序包的哪些版本，以 root 用户身份运行以下命令：
-rpm -q make glibc glibc-devel glibc-headers gcc compat-db compat-gcc-34 compat-gcc-34-c++ compat-libstdc++-33 openmotif setarch
-缺什么就装什么。例如这里用 yum 安装了这些没有安装的包：
-yum install glibc-devel glibc-headers gcc compat-db compat-gcc-34 compat-gcc-34-c++ compat-libstdc++-33 openmotif
-yum 会自动解决依赖问题。为方便安装，可以把 yum 设置为通过 DVD 光盘安装。
+rpm -q setarch make glibc libaio compat-libstdc++-33 compat-gcc-34 compat-gcc-34-c++ gcc libXp openmotif compat-db
+缺什么就装什么：
+# RedHat AS5 Disk 1
+rpm -Uvh setarch-2*
+rpm -Uvh make-3*
+rpm -Uvh glibc-2*
+rpm -Uvh libaio-0*
+
+# RedHat AS5 Disk 2
+rpm -Uvh compat-libstdc++-33-3*
+rpm -Uvh compat-gcc-34-3*
+rpm -Uvh compat-gcc-34-c++-3*
+rpm -Uvh gcc-4*
+rpm -Uvh libXp-1*
+
+# RedHat AS5 Disk 3
+rpm -Uvh openmotif-2*
+rpm -Uvh compat-db-4*
+
+为方便安装，可以把 yum 设置为通过 DVD 光盘安装。例如这里用 yum 安装了这些没有安装的包：
+yum -y install compat-libstdc++-33 compat-gcc-34 compat-gcc-34-c++ gcc libXp openmotif compat-db
 
 
 创建安装 Oracle 10gR2 软件的分区及数据库的分区。
 创建逻辑卷并创建文件系统
 lvcreate -L 5120M -n u01 vg
 lvcreate -L 5120M -n u02 vg
-mkfs -t ext3 -L /u01 /dev/vg/u01
-mkfs -t ext3 -L /u02 /dev/vg/u02
+mkfs -t ext3 /dev/vg/u01
+mkfs -t ext3 /dev/vg/u02
 
 创建挂载点
 mkdir /u01 /u02
 
 在 /etc/fstab 文件中添加
-LABEL=/u01              /u01                    ext3    defaults        1 2
-LABEL=/u02              /u02                    ext3    defaults        1 2
+/dev/vg/u01             /u01                    ext3    defaults        1 2
+/dev/vg/u02             /u02                    ext3    defaults        1 2
 
 挂载
 mount -a
@@ -167,7 +211,7 @@ VNCSERVERARGS[2]="-geometry 800x600"
 设置 oracle 用户的环境变量
 su - oracle
 vi .bash_profile
-export LANG=C
+export LANG=en_US
 export ORACLE_BASE=/u01/app/oracle
 export ORACLE_HOME=$ORACLE_BASE/product/10.2
 export ORACLE_SID=orcl
@@ -182,6 +226,7 @@ bash 使用英文环境是为了避免中文安装界面及运行 Oracle 应用程序的乱码问题。
 
 准备安装文件
 unzip -d /u01/app/oracle/orainstall /usr/local/src/10201_database_linux32.zip
+unzip -d /u01/app/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
 
 
 安装 Oracle 10gR2
@@ -200,9 +245,7 @@ unzip -d /u01/app/oracle/orainstall /usr/local/src/10201_database_linux32.zip
 9.  结束安装。
 
 升级到 10.2.0.4
-unzip p6810189_10204_Linux-x86.zip
-cd Disk1
-./runInstaller
+/u01/app/oracle/Disk1/runInstaller
 一路 Next 后 Install ，以 root 用户执行 $ORACLE_HOME/root.sh 脚本后结束安装。
 
 
@@ -272,5 +315,39 @@ chkconfig --add oracle
 登录地址
 isQL*Plus URL:
 http://localhost:5560/isqlplus
+isQL*Plus DBA URL:
+http://localhost:5560/isqlplus/dba
 Enterprise Manager 10gR2 Database Control URL:
 http://localhost:1158/em
+
+
+进入iSQL*Plus/DBA的方法：
+
+1、 进入目录：$ORACLE_HOME/oc4j/j2ee/isqlplus/application-deployments/isqlplus (不进入该目录，以后命令执行会报错)
+
+2、 执行如下命令进入JAZN命令环境：
+
+$ORACLE_HOME/jdk/bin/java -Djava.security.properties=$ORACLE_HOME/sqlplus/admin/iplus/provider -jar $ORACLE_HOME/oc4j/j2ee/home/jazn.jar -user "iSQL*Plus DBA/admin" -password welcome –shell
+
+Admin 和 welcome 分别为iSQL*Plus DBA的默认帐号和密码
+
+3、 新建用户，设置密码
+   JAZN:> adduser "iSQL*Plus DBA" username password
+
+4、 用listusers列出用户,看看你的用户是否存在
+  JAZN:> listusers
+
+5、 授予用户赋予webDba角色
+  JAZN:> grantrole webDba "iSQL*Plus DBA" username
+
+6、 退出JAZN命令环境
+   JAZN:> exit
+
+7、 再进入网址http://host:port/isqlplus/dba，在弹出的对话框中输入你新建的username和password，就可以进入到数据库登陆界面了，选择以sysdba或sysoper身份登陆。
+注意这里不是数据库用户，而是isqlplus应用服务器要求的用户和密码（要求具有webDba角色）
+
+如果你不想让这个用户继续登陆或存在，可以进入JAZN命令环境(执行1、2步操作)，执行
+   JAZN:> revokerole webDba "iSQL*Plus DBA" username       #撤销用户webDba角色
+   JAZN:> remuser "iSQL*Plus DBA" username                       #删除用户
+也可以用
+   JAZN:> setpasswd "iSQL*Plus DBA" username old_password new_password    修改用户密码
