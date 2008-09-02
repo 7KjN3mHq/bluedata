@@ -282,7 +282,7 @@ Enterprise Manager 10gR2 Database Control URL:
 http://oracle:1158/em
 
 
-解决 OEM 乱码问题
+OEM 中文乱码问题
 分别进入以下三个目录：
 $ORACLE_HOME/jdk/jre/lib
 $ORACLE_HOME/jre/1.4.2/lib
@@ -293,5 +293,8 @@ mv font.properties font.properties.bak
 cp -a font.properties.zh_CN.Redhat font.properties
 
 如果之前已经运行过 OEM，需要进入 OEM 的缓存图片目录清除缓存图片
-cd $ORACLE_HOME/oc4j/j2ee/oc4j_applications/applications/em/em/cabo/images/cache/zht
+cd $ORACLE_HOME/oc4j/j2ee/oc4j_applications/applications/em/em/cabo/images/cache/zhs
 rm -f *.gif *.imx
+重启 OEM:
+emctl stop dbconsole
+emctl start dbconsole

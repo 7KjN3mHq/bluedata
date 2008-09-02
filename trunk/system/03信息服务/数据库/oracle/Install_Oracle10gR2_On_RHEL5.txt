@@ -218,7 +218,8 @@ export ORACLE_SID=orcl
 export PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin
 export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib
 
-bash 使用英文环境是为了避免中文安装界面及运行 Oracle 应用程序的乱码问题。
+bash 使用英文环境（ASCII 编码格式）是为了避免中文安装界面及运行 Oracle 应用程序的乱码问题。
+如果设置 LANG=en_US ，打开 OEM 的时候中文会是乱码。
 需要再配置一下 gnome-terminal，VNC 以 oracle 用户登录，打开 应用程序 -> 附件 -> 终端，做如下设置：
 编辑 -> 当前配置文件 -> 标题和命令，勾选上 以登录 Shell 方式运行命令。
 这样，中文界面下的 gnome-terminal 的环境就是英文的了。
@@ -274,6 +275,8 @@ $ORACLE_SID:$ORACLE_HOME:<N|Y>
 如果最后一列为 Y，那么在 $ORACLE_HOME 目录下的 SID 为 $ORACLE_SID 的实例会由 dbstart 工具启动。
 编辑完成后保存。然后以 oracle 用户运行 dbstart 命令，数据库启动。停止数据库以 oracle 用户运行 dbshut 命令。
 
+cp -a $ORACLE_BASE/admin/orcl/pfile/init.ora.* $ORACLE_HOME/dbs/initexpress.ora
+
 启动/停止 Oracle Listener
 启动 Listener 以 oracle 用户运行命令 lsnrctl start
 停止 Listener 以 oracle 用户运行命令 lsnrctl stop
@@ -281,36 +284,61 @@ $ORACLE_SID:$ORACLE_HOME:<N|Y>
 为便于管理，创建一个启动脚本
 vi /etc/init.d/oracle
 #!/bin/bash
-# chkconfig: 0356 95 1
-# description: init script to start/stop Oracle Database 10gR2, TNS listener, isQL*Plus, EMS
-
-# match these values to your environment:
-export ORACLE_BASE=/u01/app/oracle
-export ORACLE_HOME=$ORACLE_BASE/product/10.2.0.1/db_1
+#
+# oracle        This shell script takes care of starting and stopping
+#             oracle server.
+#
+# chkconfig: 35 89 10
+# description: Oracle is a Database Server
+# processname: oracle
+# Source function library.
+#/etc/init.d/oracle
+. /etc/rc.d/init.d/functions
+prog="oracle"
+export ORACLE_HOME=/u01/app/oracle/product/10.2
 export ORACLE_SID=orcl
 export PATH=$PATH:$ORACLE_HOME/bin
-export ORACLE_USER=oracle
-# see how we are called:
+ORA_OWNR="oracle"
+# if the executables do not exist -- display error
+if [ ! -f $ORACLE_HOME/bin/dbstart -o ! -d $ORACLE_HOME ]
+then
+echo "Oracle startup: cannot start"
+exit 1
+fi
+# depending on parameter -- startup, shutdown, restart
+# of the instance and listener or usage display
 case $1 in
 start)
-su - "$ORACLE_USER" -c "$ORACLE_HOME/bin/dbstart"
-su - $ORACLE_USER -c "$ORACLE_HOME/bin/lsnrctl start"
-su - "$ORACLE_USER" -c "$ORACLE_HOME/bin/isqlplusctl start"
-su - "$ORACLE_USER" -c "$ORACLE_HOME/bin/emctl start dbconsole"
+# Oracle listener and instance startup
+echo -n "Starting Oracle: "
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/dbstart $ORACLE_HOME"
+touch /var/lock/oracle
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/emctl start dbconsole"
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/isqlplusctl start"
+echo "OK"
 ;;
 stop)
-su - $ORACLE_USER -c "$ORACLE_HOME/bin/lsnrctl stop"
-su - "$ORACLE_USER" -c "$ORACLE_HOME/bin/isqlplusctl stop"
-su - $ORACLE_USER -c "$ORACLE_HOME/bin/emctl stop dbconsole"
-su - $ORACLE_USER -c "$ORACLE_HOME/bin/dbshut"
+# Oracle listener and instance shutdown
+echo -n "Shutdown Oracle: "
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/emctl stop dbconsole"
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/isqlplusctl stop"
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/dbshut $ORACLE_HOME"
+rm -f /var/lock/oracle
+echo "OK"
+;;
+reload|restart)
+$0 stop
+$0 start
 ;;
 *)
-echo "Usage: $0 {start|stop}"
-;;
+echo "Usage: `basename $0` start|stop|restart|reload"
+exit 1
 esac
+exit 0
 
 chmod +x /etc/init.d/oracle
 chkconfig --add oracle
+/etc/init.d/oracle start
 
 登录地址
 isQL*Plus URL:
@@ -319,6 +347,13 @@ isQL*Plus DBA URL:
 http://localhost:5560/isqlplus/dba
 Enterprise Manager 10gR2 Database Control URL:
 http://localhost:1158/em
+
+
+登录 iSQL*Plus 出现错误
+ERROR - ORA-12170: TNS:Connect timeout occurred
+
+tnsping oracle
+发现 HOST IP 错误
 
 
 进入iSQL*Plus/DBA的方法：
