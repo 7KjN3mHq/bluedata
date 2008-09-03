@@ -2,7 +2,7 @@ date √¸¡Ó…Ë÷√ ±º‰£∫
 # date -s 20080710
 # date -s 21:19:50
 
-# hwclock -w
+# ntpdate 210.72.145.44 ; hwclock -w
 
 ntpd:
 vi /etc/ntp.conf

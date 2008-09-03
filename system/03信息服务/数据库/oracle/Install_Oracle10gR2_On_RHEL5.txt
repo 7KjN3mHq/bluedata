@@ -148,6 +148,7 @@ rpm -Uvh compat-db-4*
 
 为方便安装，可以把 yum 设置为通过 DVD 光盘安装。例如这里用 yum 安装了这些没有安装的包：
 yum -y install compat-libstdc++-33 compat-gcc-34 compat-gcc-34-c++ gcc libXp openmotif compat-db
+yum 会自动解决 RPM 包依赖问题。
 
 
 创建安装 Oracle 10gR2 软件的分区及数据库的分区。
@@ -212,6 +213,7 @@ VNCSERVERARGS[2]="-geometry 800x600"
 su - oracle
 vi .bash_profile
 export LANG=en_US
+export NLS_LANG="SIMPLIFIED CHINESE_CHINA.ZHS16GBK"
 export ORACLE_BASE=/u01/app/oracle
 export ORACLE_HOME=$ORACLE_BASE/product/10.2
 export ORACLE_SID=orcl
@@ -231,7 +233,7 @@ unzip -d /u01/app/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
 
 
 安装 Oracle 10gR2
-以 oracle 用户登录后开始正式安装
+以 oracle 用户登录后开始安装
 因为 Oracle 10gR2 不支持 RHEL5 操作系统，需要跳过操作系统验证，使用以下命令安装：
 /u01/app/oracle/orainstall/database/runInstaller -ignoreSysPrereqs
 
@@ -274,12 +276,8 @@ unzip -d /u01/app/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
 $ORACLE_SID:$ORACLE_HOME:<N|Y>
 如果最后一列为 Y，那么在 $ORACLE_HOME 目录下的 SID 为 $ORACLE_SID 的实例会由 dbstart 工具启动。
 编辑完成后保存。然后以 oracle 用户运行 dbstart 命令，数据库启动。停止数据库以 oracle 用户运行 dbshut 命令。
-
-cp -a $ORACLE_BASE/admin/orcl/pfile/init.ora.* $ORACLE_HOME/dbs/initexpress.ora
-
-启动/停止 Oracle Listener
-启动 Listener 以 oracle 用户运行命令 lsnrctl start
-停止 Listener 以 oracle 用户运行命令 lsnrctl stop
+这会出现：ORACLE_HOME_LISTNER is not SET, unable to auto-start Oracle Net Listener 这样的提示。
+可以使用 dbstart $ORACLE_HOME 来同时启动 Oracle Net Listener 。dbshut 同理。
 
 为便于管理，创建一个启动脚本
 vi /etc/init.d/oracle
@@ -288,7 +286,7 @@ vi /etc/init.d/oracle
 # oracle        This shell script takes care of starting and stopping
 #             oracle server.
 #
-# chkconfig: 35 89 10
+# chkconfig: 0356 99 01
 # description: Oracle is a Database Server
 # processname: oracle
 # Source function library.
@@ -338,51 +336,40 @@ exit 0
 
 chmod +x /etc/init.d/oracle
 chkconfig --add oracle
-/etc/init.d/oracle start
+cd /etc/rc0.d ; mv S99oracle K01oracle ; cd /etc/rc6.d ; mv S99oracle K01oracle
+
+可以用 /etc/init.d/oracle start 或者 /etc/init.d/oracle stop 来启动、关闭 Oracle 了。
 
 登录地址
 isQL*Plus URL:
-http://localhost:5560/isqlplus
+http://host:5560/isqlplus
 isQL*Plus DBA URL:
-http://localhost:5560/isqlplus/dba
+http://host:5560/isqlplus/dba
 Enterprise Manager 10gR2 Database Control URL:
-http://localhost:1158/em
+http://host:1158/em
 
 
-登录 iSQL*Plus 出现错误
-ERROR - ORA-12170: TNS:Connect timeout occurred
+进入 iSQL*Plus DBA 的方法
+1. cd $ORACLE_HOME/oc4j/j2ee/isqlplus/application-deployments/isqlplus
+不进入该目录，以后命令执行会报错。
+2. 执行如下命令进入 JAZN 命令环境：
+$ORACLE_HOME/jdk/bin/java -Djava.security.properties=$ORACLE_HOME/sqlplus/admin/iplus/provider -jar $ORACLE_HOME/oc4j/j2ee/home/jazn.jar -user "iSQL*Plus DBA/admin" -password welcome -shell
+Admin 和 welcome 分别为 iSQL*Plus DBA 的默认帐号和密码。
+3. 新建用户，设置密码
+JAZN:> adduser "iSQL*Plus DBA" username password
+4. 用 listusers 列出用户，看看用户是否存在
+JAZN:> listusers
+5. 给用户赋予 webDba 角色
+JAZN:> grantrole webDba "iSQL*Plus DBA" username
+6. 退出 JAZN 命令环境
+JAZN:> exit
+7. 再进入网址 http://host:port/isqlplus/dba
+在弹出的对话框中输入新建的 username 和 password 就可以进入到数据库登陆界面了，选择以 sysdba 或 sysoper 权限登陆。
+这里不是数据库用户，而是 isqlplus 应用服务器的用户和密码（要求具有 webDba 角色）。连接标识符：hostname:port/instname
 
-tnsping oracle
-发现 HOST IP 错误
-
-
-进入iSQL*Plus/DBA的方法：
-
-1、 进入目录：$ORACLE_HOME/oc4j/j2ee/isqlplus/application-deployments/isqlplus (不进入该目录，以后命令执行会报错)
-
-2、 执行如下命令进入JAZN命令环境：
-
-$ORACLE_HOME/jdk/bin/java -Djava.security.properties=$ORACLE_HOME/sqlplus/admin/iplus/provider -jar $ORACLE_HOME/oc4j/j2ee/home/jazn.jar -user "iSQL*Plus DBA/admin" -password welcome –shell
-
-Admin 和 welcome 分别为iSQL*Plus DBA的默认帐号和密码
-
-3、 新建用户，设置密码
-   JAZN:> adduser "iSQL*Plus DBA" username password
-
-4、 用listusers列出用户,看看你的用户是否存在
-  JAZN:> listusers
-
-5、 授予用户赋予webDba角色
-  JAZN:> grantrole webDba "iSQL*Plus DBA" username
-
-6、 退出JAZN命令环境
-   JAZN:> exit
-
-7、 再进入网址http://host:port/isqlplus/dba，在弹出的对话框中输入你新建的username和password，就可以进入到数据库登陆界面了，选择以sysdba或sysoper身份登陆。
-注意这里不是数据库用户，而是isqlplus应用服务器要求的用户和密码（要求具有webDba角色）
-
-如果你不想让这个用户继续登陆或存在，可以进入JAZN命令环境(执行1、2步操作)，执行
-   JAZN:> revokerole webDba "iSQL*Plus DBA" username       #撤销用户webDba角色
-   JAZN:> remuser "iSQL*Plus DBA" username                       #删除用户
-也可以用
-   JAZN:> setpasswd "iSQL*Plus DBA" username old_password new_password    修改用户密码
+修改用户密码：
+JAZN:> setpasswd "iSQL*Plus DBA" username old_password new_password
+撤销用户 webDba 角色：
+JAZN:> revokerole webDba "iSQL*Plus DBA" username
+删除用户：
+JAZN:> remuser "iSQL*Plus DBA" username
