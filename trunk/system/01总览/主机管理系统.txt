@@ -3,6 +3,10 @@
 GNU Hosting Helper
 http://hostingsoftware.net/
 
+VHCS
+http://www.vhcs.net/
+http://mirrors.penguinfriends.org/VHCS2/
+
 IspCP
 http://isp-control.net/
 
