@@ -1,0 +1,266 @@
+配置 root 用户 SSH 登陆
+# vi /etc/ssh/sshd_config
+PermitRootLogin yes
+# svcadm restart network/ssh
+
+取消影响系统启动的 TIMEOUT
+# vi /etc/bootrc
+set boot_timeout 0
+# vi /boot/solaris/bootenv.rc
+setprop auto-boot-timeout 0
+setprop boottimeout '0'
+# vi /boot/solaris/strap.rc
+Options timeout=0
+
+取消自动关机
+# vi /etc/power.conf
+#autoshutdown 30 9:00 9:00 default
+
+设置用户的环境变量
+# vi /etc/passwd 
+root:x:0:1:Super-User:/:/usr/bin/bash 
+# vi /.bashrc 
+PS1='[\u@\H \W]\$' 
+PATH=$PATH:/bin:/sbin:/usr/bin:/usr/ucb:/usr/sbin:/etc:/usr/local/bin:/usr/local/sbin:/usr/ccs/bin:/usr/sfw/bin 
+MANPATH=$MANPATH:/usr/man:/usr/local/man:/opt/sfw/man 
+LD_LIBRARY_PATH=/usr/lib:/usr/dt/lib:/usr/openwin/lib:/usr/sfw/lib: 
+/usr/local/lib:/usr/local/ssl/lib 
+CC=gcc 
+export PS1 PATH MANPATH LD_LIBRARY_PATH CC 
+export EDITOR=vim 
+umask 022 
+TMOUT=1800 
+# vi .bash_profile 
+if [ -f ~/.bashrc ]; then 
+. ~/.bashrc 
+fi 
+
+5．安装常用软件包 
+
+TOP工具： 
+# gzip -d top-3.5beta12.5-sol9-intel-local.gz 
+# pkgadd -d top-3.5beta12.5-sol9-intel-local 
+
+VIM工具： 
+# gzip -d ncurses-5.3-sol9-intel-local.gz 
+# pkgadd -d ncurses-5.3-sol9-intel-local 
+# gzip -d vim-6.2-sol9-intel-local.gz 
+# pkgadd -d vim-6.2-sol9-intel-local 
+# mv /bin/vi /bin/vi.bak 
+# ln -s /usr/local/bin/vim /bin/vi 
+# cp /usr/local/share/vim/vim62/vimrc_example.vim /.vimrc 
+# vi /.vimrc 
+把其中的： 
+set backup " keep a backup file 
+修改为： 
+set nobackup " keep a backup file 
+# vi /etc/hosts 
+加一条记录： 
+192.168.0.15 win2k 
+
+GCC工具： 
+# gzip -d libiconv-1.8-sol9-intel-local.gz 
+# gzip -d gcc-3.3.2-sol9-intel-local.gz 
+# pkgadd -d libiconv-1.8-sol9-intel-local 
+# pkgadd -d gcc-3.3.2-sol9-intel-local 
+
+MAKE工具： 
+# gzip -d make-3.80-sol9-intel-local.gz 
+# gzip -d automake-1.7.2-sol9-intel-local.gz 
+# pkgadd -d make-3.80-sol9-intel-local 
+# pkgadd -d automake-1.7.2-sol9-intel-local 
+
+MOZILLA： 
+# pkgrm SUNWnsb SUNWnsm SUNWnspsm SUNWnsxp 
+# gzip -d mozilla-i386-pc-solaris2.8-1.6.pkg.tar.gz 
+# tar -vxf mozilla-i386-pc-solaris2.8-1.6.pkg.tar 
+# cd mozilla-1.6-x86 
+# pkgadd -d MOZmozilla.pkg 
+# gzip -d flash_player_6_solaris_intel.tar.gz 
+# tar vxf flash_player_6_solaris_intel.tar 
+# cd install_flash_player_6_solaris 
+# cp * /usr/local/lib/mozilla-1.6/plugins 
+# cd /usr/local/lib/mozilla-1.6/plugins 
+# ln –s /usr/j2se/jre/plugin/i386/ns610/libjavaplugin_oji.so 
+# /usr/local/bin/mozilla 
+
+OTHERS: 
+# pkgadd -d expat-1.95.5-sol9-intel-local 
+# pkgadd -d gdbm-1.8.3-sol9-intel-local 
+# pkgadd -d openssl-0.9.7d-sol9-intel-local 
+# pkgadd -d libgcc-3.3-sol9-intel-local 
+# pkgadd -d libpcap-0.8.1-sol9-intel-local 
+# pkgadd -d tcp_wrappers-7.6-sol9-intel-local 
+# pkgadd -d tcpdump-3.8.1-sol9-intel-local 
+# pkgadd -d zlib-1.2.1-sol9-intel-local 
+# pkgadd -d lsof-4.68-sol9-intel-local 
+
+6．安装APACHE-2.0.49 
+
+# pkgrm SUNWapchd SUNWapchr SUNWapchu 
+# gzip -d apache-2.0.49-sol9-intel-local.gz 
+# pkgadd -d apache-2.0.49-sol9-intel-local 
+# cp /usr/local/apache2/bin/apachectl /etc/rc3.d/S50apache 
+# chmod 744 /etc/rc3.d/S50apache 
+# chown root:sys /etc/rc3.d/S50apache 
+# 配置/usr/local/apache2/conf/httpd.conf过程略。 
+# SMCapach2 
+
+7．安装OPENSSH-3.8 
+
+# pkgrm SUNWsshcu SUNWsshdr SUNWsshdu SUNWsshr SUNWsshu 
+# gzip -d openssh-3.8p1-sol9-intel-local.gz 
+# pkgadd -d openssh-3.8p1-sol9-intel-local 
+# mkdir /var/empty 
+# chown root:sys /var/empty 
+# chmod 755 /var/empty 
+# groupadd sshd 
+# useradd -g sshd -c "arthur sshd privsep" -d /var/empty -s /bin/false sshd 
+# ssh-keygen -t rsa1 -f /usr/local/etc/ssh_host_key -N "" 
+# ssh-keygen -t dsa -f /usr/local/etc/ssh_host_dsa_key -N "" 
+# ssh-keygen -t rsa -f /usr/local/etc/ssh_host_rsa_key -N "" 
+# vi /etc/init.d/sshd 
+===========================sshd============================ 
+#!/sbin/sh 
+# 
+# Copyright (c) 2004 by llzqq 
+# All rights reserved. 
+# mail: llzqq@126.com 
+#ident "@(#)sshd 1.1 01/09/24 SMI" 
+
+case "$1" in 
+start) 
+/usr/local/sbin/sshd 
+;; 
+stop) 
+pkill sshd 
+;; 
+*) 
+echo "Usage: $0 { start | stop }" 
+exit 1 
+;; 
+esac 
+exit 0 
+===========================sshd============================ 
+# chmod 750 /etc/init.d/sshd 
+# chown root:sys /etc/init.d/sshd 
+# ln –s /etc/init.d/sshd /etc/rc2.d/S98sshd 
+# vi /etc/hosts.deny 
+sshd:ALL 
+# vi /etc/hosts.allow 
+sshd:192.168.0.15 
+# rm /.ssh/* 
+
+8．安装SAMBA-3 
+
+# cp /etc/rc3.d/S90samba bak.S90samba 
+# pkgrm SUNWsmbac SUNWsmbar SUNWsmbau 
+# gzip -d samba-3.0.2a-sol9-intel-local.gz 
+# gzip -d popt-1.7-sol9-intel-local.gz 
+# pkgadd -d popt-1.7-sol9-intel-local 
+# pkgadd -d samba-3.0.2a-sol9-intel-local 
+# cd /usr/local/samba/doc/samba/examples/ 
+# cp smb.conf.default /usr/local/samba/lib/smb.conf 
+# 设置smb.conf文件过程略 
+# mv /etc/rc3.d/bak.S90samba S90samba 
+# chown root:sys /etc/rc3.d/S90samba 
+# vim /etc/rc3.d/S90samba 
+=======================S90samba======================== 
+#!/sbin/sh 
+# 
+# Copyright (c) 2004 by llzqq 
+# All rights reserved. 
+# mail: llzqq@126.com 
+#ident "@(#)samba 1.1 01/09/24 SMI" 
+
+case "$1" in 
+start) 
+[ -f /usr/local/samba/lib/smb.conf ] || exit 0 
+
+/usr/local/samba/sbin/smbd -D 
+/usr/local/samba/sbin/nmbd -D 
+;; 
+stop) 
+pkill smbd 
+pkill nmbd 
+;; 
+*) 
+echo "Usage: $0 { start | stop }" 
+exit 1 
+;; 
+esac 
+exit 0 
+=======================S90samba======================== 
+
+9．初步的系统安全设置 
+
+为安全起见在/etc/inetd.conf中注释掉除下列服务的所有服务 
+
+ftp 
+echo 
+echo 
+discard 
+discard 
+rstatd/2-4 
+fs 
+100083/1 
+
+在只需要不多图形操作的服务器或是要保证相当的安全，你也许应该关掉字体服务fs，也可以关掉系统性能监视器rstatd和tooltalk服务器ttdbserverd（100083/1）,查找剩下需要关闭的端口的进程用这个命令： 
+# /usr/local/bin/lsof -i | grep port 
+
+为安全起见在防止堆栈溢出 
+
+# cp /etc/system /etc/system.BACKUP 
+# vi /etc/system 
+在文件的最后，加上以下两行： 
+set noexec_user_stack=1 
+set noexec_user_stack_log=1 
+
+禁用自动启动DESKTOP 
+
+# /usr/dt/bin/dtconfig –d 
+
+为安全起见停掉几个系统服务： 
+
+卸载SENDMAIL： 
+# pkgrm SUNWsndmr SUNWsndmu 
+卸载TELNET： 
+# pkgrm SUNWtnetc SUNWtnetd SUNWtnetr 
+# cd /etc/rc2.d 
+# mv S71ldap.client _S71ldap.client 
+# mv S72inetsvc _S72inetsvc 
+# mv S74autofs _S74autofs 
+# mv S74xntpd _S74xntpd 
+# mv S80lp _S80lp 
+# mv S71rpc _S71rpc 
+# mv S73nfs.client _S73nfs.client 
+
+# cd /etc/rc3.d 
+# mv S34dhcp _S34dhcp 
+# mv S15nfs.server _S15nfs.server 
+# mv S76snmpdx _S76snmpdx 
+
+卸载PCMCIA支持： 
+# pkgrm SUNWpcelx SUNWpcmci SUNWpcmcu SUNWpcmem SUNWpcser SUNWpsdpr 
+
+安装PORT扫描工具NMAP 
+
+# gzip -d nmap-3.50-sol9-intel-local.gz 
+# gzip -d pcre-4.5-sol9-intel-local.gz 
+# pkgadd -d nmap-3.50-sol9-intel-local 
+# pkgadd -d pcre-4.5-sol9-intel-local 
+扫描本机端口： 
+# nmap -P0 -sT localhost 
+
+安装网络漏洞扫描工具NESSUS: 
+
+# gzip -d nessus-2.0.9-sol9-intel-local.gz 
+# pkgadd -d nessus-2.0.9-sol9-intel-local 
+建立SSL证书： 
+# nessus-mkcert 
+添加NESSUS用户： 
+# nessus-adduser 
+以ROOT启动NESSUS服务器： 
+# nessus –D 
+启动NESSUS的GUI客户端： 
+# nessus
