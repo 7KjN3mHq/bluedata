@@ -1,63 +1,84 @@
-配置 root 用户 SSH 登陆
-# vi /etc/ssh/sshd_config
-PermitRootLogin yes
-# svcadm restart network/ssh
+设置 root 用户
+mkdir /root
+chmod  700 /root
+chown root:root /root
+vi /etc/passwd
+root:x:0:1:Super-User:/root:/usr/bin/bash
 
-取消影响系统启动的 TIMEOUT
-# vi /etc/bootrc
-set boot_timeout 0
-# vi /boot/solaris/bootenv.rc
-setprop auto-boot-timeout 0
-setprop boottimeout '0'
-# vi /boot/solaris/strap.rc
-Options timeout=0
+配置 root 用户 SSH 登陆
+vi /etc/ssh/sshd_config
+PermitRootLogin yes
+svcadm restart network/ssh
 
 取消自动关机
-# vi /etc/power.conf
+vi /etc/power.conf
 #autoshutdown 30 9:00 9:00 default
 
+设置 pkg-get
+pkgadd -d http://blastwave.network.com/csw/pkg_get.pkg
+
+vi /opt/csw/etc/pkg-get.conf
+#url=http://ibiblio.org/pub/packages/solaris/csw/unstable
+url=http://blastwave.unix-center.net/csw/stable
+
+export PATH=$PATH:/opt/csw/bin
+pkg-get -U
+
+pkg-get install gnupg textutils
+wget --output-document=pgp.key http://www.blastwave.org/mirrors.html
+gpg --import pgp.key
+
+vi /opt/csw/etc/pkg-get.conf
+use_gpg=false
+use_md5=false
+
+安装常用软件
+http://sunfreeware.com/programlistintel10.html#coreutils
+wget ftp://ftp.sunfreeware.com/pub/freeware/intel/10/coreutils-6.4-sol10-x86-local.gz
+gzip -d coreutils-6.4-sol10-x86-local.gz
+pkgadd -d coreutils-6.4-sol10-x86-local
+
+pkg-get install vim top ggrep gawk gtar
+cp /opt/csw/share/vim/vim71/vimrc_example.vim ~/.vimrc
+vi ~/.vimrc
+set nobackup
+" set mouse=a
+set nohlsearch
+"  filetype plugin indent on
+
 设置用户的环境变量
-# vi /etc/passwd 
-root:x:0:1:Super-User:/:/usr/bin/bash 
-# vi /.bashrc 
-PS1='[\u@\H \W]\$' 
-PATH=$PATH:/bin:/sbin:/usr/bin:/usr/ucb:/usr/sbin:/etc:/usr/local/bin:/usr/local/sbin:/usr/ccs/bin:/usr/sfw/bin 
-MANPATH=$MANPATH:/usr/man:/usr/local/man:/opt/sfw/man 
-LD_LIBRARY_PATH=/usr/lib:/usr/dt/lib:/usr/openwin/lib:/usr/sfw/lib: 
-/usr/local/lib:/usr/local/ssl/lib 
-CC=gcc 
-export PS1 PATH MANPATH LD_LIBRARY_PATH CC 
-export EDITOR=vim 
-umask 022 
-TMOUT=1800 
-# vi .bash_profile 
-if [ -f ~/.bashrc ]; then 
-. ~/.bashrc 
-fi 
+# vi ~/.bashrc
+export LS_OPTIONS='--color=auto'
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -lh'
+alias l='ls $LS_OPTIONS -lA'
+alias h='history 25'
 
-5．安装常用软件包 
+alias ping='ping -s'
+alias awk='gawk'
+alias tar='gtar'
+alias vi='vim'
 
-TOP工具： 
-# gzip -d top-3.5beta12.5-sol9-intel-local.gz 
-# pkgadd -d top-3.5beta12.5-sol9-intel-local 
+PATH=/opt/csw/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/ucb:/usr/ccs/bin:/usr/sfw/bin
+MANPATH=/opt/csw/man:/usr/local/man:/usr/man:/usr/sfw/man
+LD_LIBRARY_PATH=/opt/csw/lib:/usr/local/lib:/usr/lib:/usr/sfw/lib
+export PATH MANPATH LD_LIBRARY_PATH
 
-VIM工具： 
-# gzip -d ncurses-5.3-sol9-intel-local.gz 
-# pkgadd -d ncurses-5.3-sol9-intel-local 
-# gzip -d vim-6.2-sol9-intel-local.gz 
-# pkgadd -d vim-6.2-sol9-intel-local 
-# mv /bin/vi /bin/vi.bak 
-# ln -s /usr/local/bin/vim /bin/vi 
-# cp /usr/local/share/vim/vim62/vimrc_example.vim /.vimrc 
-# vi /.vimrc 
-把其中的： 
-set backup " keep a backup file 
-修改为： 
-set nobackup " keep a backup file 
-# vi /etc/hosts 
-加一条记录： 
-192.168.0.15 win2k 
+vi ~/.bash_profile
+if [ -f ~/.bashrc ]; then
+. ~/.bashrc
+fi
 
+vi /etc/DIR_COLORS
+
+禁止自动启动 X window
+/usr/dt/bin/dtconfig –d
+恢复
+/usr/dt/bin/dtconfig -e
+
+
+
+安装常用软件包
 GCC工具： 
 # gzip -d libiconv-1.8-sol9-intel-local.gz 
 # gzip -d gcc-3.3.2-sol9-intel-local.gz 
@@ -69,20 +90,6 @@ MAKE工具：
 # gzip -d automake-1.7.2-sol9-intel-local.gz 
 # pkgadd -d make-3.80-sol9-intel-local 
 # pkgadd -d automake-1.7.2-sol9-intel-local 
-
-MOZILLA： 
-# pkgrm SUNWnsb SUNWnsm SUNWnspsm SUNWnsxp 
-# gzip -d mozilla-i386-pc-solaris2.8-1.6.pkg.tar.gz 
-# tar -vxf mozilla-i386-pc-solaris2.8-1.6.pkg.tar 
-# cd mozilla-1.6-x86 
-# pkgadd -d MOZmozilla.pkg 
-# gzip -d flash_player_6_solaris_intel.tar.gz 
-# tar vxf flash_player_6_solaris_intel.tar 
-# cd install_flash_player_6_solaris 
-# cp * /usr/local/lib/mozilla-1.6/plugins 
-# cd /usr/local/lib/mozilla-1.6/plugins 
-# ln –s /usr/j2se/jre/plugin/i386/ns610/libjavaplugin_oji.so 
-# /usr/local/bin/mozilla 
 
 OTHERS: 
 # pkgadd -d expat-1.95.5-sol9-intel-local 
@@ -216,9 +223,6 @@ fs
 set noexec_user_stack=1 
 set noexec_user_stack_log=1 
 
-禁用自动启动DESKTOP 
-
-# /usr/dt/bin/dtconfig –d 
 
 为安全起见停掉几个系统服务： 
 
@@ -264,3 +268,26 @@ set noexec_user_stack_log=1
 # nessus –D 
 启动NESSUS的GUI客户端： 
 # nessus
+
+安装 Nginx
+wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.8.tar.gz
+wget http://sysoev.ru/nginx/nginx-0.6.32.tar.gz
+
+tar zxvf pcre-7.8.tar.gz
+cd pcre-7.8
+./configure
+make
+make install
+cd ..
+
+cd nginx-0.6.32
+./configure \
+--user=nobody \
+--group=nobody \
+--prefix=/usr/local/nginx \
+--with-http_stub_status_module
+make
+make install
+cd ..
+
+use eventport;
