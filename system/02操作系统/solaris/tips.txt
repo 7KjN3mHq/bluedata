@@ -1,0 +1,22 @@
+查看系统中 CPU 的数目
+# psrinfo -vp
+The physical processor has 32 virtual processors (0-31)
+UltraSPARC-T1 (cpuid 0 clock 1000 MHz)
+UltraSPARC-T1的CPU共有8内核，每内核4个线程，因此如果单用-v参数看到的CPU数目是32个，而不是1个。
+
+查看内存
+prtconf | grep Memory
+vmstat 1
+echo ::memstat | mdb -k
+
+修改网络属性
+/etc/hosts
+/etc/hostname.xxx
+/etc/defaultrouter(默认网关)
+/etc/netmasks(掩码)
+/etc/inet/ipnodes
+/etc/resolv.conf
+
+修改默认 locale
+vi /etc/default/init
+LANG=locale
