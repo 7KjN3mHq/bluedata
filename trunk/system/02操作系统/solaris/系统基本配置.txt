@@ -1,6 +1,6 @@
 …Ë÷√ root ”√ªß
 mkdir /root
-chmod  700 /root
+chmod 700 /root
 chown root:root /root
 vi /etc/passwd
 root:x:0:1:Super-User:/root:/usr/bin/bash
