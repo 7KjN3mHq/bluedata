@@ -47,7 +47,7 @@ set nohlsearch
 "  filetype plugin indent on
 
 设置用户的环境变量
-# vi ~/.bashrc
+vi ~/.bashrc
 export LS_OPTIONS='--color=auto'
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -lh'
@@ -76,7 +76,34 @@ vi /etc/DIR_COLORS
 恢复
 /usr/dt/bin/dtconfig -e
 
+为安全起见在防止堆栈溢出：
+cp /etc/system /etc/system.BACKUP 
+vi /etc/system 
+在文件的最后，加上以下两行：
+set noexec_user_stack=1
+set noexec_user_stack_log=1
 
+为安全起见停掉几个系统服务：
+卸载 SENDMAIL 
+pkgrm SUNWsndmr SUNWsndmu
+卸载 TELNET
+pkgrm SUNWtnetc SUNWtnetd SUNWtnetr
+卸载 PCMCIA
+pkgrm SUNWpcelx SUNWpcmci SUNWpcmcu SUNWpcmem SUNWpcser SUNWpsdpr
+
+cd /etc/rc2.d
+mv S71ldap.client _S71ldap.client
+mv S72inetsvc _S72inetsvc
+mv S74autofs _S74autofs
+mv S74xntpd _S74xntpd
+mv S80lp _S80lp
+mv S71rpc _S71rpc
+mv S73nfs.client _S73nfs.client
+
+cd /etc/rc3.d
+mv S34dhcp _S34dhcp
+mv S15nfs.server _S15nfs.server
+mv S76snmpdx _S76snmpdx
 
 安装常用软件包
 GCC工具： 
@@ -215,38 +242,6 @@ fs
 在只需要不多图形操作的服务器或是要保证相当的安全，你也许应该关掉字体服务fs，也可以关掉系统性能监视器rstatd和tooltalk服务器ttdbserverd（100083/1）,查找剩下需要关闭的端口的进程用这个命令： 
 # /usr/local/bin/lsof -i | grep port 
 
-为安全起见在防止堆栈溢出 
-
-# cp /etc/system /etc/system.BACKUP 
-# vi /etc/system 
-在文件的最后，加上以下两行： 
-set noexec_user_stack=1 
-set noexec_user_stack_log=1 
-
-
-为安全起见停掉几个系统服务： 
-
-卸载SENDMAIL： 
-# pkgrm SUNWsndmr SUNWsndmu 
-卸载TELNET： 
-# pkgrm SUNWtnetc SUNWtnetd SUNWtnetr 
-# cd /etc/rc2.d 
-# mv S71ldap.client _S71ldap.client 
-# mv S72inetsvc _S72inetsvc 
-# mv S74autofs _S74autofs 
-# mv S74xntpd _S74xntpd 
-# mv S80lp _S80lp 
-# mv S71rpc _S71rpc 
-# mv S73nfs.client _S73nfs.client 
-
-# cd /etc/rc3.d 
-# mv S34dhcp _S34dhcp 
-# mv S15nfs.server _S15nfs.server 
-# mv S76snmpdx _S76snmpdx 
-
-卸载PCMCIA支持： 
-# pkgrm SUNWpcelx SUNWpcmci SUNWpcmcu SUNWpcmem SUNWpcser SUNWpsdpr 
-
 安装PORT扫描工具NMAP 
 
 # gzip -d nmap-3.50-sol9-intel-local.gz 
@@ -268,26 +263,3 @@ set noexec_user_stack_log=1
 # nessus –D 
 启动NESSUS的GUI客户端： 
 # nessus
-
-安装 Nginx
-wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-7.8.tar.gz
-wget http://sysoev.ru/nginx/nginx-0.6.32.tar.gz
-
-tar zxvf pcre-7.8.tar.gz
-cd pcre-7.8
-./configure
-make
-make install
-cd ..
-
-cd nginx-0.6.32
-./configure \
---user=nobody \
---group=nobody \
---prefix=/usr/local/nginx \
---with-http_stub_status_module
-make
-make install
-cd ..
-
-use eventport;
