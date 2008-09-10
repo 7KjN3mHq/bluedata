@@ -1,7 +1,6 @@
 设置 root 用户
 mkdir /root
 chmod 700 /root
-chown root:root /root
 vi /etc/passwd
 root:x:0:1:Super-User:/root:/usr/bin/bash
 
@@ -10,9 +9,19 @@ vi /etc/ssh/sshd_config
 PermitRootLogin yes
 svcadm restart network/ssh
 
-取消自动关机
-vi /etc/power.conf
-#autoshutdown 30 9:00 9:00 default
+设置环境变量
+vi ~/.bashrc
+PATH=/opt/csw/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/ucb:/usr/ccs/bin:/usr/sfw/bin
+MANPATH=/opt/csw/man:/opt/csw/share/man:/usr/local/man:/usr/local/share/man:/usr/man:/usr/share/man:/usr/sfw/man
+LD_LIBRARY_PATH=/opt/csw/lib:/usr/local/lib:/lib:/usr/lib:/usr/sfw/lib
+export PATH MANPATH LD_LIBRARY_PATH
+
+vi ~/.bash_profile
+if [ -f ~/.bashrc ]; then
+. ~/.bashrc
+fi
+
+source ~/.bash_profile
 
 设置 pkg-get
 pkgadd -d http://blastwave.network.com/csw/pkg_get.pkg
@@ -21,16 +30,11 @@ vi /opt/csw/etc/pkg-get.conf
 #url=http://ibiblio.org/pub/packages/solaris/csw/unstable
 url=http://blastwave.unix-center.net/csw/stable
 
-export PATH=$PATH:/opt/csw/bin
 pkg-get -U
 
 pkg-get install gnupg textutils
 wget --output-document=pgp.key http://www.blastwave.org/mirrors.html
 gpg --import pgp.key
-
-vi /opt/csw/etc/pkg-get.conf
-use_gpg=false
-use_md5=false
 
 安装常用软件
 http://sunfreeware.com/programlistintel10.html#coreutils
@@ -38,7 +42,7 @@ wget ftp://ftp.sunfreeware.com/pub/freeware/intel/10/coreutils-6.4-sol10-x86-loc
 gzip -d coreutils-6.4-sol10-x86-local.gz
 pkgadd -d coreutils-6.4-sol10-x86-local
 
-pkg-get install vim top ggrep gawk gtar
+pkg-get install vim gtar ggrep gawk top
 cp /opt/csw/share/vim/vim71/vimrc_example.vim ~/.vimrc
 vi ~/.vimrc
 set nobackup
@@ -46,7 +50,6 @@ set nobackup
 set nohlsearch
 "  filetype plugin indent on
 
-设置用户的环境变量
 vi ~/.bashrc
 export LS_OPTIONS='--color=auto'
 alias ls='ls $LS_OPTIONS'
@@ -59,17 +62,13 @@ alias awk='gawk'
 alias tar='gtar'
 alias vi='vim'
 
-PATH=/opt/csw/bin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/ucb:/usr/ccs/bin:/usr/sfw/bin
-MANPATH=/opt/csw/man:/usr/local/man:/usr/man:/usr/sfw/man
-LD_LIBRARY_PATH=/opt/csw/lib:/usr/local/lib:/usr/lib:/usr/sfw/lib
-export PATH MANPATH LD_LIBRARY_PATH
-
-vi ~/.bash_profile
-if [ -f ~/.bashrc ]; then
-. ~/.bashrc
-fi
-
 vi /etc/DIR_COLORS
+vi ~/.bash_profile
+source ~/.bash_profile
+
+取消自动关机
+vi /etc/power.conf
+#autoshutdown 30 9:00 9:00 default
 
 禁止自动启动 X window
 /usr/dt/bin/dtconfig –d
