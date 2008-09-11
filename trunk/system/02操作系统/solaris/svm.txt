@@ -1,0 +1,27 @@
+指定主引导程序
+fdisk -b /usr/lib/fs/ufs/mboot /dev/rdsk/c0d0p0
+选 5 退出
+
+把辅助磁盘的分区表调整为和引导盘一致
+prtvtoc /dev/rdsk/c0d0s2 > vtoc.dat
+fmthard -s vtoc.dat /dev/rdsk/c1d0s2
+
+使辅助磁盘可引导
+/sbin/installgrub /boot/grub/stage1 /boot/grub/stage2 /dev/rdsk/c1d0s0
+
+metadb -afc 3 c0d0s0 c1d0s0
+
+metainit -f d1 1 1 c0d0s0
+metainit d2 1 1 c1d0s0
+
+metainit d0 -m d1
+metaroot d0
+reboot
+
+metattach d0 d2
+
+menu.lst
+title alternate boot
+root (hd1,0,a)
+kernel /boot/multiboot
+module /boot/x86.miniroot-safe

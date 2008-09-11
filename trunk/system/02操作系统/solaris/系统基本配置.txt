@@ -42,7 +42,7 @@ wget ftp://ftp.sunfreeware.com/pub/freeware/intel/10/coreutils-6.4-sol10-x86-loc
 gzip -d coreutils-6.4-sol10-x86-local.gz
 pkgadd -d coreutils-6.4-sol10-x86-local
 
-pkg-get install vim gtar ggrep gawk top
+pkg-get install vim gtar ggrep gawk top lsof
 cp /opt/csw/share/vim/vim71/vimrc_example.vim ~/.vimrc
 vi ~/.vimrc
 set nobackup
@@ -75,21 +75,22 @@ vi /etc/power.conf
 恢复
 /usr/dt/bin/dtconfig -e
 
-为安全起见在防止堆栈溢出：
-cp /etc/system /etc/system.BACKUP 
-vi /etc/system 
-在文件的最后，加上以下两行：
+防止堆栈溢出
+cp /etc/system /etc/system.BACKUP
+vi /etc/system
+在文件最后加上以下两行
 set noexec_user_stack=1
 set noexec_user_stack_log=1
 
-为安全起见停掉几个系统服务：
-卸载 SENDMAIL 
+卸载不用的软件
+卸载 SENDMAIL
 pkgrm SUNWsndmr SUNWsndmu
 卸载 TELNET
 pkgrm SUNWtnetc SUNWtnetd SUNWtnetr
 卸载 PCMCIA
 pkgrm SUNWpcelx SUNWpcmci SUNWpcmcu SUNWpcmem SUNWpcser SUNWpsdpr
 
+停掉不需要的系统服务
 cd /etc/rc2.d
 mv S71ldap.client _S71ldap.client
 mv S72inetsvc _S72inetsvc
@@ -104,40 +105,19 @@ mv S34dhcp _S34dhcp
 mv S15nfs.server _S15nfs.server
 mv S76snmpdx _S76snmpdx
 
-安装常用软件包
-GCC工具： 
-# gzip -d libiconv-1.8-sol9-intel-local.gz 
-# gzip -d gcc-3.3.2-sol9-intel-local.gz 
-# pkgadd -d libiconv-1.8-sol9-intel-local 
-# pkgadd -d gcc-3.3.2-sol9-intel-local 
+在 /etc/inetd.conf 中注释掉除下列服务的所有服务
+ftp 
+echo 
+echo 
+discard 
+discard 
+rstatd/2-4 
+fs 
+100083/1 
 
-MAKE工具： 
-# gzip -d make-3.80-sol9-intel-local.gz 
-# gzip -d automake-1.7.2-sol9-intel-local.gz 
-# pkgadd -d make-3.80-sol9-intel-local 
-# pkgadd -d automake-1.7.2-sol9-intel-local 
-
-OTHERS: 
-# pkgadd -d expat-1.95.5-sol9-intel-local 
-# pkgadd -d gdbm-1.8.3-sol9-intel-local 
-# pkgadd -d openssl-0.9.7d-sol9-intel-local 
-# pkgadd -d libgcc-3.3-sol9-intel-local 
-# pkgadd -d libpcap-0.8.1-sol9-intel-local 
-# pkgadd -d tcp_wrappers-7.6-sol9-intel-local 
-# pkgadd -d tcpdump-3.8.1-sol9-intel-local 
-# pkgadd -d zlib-1.2.1-sol9-intel-local 
-# pkgadd -d lsof-4.68-sol9-intel-local 
-
-6．安装APACHE-2.0.49 
-
-# pkgrm SUNWapchd SUNWapchr SUNWapchu 
-# gzip -d apache-2.0.49-sol9-intel-local.gz 
-# pkgadd -d apache-2.0.49-sol9-intel-local 
-# cp /usr/local/apache2/bin/apachectl /etc/rc3.d/S50apache 
-# chmod 744 /etc/rc3.d/S50apache 
-# chown root:sys /etc/rc3.d/S50apache 
-# 配置/usr/local/apache2/conf/httpd.conf过程略。 
-# SMCapach2 
+在只需要不多图形操作的服务器或是要保证相当的安全，可以关掉字体服务 fs ，
+也可以关掉系统性能监视器 rstatd 和 tooltalk 服务器 ttdbserverd(100083/1) ，查找剩下需要关闭的端口的进程用这个命令
+lsof -i | grep port
 
 7．安装OPENSSH-3.8 
 
@@ -226,20 +206,6 @@ exit 0
 =======================S90samba======================== 
 
 9．初步的系统安全设置 
-
-为安全起见在/etc/inetd.conf中注释掉除下列服务的所有服务 
-
-ftp 
-echo 
-echo 
-discard 
-discard 
-rstatd/2-4 
-fs 
-100083/1 
-
-在只需要不多图形操作的服务器或是要保证相当的安全，你也许应该关掉字体服务fs，也可以关掉系统性能监视器rstatd和tooltalk服务器ttdbserverd（100083/1）,查找剩下需要关闭的端口的进程用这个命令： 
-# /usr/local/bin/lsof -i | grep port 
 
 安装PORT扫描工具NMAP 
 

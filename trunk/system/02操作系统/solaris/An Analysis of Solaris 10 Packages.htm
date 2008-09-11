@@ -1,0 +1,1061 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0051)http://people.arsc.edu/~clark/sun/PkgAnalyze10.html -->
+<HTML><HEAD><TITLE>An Analysis of Solaris 10 Packages</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=gb2312">
+<META content="MSHTML 6.00.2900.3395" name=GENERATOR></HEAD>
+<BODY bgColor=#ffffff><PRE>
+# Last updated: 2006-02-14
+
+#                     an analysis of Solaris 10 packages
+#                     ++++++++++++++++++++++++++++++++++
+#               SUNWCuser on SunBlade 1500 (701 packages total)
+
+#   This document represents the first step taken in hardening a SunBlade 1500
+# intended for use as a desktop system: Inventorying each installed package
+# with the goal of identifying which packages are (1) necessary, (2) desirable
+# or (3) (safely) removable.
+#   The SunBlade in question came preloaded with Solaris 8 and 9. Since it was
+# desired to run Solaris 10, the system was shut down and rebooted from a
+# Solaris 10 3/05 (generic) disc, selecting the "End User" package cluster
+# (SUNWCuser) and the North American environment. 701 packages were installed.
+#   The first attempt at analyzing these packages was simply examining the
+# output from pkginfo. This was, however, merely a list of packages sorted
+# alphabetically by name; not useful for inventorying by function.
+#   Consulting /var/sadm/system/admin/.clustertoc was somewhat more useful, in
+# that the metacluster listing for SUNWCuser grouped 453 (64.6%) of the 701
+# packages into 73 package clusters, each presumably grouped by function.
+# However, that still left 248 unclustered packages to deal with. Worse, there
+# was no exact correlation with the packages listed under .clustertoc and with
+# those installed: Some packages listed for installation were not installed,
+# and some packages were installed that were not listed (primarily those
+# involved with locale; logic in the install tool dynamically adds packages
+# according to the user's specified geographic location). Finally, the
+# clusters and packages appear to be listed in installation order according
+# to package dependencies, with little obvious correlation to function.
+#   The final approach taken was to sort each package individually into a
+# category best describing its primary function. The first part of this
+# exercise was to determine a package's varous functions. Documentation,
+# however, was for the most part limited to the terse description given in the
+# 'long' pkginfo listing, which description in most cases was merely a
+# restatement of the package name, in many cases was quite obtuse, and in some
+# cases was inaccurate or misleading. Accordingly, most packages required some
+# research (primarily looking at the /var/sadm/install/contents database) to
+# determine their intended function(s). The second part of this exercise was
+# then to identify a primary function for categorization; a subjective task,
+# as many packages span functional categories.
+#   In what follows, the package descriptions have in general been altered
+# with these goals in mind: (1) better correspondence with primary function,
+# (2) consistency in substance and style, and (3) good fit in an 80-column
+# page. Errors were likely introduced in some cases during this process, such
+# as misinterpreting a package's functions, inaccurate revisions of package
+# descriptions, or inappropriate categorization. Corrections and comments to
+# improve this listing are welcome (to clark AT arsc DOT edu).
+
+#  key to package installation file systems (where specified):
+#  -----------------------------------------------------------
+#    [r] - installs in /
+#    [u] - installs in /usr
+#    [s] - installs in /usr/share
+
+# ================================= base OS ==================================
+
+# ------------------------------- core Solaris -------------------------------
+
+# KVM: K Virtual Machine (Sun follow-on to Java Virtual Machine)
+# CS:  Core Solaris
+
+SUNWckr                          CS kernel
+SUNWcsd                          CS devices
+SUNWcnetr                        CS network
+SUNWcsr                          CS software [r]
+SUNWcsu                          CS software [u]
+SUNWcslr                         CS libraries [r]
+SUNWcsl                          CS libraries [u]
+SUNWcar                          CS architecture [r]
+SUNWcakr                         CS architecture (kernel)
+SUNWkvm                          CS architecture (KVM)
+
+# -------------------------- admin/install software --------------------------
+
+SUNWinst                         install software
+SUNWfrdis                        install software (French)
+SUNWesdis                        install software (Spanish)
+SUNWswmt                         install/patch utilities
+SUNWinstall-patch-utils-root     install/patch utilities [r]
+SUNWpkgcmdsr                     package commands [r]
+SUNWpkgcmdsu                     package commands [u]
+SUNWadmr                         admin root
+SUNWadmc                         admin core libraries
+SUNWadmap                        admin applications
+SUNWfrdma                        admin applications (French)
+SUNWesdma                        admin applications (Spanish)
+SUNWadmfw                        admin framework
+SUNWadmfr                        admin framework configuration
+SUNWadmlib-sysid                 admin system identification libraries
+SUNWadmj                         admin/install Java libraries
+
+# ---------------------- commonly referenced libraries -----------------------
+
+SUNWlibC                         libC
+SUNWlibCf                        libC (cfront version)
+SUNWlibms                        libm [u]
+SUNWlibmsr                       libm [r]
+SUNWGlib                         Glib (GNU C library)
+SUNWgccruntime                   GCC runtime libraries
+
+# ------------------------- common network services --------------------------
+
+# BIND: Berkeley Internet Name Domain (name service)
+# FTP:  File Transfer Protocol
+# NFS:  Network File System
+# NIS:  Network Information System
+# NTP:  Network Time Protocol
+# SSH:  Secure Shell
+# SSL:  Secure Sockets Layer
+# TFTP: Trivial FTP
+# TNS:  Trivial Name Server
+
+SUNWbind                         BIND server and tools
+SUNWbindr                        BIND server manifest
+SUNWbipr                         FTP client, ping [r]
+SUNWbip                          FTP client, ping [u]
+SUNWftpr                         FTP server [r]
+SUNWftpu                         FTP server [u]
+SUNWkrbr                         Kerberos 5 [r]
+SUNWkrbu                         Kerberos 5 [u]
+SUNWnfsckr                       NFS client kernel [r]
+SUNWnfscr                        NFS client [r]
+SUNWnfscu                        NFS client [u]
+SUNWnfsskr                       NFS server kernel [r]
+SUNWnfssr                        NFS server [r]
+SUNWnfssu                        NFS server [u]
+SUNWnisr                         NIS [r]
+SUNWnisu                         NIS [u]
+SUNWntpr                         NTP [r]
+SUNWntpu                         NTP [u]
+SUNWrcmdc                        R-command clients
+SUNWrcmdr                        R-command servers [r]
+SUNWrcmds                        R-command servers [u]
+SUNWroute                        routing protocols/daemons/commands [u]
+SUNWsndmr                        sendmail [r]
+SUNWsndmu                        sendmail [u]
+SUNWcnsr                         small services (chargen,daytime,echo,) [r]
+SUNWcnsu                         small services (chargen,daytime,echo,) [u]
+SUNWsshr                         SSH client and utilities [r]
+SUNWsshu                         SSH client and utilities [u]
+SUNWsshdr                        SSH server [r]
+SUNWsshdu                        SSH server [u]
+SUNWsshcu                        SSH common [u]
+SUNWopensslr                     OpenSSL [r]
+SUNWopenssl-commands             OpenSSL commands [u]
+SUNWopenssl-libraries            OpenSSL libraries [u]
+SUNWtnetc                        telnet client
+SUNWtnetr                        telnet server [r]
+SUNWtnetd                        telnet server [u]
+SUNWtftp                         TFTP server
+SUNWtftpr                        TFTP server [r]
+SUNWtnamr                        TNS [r]
+SUNWtnamd                        TNS [u]
+
+# =================== extended system utilities, freeware ====================
+
+# XPG: X/Open Portability Guide (commands and utilities)
+
+SUNWesu                          extended system utils (awk,bc,diff,sort,sum,)
+SUNWzip                          zip
+SUNWzlib                         zip library
+SUNWbzip                         bzip
+SUNWgzip                         gzip (GNU zip)
+SUNWbash                         bash (GNU Bourne Again SHell)
+SUNWflexruntime                  flex (GNU fast lex)
+SUNWggrp                         ggrep (GNU grep)
+SUNWgpch                         patch (GNU patch)
+SUNWgtar                         gtar (GNU tar)
+SUNWless                         less (GNU pager)
+SUNWgcmn                         framework for GNU freeware
+SUNWtcsh                         tcsh (Tenex C SHell)
+SUNWxcu4                         XPG4 versions of common utilities 
+SUNWxcu6                         XPG6 versions of common utilities
+
+# --------------------------------- security ---------------------------------
+
+# BART:     Basic Audit Reporting Tool (similar to Tripwire)
+# BSM:      Basic Security Module
+# GSS(API): Generic Security Service (Application Programming Interface)
+# JSS:      Java Security Services
+# RPCSEC:   Secure RPC (Sun/Open Network Computing)
+# SASL:     Simple Authentication and Security Layer
+# TLS:      Transport Layer Security
+
+SUNWaccr                         system accounting [r]
+SUNWaccu                         system accounting [u]
+SUNWgss                          GSSAPI v2 [u]
+SUNWgssk                         GSSAPI v2 (kernel)
+SUNWgssc                         GSSAPI v2 config
+SUNWgssdh                        GSS Diffie-Hellman
+SUNWrsg                          RPCSEC_GSS
+SUNWrsgk                         RPCSEC_GSS (kernel)
+SUNWlibsasl                      SASL v2
+SUNWtls                          TLS
+SUNWjss                          JSS
+SUNWipfr                         IP Filter utilities [r]
+SUNWipfu                         IP Filter utilities [u]
+SUNWaudit                        Java interface to BSM
+SUNWbart                         BART
+
+# ------------------------------- development --------------------------------
+
+# IPC: Interprocess Communications
+SUNWipc                          IPC utilities (ipcrm,ipcs)
+
+# compatibility libraries (w/ SunOS 4)
+SUNWbcp                          binary compatibility 
+SUNWfbcp                         binary compatibility (French)
+SUNWowbcp                        binary compatibility (OpenWindows)
+SUNWfwbcp                        binary compatibility (OpenWindows) (French)
+SUNWscbcp                        binary compatibility (SPARCompilers)
+SUNWscpr                         source compatibility [r]
+SUNWscpu                         source compatibility [u]
+SUNWscplp                        source compatibility (SunSoft print) [u]
+
+# programming tools
+SUNWtoo                          programming tools (strings,truss,)
+SUNWcpp                          C/C++/Objective C preprocessor
+SUNWmdb                          modular debugger
+SUNWmdbr                         modular debugger [r]
+
+# GIMP: GNU Image Manipulation Program
+# GTK:  GIMP Toolkit
+SUNWGtkr                         GTK [r]
+SUNWGtku                         GTK [u]
+
+# Java
+# I18N:  I(nternationalizatio)N (middle 18 letters replaced with '18')
+# J2SDK: Java 2 Software Development Kit
+# JAI:   Java Advanced Imaging
+# JDIC:  JDesktop Integration Components
+# JDK:   Java Development Kit
+# JMF:   Java Media Framework
+# SNMP:  Simple Network Management Protocol
+SUNWj3rt                         JDK 1.4 runtime environment
+SUNWj3irt                        JDK 1.4 runtime environment I18N
+SUNWj5rt                         JDK 1.5 runtime environment
+SUNWj5cfg                        JDK 1.5 host config
+SUNWj3cfg                        JDK post configuration
+SUNWjhrt                         Java help runtime
+SUNWjai                          Java Advanced Imaging
+SUNWjai-imageio                  Java Advanced Imaging image I/O tools
+SUNWjmf                          Java Media Framework
+SUNWjmfmp3                       Java Media Framework MP3 plugin
+SUNWjavaapps                     Java demo applications (jdictionary,jedit,)
+SUNWjsnmp                        Java SNMP API
+SUNWjdic                         JDesktop Integration Components
+
+# Perl
+SUNWperl584core                  Perl 5.8.4 (core)
+SUNWperl584usr                   Perl 5.8.4 [u]
+
+# TCL: Tool Command Language
+# TK:  TCL GUI toolkit
+SUNWTcl                          TCL
+SUNWTk                           TK
+
+# ---------------------------------- locale ----------------------------------
+
+SUNWloc                          system localization
+SUNWlccom                        localization common files
+SUNWnamos                        N. America OS support
+SUNWnamdt                        N. America CDE support
+SUNWnamow                        N. America OW support
+SUNWweuos                        W. Europe OS support
+SUNWweudt                        W. Europe CDE support
+SUNWweuow                        W. Europe OW support
+SUNWseuos                        S. Europe OS support
+SUNWseudt                        S. Europe CDE support
+SUNWseuow                        S. Europe OW support
+SUNWeu8os                        OS support
+SUNWfriso1                       OS support (French)
+SUNWesiso1                       OS support (Spanish)
+SUNWeuluf                        OS/NW message files
+SUNWfros                         OS/NW message files (French)
+SUNWesos                         OS/NW message files (Spanish)
+SUNWfsfw                         freeware message files (French)
+SUNWesfw                         freeware message files (Spanish)
+
+# --------------------------- system documentation ---------------------------
+
+SUNWman                          online manual
+SUNWdoc                          man page fonts and tools (nroff,troff,)
+SUNWsolnm                        OS release date and build info (/etc/release)
+
+# ============================= devices/drivers ==============================
+
+# ---------------------------------- audio -----------------------------------
+
+SUNWaudd                         audio drivers
+SUNWauda                         audio applications
+SUNWaudf                         audio sound files
+
+# ----------------------------------- CPU ------------------------------------
+
+# CPC: CPU Performance Counter
+SUNWcpc                          CPC driver
+SUNWcpcu                         CPC libraries and utilities
+
+# ---------------------------------- disks -----------------------------------
+
+# AutoFS (automatic mounting/dismounting file systems)
+SUNWatfsr                        autofs configuration and start-up files [r]
+SUNWatfsu                        autofs utilities and daemon (automountd) [u]
+
+# Volume Manager (DiskSuite follow-on) and Assistant
+SUNWmdr                          Volume Manager [r]
+SUNWmdu                          Volume Manager [u]
+SUNWmdar                         Volume Manager Assistant [r]
+SUNWmdau                         Volume Manager Assistant [u]
+
+# SSA: SPARCstorage Array
+SUNWssad                         SSA drivers
+
+# storage management APIs
+SUNWsmapi                        storage management APIs
+
+# --------------------------------- graphics ---------------------------------
+
+SUNWfbc                          generic frame buffer configuration utility
+
+# PGX64 (successor to PGX32 graphics card; Sun uses ATI's Rage XL M64 card)
+SUNWm64                          M64 graphics system software &amp; device driver
+SUNWm64cf                        M64 graphics configuration software
+SUNWm64w                         M64 graphics window system support
+
+# XVR hardware graphics accelerator (successor to Expert3D line; codename jfb)
+SUNWjfbr                         XVR-600/1200 graphics system software [r]
+SUNWjfb                          XVR-600/1200 graphics system software/driver
+SUNWjfbcf                        XVR-600/1200 graphics configuration software
+SUNWjfbw                         XVR-600/1200 graphics window system support
+
+# --------------------------------- network ----------------------------------
+
+# ethernet
+SUNWerid                         Sun RIO 10/100Mb ethernet drivers
+SUNWced                          Sun GigaSwift ethernet adapter driver
+SUNWged                          Sun Gigabit ethernet adapter driver
+SUNWqfed                         Sun Quad FastEthernet adapter driver
+SUNWxge                          S2IO Xframe 10Gb ethernet adapter driver
+SUNWixgb                         Intel PRO/10Gb ethernet adapter driver
+SUNWvld                          Sun ethernet VLAN utility routines
+
+# fibre channel
+# FCA:   Fibre Channel Adapter
+# FCADB: Fibre Channel Assembly Debugger
+# FCIP:  Fibre Channel over IP
+# FCP:   Fibre Channel Protocol
+# FCSM:  Fibre Channel Signal Modeling
+# FCT:   Fibre Channel Transport
+# FP:    Fibre Channel Port Driver (Sun)
+# HBA:   Host Bus Adapter
+# SENA:  Sun Enterprise Network Array (high-avail. mass storage subsystem)
+SUNWjfcau                        JNI (Corp.) FCA [u]
+SUNWjfca                         JNI (Corp.) FCA device driver
+SUNWqlc                          Qlogic FCA ISP 2200/2202 device driver
+SUNWfcp                          FCP SCSI device driver
+SUNWfcip                         FCIP IP/ARP over fibre channel device driver
+SUNWfcsm                         FCSM driver
+SUNWfcmdb                        FCADB macros and mdb modules
+SUNWfctl                         FCT layer
+SUNWluxop                        SENA firmware and utilities
+SUNWluxopr                       SENA libraries
+SUNWcfplr                        FP cfgadm plug-in library [r]
+SUNWcfpl                         FP cfgadm plug-in library
+SUNWfchbar                       fibre channel HBA library [r]
+SUNWfchba                        fibre channel HBA library [u]
+SUNWcfclr                        fibre channel HBA API library [r]
+SUNWcfcl                         fibre channel HBA API library [u]
+
+# FireWire (Apple's implementation of IEEE 1394 high speed serial bus)
+SUNW1394                         IEEE1394 framework
+SUNWav1394                       IEEE1394 AV driver
+SUNWscsa1394                     IEEE1394 mass storage driver
+SUNWfwdc                         IEEE1394 video conferencing driver
+SUNWfwdcu                        IEEE1394 video conferencing support [u]
+
+# InfiniBand (high speed bus)
+# uDAPL: user Direct Access Programming Library
+# Tavor HCA (Host Channel Adapter) InfiniBand driver
+SUNWib                           InfiniBand framework
+SUNWrpcib                        InfiniBand plugin to RPC over RDMA
+SUNWipoib                        IP over InfiniBand
+SUNWtavor                        Tavor HCA driver
+SUNWudapltr                      Tavor uDAPL [r]
+SUNWudapltu                      Tavor uDAPL [u]
+SUNWudaplr                       uDAPL [r]
+SUNWudaplu                       uDAPL [u]
+
+# LLC: IEEE 802.2 Logical Link Control 2 service (Unused by TCP/IP (in favor
+#   of 'type' field); used by AppleTalk (and others?))
+SUNWllc                          LLC2 driver and initialization programs
+SUNWllcr                         LLC2 driver config and startup files [r]
+
+# PCI: Peripheral Component Interconnect/Interface
+SUNWpd                           PCI drivers
+
+# SBus
+SUNWhmd                          SunSwift SBus adapter drivers
+SUNWhmdu                         SunSwift SBus adapter headers
+
+# SCSI
+# Internet Small Computer Systems Interface (iSCSI)
+SUNWqus                          QLogic Ultra3 SCSI [r]
+SUNWqusu                         QLogic Ultra3 SCSI [u]
+SUNWiscsir                       iSCSI device driver [r]
+SUNWiscsiu                       iSCSI management utilities [u]
+SUNWses                          SCSI enclosure services device driver
+
+# serial
+SUNWsbp2                         Serial Bus Protocol 2 module
+
+# USB: Universal Serial Bus
+SUNWuedg                         USB Digi Edgeport serial driver
+SUNWusbs                         USB generic serial module
+SUNWugen                         USB generic driver
+SUNWusb                          USB device drivers
+
+# ----------------------------- power management -----------------------------
+
+SUNWpmr                          PM config file and RC script
+SUNWpmu                          PM binaries
+SUNWcpr                          PM suspend/resume modules
+SUNWpmowr                        PM OpenWindows utilities [r]
+SUNWpmowu                        PM OpenWindows utilities [u]
+SUNWfrpmw                        PM OpenWindows utilities (French)
+SUNWespmw                        PM OpenWindows utilities (Spanish)
+
+# --------------------------------- printer ----------------------------------
+
+# FSG:  Free Standards Group
+# IPP:  Internet Printing Protocol
+# PAPI: Print Application Programming Interface
+# PPD:  PostScript Printer Description
+
+SUNWpcr                          LP client [r]
+SUNWpcu                          LP client [u]
+SUNWpsr                          LP server [r]
+SUNWpsu                          LP server [u]
+SUNWppm                          LP manager
+SUNWlpmsg                        LP alerts
+SUNWa2psr                        a2ps - GNU any to PostScript filter [r]
+SUNWa2psu                        a2ps - GNU any to PostScript filter [u]
+SUNWpsf                          PostScript filters [u]
+SUNWpsutils                      PostScript utilities
+SUNWffiltersr                    Foomatic print filters [r]
+SUNWffiltersu                    Foomatic print filters [u]
+SUNWfppd                         Foomatic PPDs
+SUNWimagick                      ImageMagick (image manipulation utils &amp; libs)
+SUNWmp                           (Mail Print) pretty-printing tool and filters
+SUNWpapi                         FSG Open PAPI
+SUNWpsm-lpd                      FSG Open PAPI print service module
+SUNWippcore                      IPP core libraries [u]
+SUNWgimpprint                    printer drivers (Canon, Epson, Lexmark &amp; PCL)
+SUNWhpijs                        HP InkJet server
+
+# ----------------------------- removable media ------------------------------
+
+# UDF: Universal Disk Format 1.50 file system (replacement for ISO 9660 CD
+#   standard, used primarily for DVDs)
+SUNWudf                          UDF [u]
+SUNWudfr                         UDF [r]
+SUNWvolr                         volume management [r]
+SUNWvolu                         volume management [u]
+
+# -------------------------------- smart card --------------------------------
+
+# OCF: OpenCard Framework
+SUNWocf                          OCF libraries and utilities
+SUNWocfr                         OCF config files
+SUNWscmhdlr                      external Smart Card reader
+SUNWstc                          internal Smart Card reader
+SUNWjcom                         Java Smart Card support
+SUNWpamsc                        PAM Smart Card module
+SUNWpcsclite                     PS/SC-lite SCF shim
+SUNWjib                          iButton OCF Card terminal driver
+
+# ---------------------------------- misc. -----------------------------------
+
+SUNWkey                          keyboard configuration
+SUNWter                          terminfo database
+
+# PICL: Platform Information and Control Library
+# PICL daemon stores and retrieves platform-specific device data.
+SUNWpiclr                        PICL framework [r]
+SUNWpiclu                        PICL libraries and plugins
+
+# =========================== graphics (software) ============================
+
+# ---------------------------------- fonts -----------------------------------
+
+# ALE: Asian Language Environment
+# STSF: Standard Type Services Framework
+# X11 ISO-8859-x required fonts
+
+SUNWale                          ALE common files
+SUNWhttf                         Chinese (traditional) True Type fonts
+SUNW5ttf                         Chinese (traditional) True Type fonts (BIG5)
+SUNWcttf                         Chinese (simplified) True Type fonts (EUC)
+SUNWgttf                         Chinese (simplified) True Type fonts (GBK)
+SUNWinttf                        Indic True Type fonts
+SUNWjxcft                        Japanese True Type fonts (required)
+SUNWkttf                         Korean True Type fonts
+SUNW1251f                        Russian 1251 fonts (MS Cyrillic code page)
+SUNWeurf                         global fonts
+SUNWi1of                         X11 ISO8859-1  optional fonts (Latin-1)
+SUNWi2rf                         X11 ISO8859-2  required fonts
+SUNWi4rf                         X11 ISO8859-4  required fonts
+SUNWi5rf                         X11 ISO8859-5  required fonts
+SUNWi7rf                         X11 ISO8859-7  required fonts
+SUNWi8rf                         X11 ISO8859-8  required fonts
+SUNWi9rf                         X11 ISO8859-9  required fonts
+SUNWi13rf                        X11 ISO8859-13 required fonts
+SUNWi15rf                        X11 ISO8859-15 required fonts
+SUNWkoi8f                        X11 KOI8-R fonts
+SUNWkxfnt                        X11 Korean required fonts
+SUNWarrf                         X11 Arabic required fonts
+SUNWtxfnt                        X11 Thai required fonts
+SUNW5xmft                        X11 Chinese (traditional) req. fonts (BIG5)
+SUNWcxmft                        X11 Chinese (simplified) required fonts (EUC)
+SUNWjxmft                        X11 Japanese required fonts (bitmap)
+SUNWkxmft                        X11 Korean required fonts (UTF-8)
+SUNWfdl                          font downloader
+SUNWffdl                         font downloader (French)
+SUNWefdl                         font downloader (Spanish)
+SUNWfontconfig                   fontconfig library
+SUNWfontconfig-root              fontconfig library config files
+SUNWfreetype2                    FreeType2 font library
+SUNWstsf                         Standard Type Services Framework
+SUNWstsfr                        Standard Type Services Framework [r]
+SUNWxwxft                        Xft (X FreeType) library
+
+# -------------------------------- libraries ---------------------------------
+
+# mediaLib (C functions supporting multimedia processing)
+SUNWmlib                         mediaLib shared libraries
+SUNWmlibl                        mediaLib library links
+
+# Sun OpenGL: Sun's implementation of Open Graphics Library
+SUNWglsr                         Sun OpenGL runtime generic software
+SUNWglrt                         Sun OpenGL runtime libraries
+SUNWglrtx                        Sun OpenGL runtime libraries (64-bit)
+SUNWglrtu                        Sun OpenGL runtime libraries (platform-spec.)
+SUNWgldp                         Sun OpenGL device pipeline support
+SUNWgldpx                        Sun OpenGL device pipeline support (64-bit)
+SUNWglsrz                        Sun OpenGL optimized SW rasterizer
+SUNWglsrx                        Sun OpenGL optimized SW rasterizer (64-bit)
+
+# XIL: X11 Imaging Library (Sun cross-platform imaging API, declared obsolete)
+SUNWxilrl                        XIL runtime environment
+SUNWxildh                        XIL loadable pipeline libraries
+SUNWxilow                        XIL OpenWindows loadable pipeline libraries
+SUNWxilvl                        VIS/XIL Support
+
+# XML:  eXtensible Markup Language
+# XSLT: eXtensible Stylesheet Language Transformations
+SUNWlxml                         XML library
+SUNWlexpt                        XML parser library (libexpat)
+SUNWlxsl                         XSLT library
+
+# ToolTalk (interapplication communication used by Sun mostly for CDE and OW)
+SUNWtltk                         ToolTalk runtime, libraries, headers
+SUNWftltk                        ToolTalk I18N (French)
+SUNWetltk                        ToolTalk I18N (Spanish)
+
+# --------------------------------- X Window ---------------------------------
+
+# ICE: Inter-Client Exchange (facilitates exchanges between X clients/servers,
+#   and needed for OpenSSH X Window tunneling)
+
+SUNWxwdv                         X11 kernel device drivers
+SUNWxwmod                        X11 OpenWindows kernel module
+SUNWxwplt                        X11 platform software (client,server,Xlib,)
+SUNWfxplt                        X11 platform software (French)
+SUNWexplt                        X11 platform software (Spanish)
+SUNWxwplr                        X11 platform software configuration
+SUNWxwpl                         X11 platform-specific software
+SUNWxwrtl                        X11 runtime library links in /usr/lib
+SUNWxorg-clientlibs              X11 client libraries
+SUNWxwice                        X11 ICE library and iceauth
+SUNWxwdxm                        X11 Display PostScript (DPS) motif library
+SUNWxwsrv                        X11 virtual servers
+SUNWxwxst                        X11 server extension (XST)
+SUNWxim                          X11 Input Method server
+SUNWxwhl                         X11 header links in /usr/include
+SUNWxwfs                         X11 font server
+SUNWxwfa                         X11 font administrator
+SUNWxwfnt                        X11 required fonts
+SUNWxwcft                        X11 optional common fonts
+SUNWxwoft                        X11 optional fonts
+SUNWxwpft                        X11 printer fonts
+SUNWxwcsl                        X11 font support library for type1/CID fonts
+SUNWxi18n                        X11 internationalization common package
+SUNWi1cs                         X11 ISO8859-1 codeset support
+SUNWi7cs                         X11 ISO8859-7  codeset support
+SUNWi15cs                        X11 ISO8859-15 codeset support
+SUNWxwsvr                        X11 screen saver
+SUNWfrxwsvr                      X11 screen saver (French)
+SUNWesxwsvr                      X11 screen saver (Spanish)
+SUNWxwpsr                        X11 sun4u-optimized auxiliary filter modules
+SUNWxwopt                        X11 opt. MIT core client/server extensions
+SUNWxwdem                        X11 demo programs
+SUNWxwdim                        X11 demo images
+# Motif (OSF X Window user interface)
+SUNWmfrun                        Motif runtime
+# AccessX: provides alternate keyboard input mechanisms for the disabled
+SUNWxwacx                        X11 AccessX client
+SUNWfwacx                        X11 AccessX client (French)
+SUNWewacx                        X11 AccessX client (Spanish)
+
+# --------------------------------- desktops ---------------------------------
+
+# CDE (Common Desktop Environment)
+SUNWdtcor                        CDE file system anchor (/usr/dt)
+SUNWeudba                        CDE base
+SUNWdtdmn                        CDE daemons
+SUNWdtdmr                        CDE daemons [r]
+SUNWdtlog                        CDE system boot for desktop login
+SUNWdtdte                        CDE login environment
+SUNWeudlg                        CDE login environment (en_US)
+SUNWfrdte                        CDE login environment (French)
+SUNWesdte                        CDE login environment (Spanish)
+SUNWdtbas                        CDE runtime environment
+SUNWfrbas                        CDE runtime environment (French)
+SUNWesbas                        CDE runtime environment (Spanish)
+SUNWdtwm                         CDE window manager
+SUNWeudmg                        CDE window manager (en_US)
+SUNWfrwm                         CDE window manager (French)
+SUNWeswm                         CDE window manager (Spanish)
+SUNWdthe                         CDE help environment
+SUNWfrhe                         CDE help environment (French)
+SUNWeshe                         CDE help environment (Spanish)
+SUNWdthev                        CDE help environment volumes
+SUNWfrhev                        CDE help environment volumes (French)
+SUNWeshev                        CDE help environment volumes (Spanish)
+SUNWeudhr                        CDE help runtime (en_US)
+SUNWeudhs                        CDE help runtime (en_US) (2)
+SUNWdticn                        CDE icons
+SUNWeudis                        CDE icons (en_US)
+SUNWdtdst                        CDE desktop applications
+SUNWeudda                        CDE desktop applications (en_US)
+SUNWfrdst                        CDE desktop applications (French)
+SUNWesdst                        CDE desktop applications (Spanish)
+SUNWdtezt                        CDE desktop extensions applications
+SUNWdtjxt                        CDE Java extensions
+SUNWeuezt                        CDE Power Pack applications (en_US)
+SUNWdthez                        CDE Power Pack help volumes
+SUNWfrhez                        CDE Power Pack help volumes (French)
+SUNWeshez                        CDE Power Pack help volumes (Spanish)
+SUNWdtscm                        CDE dtpower schemes
+SUNWdtim                         CDE image viewer
+SUNWeudiv                        CDE Image viewer (en_US)
+SUNWfrim                         CDE image viewer (French)
+SUNWesim                         CDE image viewer (Spanish)
+SUNWspl                          CDE spell checker
+SUNWfrspl                        CDE spell checker (French)
+SUNWesspl                        CDE spell checker (Spanish)
+SUNWscgui                        CDE Smart Card admin GUI
+SUNWfscgu                        CDE Smart Card admin GUI (French)
+SUNWescgu                        CDE Smart Card admin GUI (Spanish)
+SUNWpdas                         CDE PDA synchronization
+SUNWfpdas                        CDE PDA synchronization (French)
+SUNWepdas                        CDE PDA synchronization (Spanish)
+
+# OpenWindows
+
+SUNWeuodf                        OPEN LOOK X11 core desktop files (en_US)
+SUNWolrte                        OPEN LOOK toolkits/runtime
+SUNWforte                        OPEN LOOK toolkits/runtime (French)
+SUNWeorte                        OPEN LOOK toolkits/runtime (Spanish)
+SUNWeu8df                        OpenWindows core desktop files (en_US)
+SUNWeuxwe                        OpenWindows X11 environment (en_US)
+SUNWplow                         OpenWindows for partial locales
+SUNWplowr                        OpenWindows for partial locales [r]
+SUNWplow1                        OpenWindows for partial locales (suppl.)
+SUNWvid                          OpenWindows video timing information
+
+# JDS: Java Desktop System
+SUNWjre-config                   JDS Java runtime integration
+SUNWjre-config-plugin            JDS Java runtime integration (plug-in)
+SUNWapoc                         JDS configuration agent
+SUNWapdc                         JDS configuration agent wizard
+SUNWapdc-root                    JDS configuration agent wizard launch menu
+SUNWapmsc                        JDS configuration agent miscellaneous files
+SUNWapbas                        JDS configuration shared libraries
+SUNWapcj                         JDS configuration adapter for Java prefs
+SUNWjdsrm                        JDS upgrade package remove
+SUNWjdsver                       JDS version info
+SUNWjds-registration             JDS customer registration application
+SUNWglow                         JDS Sun Java Calendar preview
+
+# ---------------------------------- GNOME -----------------------------------
+
+# GNOME: GNU Network Object Model Environment
+# GNOME base libraries
+# EXIF: Exchangeable Image File Format (used by most digital cameras)
+# Ogg Vorbis: audio compression format ('Ogg' is a term from the network game
+#   Netrek; 'Vorbis' is the  name of a character from the book _Small Gods_.)
+SUNWgnome-base-libs              GNOME base GUI libraries [u]
+SUNWgnome-base-libs-root         GNOME base GUI libraries [r]
+SUNWgnome-base-libs-share        GNOME base GUI libraries [s]
+SUNWaspell                       Spell Checker
+SUNWaspell-share                 Spell Checker [s]
+SUNWaspell-en                    Spell Checker (English)
+SUNWaspell-en-share              Spell Checker (English) [s]
+SUNWlibpopt                      command line parsing library
+SUNWlibexif                      libexif
+SUNWogg-vorbis                   Ogg Vorbis (audio compression format)
+# GNOME runtime
+# VFS: Virtual File System
+SUNWgnome-component              GNOME CORBA ORB and component framework [u]
+SUNWgnome-component-root         GNOME CORBA ORB and component framework [r]
+SUNWgnome-session                GNOME session manager [u]
+SUNWgnome-session-root           GNOME session manager [r]
+SUNWgnome-session-share          GNOME session manager [s]
+SUNWgnome-wm                     GNOME window manager [u]
+SUNWgnome-wm-root                GNOME window manager [r]
+SUNWgnome-wm-share               GNOME window manager [s]
+SUNWgnome-file-mgr               GNOME file manager [u]
+SUNWgnome-file-mgr-root          GNOME file manager [r]
+SUNWgnome-file-mgr-share         GNOME file manager [s]
+SUNWgnome-config                 GNOME configuration framework [u]
+SUNWgnome-config-root            GNOME configuration framework [r]
+SUNWgnome-config-share           GNOME configuration framework [s]
+SUNWgnome-dtlogin-integration    GNOME desktop dtlogin config files [u]
+SUNWgnome-desktop-prefs          GNOME desktopwide preference config tools [u]
+SUNWgnome-desktop-prefs-root     GNOME desktopwide preference config tools [r]
+SUNWgnome-desktop-prefs-share    GNOME desktopwide preference config tools [s]
+SUNWgnome-help-viewer            GNOME help system [u]
+SUNWgnome-help-viewer-share      GNOME help system [s]
+SUNWgnome-user-docs              GNOME user documentation [s]
+SUNWgnome-audio                  GNOME audio support framework [u]
+SUNWgnome-audio-root             GNOME audio support framework [r]
+SUNWgnome-audio-share            GNOME audio support framework [s]
+SUNWgnome-removable-media        GNOME removable media support [u]
+SUNWgnome-removable-media-share  GNOME removable media support [s]
+SUNWgnome-print                  GNOME printing technology [u]
+SUNWgnome-print-root             GNOME printing technology [r]
+SUNWgnome-print-share            GNOME printing technology [s]
+SUNWgnome-libs                   GNOME libraries [u]
+SUNWgnome-libs-root              GNOME libraries [r]
+SUNWgnome-libs-share             GNOME libraries [s]
+SUNWgnome-panel                  GNOME panel and support libraries [u]
+SUNWgnome-panel-root             GNOME panel and support libraries [r]
+SUNWgnome-panel-share            GNOME panel and support libraries [s]
+SUNWgnome-themes                 GNOME themes and support libraries [u]
+SUNWgnome-themes-share           GNOME themes and support libraries [s]
+SUNWgnome-freedb-libs            GNOME free CD database access library [u]
+SUNWgnome-freedb-libs-root       GNOME free CD database access library [r]
+SUNWgnome-freedb-libs-share      GNOME free CD database access library [s]
+SUNWgnome-xml-root               GNOME XML catalogs [r]
+SUNWgnome-xml-share              GNOME XML stylesheets [s]
+SUNWgnome-vfs                    GNOME VFS &amp; appl./MIME type registry [u]
+SUNWgnome-vfs-root               GNOME VFS &amp; appl./MIME type registry [r]
+SUNWgnome-vfs-share              GNOME VFS &amp; appl./MIME type registry [s]
+# GNOME applications
+# APOC:  A Point Of Control
+SUNWgnome-display-mgr            GNOME Display Manager
+SUNWgnome-display-mgr-root       GNOME Display Manager [r]
+SUNWgnome-display-mgr-share      GNOME Display Manager [s]
+SUNWgnome-utility-applets        GNOME panel applets [u]
+SUNWgnome-utility-applets-root   GNOME panel applets [r]
+SUNWgnome-utility-applets-share  GNOME panel applets [s]
+SUNWgnome-internet-applets       GNOME panel applets - internet [u]
+SUNWgnome-internet-applets-root  GNOME panel applets - internet [r]
+SUNWgnome-internet-applets-share GNOME panel applets - internet [s]
+SUNWgnome-intranet-applets       GNOME panel applets - intranet [u]
+SUNWgnome-intranet-applets-root  GNOME panel applets - intranet [r]
+SUNWgnome-intranet-applets-share GNOME panel applets - intranet [s]
+SUNWgnome-mm-applets             GNOME panel applets - multimedia [u]
+SUNWgnome-mm-applets-root        GNOME panel applets - multimedia [r]
+SUNWgnome-mm-applets-share       GNOME panel applets - multimedia [s]
+SUNWgnome-jdshelp                GNOME Java help
+SUNWgnome-jdshelp-share          GNOME Java help [s]
+SUNWgnome-archive-mgr            GNOME archive manager [u]
+SUNWgnome-archive-mgr-root       GNOME archive manager [r]
+SUNWgnome-archive-mgr-share      GNOME archive manager [s]
+SUNWgnome-calculator             GNOME calculator
+SUNWgnome-calculator-root        GNOME calculator [r]
+SUNWgnome-calculator-share       GNOME calculator [s]
+SUNWgnome-cd                     GNOME CD player [u]
+SUNWgnome-cd-root                GNOME CD player [r]
+SUNWgnome-cd-share               GNOME CD player [s]
+SUNWgnome-cd-burner              GNOME CD burner
+SUNWgnome-cd-burner-root         GNOME CD burner [r]
+SUNWgnome-cd-burner-share        GNOME CD burner [s]
+SUNWgnome-dictionary             GNOME dictionary tool [u]
+SUNWgnome-dictionary-root        GNOME dictionary tool [r]
+SUNWgnome-dictionary-share       GNOME dictionary tool [s]
+SUNWgnome-camera                 GNOME digital camera tool
+SUNWgnome-camera-share           GNOME digital camera tool [s]
+SUNWgnome-character-map          GNOME character map utility [u]
+SUNWgnome-character-map-share    GNOME character map utility [s]
+SUNWgnome-search-tool            GNOME file search tool [u]
+SUNWgnome-search-tool-root       GNOME file search tool [r]
+SUNWgnome-search-tool-share      GNOME file search tool [s]
+SUNWgnome-hex-editor             GNOME hex editor [u]
+SUNWgnome-hex-editor-root        GNOME hex editor [r]
+SUNWgnome-hex-editor-share       GNOME hex editor [s]
+SUNWgnome-hex-editor-devel       GNOME hex editor developer files [u]
+SUNWgnome-img-editor             GNOME image editor
+SUNWgnome-img-editor-root        GNOME image editor [r]
+SUNWgnome-img-editor-share       GNOME image editor [s]
+SUNWgnome-img-viewer             GNOME image viewer [u]
+SUNWgnome-img-viewer-root        GNOME image viewer [r]
+SUNWgnome-img-viewer-share       GNOME image viewer [s]
+SUNWgnome-media-player           GNOME Media Player
+SUNWgnome-media-player-root      GNOME Media Player [r]
+SUNWgnome-media-player-share     GNOME Media Player [s]
+SUNWgnome-pdf-viewer             GNOME PDF viewer
+SUNWgnome-pdf-viewer-root        GNOME PDF viewer [r]
+SUNWgnome-pdf-viewer-share       GNOME PDF viewer [s]
+SUNWgnome-perf-meter             GNOME Performance Meter [u]
+SUNWgnome-perf-meter-root        GNOME Performance Meter [r]
+SUNWgnome-perf-meter-share       GNOME Performance Meter [s]
+SUNWgnome-ps-viewer              GNOME PostScript viewer [u]
+SUNWgnome-ps-viewer-root         GNOME PostScript viewer [r]
+SUNWgnome-ps-viewer-share        GNOME PostScript viewer [s]
+SUNWgnome-project                GNOME Project Planner
+SUNWgnome-project-share          GNOME Project Planner [s]
+SUNWgnome-sound-recorder         GNOME sound recording utilities [u]
+SUNWgnome-sound-recorder-root    GNOME sound recording utilities [r]
+SUNWgnome-sound-recorder-share   GNOME sound recording utilities [s]
+SUNWgnome-spell                  GNOME spell checker
+SUNWgnome-spell-share            GNOME spell checker [s]
+SUNWgnome-sys-suspend            GNOME sys-suspend application
+SUNWgnome-sys-suspend-share      GNOME sys-suspend application [s]
+SUNWgnome-terminal               GNOME terminal emulator [u]
+SUNWgnome-terminal-root          GNOME terminal emulator [r]
+SUNWgnome-terminal-share         GNOME terminal emulator [s]
+SUNWgnome-text-editor            GNOME text editor [u]
+SUNWgnome-text-editor-root       GNOME text editor [r]
+SUNWgnome-text-editor-share      GNOME text editor [s]
+SUNWgnome-config-editor          GNOME configuration database editor [u]
+SUNWgnome-config-editor-share    GNOME configuration database editor [s]
+SUNWgnome-dialog                 GNOME graphical dialog box generator
+SUNWgnome-dialog-share           GNOME graphical dialog box generator [s]
+SUNWgnome-im-client              GNOME multi-protocol instant messaging client
+SUNWgnome-im-client-share        GNOME multi-protocol instant messaging cl [s]
+SUNWgnome-media                  GNOME streaming media framework
+SUNWgnome-media-root             GNOME streaming media framework [r]
+SUNWgnome-media-share            GNOME streaming media framework [s]
+SUNWgnome-fonts                  GNOME Unicode and Korean TrueType fonts
+SUNWapoc-adapter-gconf           APOC GConf adapter
+# A11Y: A(ccessibilit)Y (middle 11 letters replaced with '11')
+SUNWgnome-a11y-libs              GNOME A11Y implementation [u]
+SUNWgnome-a11y-libs-share        GNOME A11Y implementation [s]
+SUNWgnome-a11y-base-libs         GNOME A11Y base libraries [u]
+SUNWgnome-a11y-gok               GNOME A11Y on-screen Keyboard [u]
+SUNWgnome-a11y-gok-root          GNOME A11Y on-screen Keyboard [r]
+SUNWgnome-a11y-gok-share         GNOME A11Y on-screen Keyboard [s]
+SUNWgnome-a11y-reader            GNOME A11Y screen reader and magnifier [u]
+SUNWgnome-a11y-reader-root       GNOME A11Y screen reader and magnifier [r]
+SUNWgnome-a11y-reader-share      GNOME A11Y screen reader and magnifier [s]
+SUNWgnome-a11y-speech            GNOME A11Y text-to-speech engine [u]
+SUNWgnome-a11y-speech-share      GNOME A11Y text-to-speech engine [s]
+SUNWgnome-a11y-poke              GNOME A11Y support tool [u]
+SUNWgnome-a11y-poke-share        GNOME A11Y support tool [s]
+# GNOME graphics support
+# PNG: Portable Network Graphics 
+SUNWjpg                          JPEG software
+SUNWpng                          PNG library
+SUNWTiff                         TIFF read/write library (libtiff)
+# GNOME locale files
+SUNWgnome-l10ndocument-fr        GNOME document files (French)
+SUNWgnome-l10ndocument-es        GNOME document files (Spanish)
+SUNWgnome-l10nmessages-fr        GNOME message files (French)
+SUNWgnome-l10nmessages-es        GNOME message files (Spanish)
+
+# --------------------------- desktop applications ---------------------------
+
+# Evolution (suite of email and calendaring tools used by GNOME)
+SUNWevolution                    Evolution email and calendar
+SUNWevolution-root               Evolution email and calendar [r]
+SUNWevolution-share              Evolution email and calendar [s]
+SUNWevolution-libs               Evolution email and calendar support libs
+SUNWevolution-libs-share         Evolution email and calendar support libs [s]
+# Following libraries used by Evolution:
+# TLS: Transport Layer Security
+SUNWlibgcrypt                    libgcrypt (GNU cryptographic library)
+SUNWgnutls                       libgnutls (GNU TLS library)
+# Following packages provide interfaces to MS products:
+# SOCS: Sun One Calendar Server
+SUNWevolution-exchange           Exchange connector for Evolution [u]
+SUNWevolution-exchange-root      Exchange connector for Evolution [r]
+SUNWevolution-exchange-share     Exchange connector for Evolution [s]
+SUNWevolution-socs-connect       SOCS connector for Evolution
+SUNWevolution-socs-connect-share SOCS connector for Evolution [s]
+
+# Ghostscript: PostScript interpreter, utilities, and libraries
+# ESP:   Easy Software Projects
+# ESPGS: ESP (GNU) Ghostscript
+SUNWgscr                         ESPGS (enhanced Ghostscript)
+SUNWgsfst                        GNU Ghostscript fonts (standard)
+SUNWgsfot                        GNU Ghostscript fonts (other)
+
+# Mozilla
+# APOC: A Point Of Control
+# DOM:  Document Object Model
+SUNWmozilla                      Mozilla
+SUNWmoznss                       Mozilla Network Security Services
+SUNWmozjs-debugger               Mozilla JavaScript debugger
+SUNWmozgm                        Mozilla GNOME integration
+SUNWmozapoc-adapter              Mozilla APOC adapter
+SUNWmoznspr                      Mozilla Netscape Portable Runtime
+SUNWfrmoz                        Mozilla localization (French)
+SUNWesmoz                        Mozilla localization (Spanish)
+SUNWacroread                     Mozilla Acrobat reader
+SUNWacroread-plugin              Mozilla Acrobat reader (plugin)
+SUNWmozchat                      Mozilla Chatzilla
+SUNWmozdom-inspector             Mozilla DOM inspector
+SUNWmozmail                      Mozilla mail
+SUNWmozpsm                       Mozilla Personal Security Manager
+SUNWmozspell                     Mozilla spelling checker
+
+# Netscape
+SUNWpr                           Netscape Portable Runtime
+
+# StarOffice
+SUNWsom                      StarOffice
+SUNWsogm                     StarOffice GNOME menu integration
+
+# =========================== internationalization ===========================
+
+# CTL:   Complex Text Layout (for characters changing according to context)
+# en_US: American English
+# EUC:   Extended Unix Code (ISO 2022)
+# File System Examiner: converts non-UTF-8 file names to UTF-8 format
+# I18N:  I(nternationalizatio)N (middle 18 letters replaced with '18')
+# iconv: international character code conversion utility
+# IDN:   Internationalized Domain Name
+# IIIM:  Internet/Intranet Input Method (platform-independent, multilingual
+#          Unicode support; follow-on to XIM)
+# UTF-8: Unicode Transformation Format (8-bit) (ISO 10646)
+# XSH:   System Interfaces Technical Standard (Single UNIX project)
+
+SUNWicu                          internat. components for unicode user files
+SUNWlcl                          locale conversion library
+SUNWautoef                       auto encoding finder (determines char coding)
+SUNWuiu8                         iconv modules
+SUNWdtct                         iconv GUI
+SUNWciu8                         UTF-8 Chinese (simpl.) iconv modules (EUC)
+SUNWhiu8                         UTF-8 Chinese (trad.)  iconv modules (EUC)
+SUNWiniu8                        UTF-8 Indic iconv modules
+SUNWjiu8                         UTF-8 Japanese iconv modules
+SUNWkiu8                         UTF-8 Korean iconv modules
+SUNWtiu8                         UTF-8 Thai iconv modules
+SUNWulcf                         en_US (UTF-8) locale conversion (char)
+SUNWuxlcf                        en_US (UTF-8) locale conversion (X11)
+SUNWislcc                        XSH4 conversion for Eastern European locales
+SUNWisolc                        XSH4 conversion for ISO Latin character sets
+SUNWidnl                         IDN libraries
+SUNWidnu                         IDN utilities
+SUNWiiimr                        IIIM framework [r]
+SUNWiiimu                        IIIM framework [u]
+SUNWctlu                         CTL print utilities
+SUNWctpls                        CTL portable layout services
+SUNWfsexam                       File System Examiner
+SUNWfsexam-root                  File System Examiner [r]
+
+# ======================== Solaris-specific services =========================
+
+# Containers
+SUNWzoner                        Solaris Zones [r]
+SUNWzoneu                        Solaris Zones [u]
+# resource pools
+SUNWpool                         resource pools
+SUNWpoolr                        resource pools [r]
+# resource management
+SUNWrcapr                        Resource Capping Daemon [r]
+SUNWrcapu                        Resource Capping Daemon [u]
+SUNWfss                          Fair Share Scheduler
+# zonecfg support
+SUNWtecla                        Tecla command line editor
+
+# DTrace: Dynamic Tracing (OS trace/debug tool)
+
+SUNWdtrc                         DTrace clients
+SUNWdtrp                         DTrace providers
+
+# FMA: Fault Management Architecture ("predictive self-healing")
+SUNWfmd                          Fault Management daemon and utilities
+
+# Live Upgrade
+SUNWlur                          Live Upgrade [r]
+SUNWluu                          Live Upgrade [u]
+SUNWluzone                       Live Upgrade (zones support)
+SUNWfrlu                         Live Upgrade (French)
+SUNWeslu                         Live Upgrade (Spanish)
+
+# DMI:  Desktop Management Interface
+# SEA:  Solstice Enterprise Agents (1.0.3)
+# SNMP: Simple Network Management Protocol
+SUNWsacom                        SEA software [r]
+SUNWmibii                        SEA SNMP daemon
+SUNWsasnm                        SEA SNMP libraries
+SUNWsadmi                        SEA DMI libraries
+
+# SMA: System Management Agent
+SUNWsmagt                        SMA files and libraries
+SUNWsmcmd                        SMA applications and utilities
+SUNWsmmgr                        SMA startup scripts
+
+# SPR: Solaris Product Registry
+SUNWwsrv                         SPR viewer
+SUNWfrwsv                        SPR viewer (French)
+SUNWeswsv                        SPR viewer (Spanish)
+SUNWproduct-registry-root        SPR runtime support [r]
+SUNWwsr2                         SPR &amp; Web Start runtime support
+SUNWfrws2                        SPR &amp; Web Start runtime support (French)
+SUNWesws2                        SPR &amp; Web Start runtime support (Spanish)
+
+# WBEM: Web-Based Enterprise Management
+SUNWwbcor                        WBEM services [r]
+SUNWwbcou                        WBEM services [u]
+SUNWfrwbc                        WBEM services (French)
+SUNWeswbc                        WBEM services (Spanish)
+SUNWmgapp                        WBEM management applications
+SUNWwbapi                        WBEM API
+SUNWwbpro                        WBEM providers [u]
+SUNWrmwbr                        WBEM resource management instrumentation [r]
+SUNWrmwbu                        WBEM resource management instrumentation [u]
+
+# ================================== misc. ===================================
+
+# -------------------------- misc. network related ---------------------------
+
+# LDAP: Lightweight Directory Access Protocol (Internet phone book)
+SUNWlldap                        LDAP libraries
+
+# IPMI: Intelligent Platform Management Interface (device management utility)
+SUNWipmi                         ipmitool [u]
+
+# Quality of Service (over IP)
+SUNWqos                          IP QoS [r]
+SUNWqosu                         IP QoS [u]
+
+# SLP: Service Location Protocol (network resource discovery)
+SUNWslpr                         SLP framework [r]
+SUNWslpu                         SLP framework [u]
+
+# WAN: Wide Area Network
+SUNWwbsup                        WAN boot support
+
+# ---------------------------- x86 compatibility -----------------------------
+
+# Realmode: Sun package for attempting boot of Solaris onto an x86 system
+SUNWbsr                          boot server daemons [r]
+SUNWbsu                          boot server daemons [u]
+SUNWrmodu                        Realmode modules [u]
+
+# Samba: Server Message Block (MS file/print service protocol)
+SUNWsmbac                        samba client
+SUNWsmbar                        samba server [r]
+SUNWsmbau                        samba server [u]
+</PRE></BODY></HTML>

@@ -20,3 +20,12 @@ echo ::memstat | mdb -k
 ÐÞ¸ÄÄ¬ÈÏ locale
 vi /etc/default/init
 LANG=locale
+
+
+ar_entry_query: Could not find the ace for source address 192.168.0.249
+ifconfig -a | grep ether
+        ether 0:c:29:c5:f9:15
+arp -s 192.168.0.249 00:0c:29:c5:f9:15 permanent pub
+
+http://sunsolve.sun.com/search/printfriendly.do?assetkey=1-66-238887-1
+
