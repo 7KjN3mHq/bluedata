@@ -31,6 +31,7 @@ vi /opt/csw/etc/pkg-get.conf
 url=http://blastwave.unix-center.net/csw/stable
 
 pkg-get -U
+pkg-get install wget
 
 pkg-get install gnupg textutils
 wget --output-document=pgp.key http://www.blastwave.org/mirrors.html
@@ -42,7 +43,7 @@ wget ftp://ftp.sunfreeware.com/pub/freeware/intel/10/coreutils-6.4-sol10-x86-loc
 gzip -d coreutils-6.4-sol10-x86-local.gz
 pkgadd -d coreutils-6.4-sol10-x86-local
 
-pkg-get install vim gtar ggrep gawk top lsof
+pkg-get install gtar ggrep gawk vim top lsof
 cp /opt/csw/share/vim/vim71/vimrc_example.vim ~/.vimrc
 vi ~/.vimrc
 set nobackup
@@ -106,14 +107,14 @@ mv S15nfs.server _S15nfs.server
 mv S76snmpdx _S76snmpdx
 
 在 /etc/inetd.conf 中注释掉除下列服务的所有服务
-ftp 
-echo 
-echo 
-discard 
-discard 
-rstatd/2-4 
-fs 
-100083/1 
+ftp
+echo
+echo
+discard
+discard
+rstatd/2-4
+fs
+100083/1
 
 在只需要不多图形操作的服务器或是要保证相当的安全，可以关掉字体服务 fs ，
 也可以关掉系统性能监视器 rstatd 和 tooltalk 服务器 ttdbserverd(100083/1) ，查找剩下需要关闭的端口的进程用这个命令
