@@ -9,23 +9,58 @@ prtconf | grep Memory
 vmstat 1
 echo ::memstat | mdb -k
 
-修改网络属性
-/etc/hosts
-/etc/hostname.xxx
-/etc/defaultrouter(默认网关)
-/etc/netmasks(掩码)
-/etc/inet/ipnodes
-/etc/resolv.conf
-
 修改默认 locale
 vi /etc/default/init
 LANG=locale
 
 
+修改网络属性
+主机名
+hostname <new name>
+不要在 Window(CDE, JDS) 界面中使用。
+/etc/nodename
+/etc/hostname.<Interface>
+/etc/inet/hosts
+
+IP 地址
+ifconfig <Interface> plumb
+ifconfig <Interface> <IP> up
+/etc/inet/hosts
+
+网络掩码
+ifconfig <Interface> <netmask> up
+/etc/netmasks
+
+Gateway 网关
+route add default <IP Gateway>
+/etc/defaultrouter
+
+DHCP 客户端
+ifconfig <Interface> plumb
+ifconfig <Interface> dhcp start
+touch /etc/hostname.<Interface>
+touch /etc/dhcp.<Interface>
+
+Domain 域名
+domainname <yourdomain.com>
+echo <yourdomain.com> > /etc/defaultdomain
+
+DNS
+/etc/resolv.conf
+
+
 ar_entry_query: Could not find the ace for source address 192.168.0.249
+arp -an
 ifconfig -a | grep ether
         ether 0:c:29:c5:f9:15
-arp -s 192.168.0.249 00:0c:29:c5:f9:15 permanent pub
+##arp -s 192.168.0.249 00:0c:29:c5:f9:15 permanent pub
+##arp -s HOSTNAME 00:0c:29:c5:f9:15 pub
+arp -s 192.168.0.249 00:0c:29:c5:f9:15
 
 http://sunsolve.sun.com/search/printfriendly.do?assetkey=1-66-238887-1
+http://sunsolve.sun.com/search/document.do?assetkey=1-21-137112-06-1
+http://sunsolve.sun.com/search/document.do?assetkey=1-21-137092-01-1
 
+vi /etc/ethers
+##192.168.0.249 00:0c:29:c5:f9:15
+HOSTNAME 0:c:29:c5:f9:15

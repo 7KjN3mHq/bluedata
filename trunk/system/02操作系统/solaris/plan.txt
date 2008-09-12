@@ -1,0 +1,12 @@
+准备测试环境环境
+x86 -- VMserver server 1.0.6
+sparc -- Virtutech Simics 3.0.29
+
+安装操作系统
+
+系统基本配置
+
+系统盘做 RAID1
+
+添加存储设备，用 ZFS 管理。
+

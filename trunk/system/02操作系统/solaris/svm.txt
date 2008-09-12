@@ -2,6 +2,9 @@
 fdisk -b /usr/lib/fs/ufs/mboot /dev/rdsk/c0d0p0
 选 5 退出
 
+添加辅助磁盘
+devfsadm
+
 把辅助磁盘的分区表调整为和引导盘一致
 prtvtoc /dev/rdsk/c0d0s2 > vtoc.dat
 fmthard -s vtoc.dat /dev/rdsk/c1d0s2
