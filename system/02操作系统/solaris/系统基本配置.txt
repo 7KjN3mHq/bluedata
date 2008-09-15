@@ -67,14 +67,13 @@ vi /etc/DIR_COLORS
 vi ~/.bash_profile
 source ~/.bash_profile
 
+缩短 grub timeout 时间
+vi /boot/grub/menu.lst
+timeout 3
+
 取消自动关机
 vi /etc/power.conf
 #autoshutdown 30 9:00 9:00 default
-
-禁止自动启动 X window
-/usr/dt/bin/dtconfig -d
-恢复
-/usr/dt/bin/dtconfig -e
 
 防止堆栈溢出
 cp /etc/system /etc/system.BACKUP
@@ -82,6 +81,14 @@ vi /etc/system
 在文件最后加上以下两行
 set noexec_user_stack=1
 set noexec_user_stack_log=1
+
+禁止自动启动 X window
+/usr/dt/bin/dtconfig -d
+恢复
+/usr/dt/bin/dtconfig -e
+
+cd /
+rm -rf .I* .X* .d* .g* .i* .m* .n* .r* .s* D*
 
 卸载不用的软件
 卸载 SENDMAIL

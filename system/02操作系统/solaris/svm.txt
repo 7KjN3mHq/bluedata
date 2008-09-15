@@ -13,7 +13,7 @@ prtvtoc /dev/rdsk/c1t0d0s2|fmthard -s - /dev/rdsk/c1t1d0s2
 指定主引导程序
 fdisk -b /usr/lib/fs/ufs/mboot /dev/rdsk/c1t1d0s0
 y
-选 5 退出
+Enter Selection: 5
 
 使辅助磁盘可引导
 /sbin/installgrub /boot/grub/stage1 /boot/grub/stage2 /dev/rdsk/c1t1d0s0
@@ -26,30 +26,30 @@ vi /etc/vfstab
 metadb -afc 2 c1t0d0s3 c1t1d0s3
 
 创建 / 分区镜像
-metainit -f d1 1 1 c1t0d0s0
-metainit d2 1 1 c1t1d0s0
-metainit d0 -m d1
+metainit -f d10 1 1 c1t0d0s0
+metainit d20 1 1 c1t1d0s0
+metainit d0 -m d10
 metaroot d0
 
 创建 swap 分区镜像
 metainit -f d11 1 1 c1t0d0s1
-metainit d12 1 1 c1t1d0s1
-metainit d1 -m d12
+metainit d21 1 1 c1t1d0s1
+metainit d1 -m d11
 
 创建 /var 分区镜像
-metainit -f d21 1 1 c1t0d0s4
-metainit d22 1 1 c1t1d0s4
-metainit d2 -m d22
+metainit -f d14 1 1 c1t0d0s4
+metainit d24 1 1 c1t1d0s4
+metainit d4 -m d14
 
 创建 /opt 分区镜像
-metainit -f d31 1 1 c1t0d0s5
-metainit d32 1 1 c1t1d0s5
-metainit d3 -m d32
+metainit -f d15 1 1 c1t0d0s5
+metainit d25 1 1 c1t1d0s5
+metainit d5 -m d15
 
 创建 /usr 分区镜像
-metainit -f d41 1 1 c1t0d0s6
-metainit d42 1 1 c1t1d0s6
-metainit d4 -m d42
+metainit -f d16 1 1 c1t0d0s6
+metainit d26 1 1 c1t1d0s6
+metainit d6 -m d16
 
 vi /etc/vfstab
 /dev/dsk/c1t0d0s1       -       -       swap    -       no      -
@@ -58,9 +58,9 @@ vi /etc/vfstab
 /dev/dsk/c1t0d0s5       /dev/rdsk/c1t0d0s5      /opt    ufs     2       yes     -
 改为：
 /dev/md/dsk/d1  -       -       swap    -       no      -
-/dev/md/dsk/d4  /dev/md/rdsk/d4      /usr    ufs     1       no      -
-/dev/md/dsk/d2  /dev/md/rdsk/d2      /var    ufs     1       no      -
-/dev/md/dsk/d3  /dev/md/rdsk/d3      /opt    ufs     2       yes     -
+/dev/md/dsk/d6  /dev/md/rdsk/d6      /usr    ufs     1       no      -
+/dev/md/dsk/d4  /dev/md/rdsk/d4      /var    ufs     1       no      -
+/dev/md/dsk/d5  /dev/md/rdsk/d5      /opt    ufs     2       yes     -
 
 根分区也应该是
 /dev/md/dsk/d0  /dev/md/rdsk/d0 /       ufs     1       no      -
@@ -69,18 +69,18 @@ vi /etc/vfstab
 reboot
 
 文件系统关联
-metattach d0 d2
-metattach d1 d12
-metattach d2 d22
-metattach d3 d32
-metattach d4 d42
+metattach d0 d20
+metattach d1 d21
+metattach d4 d24
+metattach d5 d25
+metattach d6 d26
 
 查看同步状态
 metastat d0
 metastat d1
-metastat d2
-metastat d3
 metastat d4
+metastat d5
+metastat d6
 
 在 menu.lst 文件中定义替代引导路径
 vi menu.lst
