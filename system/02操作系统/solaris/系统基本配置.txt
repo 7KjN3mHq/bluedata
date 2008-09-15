@@ -72,7 +72,7 @@ vi /etc/power.conf
 #autoshutdown 30 9:00 9:00 default
 
 ½ûÖ¹×Ô¶¯Æô¶¯ X window
-/usr/dt/bin/dtconfig ¨Cd
+/usr/dt/bin/dtconfig -d
 »Ö¸´
 /usr/dt/bin/dtconfig -e
 
