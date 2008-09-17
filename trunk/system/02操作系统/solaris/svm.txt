@@ -23,7 +23,7 @@ umount /metadb
 rm -r /metadb
 vi /etc/vfstab
 #/dev/dsk/c1t0d0s3      /dev/rdsk/c1t0d0s3      /metadb ufs     2       yes     -
-metadb -afc 2 c1t0d0s3 c1t1d0s3
+metadb -afc 3 c1t0d0s3 c1t1d0s3
 
 创建 / 分区镜像
 metainit -f d10 1 1 c1t0d0s0
@@ -66,6 +66,7 @@ vi /etc/vfstab
 /dev/md/dsk/d0  /dev/md/rdsk/d0 /       ufs     1       no      -
 
 重启激活文件系统
+lockfs -fa
 reboot
 
 文件系统关联
@@ -82,9 +83,15 @@ metastat d4
 metastat d5
 metastat d6
 
-在 menu.lst 文件中定义替代引导路径
-vi menu.lst
-title alternate boot
-root (hd1,0,a)
-kernel /boot/multiboot
-module /boot/x86.miniroot-safe
+恢复需要维护的镜像
+metadetach -f d0 d10
+metadetach -f d1 d11
+metadetach -f d4 d14
+metadetach -f d5 d15
+metadetach -f d6 d16
+
+metattach d0 d10
+metattach d1 d11
+metattach d4 d14
+metattach d5 d15
+metattach d6 d16

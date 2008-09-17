@@ -48,6 +48,26 @@ echo <yourdomain.com> > /etc/defaultdomain
 DNS
 /etc/resolv.conf
 
+µ¥Íø¿¨¶à IP
+ifconfig pcn0:1 plumb
+ifconfig pcn0:1 inet 192.168.0.239 broadcast 192.168.0.255 netmask 255.255.255.0 -trailers
+ifconfig pcn0:1 up
+
+vi /etc/hosts
+192.168.0.239 bluedata
+vi /etc/hostname.pcn0:1
+bluedata
+
+ifconfig -a
+lo0: flags=2001000849<UP,LOOPBACK,RUNNING,MULTICAST,IPv4,VIRTUAL> mtu 8232 index 1
+        inet 127.0.0.1 netmask ff000000
+pcn0: flags=1000843<UP,BROADCAST,RUNNING,MULTICAST,IPv4> mtu 1500 index 2
+        inet 192.168.0.249 netmask ffffff00 broadcast 192.168.0.255
+        ether 0:c:29:c5:f9:15
+pcn0:1: flags=1000843<UP,BROADCAST,RUNNING,MULTICAST,IPv4> mtu 1500 index 2
+        inet 192.168.0.239 netmask ffffff00 broadcast 192.168.0.255
+
+
 
 ar_entry_query: Could not find the ace for source address 192.168.0.249
 arp -an
@@ -64,3 +84,7 @@ http://sunsolve.sun.com/search/document.do?assetkey=1-21-137092-01-1
 vi /etc/ethers
 ##192.168.0.249 00:0c:29:c5:f9:15
 HOSTNAME 0:c:29:c5:f9:15
+
+
+C:\Program Files\VMware\VMware Server\solaris.iso
+cd /cdrom/vmwaretools
