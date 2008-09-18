@@ -1,12 +1,13 @@
-添加辅助磁盘
-devfsadm
-
+在从盘创建 Solaris 分区
 format
 Specify disk (enter its number): 1
 format> fdisk
 y
+format> q
 
-把辅助磁盘的分区表调整为和引导盘一致
+如果没有发现从盘，需要执行 devfsadm
+
+把从盘的分区表调整为和主盘一致
 prtvtoc /dev/rdsk/c1t0d0s2|fmthard -s - /dev/rdsk/c1t1d0s2
 
 使辅助子镜像可以使用主引导程序引导
@@ -15,7 +16,7 @@ fdisk -b /usr/lib/fs/ufs/mboot /dev/rdsk/c1t1d0s0
 y
 Enter Selection: 5
 
-使辅助磁盘可引导
+使从盘可引导
 /sbin/installgrub /boot/grub/stage1 /boot/grub/stage2 /dev/rdsk/c1t1d0s0
 
 初始化 metadb
@@ -23,7 +24,9 @@ umount /metadb
 rm -r /metadb
 vi /etc/vfstab
 #/dev/dsk/c1t0d0s3      /dev/rdsk/c1t0d0s3      /metadb ufs     2       yes     -
-metadb -afc 3 c1t0d0s3 c1t1d0s3
+
+metadb -afc 3 c1t0d0s3
+metadb -afc 2 c1t1d0s3
 
 创建 / 分区镜像
 metainit -f d10 1 1 c1t0d0s0
@@ -62,7 +65,7 @@ vi /etc/vfstab
 /dev/md/dsk/d4  /dev/md/rdsk/d4      /var    ufs     1       no      -
 /dev/md/dsk/d5  /dev/md/rdsk/d5      /opt    ufs     2       yes     -
 
-根分区也应该是
+执行 metaroot d0 时，根分区已被替换为：
 /dev/md/dsk/d0  /dev/md/rdsk/d0 /       ufs     1       no      -
 
 重启激活文件系统
@@ -83,15 +86,56 @@ metastat d4
 metastat d5
 metastat d6
 
-恢复需要维护的镜像
-metadetach -f d0 d10
-metadetach -f d1 d11
-metadetach -f d4 d14
-metadetach -f d5 d15
-metadetach -f d6 d16
 
-metattach d0 d10
+磁盘损坏后的恢复
+如果主盘 2 份 metadb ，从盘 3 份 metadb 。
+那么，当主盘损坏时，可以使用从盘启动到多用户模式；
+而从盘损坏时，通过主盘启动只能进入维护模式。反之亦然。
+在维护状态删除损坏盘的 metadb 重启可以进入多用户模式。
+
+BIOS 启动顺序不支持从第二块磁盘启动（如 VMware）就需要把从盘移到主盘的位置，把新硬盘挂到从盘的位置。
+为了方便可以把主盘的 metadb 设为 n+1 份，从盘设为 n 份。
+
+从盘损坏
+可直接登入多用户模式，然后对新磁盘进行分区和安装引导程序的操作。
+重建从盘 metadb
+metadb -d -f c1t1d0s3
+metadb -ac 2 c1t1d0s3
+
+恢复需要维护的镜像
+metareplace -e d0 c1t1d0s0
+metareplace -e d1 c1t1d0s1
+metareplace -e d4 c1t1d0s4
+metareplace -e d5 c1t1d0s5
+metareplace -e d6 c1t1d0s6
+
+主盘损坏
+把从盘放到主盘的位置，把新磁盘放到从盘的位置，启动到维护模式。
+此时 metadb 显示的状态数据库信息存放设备并没有变，但是，format 查看到磁盘的情况已经是更换了的。
+删除损坏磁盘的 metadb
+metadb -d -f c1t0d0s3
+
+重启后进入多用户模式， metadb 显示状态数据库信息存放设备已经改变了。
+对新磁盘进行分区和安装引导的操作。
+重建 metadb
+metadb -afc 3 c1t1d0s3
+
+重启只能启动到 grub 提示符，可进行如下操作启动系统：
+grub> find /platform/i86pc/multiboot
+ (hd1,0,a)
+grub> root (hd1,0,a)
+grub> kernel /platform/i86pc/multiboot
+grub> module /platform/i86pc/boot_archive
+grub> boot
+
+登入系统后， metadb 显示的状态数据库信息存放设备已经对换过来了。
+恢复需要维护的镜像
+metareplace -e d0 c1t0d0s0
+metareplace -e d1 c1t0d0s1
+metareplace -e d4 c1t0d0s4
+metareplace -e d5 c1t0d0s5
+metareplace -e d6 c1t0d0s6
+
+如果 metareplace 不能执行，可以先 metadetach 再 metattach ，如：
+metadetach -f d1 d11
 metattach d1 d11
-metattach d4 d14
-metattach d5 d15
-metattach d6 d16
