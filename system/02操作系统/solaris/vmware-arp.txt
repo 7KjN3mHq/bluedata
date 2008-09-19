@@ -1,0 +1,31 @@
+VMware Server 1.0.6 安装的 Solaris 10 5/08 , 有时启动的时候会出现如下错误：
+ar_entry_query: Could not find the ace for source address 192.168.0.249
+
+arp -an 无输出
+
+零时解决办法：
+ifconfig -a | grep ether
+        ether 0:c:29:c5:f9:15
+arp -s 192.168.0.249 00:0c:29:c5:f9:15
+
+就算 arp 正常了，网络也不稳定，时断时续的。
+
+以为是 bug
+http://sunsolve.sun.com/search/printfriendly.do?assetkey=1-66-238887-1
+http://sunsolve.sun.com/search/document.do?assetkey=1-21-137112-06-1
+http://sunsolve.sun.com/search/document.do?assetkey=1-21-137092-01-1
+其实 Solaris 10 5/08 已经包含这些 patch 了。
+
+安装 VMware Tools
+使用光盘镜像
+C:\Program Files\VMware\VMware Server\solaris.iso
+
+cd /cdrom/vmwaretools
+gtar zxvf vmware-solaris-tools.tar.gz -C /tmp/
+cd /tmp/vmware-tools-distrib
+./vmware-install.pl
+一路回车
+mv /etc/hostname.pcn0 /etc/hostname.vmxnet0
+重启
+
+问题解决

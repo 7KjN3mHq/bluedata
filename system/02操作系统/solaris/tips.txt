@@ -32,6 +32,7 @@ ifconfig <Interface> <netmask> up
 /etc/netmasks
 
 Gateway Íø¹Ø
+route delete default <IP Gateway>
 route add default <IP Gateway>
 /etc/defaultrouter
 
@@ -58,33 +59,8 @@ vi /etc/hosts
 vi /etc/hostname.pcn0:1
 bluedata
 
-ifconfig -a
-lo0: flags=2001000849<UP,LOOPBACK,RUNNING,MULTICAST,IPv4,VIRTUAL> mtu 8232 index 1
-        inet 127.0.0.1 netmask ff000000
-pcn0: flags=1000843<UP,BROADCAST,RUNNING,MULTICAST,IPv4> mtu 1500 index 2
-        inet 192.168.0.249 netmask ffffff00 broadcast 192.168.0.255
-        ether 0:c:29:c5:f9:15
-pcn0:1: flags=1000843<UP,BROADCAST,RUNNING,MULTICAST,IPv4> mtu 1500 index 2
-        inet 192.168.0.239 netmask ffffff00 broadcast 192.168.0.255
-
-
-
-ar_entry_query: Could not find the ace for source address 192.168.0.249
-arp -an
-ifconfig -a | grep ether
-        ether 0:c:29:c5:f9:15
-##arp -s 192.168.0.249 00:0c:29:c5:f9:15 permanent pub
-##arp -s HOSTNAME 00:0c:29:c5:f9:15 pub
-arp -s 192.168.0.249 00:0c:29:c5:f9:15
-
-http://sunsolve.sun.com/search/printfriendly.do?assetkey=1-66-238887-1
-http://sunsolve.sun.com/search/document.do?assetkey=1-21-137112-06-1
-http://sunsolve.sun.com/search/document.do?assetkey=1-21-137092-01-1
-
+arp °ó¶¨
 vi /etc/ethers
 ##192.168.0.249 00:0c:29:c5:f9:15
 HOSTNAME 0:c:29:c5:f9:15
-
-
-C:\Program Files\VMware\VMware Server\solaris.iso
-cd /cdrom/vmwaretools
+arp -f /etc/ethers
