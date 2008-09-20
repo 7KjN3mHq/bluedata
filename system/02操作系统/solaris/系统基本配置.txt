@@ -1,10 +1,10 @@
-设置 root 用户
+设置 root 用户目录及 Shell
 mkdir /root
 chmod 700 /root
 vi /etc/passwd
 root:x:0:1:Super-User:/root:/usr/bin/bash
 
-配置 root 用户 SSH 登陆
+允许 root 用户 SSH 登陆
 vi /etc/ssh/sshd_config
 PermitRootLogin yes
 svcadm restart network/ssh
@@ -80,11 +80,12 @@ vi /etc/system
 set noexec_user_stack=1
 set noexec_user_stack_log=1
 
-禁止自动启动 X window
+禁止自动启动桌面系统
 /usr/dt/bin/dtconfig -d
 恢复
 /usr/dt/bin/dtconfig -e
 
+删除根目录下产生的 root 用户文件
 cd /
 rm -rf .I* .X* .d* .g* .i* .m* .n* .r* .s* D*
 
