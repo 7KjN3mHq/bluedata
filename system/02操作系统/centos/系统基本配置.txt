@@ -19,7 +19,7 @@ vi /etc/lvm/lvm.conf
 # filter = [ "a/.*/" ]
 filter = [ "r|/dev/cdrom|", "r|/dev/hdc|", "a|/dev/sda4|" ]
 
-CentOS5.2 ½ûÓÃ SELinux
+½ûÓÃ SELinux
 # vi /etc/sysconfig/selinux
 SELINUX=disabled
 

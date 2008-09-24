@@ -1,0 +1,255 @@
+Nginx Squid 构建高性能 WEB 前端
+
+系统配置
+建议将整个系统的文件句柄值至少设置为 65536
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
+
+可以使用以下命令查看文件句柄当前的使用情况：
+cat /proc/sys/fs/file-nr
+256    0       65536
+
+增大 file-max 的值，还需要设置 ulimit
+ulimit -a | grep "open files"
+open files                      (-n) 1024
+
+这是 Shell 对一个进程打开的文件句柄数量的限制。
+要增大这个值，可以修改 /etc/security/limits.conf
+echo -ne "
+nobody soft nofile 65536
+nobody hard nofile 65536
+" >> /etc/security/limits.conf
+
+TCP 方面的优化
+echo -ne "
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.tcp_keepalive_time = 300
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 1
+" >> /etc/sysctl.conf
+
+设置向外连接的端口范围
+cat /proc/sys/net/ipv4/ip_local_port_range
+32768   61000
+
+可以扩大范围
+echo "net.ipv4.ip_local_port_range = 5000    65000" >> /etc/sysctl.conf
+sysctl -p
+
+
+Squid 部分
+安装 Squid
+下载： http://www.squid-cache.org/Download/
+tar jxvf squid-3.0.STABLE9.tar.bz2
+cd squid-3.0.STABLE9
+./configure \
+--prefix=/usr/local/squid \
+--enable-dlmalloc \
+--with-pthreads \
+--enable-async-io=384 \
+--enable-storeio=null \
+--enable-removal-policies="heap,lru" \
+--enable-delay-pools \
+--enable-useragent-log \
+--enable-referer-log \
+--disable-wccp \
+--disable-wccpv2 \
+--enable-kill-parent-hack \
+--enable-arp-acl \
+--enable-cache-digests \
+--enable-default-err-languages="Simplify_Chinese" \
+--enable-err-language="Simplify_Chinese" \
+--disable-select \
+--disable-poll \
+--enable-epoll \
+--disable-ident-lookups \
+--enable-truncate \
+--enable-underscore \
+--enable-stacktrace \
+--enable-x-accelerator-vary \
+--enable-follow-x-forwarded-for
+
+make
+make install
+
+配置 Squid
+vi /usr/local/squid/etc/squid.conf
+http_port 3128 vhost vport
+
+icp_port 0
+
+cache_peer 127.0.0.1 parent 3129 0 no-query originserver no-digest
+
+acl Manager proto cache_object
+acl Purge method PURGE
+acl Localhost src 127.0.0.1
+http_access allow Manager Localhost
+http_access deny Manager
+http_access allow Localhost Purge
+http_access deny Purge
+
+acl Safe_ports port 80
+http_access deny !Safe_ports
+http_access allow all
+
+visible_hostname cache2
+cache_mgr bluedata@gmail.com
+
+cache_effective_user nobody
+cache_effective_group nobody
+
+tcp_recv_bufsize 65535 bytes
+client_persistent_connections off
+server_persistent_connections on
+half_closed_clients off
+
+cache_mem 1280 MB
+cache_swap_low 90
+cache_swap_high 98
+maximum_object_size 256 KB
+minimum_object_size 0 KB
+maximum_object_size_in_memory 256 KB
+ipcache_size 1024
+ipcache_low 90
+ipcache_high 95
+fqdncache_size 1024
+cache_replacement_policy lru
+memory_replacement_policy lru
+cache_dir null /tmp
+cache_store_log none
+
+refresh_pattern -i .html 60 90% 4320 reload-into-ims
+refresh_pattern -i .htm 60 90% 4320 reload-into-ims
+refresh_pattern -i .shtml 60 90% 4320 reload-into-ims
+refresh_pattern -i .png 1440 90% 10080 reload-into-ims
+refresh_pattern -i .gif 1440 90% 10080 reload-into-ims
+refresh_pattern -i .bmp 1440 90% 10080 reload-into-ims
+refresh_pattern -i .jpg 1440 90% 10080 reload-into-ims
+refresh_pattern -i .js 1440 90% 10080 reload-into-ims
+refresh_pattern -i .css 1440 90% 10080 reload-into-ims
+refresh_pattern -i .swf 1440 90% 10080 reload-into-ims
+
+forward_timeout 20 seconds
+connect_timeout 15 seconds
+read_timeout 3 minutes
+request_timeout 1 minutes
+persistent_request_timeout 15 seconds
+client_lifetime 15 minutes
+shutdown_lifetime 5 seconds
+negative_ttl 10 seconds
+
+access_log none
+cache_log /dev/null
+pid_filename /var/run/squid.pid
+
+acl QUERY urlpath_regex cgi-bin .php .cgi .avi .wmv .rm .ram .mpg .mpeg .zip .exe .aspx .asp .jsp
+cache deny QUERY
+
+
+Nginx Proxy 部分
+安装 Nginx
+下载： http://nginx.net/
+下载 ngx_http_upstream_hash_module ： http://wiki.codemongers.com/NginxHttpUpstreamRequestHashModule
+yum -y install pcre-devel zlib-devel
+tar zxvf nginx-0.6.32.tar.gz
+tar zxvf nginx_upstream_hash-0.3.tar.gz
+cd nginx-0.6.32
+patch -p0 < ../nginx_upstream_hash-0.3/nginx.patch
+./configure \
+--user=nobody \
+--group=nobody \
+--prefix=/usr/local/nginx-proxy \
+--with-http_stub_status_module \
+--add-module=../nginx_upstream_hash-0.3
+make
+make install
+cd ..
+
+配置 Nginx
+创建相关目录
+mkdir /tmp/nginx-proxy
+chown -R nobody:nobody /tmp/nginx-proxy
+chmod -R 1777 /tmp/nginx-proxy
+mkdir /var/log/nginx-proxy
+cd /usr/local/nginx-proxy
+mv logs conf/vhosts
+cd conf
+vi nginx.conf
+user  nobody nobody;
+worker_processes  8;
+
+error_log  /var/log/nginx-proxy/error.log;
+
+pid        /var/run/nginx-proxy.pid;
+
+worker_rlimit_nofile 51200;
+
+events {
+    use  epoll;
+    worker_connections  51200;
+}
+
+
+http {
+    include  mime.types;
+    default_type  application/octet-stream;
+
+    charset  utf-8;
+
+    client_body_temp_path  /tmp/nginx-proxy/client_body_temp;
+    proxy_temp_path        /tmp/nginx-proxy/proxy_temp;
+    fastcgi_temp_path      /tmp/nginx-proxy/fastcgi_temp;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] $request '
+                      '"$status" $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent"';
+
+    access_log  /var/log/nginx-proxy/access.log  main;
+
+    sendfile  on;
+
+    tcp_nopush  on;
+
+    tcp_nodelay  on;
+
+    keepalive_timeout  60 15;
+
+    upstream cache {
+        server cache1:3128;
+        server cache2:3128;
+        hash  $request_uri;
+        hash_method  crc32;
+    }
+
+    limit_zone one $binary_remote_addr 10m;
+
+    server {
+        listen  80;
+        server_name  _;
+        location / {
+            limit_conn one 1;
+            limit_rate  64k;
+            proxy_pass  http://cache;
+        }
+    }
+
+}
+
+echo -ne "
+su - nobody -c \"/usr/local/nginx-proxy/sbin/nginx -c /usr/local/nginx-proxy/conf/nginx.conf\"
+su - nobody -c \"/usr/local/squid/bin/RunCache\"" >> /etc/rc.local
+
+Nginx Web 部分
+tar zxvf nginx-0.6.32.tar.gz
+cd nginx-0.6.32
+./configure \
+--user=nobody \
+--group=nobody \
+--prefix=/usr/local/nginx \
+--with-http_stub_status_module
+make
+make install
+cd ..
