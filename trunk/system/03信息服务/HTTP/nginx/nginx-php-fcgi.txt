@@ -2,9 +2,10 @@ Nginx PHP FastCGI 安装配置记录
 
 安装 PHP
 下载：http://www.php.net/downloads.php
+http://php-fpm.anight.org/downloads/head/php-4.4.9-fpm-0.5.9.diff.gz
 因需要兼容老程序，这里用的还是 PHP4 ，可根据自己的需要更改编译选项。
-tar jxvf php-4.4.8.tar.bz2
-cd php-4.4.8
+tar jxvf php-4.4.9.tar.bz2
+cd php-4.4.9
 ./configure \
 --prefix=/usr/local/php-fcgi \
 --enable-fastcgi \
@@ -38,8 +39,8 @@ cd ..
 安装 eAccelerator
 PHP scripts 的缓存，对于提高 PHP 程序执行速度很有帮助。
 下载：http://eaccelerator.net/
-tar jxvf eaccelerator-0.9.5.2.tar.bz2
-cd eaccelerator-0.9.5.2
+tar jxvf eaccelerator-0.9.5.3.tar.bz2
+cd eaccelerator-0.9.5.3
 /usr/local/php-fcgi/bin/phpize
 ./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php-fcgi/bin/php-config
 make
@@ -50,8 +51,8 @@ cd ..
 安装 memcache
 用于缓存 sql 查询，对于降低数据库压力，提升查询速度有很大好处。
 下载：http://pecl.php.net/package/memcache
-tar zxvf memcache-2.2.3.tgz
-cd memcache-2.2.3
+tar zxvf memcache-2.2.4.tgz
+cd memcache-2.2.4
 /usr/local/php-fcgi/bin/phpize
 ./configure --with-php-config=/usr/local/php-fcgi/bin/php-config
 make
