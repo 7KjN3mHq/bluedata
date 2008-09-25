@@ -64,3 +64,6 @@ vi /etc/ethers
 ##192.168.0.249 00:0c:29:c5:f9:15
 HOSTNAME 0:c:29:c5:f9:15
 arp -f /etc/ethers
+
+查看软件包的文件列表
+pkgchk -l SMCcoreu|grep "^Pathname"|cut -d: -f2-

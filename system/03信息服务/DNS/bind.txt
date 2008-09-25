@@ -1,9 +1,8 @@
-# yum -y install bind
+yum -y install bind
 
-
-# chown -R named:named /var/named
-# chmod -R 1777 /var/named
-# chmod -R 1777 /var/run/named
+chown -R named:named /var/named
+chmod -R 1777 /var/named
+chmod -R 1777 /var/run/named
 
 :1,$s/jc001\.tv/9zhen\.com/g
 
