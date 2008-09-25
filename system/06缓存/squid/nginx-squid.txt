@@ -92,12 +92,12 @@ http_access deny Manager
 http_access allow Localhost Purge
 http_access deny Purge
 
-acl Safe_ports port 80
+acl Safe_ports port 80 3128
 http_access deny !Safe_ports
 http_access allow all
 
-visible_hostname cache2
-cache_mgr bluedata@gmail.com
+visible_hostname cache1
+cache_mgr bluedata@jc001.cn
 
 cache_effective_user nobody
 cache_effective_group nobody
@@ -245,20 +245,19 @@ upstream cache {
     server cache2:3128;
     hash  $request_uri;
     hash_again 1;
-    hash_method  crc32;
 }
 
 vi vhosts/default.conf
 server {
-    include port.conf;
+    include  port.conf;
     server_name  _;
     server_name_in_redirect  off;
-    limit_zone one $binary_remote_addr 10m;
     include location.conf;
     location / {
-        limit_conn one 1;
+        limit_conn one 2;
         limit_rate  64k;
         proxy_pass  http://cache;
+        error_page 502 504 $scheme://$host:3128$uri;
         include proxy.conf;
     }
 }
@@ -267,16 +266,16 @@ vi port.conf
 listen  80;
 
 vi location.conf
-location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico)$ {
-    access_log  off;
-    expires  30d;
+location /server-status {
+    stub_status  on;
 }
 
 vi proxy.conf
 #proxy_set_header X-Forwarded-For $remote_addr;
 #proxy_set_header REMOTE_ADDR $remote_addr;
 #proxy_set_header RealIP $remote_addr;
-proxy_set_header Host $proxy_host;
+#proxy_set_header Host $proxy_host;
+proxy_set_header Host $host;
 #proxy_set_header Accept-Encoding '';
 
 #proxy_hide_header X-Cache;
@@ -306,122 +305,6 @@ proxy_next_upstream error timeout invalid_header http_500 http_503;
 /usr/local/proxy/sbin/nginx -c /usr/local/proxy/conf/nginx.conf
 kill -HUP `cat /var/run/proxy.pid`
 
+/usr/local/nginx/sbin/nginx -t
 /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
-
-创建启动脚本
-vi /etc/init.d/nginx
-#!/bin/sh
-#
-# nginx - this script starts and stops the nginx daemin
-#
-# chkconfig:   - 85 15 
-# description:  Nginx is an HTTP(S) server, HTTP(S) reverse \
-#               proxy and IMAP/POP3 proxy server
-# processname: nginx
-# config:      /usr/local/nginx/conf/nginx.conf
-# config:      /etc/sysconfig/nginx
-# pidfile:     /var/run/nginx.pid
-
-# Source function library.
-. /etc/rc.d/init.d/functions
-
-# Source networking configuration.
-. /etc/sysconfig/network
-
-# Check that networking is up.
-[ "$NETWORKING" = "no" ] && exit 0
-
-nginx="/usr/local/nginx/sbin/nginx"
-prog=$(basename $nginx)
-
-NGINX_CONF_FILE="/usr/local/nginx/conf/nginx.conf"
-
-[ -f /etc/sysconfig/nginx ] && . /etc/sysconfig/nginx
-
-lockfile=/var/lock/subsys/nginx
-
-start() {
-    [ -x $nginx ] || exit 5
-    [ -f $NGINX_CONF_FILE ] || exit 6
-    echo -n $"Starting $prog: "
-    daemon $nginx -c $NGINX_CONF_FILE
-    retval=$?
-    echo
-    [ $retval -eq 0 ] && touch $lockfile
-    return $retval
-}
-
-stop() {
-    echo -n $"Stopping $prog: "
-    killproc $prog -QUIT
-    retval=$?
-    echo
-    [ $retval -eq 0 ] && rm -f $lockfile
-    return $retval
-}
-
-restart() {
-    configtest || return $?
-    stop
-    start
-}
-
-reload() {
-    configtest || return $?
-    echo -n $"Reloading $prog: "
-    killproc $nginx -HUP
-    RETVAL=$?
-    echo
-}
-
-force_reload() {
-    restart
-}
-
-configtest() {
-  $nginx -t -c $NGINX_CONF_FILE
-}
-
-rh_status() {
-    status $prog
-}
-
-rh_status_q() {
-    rh_status >/dev/null 2>&1
-}
-
-case "$1" in
-    start)
-        rh_status_q && exit 0
-        $1
-        ;;
-    stop)
-        rh_status_q || exit 0
-        $1
-        ;;
-    restart|configtest)
-        $1
-        ;;
-    reload)
-        rh_status_q || exit 7
-        $1
-        ;;
-    force-reload)
-        force_reload
-        ;;
-    status)
-        rh_status
-        ;;
-    condrestart|try-restart)
-        rh_status_q || exit 0
-            ;;
-    *)
-        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}"
-        exit 2
-esac
-
-chmod +x /etc/init.d/nginx
-chkconfig --add nginx
-
-vi /etc/sysconfig/nginx
-ulimit -SHn 51200
+kill -HUP `cat /var/run/nginx.pid`

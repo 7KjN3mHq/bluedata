@@ -73,13 +73,12 @@ cp -a src/spawn-fcgi /usr/local/php-fcgi/bin/
 
 安装 Nginx
 下载：http://nginx.net/
-tar zxvf nginx-0.5.35.tar.gz
-cd nginx-0.5.35
+tar zxvf nginx-0.7.17.tar.gz
+cd nginx-0.7.17
 ./configure \
 --user=nobody \
 --group=nobody \
---prefix=/usr/local/nginx \
---with-http_stub_status_module
+--prefix=/usr/local/nginx
 make
 make install
 
@@ -145,8 +144,11 @@ cd conf
 vi nginx.conf
 # 运行 Nginx 的用户
 user  nobody nobody;
+
 # Nginx 的进程数
-worker_processes  8;
+worker_processes  2;
+
+worker_cpu_affinity 01 10;
 
 # 错误日志
 error_log  /var/log/nginx/error.log;
@@ -387,3 +389,233 @@ vi ~/.bashrc
 alias nginx='kill -HUP `cat /var/run/nginx.pid`'
 
 source ~/.bashrc
+
+
+
+
+vi nginx.conf
+user  nobody nobody;
+
+worker_processes  2;
+
+worker_cpu_affinity 01 10;
+
+worker_rlimit_nofile 65536;
+
+pid  /var/run/nginx.pid;
+
+error_log  /var/log/nginx/error.log;
+
+events {
+    use  epoll;
+    worker_connections  65536;
+}
+
+
+http {
+    include  mime.types;
+    default_type  text/html;
+    charset gbk;
+
+    access_log  /dev/null;
+
+    keepalive_timeout  30;
+
+    output_buffers  4 32k;
+    postpone_output  1460;
+
+    client_header_buffer_size  128k;
+    large_client_header_buffers  4 256k;
+
+    client_header_timeout  1m;
+    client_body_timeout    1m;
+    send_timeout           1m;
+    sendfile  on;
+    tcp_nopush  on;
+    tcp_nodelay  on;
+
+    include  upstream.conf;
+
+    include  vhosts/default.conf;
+    include  vhosts/default.conf;
+    include  vhosts/main.conf;
+    include  vhosts/autosite.conf;
+}
+
+vi fastcgi_params
+fastcgi_param  QUERY_STRING       $query_string;
+fastcgi_param  REQUEST_METHOD     $request_method;
+fastcgi_param  CONTENT_TYPE       $content_type;
+fastcgi_param  CONTENT_LENGTH     $content_length;
+
+fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
+fastcgi_param  REQUEST_URI        $request_uri;
+fastcgi_param  DOCUMENT_URI       $document_uri;
+fastcgi_param  DOCUMENT_ROOT      $document_root;
+fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+
+fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
+
+fastcgi_param  REMOTE_ADDR        $remote_addr;
+fastcgi_param  REMOTE_PORT        $remote_port;
+fastcgi_param  SERVER_ADDR        $server_addr;
+fastcgi_param  SERVER_PORT        $server_port;
+#fastcgi_param  SERVER_NAME        $server_name;
+
+fastcgi_param  SERVER_NAME        $host;
+fastcgi_param  PHP_SELF           $uri;
+
+fastcgi_param  REDIRECT_STATUS    200;
+
+vi upstream.conf
+upstream php-fcgi {
+    server 192.168.0.101:10080 weight=5;
+    server 192.168.0.102:10080 weight=4;
+    server 192.168.0.103:10080 weight=3;
+    #server 192.168.0.104:10080 weight=4;
+}
+
+vi vhosts/default.conf
+server {
+    include  port.conf;
+    server_name  _;
+    server_name_in_redirect  off;
+    index  autositenew.php;
+    root  /home/xnjcw_branch/test/autositenew;
+    include  location.conf;
+}
+
+vi port.conf
+listen  81;
+
+vi location.conf
+location ~ .*\.php?$ {
+    fastcgi_pass  php-fcgi;
+    include  fastcgi_params;
+}
+location ~* ^.+.(html)$ {
+    expires  1h;
+}
+location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico)$ {
+    access_log  off;
+    expires  30d;
+}
+
+vi /etc/init.d/nginx
+#!/bin/sh
+#
+# nginx - this script starts and stops the nginx daemin
+#
+# chkconfig:   - 85 15 
+# description:  Nginx is an HTTP(S) server, HTTP(S) reverse \
+#               proxy and IMAP/POP3 proxy server
+# processname: nginx
+# config:      /usr/local/nginx/conf/nginx.conf
+# config:      /etc/sysconfig/nginx
+# pidfile:     /var/run/nginx.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ "$NETWORKING" = "no" ] && exit 0
+
+nginx="/usr/local/nginx/sbin/nginx"
+prog=$(basename $nginx)
+
+NGINX_CONF_FILE="/usr/local/nginx/conf/nginx.conf"
+
+[ -f /etc/sysconfig/nginx ] && . /etc/sysconfig/nginx
+
+lockfile=/var/lock/subsys/nginx
+
+start() {
+    [ -x $nginx ] || exit 5
+    [ -f $NGINX_CONF_FILE ] || exit 6
+    echo -n $"Starting $prog: "
+    daemon $nginx -c $NGINX_CONF_FILE
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog -QUIT
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    configtest || return $?
+    stop
+    start
+}
+
+reload() {
+    configtest || return $?
+    echo -n $"Reloading $prog: "
+    killproc $nginx -HUP
+    RETVAL=$?
+    echo
+}
+
+force_reload() {
+    restart
+}
+
+configtest() {
+  $nginx -t -c $NGINX_CONF_FILE
+}
+
+rh_status() {
+    status $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart|configtest)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+            ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}"
+        exit 2
+esac
+
+chmod +x /etc/init.d/nginx
+chkconfig --add nginx
+
+vi /etc/sysconfig/nginx
+ulimit -SHn 51200
