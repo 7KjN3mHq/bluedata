@@ -36,7 +36,7 @@ cp -f contrib/dist/rpm/proftpd.init.d /etc/init.d/proftpd
 vi /etc/init.d/proftpd
 PATH="$PATH:/usr/local/proftpd/sbin"
 chmod +x /etc/init.d/proftpd
-chkconfig --level 2345 proftpd on
+chkconfig --add proftpd
 
 vi ~/.bash_profile
 PATH=$PATH:$HOME/bin:/usr/local/proftpd/bin

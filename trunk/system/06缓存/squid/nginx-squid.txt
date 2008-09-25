@@ -1,25 +1,23 @@
 Nginx Squid 构建高性能 WEB 前端
 
 系统配置
-建议将整个系统的文件句柄值至少设置为 65536
+建议将整个系统的文件句柄值至少设置为 65536 ，可以使用以下命令查看文件句柄当前的使用情况：
+cat /proc/sys/fs/file-nr
+256    0       203660
+
+203660 是 CentOS 4.x file-max 的默认值。如果系统的 file-max 较小，可以增大：
 echo -ne "
 fs.file-max = 65536
 " >> /etc/sysctl.conf
-sysctl -p
 
-可以使用以下命令查看文件句柄当前的使用情况：
-cat /proc/sys/fs/file-nr
-256    0       65536
-
-增大 file-max 的值，还需要设置 ulimit
+增大 file-max 的值，还需要设置 Shell 对一个进程打开的文件句柄数量的限制：
 ulimit -a | grep "open files"
 open files                      (-n) 1024
 
-这是 Shell 对一个进程打开的文件句柄数量的限制。
-要增大这个值，可以修改 /etc/security/limits.conf
+要增大这个值，可以修改 /etc/security/limits.conf （需要重新登陆）：
 echo -ne "
-nobody soft nofile 65536
-nobody hard nofile 65536
+* soft nofile 65536
+* hard nofile 65536
 " >> /etc/security/limits.conf
 
 TCP 方面的优化
@@ -32,11 +30,14 @@ net.ipv4.tcp_tw_recycle = 1
 " >> /etc/sysctl.conf
 
 设置向外连接的端口范围
+查看当前范围：
 cat /proc/sys/net/ipv4/ip_local_port_range
 32768   61000
 
 可以扩大范围
 echo "net.ipv4.ip_local_port_range = 5000    65000" >> /etc/sysctl.conf
+
+使更改生效：
 sysctl -p
 
 
@@ -81,7 +82,7 @@ http_port 3128 vhost vport
 
 icp_port 0
 
-cache_peer 127.0.0.1 parent 3129 0 no-query originserver no-digest
+cache_peer 127.0.0.1 parent 81 0 no-query originserver no-digest
 
 acl Manager proto cache_object
 acl Purge method PURGE
@@ -148,20 +149,23 @@ pid_filename /var/run/squid.pid
 acl QUERY urlpath_regex cgi-bin .php .cgi .avi .wmv .rm .ram .mpg .mpeg .zip .exe .aspx .asp .jsp
 cache deny QUERY
 
+vi /etc/rc.local
+/usr/local/squid/bin/RunCache
 
-Nginx Proxy 部分
+
+Nginx 部分
 安装 Nginx
 下载： http://nginx.net/
 下载 ngx_http_upstream_hash_module ： http://wiki.codemongers.com/NginxHttpUpstreamRequestHashModule
 yum -y install pcre-devel zlib-devel
-tar zxvf nginx-0.6.32.tar.gz
+tar zxvf nginx-0.7.17.tar.gz
 tar zxvf nginx_upstream_hash-0.3.tar.gz
-cd nginx-0.6.32
+cd nginx-0.7.17
 patch -p0 < ../nginx_upstream_hash-0.3/nginx.patch
 ./configure \
 --user=nobody \
 --group=nobody \
---prefix=/usr/local/nginx-proxy \
+--prefix=/usr/local/proxy \
 --with-http_stub_status_module \
 --add-module=../nginx_upstream_hash-0.3
 make
@@ -169,87 +173,255 @@ make install
 cd ..
 
 配置 Nginx
-创建相关目录
-mkdir /tmp/nginx-proxy
-chown -R nobody:nobody /tmp/nginx-proxy
-chmod -R 1777 /tmp/nginx-proxy
-mkdir /var/log/nginx-proxy
-cd /usr/local/nginx-proxy
+mkdir /var/log/proxy
+cd /usr/local/proxy
 mv logs conf/vhosts
 cd conf
 vi nginx.conf
 user  nobody nobody;
-worker_processes  8;
 
-error_log  /var/log/nginx-proxy/error.log;
+worker_processes  2;
 
-pid        /var/run/nginx-proxy.pid;
+worker_cpu_affinity 01 10;
 
-worker_rlimit_nofile 51200;
+worker_rlimit_nofile 65536;
+
+pid  /var/run/proxy.pid;
+
+error_log  /var/log/proxy/error.log;
 
 events {
     use  epoll;
-    worker_connections  51200;
+    worker_connections  65536;
 }
 
 
 http {
     include  mime.types;
-    default_type  application/octet-stream;
-
-    charset  utf-8;
-
-    client_body_temp_path  /tmp/nginx-proxy/client_body_temp;
-    proxy_temp_path        /tmp/nginx-proxy/proxy_temp;
-    fastcgi_temp_path      /tmp/nginx-proxy/fastcgi_temp;
+    default_type  text/html;
+    charset gbk;
 
     log_format  main  '$remote_addr - $remote_user [$time_local] $request '
                       '"$status" $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent"';
+                      '"$http_user_agent" "$http_x_forwarded_for"';
 
-    access_log  /var/log/nginx-proxy/access.log  main;
+    #access_log  /var/log/proxy/access.log  main;
+    access_log  /dev/null;
 
+    keepalive_timeout  30;
+
+    gzip  on;
+    gzip_min_length  1000;
+    gzip_buffers  4 8k;
+    gzip_types  text/* application/javascript application/x-javascript;
+    gzip_comp_level  9;
+    gzip_proxied  any;
+    gzip_vary  on;
+    gzip_http_version  1.0;
+
+    output_buffers  4 32k;
+    postpone_output  1460;
+
+    client_header_buffer_size  128k;
+    large_client_header_buffers  4 256k;
+
+    client_header_timeout  1m;
+    client_body_timeout    1m;
+    send_timeout           1m;
     sendfile  on;
-
     tcp_nopush  on;
-
     tcp_nodelay  on;
-
-    keepalive_timeout  60 15;
-
-    upstream cache {
-        server cache1:3128;
-        server cache2:3128;
-        hash  $request_uri;
-        hash_method  crc32;
-    }
 
     limit_zone one $binary_remote_addr 10m;
 
-    server {
-        listen  80;
-        server_name  _;
-        location / {
-            limit_conn one 1;
-            limit_rate  64k;
-            proxy_pass  http://cache;
-        }
-    }
+    include upstream.conf;
 
+    include vhosts/default.conf;
 }
 
-echo -ne "
-su - nobody -c \"/usr/local/nginx-proxy/sbin/nginx -c /usr/local/nginx-proxy/conf/nginx.conf\"
-su - nobody -c \"/usr/local/squid/bin/RunCache\"" >> /etc/rc.local
+vi upstream.conf
+upstream cache {
+    server cache1:3128;
+    server cache2:3128;
+    hash  $request_uri;
+    hash_again 1;
+    hash_method  crc32;
+}
 
-Nginx Web 部分
-tar zxvf nginx-0.6.32.tar.gz
-cd nginx-0.6.32
-./configure \
---user=nobody \
---group=nobody \
---prefix=/usr/local/nginx \
---with-http_stub_status_module
-make
-make install
-cd ..
+vi vhosts/default.conf
+server {
+    include port.conf;
+    server_name  _;
+    server_name_in_redirect  off;
+    limit_zone one $binary_remote_addr 10m;
+    include location.conf;
+    location / {
+        limit_conn one 1;
+        limit_rate  64k;
+        proxy_pass  http://cache;
+        include proxy.conf;
+    }
+}
+
+vi port.conf
+listen  80;
+
+vi location.conf
+location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico)$ {
+    access_log  off;
+    expires  30d;
+}
+
+vi proxy.conf
+#proxy_set_header X-Forwarded-For $remote_addr;
+#proxy_set_header REMOTE_ADDR $remote_addr;
+#proxy_set_header RealIP $remote_addr;
+proxy_set_header Host $proxy_host;
+#proxy_set_header Accept-Encoding '';
+
+#proxy_hide_header X-Cache;
+#proxy_hide_header X-Powered-By;
+#proxy_hide_header Last-Modified;
+#proxy_hide_header Date;
+#proxy_hide_header Content-Length;
+#proxy_hide_header Content-Language;
+#proxy_hide_header Cache-Control;
+
+#proxy_pass_header Server;
+
+client_max_body_size    8m;
+proxy_connect_timeout   5s;
+proxy_send_timeout      1m;
+proxy_read_timeout      1m;
+proxy_temp_file_write_size 1024m;
+proxy_buffer_size         32k; 
+proxy_buffers             4 32k; 
+proxy_busy_buffers_size 64k; 
+
+proxy_ignore_client_abort on;
+
+proxy_next_upstream error timeout invalid_header http_500 http_503;
+
+/usr/local/proxy/sbin/nginx -t
+/usr/local/proxy/sbin/nginx -c /usr/local/proxy/conf/nginx.conf
+kill -HUP `cat /var/run/proxy.pid`
+
+/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+
+创建启动脚本
+vi /etc/init.d/nginx
+#!/bin/sh
+#
+# nginx - this script starts and stops the nginx daemin
+#
+# chkconfig:   - 85 15 
+# description:  Nginx is an HTTP(S) server, HTTP(S) reverse \
+#               proxy and IMAP/POP3 proxy server
+# processname: nginx
+# config:      /usr/local/nginx/conf/nginx.conf
+# config:      /etc/sysconfig/nginx
+# pidfile:     /var/run/nginx.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ "$NETWORKING" = "no" ] && exit 0
+
+nginx="/usr/local/nginx/sbin/nginx"
+prog=$(basename $nginx)
+
+NGINX_CONF_FILE="/usr/local/nginx/conf/nginx.conf"
+
+[ -f /etc/sysconfig/nginx ] && . /etc/sysconfig/nginx
+
+lockfile=/var/lock/subsys/nginx
+
+start() {
+    [ -x $nginx ] || exit 5
+    [ -f $NGINX_CONF_FILE ] || exit 6
+    echo -n $"Starting $prog: "
+    daemon $nginx -c $NGINX_CONF_FILE
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog -QUIT
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    configtest || return $?
+    stop
+    start
+}
+
+reload() {
+    configtest || return $?
+    echo -n $"Reloading $prog: "
+    killproc $nginx -HUP
+    RETVAL=$?
+    echo
+}
+
+force_reload() {
+    restart
+}
+
+configtest() {
+  $nginx -t -c $NGINX_CONF_FILE
+}
+
+rh_status() {
+    status $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart|configtest)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+            ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}"
+        exit 2
+esac
+
+chmod +x /etc/init.d/nginx
+chkconfig --add nginx
+
+vi /etc/sysconfig/nginx
+ulimit -SHn 51200
