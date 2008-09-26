@@ -1,0 +1,14 @@
+如果需要将文件缓存到本地，则需要增加如下几个子参数：
+proxy_store on;
+proxy_store_access user:rw group:rw all:rw;
+proxy_temp_path 缓存目录;
+
+其中，
+proxy_store on用来启用缓存到本地的功能，
+proxy_temp_path用来指定缓存在哪个目录下，如：proxy_temp_path html;
+
+在经过上一步配置之后，虽然文件被缓存到了本地磁盘上，但每次请求仍会向远端拉取文件，为了避免去远端拉取文件，必须修改proxy_pass：
+if ( !-e $request_filename) {
+    proxy_pass  http://mysvr;
+}
+即改成有条件地去执行proxy_pass，这个条件就是当请求的文件在本地的proxy_temp_path指定的目录下不存在时，再向后端拉取。
