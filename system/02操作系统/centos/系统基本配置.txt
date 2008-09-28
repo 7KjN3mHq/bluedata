@@ -36,7 +36,7 @@ CentOS5.2 再注释掉如下设置：
 # vi CentOS-Base.repo
 :1,$s/mirrorlist=/#mirrorlist=/g
 :1,$s/#baseurl=/baseurl=/g
-:1,$s/mirror.centos.org/mirror.be10.com/g
+:1,$s/mirror.centos.org/centos.ustc.edu.cn/g
 :wq
 
 可以安装使 yum 支持选择较快镜像的补丁
