@@ -1,0 +1,183 @@
+PHP FastCGI 安装配置
+
+安装 PHP
+下载 PHP: http://www.php.net/downloads.php
+下载 PHP FastCGI Process Manager: http://php-fpm.anight.org/downloads/head/
+
+安装所需的库
+yum -y install curl-devel gd-devel
+
+64 位系统
+ln -s /usr/lib64/libjpeg.so.62.0.0 /usr/lib/libjpeg.so
+ln -s /usr/lib64/libpng.so.3 /usr/lib/libpng.so
+
+tar jxvf php-4.4.9.tar.bz2
+gzip -cd php-4.4.9-fpm-0.5.9.diff.gz | patch -d php-4.4.9 -p1
+cd php-4.4.9
+./configure \
+--prefix=/usr/local/php-fcgi \
+--enable-discard-path \
+--enable-force-cgi-redirect \
+--enable-fastcgi \
+--enable-fpm \
+--with-config-file-path=/usr/local/php-fcgi/etc \
+--with-zlib \
+--with-curl \
+--with-dom \
+--with-gd \
+--with-jpeg-dir \
+--with-png-dir \
+--with-freetype-dir \
+--with-iconv \
+--enable-mbstring \
+--with-mysql=/usr/local/mysql
+
+make
+make install
+cp -f php.ini-dist /usr/local/php-fcgi/etc/php.ini
+cd ..
+
+安装 ZendOptimizer
+Zend 的优化器，免费使用，如果加密了 PHP 程序文件，这是必须的。
+如果没有使用 Zend 优化器，PHP 进程的内存会难以释放。
+下载：http://www.zend.com/en/products/guard/downloads
+tar zxvf ZendOptimizer-3.3.3-linux-glibc23-i386.tar.gz
+cd ZendOptimizer-3.3.3-linux-glibc23-i386
+./install
+cd ..
+
+安装 eAccelerator
+PHP scripts 的缓存，对于提高 PHP 程序执行速度很有帮助。
+下载：http://eaccelerator.net/
+tar jxvf eaccelerator-0.9.5.3.tar.bz2
+cd eaccelerator-0.9.5.3
+/usr/local/php-fcgi/bin/phpize
+./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php-fcgi/bin/php-config
+make
+make install
+cd ..
+
+安装 memcache
+用于缓存 sql 查询，对于降低数据库压力，提升查询速度有很大好处。
+下载：http://pecl.php.net/package/memcache
+tar zxvf memcache-2.2.4.tgz
+cd memcache-2.2.4
+/usr/local/php-fcgi/bin/phpize
+./configure --with-php-config=/usr/local/php-fcgi/bin/php-config
+make
+make install
+
+
+配置 PHP
+vi /usr/local/php-fcgi/etc/php.ini
+# 最大执行时间
+max_execution_time = 5
+# 打开全局变量兼容老程序
+register_globals = On
+# 指定扩展模块的目录
+extension_dir = "/usr/local/php-fcgi/lib/php/extensions/no-debug-non-zts-20020429"
+# 缩短 socket 连接超时时间
+default_socket_timeout = 10
+# 关闭 MySQL 持久连接。高访问量下会把数据库可用连接用完。
+mysql.allow_persistent = Off
+# 缩短 MySQL 连接超时时间
+mysql.connect_timeout = 10
+# session 过期时间设为一小时。
+session.gc_maxlifetime = 3600
+# 关闭
+session.bug_compat_42 = 0
+session.bug_compat_warn = 0
+
+# 开启 eAccelerator
+[eAccelerator]
+extension="eaccelerator.so"
+# 可使用内存设为了 32M，太大会启动不了 PHP。
+eaccelerator.shm_size="32"
+# 把缓存文件放入内存中提升性能。
+eaccelerator.cache_dir="/tmpfs/eaccelerator"
+eaccelerator.enable="1"
+eaccelerator.optimizer="1"
+eaccelerator.check_mtime="1"
+eaccelerator.debug="0"
+eaccelerator.filter=""
+eaccelerator.shm_max="0"
+eaccelerator.shm_ttl="0"
+eaccelerator.shm_prune_period="0"
+eaccelerator.shm_only="0"
+eaccelerator.compress="1"
+eaccelerator.compress_level="9"
+
+# 在 eAccelerator 之后启用 ZO ，避免 eaccelerator.so 不能加载。
+[Zend]
+zend_optimizer.optimization_level=1023
+zend_extension_manager.optimizer=/usr/local/Zend/lib/Optimizer-3.3.3
+zend_optimizer.version=3.3.3
+zend_extension=/usr/local/Zend/lib/ZendExtensionManager.so
+
+# 开启 Memcache
+[Memcache]
+extension=memcache.so
+
+
+用 tmpfs 提升性能
+mkdir /tmpfs
+在 /etc/fstab 中加入
+tmpfs                   /tmpfs              tmpfs   size=256m,mode=1777        0 0
+
+mount -a
+
+创建相关目录
+mkdir /tmpfs/eaccelerator
+chown -R nobody:nobody /tmpfs/eaccelerator
+chmod -R 1777 /tmpfs/eaccelerator
+
+清除超过一小时没有被访问到的 eAccelerator 缓存文件，防止占满空间。
+vi /etc/crontab
+0 * * * * root find /tmpfs/eaccelerator -type f -amin +60 -exec rm {} \;
+
+
+启动 PHP FastCGI
+创建相关目录
+mkdir /var/log/php-fpm
+vi /usr/local/php-fcgi/etc/php-fpm.conf
+修改错误日志存放路径
+<value name="error_log">/var/log/php-fpm/error.log</value>
+设置监听地址及端口
+<value name="listen_address">192.168.0.103:9000</value>
+进程运行的组及用户
+<value name="user">nobody</value>
+<value name="group">nobody</value>
+始终运行 80 个子进程，根据内存总量和应用的消耗内存状况估算。
+<value name="max_children">80</value>
+记录慢响应的日志文件
+<value name="slowlog">/var/log/php-fpm/slow.log</value>
+增大一个进程可打开文件句柄数量
+<value name="rlimit_files">65536</value>
+增大最大响应数
+<value name="max_requests">16384</value>
+允许连接的客户端地址
+<value name="allowed_clients">192.168.0.103,192.168.0.100,192.168.0.200</value>
+
+修改 pid 文件路径
+<value name="pid_file">/var/run/php-fpm.pid</value>
+启动、停止会报错，但 php-cgi 进程已经有了，所以保留 pid 文件路径为默认值。
+
+ulimit -SHn 65536
+/usr/local/php-fcgi/sbin/php-fpm start
+
+永久增大 Shell 对一个进程打开的文件句柄数量，可以修改 /etc/security/limits.conf :
+echo -ne "
+* soft nofile 65536
+* hard nofile 65536
+" >> /etc/security/limits.conf
+
+php-fpm 还有其他参数，包括： start|stop|quit|restart|reload|logrotate ，
+修改 php.ini 后重新加载配置文件使用 reload ，可以不重启 PHP FastCGI 进程。
+
+开机自启动
+vi /etc/rc.local
+mkdir /tmpfs/eaccelerator
+chown -R nobody:nobody /tmpfs/eaccelerator
+chmod -R 1777 /tmpfs/eaccelerator
+ulimit -SHn 65536
+/usr/local/php-fcgi/sbin/php-fpm start
