@@ -61,6 +61,42 @@ define command{
         command_line    /usr/local/nagios/libexec/msn_send.pl $CONTACTEMAIL$ "`/usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$"`"
         }
 
+使用中发现，需要回复了才能终止进程，不然 check 就无法继续，而且是所有其它 host 和 service 的 check 都无法继续了。
+作者说需要把接收报警的人加为好友，可是的确是加为好友了的。又说可以设置超时时间，不解。
+
+如果有可以运行 PHP 的 Web 服务，用 PHP 发送 MSN 信息是个简单的办法：
+http://www.fanatic.net.nz/2005/02/15/send-a-message-using-php/
+wget http://downloads.fanatic.net.nz/dev/php/sendMsg.zip
+unzip sendMsg.zip
+mv sendMsg /path/to/web/dir/msn
+
+配置
+默认的验证提交方式需要 ssl 支持，用 curl 的：
+vi sendMsg.php
+require_once('msnpauth-1.1.3.php');
+
+发送中文需要先用 iconv 将字符集转为 UTF-8:
+vi index.php
+$sendMsg->sendMessage(iconv("GBK", "UTF-8", $_POST['message']), 'Times New Roman', '008000');
+
+把发送者和接收者互相加为好友，打开 http://server/msn/index.php 测试一下能否发送。
+
+vi /usr/local/nagios/libexec/msn_send.sh
+#!/bin/sh
+wget -O - -q --post-data="sender=nagios@live.cn&password=password&recipient=$1&message=$2" http://server/msn/index.php > /dev/null
+chmod +x /usr/local/nagios/libexec/msn_send.sh
+
+vi /usr/local/nagios/etc/objects/commands.cfg
+define command{
+        command_name    notify-host-by-msn
+        command_line    /usr/local/nagios/libexec/msn_send.sh $CONTACTEMAIL$ "`/usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\nHost: $HOSTNAME$\nState: $HOSTSTATE$\nAddress: $HOSTADDRESS$\nInfo: $HOSTOUTPUT$\n\nDate/Time: $LONGDATETIME$\n"`"
+        }
+
+define command{
+        command_name    notify-service-by-msn
+        command_line    /usr/local/nagios/libexec/msn_send.sh $CONTACTEMAIL$ "`/usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$"`"
+        }
+
 
 3. 发送 短信 提醒
 简单的，在 www.139.com 注册移动的邮箱，设置邮件短信提醒。这样就可以发送邮件的标题到注册的手机号码上。
