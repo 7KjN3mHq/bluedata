@@ -1,10 +1,12 @@
-1. 使用 smtp 发送邮件
+1. 使用 SMTP 发送邮件
 objects/commands.cfg 中有邮件提醒命令的设置
-如要通过 smtp 发送邮件，可以使用 sendEmail
+如要通过 SMTP 发送邮件，可以使用 sendEmail:
 http://caspian.dotconf.net/menu/Software/SendEmail/
-tar zxvf sendEmail-v1.54.tar.gz
-cd sendEmail-v1.54
-mv sendEmail /usr/local/bin/
+
+安装
+wget http://caspian.dotconf.net/menu/Software/SendEmail/sendEmail-v1.55.tar.gz
+tar zxvf sendEmail-v1.55.tar.gz
+mv sendEmail-v1.55/sendEmail /usr/local/bin/
 
 发送邮件的示例：
 sendEmail -f nagios@test.com -t admin@test.com -s smtp.test.com -u "test" -xu nagios@test.com -xp password -m "test."
@@ -14,7 +16,7 @@ vi objects/commands.cfg
 /usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s smtp.test.com -u "$HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$" -xu nagios@test.com -xp password
 
 
-2. 发送 msn 提醒
+2. 发送 MSN 提醒
 这里有个 perl 写的程序：
 http://blog.chinaunix.net/u/24312/showart_1076329.html
 
@@ -62,16 +64,18 @@ define command{
         }
 
 使用中发现，需要回复了才能终止进程，不然 check 就无法继续，而且是所有其它 host 和 service 的 check 都无法继续了。
-作者说需要把接收报警的人加为好友，可是的确是加为好友了的。又说可以设置超时时间，不解。
+作者说需要把接收报警的人加为好友，可是的确是加为好友了的。但据说是可以设置超时时间的。
 
 如果有可以运行 PHP 的 Web 服务，用 PHP 发送 MSN 信息是个简单的办法：
 http://www.fanatic.net.nz/2005/02/15/send-a-message-using-php/
+
+安装
 wget http://downloads.fanatic.net.nz/dev/php/sendMsg.zip
 unzip sendMsg.zip
 mv sendMsg /path/to/web/dir/msn
 
 配置
-默认的验证提交方式需要 ssl 支持，用 curl 的：
+默认的验证提交方式需要 ssl 支持，用 curl 的（需要在编译 PHP 时加上 --with-curl ）：
 vi sendMsg.php
 require_once('msnpauth-1.1.3.php');
 
@@ -79,23 +83,15 @@ require_once('msnpauth-1.1.3.php');
 vi index.php
 $sendMsg->sendMessage(iconv("GBK", "UTF-8", $_POST['message']), 'Times New Roman', '008000');
 
-把发送者和接收者互相加为好友，打开 http://server/msn/index.php 测试一下能否发送。
-
+同样需要把发送者和接收者互相加为好友。
+可以先打开 http://server/msn/index.php 测试一下能否发送。如果没有问题，可以写一个脚本来执行 MSN 信息发送命令：
 vi /usr/local/nagios/libexec/msn_send.sh
 #!/bin/sh
 wget -O - -q --post-data="sender=nagios@live.cn&password=password&recipient=$1&message=$2" http://server/msn/index.php > /dev/null
+
 chmod +x /usr/local/nagios/libexec/msn_send.sh
 
-vi /usr/local/nagios/etc/objects/commands.cfg
-define command{
-        command_name    notify-host-by-msn
-        command_line    /usr/local/nagios/libexec/msn_send.sh $CONTACTEMAIL$ "`/usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\nHost: $HOSTNAME$\nState: $HOSTSTATE$\nAddress: $HOSTADDRESS$\nInfo: $HOSTOUTPUT$\n\nDate/Time: $LONGDATETIME$\n"`"
-        }
-
-define command{
-        command_name    notify-service-by-msn
-        command_line    /usr/local/nagios/libexec/msn_send.sh $CONTACTEMAIL$ "`/usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$"`"
-        }
+再把前面设置的 MSN 提醒命令中的 msn_send.pl 改为 msn_send.sh 就可以使用了。
 
 
 3. 发送 短信 提醒
@@ -120,7 +116,7 @@ vi /usr/local/bin/sms.sh
 
 chmod +x /usr/local/bin/sms.sh
 
-如添加 MSN 提醒命令那样添加短信提醒的命令就可以了。
+和添加 MSN 提醒命令一样添加短信提醒的命令就可以了。
 
 Debian Etch 可以升级到 testing ， glibc 也就更新到 2.4 了。
 sed -e 's|etch|testing|g' /etc/apt/sources.list > /etc/apt/sources.list~
