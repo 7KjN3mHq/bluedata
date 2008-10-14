@@ -4,5 +4,6 @@ PasswordAuthentication no
 #ChallengeResponseAuthentication yes
 #GSSAPIAuthentication no
 #GSSAPICleanupCredentials no
+#UsePAM no
 #X11Forwarding no
 UseDNS no

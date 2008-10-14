@@ -1,24 +1,24 @@
 ssh 的 key 验证：
 
-# ssh-keygen -t rsa
+ssh-keygen -t rsa
 
 直接回车
 
-# ssh SERVER
+ssh SERVER
 
-# mkdir .ssh
+mkdir .ssh
 
-# chmod 0600 .ssh
+chmod -R 0600 ~/.ssh
 
-# exit
+exit
 
-# scp .ssh/id_rsa.pub root@SERVER:.ssh/authorized_keys
+scp .ssh/id_rsa.pub root@SERVER:.ssh/authorized_keys
 
 增加其它公钥：
-# cat /home/id_rsa.pub >> authorized_keys
+cat ~/id_rsa.pub >> authorized_keys
 
-puttygen 生成的公钥文件转换为 OpenSSH 程序使用的格式：
-ssh-keygen -i -f /root/.ssh/id_rsa.pub > /root/.ssh/authorized_keys
+puttygen 生成的公钥须转换为 OpenSSH 程序使用的格式：
+ssh-keygen -i -f /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
-
-chmod -R 600 /root/.ssh
+OpenSSH 使用 puttygen 生成的私钥也须要进行转换：
+运行 puttygen -> 转换 -> 导入密钥 -> 导出 OpenSSH 密钥
