@@ -1,0 +1,39 @@
+最新版下载：
+http://www.rarlab.com/download.htm
+
+安装：
+tar zxvf rarlinux-3.8.0.tar.gz
+cd rar
+make install
+
+做了如下操作：
+mkdir -p /usr/local/bin
+mkdir -p /usr/local/lib
+cp rar unrar /usr/local/bin
+cp rarfiles.lst /etc
+cp default.sfx /usr/local/lib
+
+rarlinux-3.8.0 在 CentOS 4.x 上：
+rar: /lib/tls/libc.so.6: version `GLIBC_2.4' not found (required by rar)
+需要 glibc-2.4 。
+
+安装 rarlinux-3.5.1 变成了如下错误：
+rar: error while loading shared libraries: libstdc++.so.5: cannot open shared object file: No such file or directory
+
+libstdc++ 已经安装：
+rpm -ql libstdc++
+/usr/lib/libstdc++.so.6
+/usr/lib/libstdc++.so.6.0.3
+
+做符号链接：
+ln -s /usr/lib/libstdc++.so.6.0.3 /usr/lib/libstdc++.so.5
+
+又变成了如下错误：
+rar: /usr/lib/libstdc++.so.5: version `GLIBCPP_3.2' not found (required by rar)
+rar: /usr/lib/libstdc++.so.5: version `CXXABI_1.2' not found (required by rar)
+
+通过 DAG 的 yum 源安装：
+yum install unrar
+
+解压：
+unrar e file.rar
