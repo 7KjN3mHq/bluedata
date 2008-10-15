@@ -1,13 +1,9 @@
-## note
-dom need: libxml2 libxml2-devel
-mcrypt need: libmcrypt libmcrypt-devel
-gd freetype need(for debian): libttf2 libttf-dev
+一些功能所依赖的包：
+dom: libxml2 libxml2-devel
+mcrypt: libmcrypt libmcrypt-devel
+gd freetype(for debian): libttf2 libttf-dev
 
-
---disable-session
-
-
-## install mysql
+安装 MySQL
 tar zxvf mysql-5.0.33.tar.gz
 cd mysql-5.0.33
 ./configure \
@@ -18,27 +14,7 @@ cd mysql-5.0.33
 make
 make install
 
-
-# yum -y install libpng-devel libjpeg-devel freetype-devel
-
-
-## install gd_gif
-tar zxvf gd-2.0.26gif.tar.gz
-cd gd-2.0.26gif
-./configure \
---prefix=/usr/local/gd \
---with-zlib \
---with-png \
---with-jpeg \
---with-freetype
-make
-make install
-cd ..
-
-
 # yum -y install flex
-# yum -y install libxml2-devel
-
 
 ## install php
 tar jxvf php-4.4.4.tar.bz2

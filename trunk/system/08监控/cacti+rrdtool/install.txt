@@ -41,8 +41,8 @@ http://cacti.net/downloads/
 
 安装：
 tar zxvf cacti-0.8.6i.tar.gz
-mv cacti-0.8.6i /home/cacti
-cd /home/cacti
+mv cacti-0.8.6i /var/www/html/cacti
+cd /var/www/html/cacti
 
 建立 cacti 的数据库。
 # /usr/local/mysql/bin/mysql -uroot -proot cacti < cacti.sql
@@ -70,7 +70,7 @@ NEXT －》
 安装完成。
 
 vi /etc/crontab
-*/5 * * * * webuser /usr/local/php/bin/php /data/cacti/poller.php > /dev/null 2>&1
+*/5 * * * * webuser /usr/local/php/bin/php /var/www/html/poller.php > /dev/null 2>&1
 
 Settings -> RRDTool Utility Version -> RRDTool 1.2.x
 
