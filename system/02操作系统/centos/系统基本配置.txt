@@ -53,7 +53,6 @@ set nohlsearch
 # vi ~/.bashrc
 alias h='history 25'
 alias ll='ls -lh --color=tty' 2>/dev/null
-alias vi='vim'
 # source ~/.bash_profile
 # alias -p
 
@@ -82,7 +81,7 @@ CentOS5.2 先：
 移除不需要的内核（根据实际情况）
 # uname -a
 # rpm -qa | grep kernel
-# yum -y remove kernel-2.6.9-67.EL kernel-2.6.9-67.0.15.EL kernel-smp-2.6.9-67.EL
+# yum -y remove kernel-2.6.9-78.0.1.EL kernel-2.6.9-42.EL
 
 安装开发工具
 # yum -y install libtool gcc-c++ make

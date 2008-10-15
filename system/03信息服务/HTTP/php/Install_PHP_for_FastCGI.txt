@@ -22,13 +22,11 @@ cd php-4.4.9
 --enable-fpm \
 --with-config-file-path=/usr/local/php-fcgi/etc \
 --with-zlib \
---with-curl \
 --with-dom \
 --with-gd \
 --with-jpeg-dir \
 --with-png-dir \
 --with-freetype-dir \
---with-iconv \
 --enable-mbstring \
 --with-mysql=/usr/local/mysql
 

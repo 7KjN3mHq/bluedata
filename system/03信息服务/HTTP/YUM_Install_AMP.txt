@@ -1,0 +1,121 @@
+安装：
+MySQL:
+yum -y install mysql-server
+## Installing for dependencies: perl-DBD-MySQL
+
+Apache2:
+yum -y install httpd
+## Installing for dependencies: apr apr-util httpd-suexec
+
+PHP:
+yum -y install php php-gd php-mbstring php-mysql php-eaccelerator
+## Installing for dependencies: curl libidn mysql perl-DBI php-pear
+
+ZendOptimizer:
+tar zxvf ZendOptimizer-3.3.3-linux-glibc23-i386.tar.gz
+cd ZendOptimizer-3.3.3-linux-glibc23-i386
+./install
+
+
+配置：
+Apache:
+vi /etc/httpd/conf/httpd.conf
+
+ServerTokens Prod
+
+Listen 88
+
+#LoadModule auth_anon_module modules/mod_auth_anon.so
+#LoadModule auth_dbm_module modules/mod_auth_dbm.so
+#LoadModule auth_digest_module modules/mod_auth_digest.so
+#LoadModule ldap_module modules/mod_ldap.so
+#LoadModule auth_ldap_module modules/mod_auth_ldap.so
+#LoadModule env_module modules/mod_env.so
+#LoadModule mime_magic_module modules/mod_mime_magic.so
+#LoadModule cern_meta_module modules/mod_cern_meta.so
+#LoadModule headers_module modules/mod_headers.so
+#LoadModule usertrack_module modules/mod_usertrack.so
+#LoadModule dav_module modules/mod_dav.so
+#LoadModule status_module modules/mod_status.so
+#LoadModule asis_module modules/mod_asis.so
+#LoadModule info_module modules/mod_info.so
+#LoadModule dav_fs_module modules/mod_dav_fs.so
+#LoadModule vhost_alias_module modules/mod_vhost_alias.so
+#LoadModule imap_module modules/mod_imap.so
+#LoadModule actions_module modules/mod_actions.so
+#LoadModule speling_module modules/mod_speling.so
+#LoadModule userdir_module modules/mod_userdir.so
+#LoadModule proxy_module modules/mod_proxy.so
+#LoadModule proxy_ftp_module modules/mod_proxy_ftp.so
+#LoadModule proxy_http_module modules/mod_proxy_http.so
+#LoadModule proxy_connect_module modules/mod_proxy_connect.so
+#LoadModule cache_module modules/mod_cache.so
+#LoadModule suexec_module modules/mod_suexec.so
+#LoadModule disk_cache_module modules/mod_disk_cache.so
+#LoadModule file_cache_module modules/mod_file_cache.so
+#LoadModule mem_cache_module modules/mod_mem_cache.so
+
+#CustomLog logs/access_log combined
+
+#    Options Indexes FollowSymLinks
+    Options FollowSymLinks
+
+#AddDefaultCharset UTF-8
+
+NameVirtualHost *:88
+
+vi /etc/httpd/conf.d/welcome.conf
+注释掉下面的内容：
+<LocationMatch "^/+$">
+    Options -Indexes
+    ErrorDocument 403 /error/noindex.html
+</LocationMatch>
+
+vi /etc/httpd/conf.d/modules.conf
+<IfModule mod_deflate.c>
+    DeflateCompressionLevel 9
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml application/x-httpd-php
+    AddOutputFilter DEFLATE css js
+</ifmodule>
+
+
+PHP:
+mv /etc/php.ini-zend_optimizer.bak /etc/php.ini
+vi /etc/php.ini
+max_execution_time = 5
+register_globals = On
+default_socket_timeout = 10
+mysql.allow_persistent = Off
+mysql.connect_timeout = 10
+session.gc_maxlifetime = 3600
+session.bug_compat_warn = 0
+
+vi /etc/php.d/zend_optimizer.ini
+[Zend]
+zend_optimizer.optimization_level=1023
+zend_extension_manager.optimizer=/usr/local/Zend/lib/Optimizer-3.3.3
+zend_optimizer.version=3.3.3
+zend_extension=/usr/local/Zend/lib/ZendExtensionManager.so
+
+
+MySQL:
+vi /etc/my.cnf
+[mysqld]
+datadir=/usr/local/mysql/var
+socket=/var/lib/mysql/mysql.sock
+default-character-set=gbk
+character-set-client=gbk
+skip-innodb
+skip-bdb
+skip-locking
+wait_timeout = 3600
+interactive_timeout = 3600
+skip-name-resolve
+thread_concurrency = 4
+
+cp -ar /var/lib/mysql /usr/local/
+mkdir /usr/local/mysql/var
+chown -R mysql:mysql /usr/local/mysql/var
+
+
+开机自启动： ntsysv ， 选上 httpd mysqld
