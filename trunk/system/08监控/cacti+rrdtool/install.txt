@@ -13,7 +13,7 @@ access  notConfigGroup ""      any       noauth    exact  systemview none none
 将"read"字段改为all.
 
 3、查找以下字段：
-#           incl/excl subtree                          mask
+##           incl/excl subtree                          mask
 #view all    included  .1                               80
 将该行前面的"#"去掉.
 

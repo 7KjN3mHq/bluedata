@@ -5,7 +5,7 @@ PHP FastCGI 安装配置
 下载 PHP FastCGI Process Manager: http://php-fpm.anight.org/downloads/head/
 
 安装所需的库
-yum -y install curl-devel gd-devel
+yum -y install flex zlib-devel libxml2-devel gd-devel libjpeg-devel libpng-devel freetype-devel
 
 64 位系统
 ln -s /usr/lib64/libjpeg.so.62.0.0 /usr/lib/libjpeg.so
@@ -67,6 +67,8 @@ make install
 
 
 配置 PHP
+mv /usr/local/Zend/etc/php.ini /usr/local/php-fcgi/etc/
+mv /usr/local/php-fcgi/etc/php.ini-zend_optimizer.bak /usr/local/Zend/etc/php.ini
 vi /usr/local/php-fcgi/etc/php.ini
 # 最大执行时间
 max_execution_time = 5
