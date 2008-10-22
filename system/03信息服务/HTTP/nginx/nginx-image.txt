@@ -1,6 +1,6 @@
 yum -y install pcre-devel zlib-devel
-tar zxvf nginx-0.7.17.tar.gz
-cd nginx-0.7.17
+tar zxvf nginx-0.7.19.tar.gz
+cd nginx-0.7.19
 ./configure \
 --user=nobody \
 --group=nobody \
