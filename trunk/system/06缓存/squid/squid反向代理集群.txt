@@ -136,16 +136,35 @@ killall squid
 rm -rf /tmpfs/squid/* ; rm -f /var/log/squid/* ; /usr/local/squid/sbin/squid -z ; /usr/local/squid/sbin/squid -NCd1 &
 
 
-squidclient -t 1 -h localhost -p 80 mgr:info
-squidclient -T 1 -p 80 -h localhost mgr:5min | grep -e client_http.req -e client_http.all_median_svc_time -e client_http.miss_median_svc_time -e client_http.hit_median_svc_time
+squidclient -t 1 -h localhost -p 3128 mgr:info
+squidclient -T 1 -p 3128 -h localhost mgr:5min | grep -e client_http.req -e client_http.all_median_svc_time -e client_http.miss_median_svc_time -e client_http.hit_median_svc_time
 
-squidclient -p 80 -m purge http://news.jc001.cn/detail/345937.html
+squidclient -p 3128 -m purge http://news.jc001.cn/detail/345937.html
 
 vi clear_squid_cache.sh
 #!/bin/sh
-squidcache_path="/data1/squid/var/cache"
+squidcache_path="/tmp"
 squidclient_path="/usr/local/squid/bin/squidclient"
 grep -a -r $1 $squidcache_path/* | strings | grep "http:" | awk -F'http:' '{print "http:"$2;}' > cache_list.txt
 for url in `cat cache_list.txt`; do
-$squidclient_path -m PURGE -p 80 $url
+$squidclient_path -m PURGE -p 3128 $url
 done
+
+
+http://www.wa.apana.org.au/~dean/squidpurge/
+wget http://www.wa.apana.org.au/~dean/sources/purge-20040201-src.tar.gz
+tar zxvf purge-20040201-src.tar.gz
+cd purge
+make
+mv purge /usr/local/squid/bin/
+
+清除缓存示例：
+清除 URL 以 ".mp3" 结尾的缓存文件（例如 http://www.s135.com/abc.mp3、http://www.s135.com/01/a.mp3）
+引用
+purge -p localhost:3128 -P 1 -se '\.mp3$'
+
+清除URL中包含s135.com的所有缓存：
+purge -p localhost:3128 -P 1 -se 'http://shop.jc001.cn/1167000/'
+
+将程序推到后台去执行，同时将输出内容记录到 purge.log 文件：
+purge -p localhost:3128 -P 1 -se 's135.com' > purge.log 2>&1 &
