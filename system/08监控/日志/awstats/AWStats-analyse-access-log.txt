@@ -1,0 +1,181 @@
+使用 AWStats 分析网站访问日志
+
+日志文件的处理
+对于 Apache
+yum -y install cronolog
+vi /etc/httpd/conf/httpd.conf
+CustomLog "|/usr/sbin/cronolog /var/log/httpd/access_log.%Y%m%d" combined
+
+清除历史日志
+vi /etc/crontab
+0 0 * * * root find /var/log/httpd -type f -mtime +1 -exec rm {} \;
+
+对于 Nginx
+vi /usr/local/nginx/conf/nginx.conf
+access_log  /var/log/nginx/access_log  combined;
+
+按天截断日志
+vi /etc/crontab
+59 23 * * * root cd /var/log/nginx ; mv -f access_log access_log.1 ; kill -USR1 `cat /var/run/nginx.pid`
+
+多台服务日志合并问题
+把多个日志中的记录按时间排序后合并成一个文件：
+sort -m -t " " -k 4 -o access_log.`date +%Y%m%d --date='1 days ago'` web1 web2 web3 web4
+注释： -m 即使用 merge 优化算法。
+
+
+安装 AWStats
+http://awstats.sourceforge.net/
+wget http://prdownloads.sourceforge.net/awstats/awstats-6.8.tar.gz
+tar zxvf awstats-6.8.tar.gz
+mv awstats-6.8/wwwroot /var/www/awstats
+
+
+配置
+cd /var/www/awstats/cgi-bin
+mv awstats.model.conf common.conf
+vi common.conf
+# 解决中文搜索引擎统计问题
+LoadPlugin="decodeutfkeys"
+
+创建 data 目录用于统计数据输出：
+mkdir ../data
+
+创建配置文件：
+vi awstats.xbjcw.cn.conf
+Include "common.conf"
+LogFile="/var/log/httpd/access_log.%YYYY-24%MM-24%DD-24"
+SiteDomain="www.xbjcw.cn"
+HostAliases="xbjcw.cn"
+DirData="/var/www/awstats/data/"
+
+
+额外任务
+搜索引擎的补充：
+wget http://www.chedong.com/lib.tgz
+tar zxvf lib.tgz
+覆盖 cgi-bin 下的 lib 目录即可。
+注释：蜘蛛定义部分增加了区分 Yahoo!中国， Soso ，豆瓣，鲜果等，其他的是几个国外的 RSS 阅读器；搜索引擎部分区分了百度图片，有道搜索，Soso 。
+
+
+增加去百度，谷歌和雅虎的查询链接：
+编辑 awstats.pl 文件，注释第 8890 行并增加：
+# print "<tr><td class=\"aws\">".XMLEncode($mot)."</td><td>$_keyphrases{$key}</td><td>$p %</td></tr>\n";
+print "<tr><td class=\"aws\">".XMLEncode($mot).
+      " <a target=\"_blank\" href=\"http://www.baidu.com/s?wd=site:" .$SiteDomain. " ". $mot ."\">[Baidu]</a>" .
+      " <a target=\"_blank\" href=\"http://www.google.cn/search?ie=gbk&q=site:" .$SiteDomain. " " . $mot ."\">[Google]</a>".
+      " <a target=\"_blank\" href=\"http://www.yahoo.cn/search?p=site:" .$SiteDomain. " " . $mot ."\">[Yahoo!]</a>".
+      "</td><td>$_keyphrases{$key}</td><td>$p %</td></tr>\n";
+
+
+增加对 BaiDuSpider/Googlebot/Yahoo!Slurp/MSNBot/SogouSpider 的详细统计：
+vi common.conf
+ExtraSectionName1="Baidu crawls - Top 50"
+ExtraSectionCodeFilter1="200 304"
+ExtraSectionCondition1="UA,(.*Baiduspider.*)"
+ExtraSectionFirstColumnValues1="URL,(.*)"
+ExtraSectionFirstColumnFormat1="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionStatTypes1=PHBL
+ExtraSectionAddAverageRow1=0
+ExtraSectionAddSumRow1=1
+MaxNbOfExtra1=50
+MinHitExtra1=1
+
+ExtraSectionName2="Google crawls - Top 50"
+ExtraSectionCodeFilter2="200 304"
+ExtraSectionCondition2="UA,(.*Googlebot.*)"
+ExtraSectionFirstColumnValues2="URL,(.*)"
+ExtraSectionFirstColumnFormat2="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionStatTypes2=PHBL
+ExtraSectionAddAverageRow2=0
+ExtraSectionAddSumRow2=2
+MaxNbOfExtra2=50
+MinHitExtra2=1
+
+ExtraSectionName3="Yahoo Slurp crawls - Top 50"
+ExtraSectionCodeFilter3="200 304"
+ExtraSectionCondition3="UA,(.*Slurp.*)"
+ExtraSectionFirstColumnValues3="URL,(.*)"
+ExtraSectionFirstColumnFormat3="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionStatTypes3=PHBL
+ExtraSectionAddAverageRow3=0
+ExtraSectionAddSumRow3=3
+MaxNbOfExtra3=50
+MinHitExtra3=1
+
+ExtraSectionName4="MSN crawls - Top 50"
+ExtraSectionCodeFilter4="200 304"
+ExtraSectionCondition4="UA,(.*msnbot.*)"
+ExtraSectionFirstColumnValues4="URL,(.*)"
+ExtraSectionFirstColumnFormat4="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionStatTypes4=PHBL
+ExtraSectionAddAverageRow4=0
+ExtraSectionAddSumRow4=4
+MaxNbOfExtra4=50
+MinHitExtra4=1
+
+ExtraSectionName5="Sohu crawls - Top 50"
+ExtraSectionCodeFilter5="200 304"
+ExtraSectionCondition5="UA,(.*sogou.*)"
+ExtraSectionFirstColumnValues5="URL,(.*)"
+ExtraSectionFirstColumnFormat5="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionStatTypes5=PHBL
+ExtraSectionAddAverageRow5=0
+ExtraSectionAddSumRow5=5
+MaxNbOfExtra5=50
+MinHitExtra5=1
+
+如果扩展配置统计的条目较多（比如：蜘蛛抓取的不同 URL 的个数很多），就需要在全局扩大一下 ExtraTrackedRowsLimit 这个参数：
+ExtraTrackedRowsLimit=50000
+
+
+添加 Chrome 浏览器的图标：
+wget http://www.google.com/tools/dlpage/res/chrome/images/chrome-16.png -O /var/www/awstats/icon/browser/chrome.png
+
+
+安装插件
+安装纯真版 IP 数据库来分析 IP
+下载 纯真版 IP 数据库：
+http://www.cz88.net/fox/
+解压后得到 QQWry.Dat 。
+
+下载 qqhostinfo.pm 和 qqwry.pl 用于分析 QQWry.dat:
+wget http://www.ieasy.org/download/qqhostinfo.pm
+wget http://www.ieasy.org/download/qqwry.pl
+编辑 qqwry.pl ，把 ./QQWry.Dat 改为 ${DIR}/plugins/QQWry.Dat 。
+把 QQWry.Dat, qqhostinfo.pm, qqwry.pl 放在 cgi-bin/plugins 下。
+
+使用 qqhostinfo 插件需要安装 Net::XWhois 模块：
+yum -y install perl-Net-XWhois
+
+在配置文件中加载插件：
+vi awstats.xbjcw.cn.conf
+LoadPlugin="qqhostinfo"
+
+
+分析日志
+/var/www/awstats/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
+注释： -databasebreak=day 即按天进行统计。报表输出时还需增加 &databasebreak=day&day=DD 。可解决按月统计归档数据过大导致统计过慢或失败的问题。
+
+定期执行
+vi /etc/crontab
+0 1 * * * root /var/www/awstats/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
+
+
+查看报表
+Apache 下增加 AWStats 的虚拟主机：
+vi /etc/httpd/conf.d/vhosts_awstats.conf
+<VirtualHost *:80>
+DocumentRoot "/var/www/awstats"
+ServerName awstats.xbjcw.cn
+ScriptAlias /cgi-bin "/var/www/awstats/cgi-bin"
+</VirtualHost>
+
+用 PHP Calendar 做日历浏览界面：
+http://www.cascade.org.uk/software/php/calendar/
+wget http://www.cascade.org.uk/software/php/calendar/Calendar.txt
+mv Calendar.txt calendar.php
+然后创建 awstats.php, index.php 程序文件并放到虚拟主机目录下：
+cp -a *.php /var/www/awstats/
+
+查看： http://awstats.xbjcw.cn/

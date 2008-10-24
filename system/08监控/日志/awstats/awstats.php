@@ -3,7 +3,7 @@ $year  = array_key_exists('year' , $_GET) ? intval($_GET['year'])     : date('Y'
 $month = array_key_exists('month', $_GET) ? intval($_GET['month']) : date('m');
 $day   = array_key_exists('day'  , $_GET) ? intval($_GET['day'])      : date('d');
 
-$url = '&amp;config=jc001.cn&amp;databasebreak=day&amp;year=' . $year . '&amp;month=' . $month . '&amp;day=' . $day;
+$url = '&amp;databasebreak=day&amp;year=' . $year . '&amp;month=' . $month . '&amp;day=' . $day;
 ?> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
 <html lang='cn'>
