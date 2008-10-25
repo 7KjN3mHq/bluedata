@@ -18,9 +18,9 @@ access_log  /var/log/nginx/access_log  combined;
 vi /etc/crontab
 59 23 * * * root cd /var/log/nginx ; mv -f access_log access_log.1 ; kill -USR1 `cat /var/run/nginx.pid`
 
-多台服务日志合并问题
+多台服务器日志合并问题
 把多个日志中的记录按时间排序后合并成一个文件：
-sort -m -t " " -k 4 -o access_log.`date +%Y%m%d --date='1 days ago'` web1 web2 web3 web4
+sort -m -t " " -k 4 -o access_log.`date +%Y%m%d --date='1 days ago'` access_log.web1 access_log.web2 access_log.web3
 注释： -m 即使用 merge 优化算法。
 
 
@@ -28,18 +28,18 @@ sort -m -t " " -k 4 -o access_log.`date +%Y%m%d --date='1 days ago'` web1 web2 w
 http://awstats.sourceforge.net/
 wget http://prdownloads.sourceforge.net/awstats/awstats-6.8.tar.gz
 tar zxvf awstats-6.8.tar.gz
-mv awstats-6.8/wwwroot /var/www/awstats
+mv awstats-6.8 /usr/local/awstats
 
 
 配置
-cd /var/www/awstats/cgi-bin
+cd /usr/local/awstats/wwwroot/cgi-bin
 mv awstats.model.conf common.conf
 vi common.conf
 # 解决中文搜索引擎统计问题
 LoadPlugin="decodeutfkeys"
 
 创建 data 目录用于统计数据输出：
-mkdir ../data
+mkdir /usr/local/awstats/data
 
 创建配置文件：
 vi awstats.xbjcw.cn.conf
@@ -47,14 +47,17 @@ Include "common.conf"
 LogFile="/var/log/httpd/access_log.%YYYY-24%MM-24%DD-24"
 SiteDomain="www.xbjcw.cn"
 HostAliases="xbjcw.cn"
-DirData="/var/www/awstats/data/"
+DirData="/usr/local/awstats/data/"
+
+# 统计多个日志文件
+LogFile="/usr/local/awstats/tools/logresolvemerge.pl /var/log/httpd/access_log* |"
 
 
 额外任务
 搜索引擎的补充：
 wget http://www.chedong.com/lib.tgz
 tar zxvf lib.tgz
-覆盖 cgi-bin 下的 lib 目录即可。
+cp -arf lib /usr/local/awstats/wwwroot/cgi-bin/lib
 注释：蜘蛛定义部分增加了区分 Yahoo!中国， Soso ，豆瓣，鲜果等，其他的是几个国外的 RSS 阅读器；搜索引擎部分区分了百度图片，有道搜索，Soso 。
 
 
@@ -126,15 +129,15 @@ MaxNbOfExtra5=50
 MinHitExtra5=1
 
 如果扩展配置统计的条目较多（比如：蜘蛛抓取的不同 URL 的个数很多），就需要在全局扩大一下 ExtraTrackedRowsLimit 这个参数：
-ExtraTrackedRowsLimit=50000
+ExtraTrackedRowsLimit=5000000
 
 
 添加 Chrome 浏览器的图标：
-wget http://www.google.com/tools/dlpage/res/chrome/images/chrome-16.png -O /var/www/awstats/icon/browser/chrome.png
+wget http://www.google.com/tools/dlpage/res/chrome/images/chrome-16.png -O /usr/local/awstats/wwwroot/icon/browser/chrome.png
 
 
 安装插件
-安装纯真版 IP 数据库来分析 IP
+分析 IP 地址来源：
 下载 纯真版 IP 数据库：
 http://www.cz88.net/fox/
 解压后得到 QQWry.Dat 。
@@ -142,33 +145,38 @@ http://www.cz88.net/fox/
 下载 qqhostinfo.pm 和 qqwry.pl 用于分析 QQWry.dat:
 wget http://www.ieasy.org/download/qqhostinfo.pm
 wget http://www.ieasy.org/download/qqwry.pl
-编辑 qqwry.pl ，把 ./QQWry.Dat 改为 ${DIR}/plugins/QQWry.Dat 。
-把 QQWry.Dat, qqhostinfo.pm, qqwry.pl 放在 cgi-bin/plugins 下。
+vi qqwry.pl
+#./QQWry.Dat
+${DIR}/plugins/QQWry.Dat
+
+cp QQWry.Dat qqhostinfo.pm qqwry.pl /usr/local/awstats/wwwroot/cgi-bin/plugins/
 
 使用 qqhostinfo 插件需要安装 Net::XWhois 模块：
 yum -y install perl-Net-XWhois
 
 在配置文件中加载插件：
-vi awstats.xbjcw.cn.conf
+vi common.conf
 LoadPlugin="qqhostinfo"
 
 
 分析日志
-/var/www/awstats/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
+/usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
 注释： -databasebreak=day 即按天进行统计。报表输出时还需增加 &databasebreak=day&day=DD 。可解决按月统计归档数据过大导致统计过慢或失败的问题。
 
 定期执行
 vi /etc/crontab
-0 1 * * * root /var/www/awstats/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
+0 1 * * * root /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
 
 
 查看报表
 Apache 下增加 AWStats 的虚拟主机：
+mkdir /var/www/awstats
 vi /etc/httpd/conf.d/vhosts_awstats.conf
 <VirtualHost *:80>
 DocumentRoot "/var/www/awstats"
 ServerName awstats.xbjcw.cn
-ScriptAlias /cgi-bin "/var/www/awstats/cgi-bin"
+ScriptAlias /cgi-bin "/usr/local/awstats/wwwroot/cgi-bin"
+Alias /icon "/usr/local/awstats/wwwroot/icon"
 </VirtualHost>
 
 用 PHP Calendar 做日历浏览界面：
