@@ -14,8 +14,8 @@ $url = '&amp;databasebreak=day&amp;year=' . $year . '&amp;month=' . $month . '&a
 </head>
 
 <frameset cols="240,*">
-<frame name="mainleft" src="/cgi-bin/awstats.pl?framename=mainleft<?php echo $url; ?>" noresize="noresize" frameborder="0" />
-<frame name="mainright" src="/cgi-bin/awstats.pl?framename=mainright<?php echo $url; ?>" noresize="noresize" scrolling="yes" frameborder="0" />
+<frame name="mainleft" src="/awstats/awstats.pl?framename=mainleft<?php echo $url; ?>" noresize="noresize" frameborder="0" />
+<frame name="mainright" src="/awstats/awstats.pl?framename=mainright<?php echo $url; ?>" noresize="noresize" scrolling="yes" frameborder="0" />
 <noframes><body>Your browser does not support frames.<br />
 You must set AWStats UseFramesWhenCGI parameter to 0
 to see your reports.<br />
