@@ -10,7 +10,7 @@ $url = '&amp;databasebreak=day&amp;year=' . $year . '&amp;month=' . $month . '&a
 <head>
 <meta name="robots" content="noindex,nofollow">
 <meta http-equiv="content-type" content="text/html; charset=gbk">
-<title>Statistics</title>
+<title>AWStats</title>
 </head>
 
 <frameset cols="240,*">

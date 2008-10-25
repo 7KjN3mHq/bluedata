@@ -151,7 +151,7 @@ ${DIR}/plugins/QQWry.Dat
 
 cp QQWry.Dat qqhostinfo.pm qqwry.pl /usr/local/awstats/wwwroot/cgi-bin/plugins/
 
-使用 qqhostinfo 插件需要安装 Net::XWhois 模块：
+使用 qqhostinfo 插件需要安装 Perl Net::XWhois 模块：
 yum -y install perl-Net-XWhois
 
 在配置文件中加载插件：
@@ -162,6 +162,11 @@ LoadPlugin="qqhostinfo"
 分析日志
 /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
 注释： -databasebreak=day 即按天进行统计。报表输出时还需增加 &databasebreak=day&day=DD 。可解决按月统计归档数据过大导致统计过慢或失败的问题。
+
+生成静态文件
+/usr/bin/perl /usr/local/awstats/tools/awstats_buildstaticpages.pl -update -databasebreak=day -config=xbjcw.cn -lang=cn -dir=/var/www/awstats/html/ -awstatsprog=/usr/local/awstats/wwwroot/cgi-bin/awstats.pl
+需要安装 Perl URI 模块：
+yum -y install perl-URI
 
 定期执行
 vi /etc/crontab
