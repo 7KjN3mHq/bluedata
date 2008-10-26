@@ -77,7 +77,7 @@ ExtraSectionName1="Baidu crawls - Top 50"
 ExtraSectionCodeFilter1="200 304"
 ExtraSectionCondition1="UA,(.*Baiduspider.*)"
 ExtraSectionFirstColumnValues1="URL,(.*)"
-ExtraSectionFirstColumnFormat1="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat1="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes1=PHBL
 ExtraSectionAddAverageRow1=0
 ExtraSectionAddSumRow1=1
@@ -88,7 +88,7 @@ ExtraSectionName2="Google crawls - Top 50"
 ExtraSectionCodeFilter2="200 304"
 ExtraSectionCondition2="UA,(.*Googlebot.*)"
 ExtraSectionFirstColumnValues2="URL,(.*)"
-ExtraSectionFirstColumnFormat2="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat2="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes2=PHBL
 ExtraSectionAddAverageRow2=0
 ExtraSectionAddSumRow2=2
@@ -99,7 +99,7 @@ ExtraSectionName3="Yahoo Slurp crawls - Top 50"
 ExtraSectionCodeFilter3="200 304"
 ExtraSectionCondition3="UA,(.*Slurp.*)"
 ExtraSectionFirstColumnValues3="URL,(.*)"
-ExtraSectionFirstColumnFormat3="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat3="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes3=PHBL
 ExtraSectionAddAverageRow3=0
 ExtraSectionAddSumRow3=3
@@ -110,7 +110,7 @@ ExtraSectionName4="MSN crawls - Top 50"
 ExtraSectionCodeFilter4="200 304"
 ExtraSectionCondition4="UA,(.*msnbot.*)"
 ExtraSectionFirstColumnValues4="URL,(.*)"
-ExtraSectionFirstColumnFormat4="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat4="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes4=PHBL
 ExtraSectionAddAverageRow4=0
 ExtraSectionAddSumRow4=4
@@ -121,7 +121,7 @@ ExtraSectionName5="Sohu crawls - Top 50"
 ExtraSectionCodeFilter5="200 304"
 ExtraSectionCondition5="UA,(.*sogou.*)"
 ExtraSectionFirstColumnValues5="URL,(.*)"
-ExtraSectionFirstColumnFormat5="<a href='%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat5="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes5=PHBL
 ExtraSectionAddAverageRow5=0
 ExtraSectionAddSumRow5=5
@@ -137,7 +137,24 @@ wget http://www.google.com/tools/dlpage/res/chrome/images/chrome-16.png -O /usr/
 
 
 安装插件
-分析 IP 地址来源：
+GeoIP
+yum -y install GeoIP perl-Geo-IP
+只使用 Perl 则只需安装 perl-Geo-IPfree ，但不能同时使用。
+
+下载 GeoIP 数据库：
+wget http://www.maxmind.com/download/geoip/database/GeoIP.dat.gz
+wget http://www.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+gzip -d GeoIP.dat.gz
+gzip -d GeoLiteCity.dat.gz
+cp GeoIP.dat GeoLiteCity.dat /usr/local/awstats/wwwroot/cgi-bin/plugins/
+
+在配置文件中启用插件：
+vi common.conf
+LoadPlugin="geoip GEOIP_STANDARD /usr/local/awstats/wwwroot/cgi-bin/plugins/GeoIP.dat"
+LoadPlugin="geoip_city_maxmind GEOIP_STANDARD /usr/local/awstats/wwwroot/cgi-bin/plugins/GeoLiteCity.dat"
+
+qqhostinfo
+GeoLiteCity 的城市信息并不准确，可使用 QQ 纯真版 IP 数据库 分析 IP 地址。
 下载 纯真版 IP 数据库：
 http://www.cz88.net/fox/
 解压后得到 QQWry.Dat 。
@@ -154,7 +171,7 @@ cp QQWry.Dat qqhostinfo.pm qqwry.pl /usr/local/awstats/wwwroot/cgi-bin/plugins/
 使用 qqhostinfo 插件需要安装 Perl Net::XWhois 模块：
 yum -y install perl-Net-XWhois
 
-在配置文件中加载插件：
+在配置文件中启用插件：
 vi common.conf
 LoadPlugin="qqhostinfo"
 
