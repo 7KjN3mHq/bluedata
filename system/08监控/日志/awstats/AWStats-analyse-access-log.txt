@@ -62,7 +62,7 @@ cp -arf lib /usr/local/awstats/wwwroot/cgi-bin/lib
 
 
 增加去百度，谷歌和雅虎的查询链接：
-编辑 awstats.pl 文件，注释第 8890 行并增加：
+vi awstats.pl
 # print "<tr><td class=\"aws\">".XMLEncode($mot)."</td><td>$_keyphrases{$key}</td><td>$p %</td></tr>\n";
 print "<tr><td class=\"aws\">".XMLEncode($mot).
       " <a target=\"_blank\" href=\"http://www.baidu.com/s?wd=site:" .$SiteDomain. " ". $mot ."\">[Baidu]</a>" .
@@ -70,6 +70,12 @@ print "<tr><td class=\"aws\">".XMLEncode($mot).
       " <a target=\"_blank\" href=\"http://www.yahoo.cn/search?p=site:" .$SiteDomain. " " . $mot ."\">[Yahoo!]</a>".
       "</td><td>$_keyphrases{$key}</td><td>$p %</td></tr>\n";
 
+# print "<tr><td class=\"aws\">".XMLEncode($mot)."</td><td>$_keywords{$key}</td><td>$p %</td></tr>\n";
+print "<tr><td class=\"aws\">".XMLEncode($mot).
+      " <a target=\"_blank\" href=\"http://www.baidu.com/s?wd=site:" .$SiteDomain. " ". $mot ."\">[Baidu]</a>" .
+      " <a target=\"_blank\" href=\"http://www.google.cn/search?ie=gbk&q=site:" .$SiteDomain. " " . $mot ."\">[Google]</a>".
+      " <a target=\"_blank\" href=\"http://www.yahoo.cn/search?p=site:" .$SiteDomain. " " . $mot ."\">[Yahoo!]</a>".
+      "</td><td>$_keywords{$key}</td><td>$p %</td></tr>\n";
 
 增加对 BaiDuSpider/Googlebot/Yahoo!Slurp/MSNBot/SogouSpider 的详细统计：
 vi common.conf
