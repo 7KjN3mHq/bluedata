@@ -8,7 +8,9 @@ useradd -g nagios -d /usr/local/nagios -s /bin/bash nagios
 创建一个 nagcmd 组用于从 Web 接口执行外部命令，并将 nagios 用户和 Apache 用户都加到这个组中
 groupadd nagcmd
 usermod -G nagcmd nagios
-usermod -G nagcmd nobody
+usermod -G nagcmd apache
+
+yum -y install gd-devel
 
 tar zxvf nagios-3.0.3.tar.gz
 cd nagios-3.0.3
@@ -57,4 +59,6 @@ chkconfig nagios on
 service nagios start
 
 通过 http://IP/nagios 输入用户名密码就可以打开 nagios 的页面了。
+注意 /usr/local/nagios 目录的权限，默认安装是 700 ， Apache 会报 403 错误。
+chmod 755 /usr/local/nagios
 此时还只能简单的查看 localhost 的状态。
