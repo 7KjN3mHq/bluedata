@@ -90,6 +90,9 @@ mysql.connect_timeout = 10
 session.gc_maxlifetime = 3600
 session.bug_compat_warn = 0
 
+vi /etc/php.d/eaccelerator.ini
+eaccelerator.shm_size = 32
+
 vi /etc/php.d/zend_optimizer.ini
 [Zend]
 zend_optimizer.optimization_level=1023

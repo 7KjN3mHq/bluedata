@@ -1,0 +1,5 @@
+yum -y install mytop
+Dependency Installed: perl-TermReadKey
+
+yum -y install mtop
+Dependency Installed: perl-Curses

@@ -1,0 +1,61 @@
+Requires the following perl modules:
+ 
+Module          Available At
+------------    --------------------------------------------------------
+Curses          http://cpan.linuxforum.net/authors/id/G/GI/GIRAFFED
+DBI             http://www.cpan.org/authors/id/TIMB
+DBD::mysql      http://www.cpan.org/modules/by-module/DBD
+Getopt::Long    (Distributed with Perl 5)
+Net::Domain     http://www.cpan.org/authors/id/GBARR
+
+perl -e 'use Curses'
+perl -e 'use DBI'
+perl -e 'use DBD::mysql'
+perl -e 'use Getopt::Long'
+perl -e 'use Net::Domain'
+ 
+没有输出就是模块已经安装了，有错误就是相应的模块没有安装。
+可以在上面给出的地址下载相应模块的最新版本。
+
+安装所需的 Perl 模块：
+tar zxvf Curses-x.xx.tar.gz
+cd Curses*
+perl Makefile.PL
+make
+make install
+ 
+yum 仓库里有 perl-DBI ，所以直接 yum 安装，
+yum -y install perl-DBI
+ 
+因为是编译安装的 MySQL ，所以需要把 lib 的路径加入 ld.so.conf ，
+vi /etc/ld.so.conf
+/usr/local/mysql/lib/mysql
+ldconfig
+ 
+虽然 yum 仓库里有 perl-DBD-MySQL ，但其依赖 mysql ，所以还是编译安装，
+tar zxvf DBD-mysql-x.xxxx.tar.gz
+cd DBD-mysql*
+perl Makefile.PL --mysql_config=/usr/local/mysql/bin/mysql_config
+make
+make install
+ 
+安装 mtop ：
+tar zxvf mtop-0.6.6.tar.gz
+cd mtop-0.6.6
+perl Makefile.PL
+make
+make install
+ 
+添加相应的 MySQL 数据库用户：
+mysql -uroot -pPASSWORD
+mysql> GRANT RELOAD,PROCESS,SUPER ON *.* TO 'mtop'@'localhost' IDENTIFIED BY 'mtop';
+mysql> FLUSH PRIVILEGES;
+mysql> exit
+ 
+运行：
+因为自定义了 mysql.sock 的位置，所以需要做个链接 mtop 才能运行，
+ln -s /var/run/mysqld/mysql.sock /tmp/mysql.sock
+ 
+mtop --dbuser=mtop --password=mtop
+ 
+参考资料：http://mtop.sourceforge.net/

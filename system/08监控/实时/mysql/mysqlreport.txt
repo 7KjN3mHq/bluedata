@@ -1,0 +1,18 @@
+http://hackmysql.com/mysqlreport
+wget http://hackmysql.com/scripts/mysqlreport-3.5.tgz
+tar zxvf mysqlreport-3.5.tgz
+mv mysqlreport-3.5/mysqlreport /usr/local/mysql/bin/
+
+perl -e 'use DBI'
+perl -e 'use File::Temp'
+perl -e 'use Getopt::Long'
+perl -e 'use Term::ReadKey'
+
+http://www.cpan.org/modules/by-module/DBD
+tar zxvf DBD-mysql-x.xxxx.tar.gz
+cd DBD-mysql*
+perl Makefile.PL --mysql_config=/usr/local/mysql/bin/mysql_config
+make
+make install
+
+yum install perl-DBI perl-TermReadKey
