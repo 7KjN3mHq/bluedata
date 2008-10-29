@@ -1,0 +1,33 @@
+http://gert.sos.be/en/
+wget http://gert.sos.be/downloads/mysqlar/mysqlard-1.0.0.tar.gz
+
+yum -y install rrdtool-devel
+tar zxvf mysqlard-1.0.0.tar.gz
+cd mysqlard-1.0.0
+
+CPPFLAGS='-I/usr/local/mysql/include/mysql/' \
+LDFLAGS='-L/usr/local/mysql/lib/mysql' \ 
+LIBS='-lrrd  -L/usr/local/mysql/lib/mysql -lmysqlclient -lz -lcrypt -lnsl -lm -L/usr/lib -lssl -lcrypto' \
+mysql_config_script='/usr/local/mysql/bin/mysql_config' \
+./configure --prefix=/usr/local/mysqlard --sysconfdir=/usr/local/mysqlard/etc --datadir=/usr/local/mysqlard/lib
+
+make
+make install
+
+cd /usr/local/mysqlard
+mkdir etc var
+cp -a lib/mysqlard/mysqlard.cnf etc/
+cp -a lib/mysqlard/mysqlard.server /etc/init.d/mysqlard
+
+mysql -uroot -pPASSWORD
+mysql> GRANT USAGE ON *.* TO mysqlar@localhost;
+mysql> exit
+
+/etc/init.d/mysqlard start
+
+vi /etc/crontab
+*/5 * * * * root hourly=1 daily=1 weekly=1 monthly=1 /usr/local/mysqlard/bin/mysqlar_graph > /dev/null
+
+vi lib/mysqlard/mysqlar.php
+$sqluser = "mysqlar";
+$showtime = 'hour';
