@@ -1,3 +1,23 @@
+数据流重定向
+UNIX 有几种输入输出流，它们分别与几个数字有如下的对应关系：
+0-标准输入流(stdin)
+1-标准输出流(stdout)
+2-标准错误流(stderr)
+"2>&1" 的意思就是将 stderr 重定向至 stdout 并一起在屏幕上显示出来。
+如果不加数字，那么默认的重定向动作是针对 stdout(1) 的。
+举例说明：
+cat std.sh
+#!/bin/sh
+echo "stdout"
+echo "stderr" >&2
+
+/bin/sh std.sh 2>&1 > /dev/null
+输出结果是 stderr ，因为 stdout 和 stderr 合并后一同重定向到 /dev/null ，但 stderr 并未被清除，因此仍将在屏幕中显示出来。
+
+/bin/sh std.sh > /dev/null 2>&1
+无输出，因为当 stdout 重定向至 /dev/null 后， stderr 又重定向到了 stdout ，这样 stderr 也被输出到了/dev/null 。
+
+
 统计一个目录下子目录内的文件数量
 for x in `ls -l /home/xnjcw_branch/test/template_1 | grep ^d | awk '{print $9}'` ; do
 dir="/home/xnjcw_branch/test/template_1/"$x
