@@ -22,8 +22,8 @@ chkconfig snmpd on
 
 
 在监控端，需要先安装 net-snmp-utils:
-yum -y install net-snmp-utils rrdtool
-检查 snmp 是否正常工作：
+yum -y install net-snmp-utils
+检查 SNMP 是否正常工作：
 snmpwalk -v 2c 192.168.0.200 -c public .1.3.6.1.4.1.2021.10.1.3
 UCD-SNMP-MIB::laLoad.1 = STRING: 0.22
 UCD-SNMP-MIB::laLoad.2 = STRING: 0.15
@@ -31,17 +31,16 @@ UCD-SNMP-MIB::laLoad.3 = STRING: 0.14
 
 正常情况下可以看到 192.168.0.200 这台机器的负载情况。
 
+安装 Cacti
 Cacti 需要 rrdtool 工具的支持，先安装：
 yum -y install rrdtool
 
-
-安装 Cacti
-在这里下载： http://cacti.net/downloads/
+在这里下载 Cacti: http://cacti.net/downloads/
 wget http://www.cacti.net/downloads/cacti-0.8.7b.tar.gz
 tar zxvf cacti-0.8.7b.tar.gz
 mv cacti-0.8.6i /var/www/html/cacti
 
-建立 Cacti 的数据库 cacti 后倒入表：
+建立 Cacti 的数据库 cacti 后倒入表结构及基础数据：
 cd /var/www/html/cacti
 mysql -uroot -proot cacti < cacti.sql
 
@@ -64,7 +63,7 @@ NEXT ->
 更改 admin 用户的密码 ->
 Save ->
 安装完成。进入管理界面。
-
+默认只有 Localhost ，可以继续添加其它 ucd/net SNMP Host 及使用被监的主机数据绘图。
 
 定时取得数据：
 vi /etc/crontab
@@ -144,7 +143,7 @@ create
 
 Graph Template Items -> Add
 Data Source: ucd/net - Squid - Memory Hits - 5 Minute - (squid_memhits_5min)
-Color: FF0000
+Color: FFC73B
 Graph Item Type: AREA
 Consolidation Function: AVERAGE
 Text Format: 5 Minute
@@ -158,7 +157,7 @@ create ->
 
 Graph Template Items -> Add
 Data Source: ucd/net - Squid - Memory Hits - 60 Minute - (squid_memhits_60min)
-Color: 000000
+Color: FF0000
 Graph Item Type: LINE1
 Consolidation Function: AVERAGE
 Text Format: 60 Minute
@@ -172,7 +171,3 @@ create ->
 Save
 
 然后就可以选择主机，添加图形了。
-
-
-lighttpd:
-wget --quiet -O - "http://219.153.35.31:81/server-status" | grep -A 1 "5s sliding average" | grep "Requests" | awk '{print $2}' | sed -e "s/class=\"string\">//g"
