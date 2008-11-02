@@ -5,6 +5,7 @@ netstat -na | grep ESTABLISHED | awk '{print $5}' | awk -F: '{print $1}' | sort 
 netstat -na | grep SYN | awk '{print $5}' | awk -F: '{print $1}' | sort | uniq -c | sort -r +0n
 
 netstat:
+netstat -s -t | grep connections\ established
 netstat -na | grep 80 | awk '{print $5}' | cut -d : -f1 | sort | more
 watch "netstat -an | grep IP:80 | grep ESTABLISHED | wc -l"
 netstat -an | grep IP:80 | grep SYN | wc -l
@@ -44,9 +45,18 @@ watch "ps -e | grep httpd | wc -l"
 httptop -f combined /var/log/apache/access_log.`date +%Y%m%d`
 
 
+lighttpd:
+wget --quiet -O - "http://219.153.35.31:81/server-status" | grep -A 1 "5s sliding average" | grep "Requests" | awk '{print $2}' | sed -e "s/class=\"string\">//g"
+
+
 mysql:
 watch "/usr/local/mysql/bin/mysqladmin -uUSERNAME -pPASSWORD status"
 mtop --dbuser=mtop --password=mtop
+
+
+存储空间占用情况分析
+显示两层，只显示MB和GB大小的：
+du -h --max-depth=2 /usr/local | grep [MG]
 
 
 标题栏中连续平均负载显示
@@ -76,8 +86,3 @@ while(1) {
 chmod +x /usr/local/bin/tl
 echo 'tl & > /dev/null 2>&1' >> ~/.bash_login
 echo 'killall tl > /dev/null 2>&1' >> ~/.bash_logout
-
-
-存储空间占用情况分析
-显示两层，只显示MB和GB大小的：
-du -h --max-depth=2 /usr/local | grep [MG]
