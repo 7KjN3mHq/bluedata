@@ -44,9 +44,11 @@ apache:
 watch "ps -e | grep httpd | wc -l"
 httptop -f combined /var/log/apache/access_log.`date +%Y%m%d`
 
-
 lighttpd:
 wget --quiet -O - "http://219.153.35.31:81/server-status" | grep -A 1 "5s sliding average" | grep "Requests" | awk '{print $2}' | sed -e "s/class=\"string\">//g"
+
+nginx:
+wget --quiet -O - "http://202.75.216.164/server-status" | head -1 | awk '{print $3}'
 
 
 mysql:

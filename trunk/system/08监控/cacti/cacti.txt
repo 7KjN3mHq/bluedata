@@ -77,6 +77,7 @@ unset LANG; export LANG
 LC_ALL=C
 export LC_ALL
 
+
 合并数据的功能参考下面的方法：
 You have to create you own graph, but to get multiple hosts, you do not select a host when creating a new graph.
 Click on Console -> Graph Management, then click on Add in the upper right hand corner.
@@ -85,7 +86,8 @@ Then set your max value and graph title... Click create.
 Now you can start adding graph items.
 You should see all data sources for all hosts. Then you can add any of them you like.
 
-获取 snmp 发送的自定义信息作图：
+
+获取 SNMP 发送的自定义信息绘图：
 在 /etc/snmp/snmpd.conf 可以看到这样的样例：
 # exec .1.3.6.1.4.1.2021.50 shelltest /bin/sh /tmp/shtest
 可以使用自己编写的脚本，比如：
@@ -95,8 +97,8 @@ vi /usr/local/bin/squidmemhits.sh
 #!/bin/sh
 PATH=$PATH:/usr/local/squid/bin
 export PATH
-echo `squidclient -t 1 -h localhost -p 3128 mgr:info | grep "Memory hits" | cut -d "%" -f 2 | awk '{print $5}'`
-echo `squidclient -t 1 -h localhost -p 3128 mgr:info | grep "Memory hits" | cut -d "%" -f 3 | awk '{print $3}'`
+squidclient -t 1 -h localhost -p 3128 mgr:info | grep "Memory hits" | cut -d "%" -f 2 | awk '{print $5}'
+squidclient -t 1 -h localhost -p 3128 mgr:info | grep "Memory hits" | cut -d "%" -f 3 | awk '{print $3}'
 
 /etc/init.d/snmpd restart
 
@@ -167,7 +169,98 @@ Graph Item Type: GPRINT
 Consolidation Function: LAST
 Text Format: Current:
 Insert Hard Return
-create ->
-Save
+create -> Save
 
 然后就可以选择主机，添加图形了。
+
+
+自定义脚本取得的数据绘图：
+例如监控 Nginx
+Nginx 的配置：
+location /nginx_status {
+    stub_status  on;
+    access_log  off;
+    allow  192.168.0.100;
+    deny  all;
+}
+
+下载 cacti-nginx:
+wget http://forums.cacti.net/download.php?id=12676
+tar zxvf cacti-nginx.tar.gz
+cd cacti-nginx
+cp cacti-nginx/get_nginx_*.pl /var/www/cacti/scripts/
+chmod +x /var/www/cacti/scripts/get_nginx_*.pl
+
+检查插件：
+/var/www/cacti/scripts/get_nginx_clients_status.pl http://192.168.0.100/nginx_status
+
+导入模板：
+console -> Import/Export -> Import Templates
+cacti_graph_template_nginx_clients_stat.xml
+cacti_graph_template_nginx_sockets_stat.xml
+
+创建图形：
+console -> Create -> New Graphs -> Edit this Host -> Associated Graph Templates -> Nginx Clients Stat -> add ->
+Create Graphs for this Host -> Create: Nginx Clients Stat -> URL of nginx stub status: http://192.168.0.100/nginx_status -> create
+
+合并多台 Nginx 主机的数据：
+Management -> Graph Management -> Add
+Selected Graph Template: None
+Host: None
+create ->
+Graph Configuration
+Title: Nginx Active Connections
+Vertical Label: active connections
+create ->
+
+Graph Items -> Add
+Host: Any
+Data Template: Nginx Clients Stat
+Data Source: ld1 - Nginx Clients Stat (nginx_active)
+Color: 
+Graph Item Type: AREA
+Text Format: ld1
+create ->
+
+Graph Items -> Add
+Host: Any
+Data Template: Nginx Clients Stat
+Data Source: ld2 - Nginx Clients Stat (nginx_active)
+Color: 
+Graph Item Type: STACK
+Text Format: ld2
+create ->
+继续添加其它主机。
+
+最后可添加一个 Total:
+Graph Items -> Add
+Data Source: None
+Color: 000000
+Graph Item Type: LINE1
+CDEF Function: Total All Data Sources
+Text Format: Total:
+create ->
+
+Graph Items -> Add
+Data Source: None
+Graph Item Type: GPRINT
+CDEF Function: Total All Data Sources
+Consolidation Function: LAST
+create ->
+
+save, 之后就可以把这个图形添加到 Graph Tree 里去了。
+
+
+Cacti 监控 MySQL
+wget http://www.faemalia.net/mysqlUtils/teMySQLcacti-20060810.tar.gz
+tar zxvf teMySQLcacti-20060810.tar.gz
+cd teMySQLcacti
+./convertXmlTo5minutePollingInterval.sh
+These graphs assume a 1-minute Poller cron frequency! If you use the default 5-minute interval, run convertXmlTo5minutePollingInterval.sh, which will make a step=300, heartbeat=600 version of the XML file for you to import.
+
+cp mysql_stats.php dumpMemcachedStats.php /data/cacti/scripts/
+
+在 Cacti 管理界面导入 cacti_host_template_temysql_host-step300-heartbeat600.xml, cacti_host_template_memcached_host-step300-heartbeat600.xml 模板文件。
+
+被监控的 MySQL 数据库服务器需要加入以下权限：
+mysql> grant process,super on *.* to 'cacti'@'cacti server ip' identified by 'password';
