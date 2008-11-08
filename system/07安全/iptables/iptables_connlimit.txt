@@ -1,11 +1,10 @@
-下载最新的 iptables:
-wget http://ftp.netfilter.org/pub/iptables/iptables-1.3.5.tar.bz2
+CentOS 4.7 安装 iptables connlimit 补丁
 
-下载 iptables 的最新补丁：
-http://ftp.netfilter.org/pub/patch-o-matic-ng/snapshot/
-wget http://ftp.netfilter.org/pub/patch-o-matic-ng/snapshot/patch-o-matic-ng-20060725.tar.bz2
+有 rpm 的 ipt_connlimit 内核模块：
+http://ftp.pslib.cz/pub/users/Milan.Kerslager/
+但是没有与最新内核版本匹配的，需要自行编译安装。
 
-
+安装相关工具：
 yum -y install rpm-build redhat-rpm-config ncurses-devel
 
 安装内核源码：
@@ -17,38 +16,40 @@ rpmbuild --target i686 -bp kernel-2.6.spec
 sed -i 's#-prep#-78.EL#' /usr/src/redhat/BUILD/kernel-2.6.9/linux-2.6.9/Makefile
 cp -ar /usr/src/redhat/BUILD/kernel-2.6.9/linux-2.6.9 /usr/src/
 
+安装 iptables 源码：
 wget http://centos.ustc.edu.cn/centos/4/os/SRPMS/iptables-1.2.11-3.1.RHEL4.src.rpm
 rpm -ivh iptables-1.2.11-3.1.RHEL4.src.rpm
 cd /usr/src/redhat/SPECS
 rpmbuild -bp iptables.spec
 cp -ar /usr/src/redhat/BUILD/iptables-1.2.11 /usr/src/
 
-
-
-cd /usr/src/linux-2.6.9
-make mrproper
-make menuconfig
-Exit
-
-
-
-
+应用 connlimit 补丁：
+下载 iptables 的补丁包：
+wget http://ftp.netfilter.org/pub/patch-o-matic-ng/snapshot/patch-o-matic-ng-20060725.tar.bz2
+20060725 之后的版本就没有 connlimit 补丁了。
 tar -jxvf patch-o-matic-ng-20060725.tar.bz2 -C /usr/src/
 cd /usr/src/patch-o-matic-ng-20060725
 export KERNEL_DIR=/usr/src/linux-2.6.9
 export IPTABLES_DIR=/usr/src/iptables-1.2.11
 ./runme connlimit
+y
 
-ipt_connlimit.c
---- BUILD-connlimit/ipt_connlimit.c.RH 2005-07-04 20:53:55.000000000 +0200
-+++ BUILD-connlimit/ipt_connlimit.c 2005-07-04 20:56:12.619285450 +0200
+编译出内核模块：
+connlimit 需要内核版本为 2.6.11 以上，直接编译会有如下错误：
+net/ipv4/netfilter/ipt_connlimit.c: In function `count_them':
+net/ipv4/netfilter/ipt_connlimit.c:68: error: structure has no member named `proto'
+net/ipv4/netfilter/ipt_connlimit.c:94: error: structure has no member named `infos'
+net/ipv4/netfilter/ipt_connlimit.c:101: error: structure has no member named `infos'
+make[1]: *** [net/ipv4/netfilter/ipt_connlimit.o] Error 1
+make: *** [_module_net/ipv4/netfilter] Error 2
 
-//#ifndef __KERNEL__
-//#error including kernel header in userspace; use the glibc headers instead!
-//#endif
-
+所以还需要打补丁：
+wget http://www.linuxfly.org/attachment/ipt_connlimit_by_qk.patch.bz2
+cd /usr/src/linux-2.6.9/net/ipv4/netfilter
+bzip2 -dc /home/software/iptables/ipt_connlimit_by_qk.patch.bz2 | patch -p1
 
 cd /usr/src/linux-2.6.9
+cp /boot/config-2.6.9-78.0.1.ELsmp .config
 make menuconfig
 Device Drivers  --->
 Networking support  --->
@@ -58,92 +59,17 @@ IP: Netfilter Configuration  --->
 <M> Connections/IP limit match support
 
 make modules_prepare
-make M=net/ipv4/netfilter
-make modules SUBDIRS=net/ipv4/netfilter
+make M='net/ipv4/netfilter/'
 
+加载模块：
+cp -f /usr/src/linux-2.6.9/net/ipv4/netfilter/ipt_connlimit.ko /lib/modules/2.6.9-78.0.1.ELsmp/kernel/net/ipv4/netfilter/
+chmod u+x /lib/modules/2.6.9-78.0.1.ELsmp/kernel/net/ipv4/netfilter/ipt_connlimit.ko
+depmod -a
 
-
-net/ipv4/netfilter/ipt_connlimit.c: In function `count_them':
-net/ipv4/netfilter/ipt_connlimit.c:68: error: structure has no member named `proto'
-net/ipv4/netfilter/ipt_connlimit.c:94: error: structure has no member named `infos'
-net/ipv4/netfilter/ipt_connlimit.c:101: error: structure has no member named `infos'
-make[1]: *** [net/ipv4/netfilter/ipt_connlimit.o] Error 1
-make: *** [_module_net/ipv4/netfilter] Error 2
-
-
-/usr/src/linux-2.6.9/net/ipv4/netfilter/ipt_connlimit.c
-
---- BUILD-connlimit/ipt_connlimit.c.RH 2005-07-04 20:53:55.000000000 +0200
-+++ BUILD-connlimit/ipt_connlimit.c 2005-07-04 20:56:12.619285450 +0200
-@@ -63,9 +63,9 @@
-for (lh = hash->next; lh != hash; lh = lh->next) {
-conn = list_entry(lh,struct ipt_connlimit_conn,list);
-found = ip_conntrack_find_get(&conn->tuple,ct);
-- if (found != NULL &&
-- 0 == memcmp(&conn->tuple,&tuple,sizeof(tuple)) &&
-- found->ctrack->proto.tcp.state != TCP_CONNTRACK_TIME_WAIT) {
-+ if (found != NULL
-+ && 0 == memcmp(&conn->tuple,&tuple,sizeof(tuple))
-+ && found->ctrack->proto.tcp.state != TCP_CONNTRACK_TIME_WAIT) {
-/* Just to be sure we have it only once in the list.
-We should'nt see tuples twice unless someone hooks this
-into a table without "-p tcp --syn" */
-@@ -91,14 +91,14 @@
-lh = lh->prev;
-list_del(lh->next);
-kfree(conn);
-- nf_conntrack_put(&found->ctrack->infos[0]);
-+ nf_conntrack_put(&found->ctrack->ct_general);
-continue;
-}
-if ((addr & mask) == (conn->tuple.src.ip & mask)) {
-/* same source IP address -> be counted! */
-matches++;
-}
-- nf_conntrack_put(&found->ctrack->infos[0]);
-+ nf_conntrack_put(&found->ctrack->ct_general);
-}
-if (addit) {
-/* save the new connection in our list */
-@@ -109,8 +109,10 @@
-NIPQUAD(tuple.dst.ip), ntohs(tuple.dst.u.tcp.port));
-#endif
-conn = kmalloc(sizeof(*conn),GFP_ATOMIC);
-if (NULL == conn) {
-spin_unlock_bh(&data->lock);
-return -1;
-}
-memset(conn,0,sizeof(*conn));
-INIT_LIST_HEAD(&conn->list);
-conn->tuple = tuple;
-@@ -127,8 +129,6 @@
-const struct net_device *out,
-const void *matchinfo,
-int offset,
-const void *hdr,
-u_int16_t datalen,
-int *hotdrop)
-{
-const struct ipt_connlimit_info *info = matchinfo;
-@@ -204,8 +204,14 @@
-kfree(info->data);
-}
-
-static struct ipt_match connlimit_match = {
-.list = { NULL, NULL },
-.name = "connlimit",
-.match = &match,
-.checkentry = &check,
-.destroy = &destroy,
-.me = THIS_MODULE
-};
-
-static int __init init(void)
-{
-
-
-
-
+安装打了补丁的 iptables:
+因为 Redhat 对 kernel 做了一些修改，所以直接编译会报如下错误：
+/usr/src/linux-2.6.9/include/linux/config.h:6:2: #error including kernel header in userspace; use the glibc headers instead!
+只需要注释 /usr/src/linux-2.6.9/include/linux/config.h 中的条件判断语句就可以了：
 vi /usr/src/linux-2.6.9/include/linux/config.h
 /*
 #if !defined (__KERNEL__) && !defined(__KERNGLUE__)
@@ -151,10 +77,19 @@ vi /usr/src/linux-2.6.9/include/linux/config.h
 #endif
 */
 
+编译中还遇到一些错误，根据错误提示，做了如下修改：
+vi /usr/src/linux-2.6.9/include/asm/processor.h
+//extern u8 booted_cores[];
+
+vi /usr/src/linux-2.6.9/include/linux/types.h
+//typedef __u16 __bitwise __sum16;
+//typedef __u32 __bitwise __wsum;
+
 cd $IPTABLES_DIR
 make BINDIR=/sbin LIBDIR=/lib MANDIR=/usr/share/man install
 
-
-cp -f /usr/src/linux-2.6.9/net/ipv4/netfilter/*.ko /lib/modules/2.6.9-78.EL/kernel/net/ipv4/netfilter/
-chmod +x /lib/modules/2.6.9-78.EL/kernel/net/ipv4/netfilter/*.ko
-depmod -a
+使用示例：
+iptables -m connlimit -help
+iptables -I INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 16 --connlimit-mask 24 -j REJECT
+iptables -I INPUT -i eth0 -s 222.209.0.205 -m connlimit --connlimit-above 8 -p tcp --syn --dport 80 -j REJECT
+iptables -I INPUT -i eth0 -m iprange --src-range 124.115.0.26-124.115.1.62 -m connlimit --connlimit-above 4 -p tcp --syn --dport 80 -j REJECT
