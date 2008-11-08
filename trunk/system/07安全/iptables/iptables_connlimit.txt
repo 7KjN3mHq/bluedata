@@ -1,0 +1,74 @@
+下载最新的 iptables:
+wget http://ftp.netfilter.org/pub/iptables/iptables-1.3.5.tar.bz2
+
+下载 iptables 的最新补丁：
+http://ftp.netfilter.org/pub/patch-o-matic-ng/snapshot/
+wget http://ftp.netfilter.org/pub/patch-o-matic-ng/snapshot/patch-o-matic-ng-20060725.tar.bz2
+
+
+yum -y install rpm-build redhat-rpm-config ncurses-devel
+
+安装内核源码：
+wget http://centos.ustc.edu.cn/centos/4/os/SRPMS/kernel-2.6.9-78.EL.src.rpm
+mkdir -p /usr/src/redhat/BUILD
+rpm -ivh kernel-2.6.9-78.EL.src.rpm
+cd /usr/src/redhat/SPECS
+rpmbuild --target i686 -bp kernel-2.6.spec
+sed -i 's#-prep#-78.EL#' /usr/src/redhat/BUILD/kernel-2.6.9/linux-2.6.9/Makefile
+cp -ar /usr/src/redhat/BUILD/kernel-2.6.9/linux-2.6.9 /usr/src/
+
+wget http://centos.ustc.edu.cn/centos/4/os/SRPMS/iptables-1.2.11-3.1.RHEL4.src.rpm
+rpm -ivh iptables-1.2.11-3.1.RHEL4.src.rpm
+cd /usr/src/redhat/SPECS
+rpmbuild -bp iptables.spec
+cp -ar /usr/src/redhat/BUILD/iptables-1.2.11 /usr/src/
+
+
+
+cd /usr/src/linux-2.6.9
+make mrproper
+make menuconfig
+Exit
+
+
+
+
+tar -jxvf patch-o-matic-ng-20060725.tar.bz2 -C /usr/src/
+cd /usr/src/patch-o-matic-ng-20060725
+export KERNEL_DIR=/usr/src/linux-2.6.9
+export IPTABLES_DIR=/usr/src/iptables-1.2.11
+./runme connlimit
+
+ipt_connlimit.c
+--- BUILD-connlimit/ipt_connlimit.c.RH 2005-07-04 20:53:55.000000000 +0200
++++ BUILD-connlimit/ipt_connlimit.c 2005-07-04 20:56:12.619285450 +0200
+
+//#ifndef __KERNEL__
+//#error including kernel header in userspace; use the glibc headers instead!
+//#endif
+
+
+cd /usr/src/linux-2.6.9
+make menuconfig
+Device Drivers  --->
+Networking support  --->
+Networking options  --->
+Network packet filtering (replaces ipchains)  --->
+IP: Netfilter Configuration  --->
+<M> Connections/IP limit match support
+
+make modules_prepare
+make M=net/ipv4/netfilter
+make modules SUBDIRS=net/ipv4/netfilter
+
+
+/usr/src/linux-2.6.9/include/linux/netfilter_ipv4/ipt_connlimit.h
+/usr/src/linux-2.6.9/net/ipv4/netfilter/ipt_connlimit.c
+
+
+net/ipv4/netfilter/ipt_connlimit.c: In function `count_them':
+net/ipv4/netfilter/ipt_connlimit.c:68: error: structure has no member named `proto'
+net/ipv4/netfilter/ipt_connlimit.c:94: error: structure has no member named `infos'
+net/ipv4/netfilter/ipt_connlimit.c:101: error: structure has no member named `infos'
+make[1]: *** [net/ipv4/netfilter/ipt_connlimit.o] Error 1
+make: *** [_module_net/ipv4/netfilter] Error 2
