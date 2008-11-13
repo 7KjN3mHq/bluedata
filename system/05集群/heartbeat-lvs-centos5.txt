@@ -131,8 +131,12 @@ a) 网络调整
 echo "900" > /proc/sys/net/ipv4/netfilter/ip_conntrack_tcp_timeout_established
 
 这里把 ip_conntrack_tcp_timeout_established 调整为和 lvs 的默认 timeout 一样。
-# ipvsadm -Ln --timeout
+# ipvsadm -l --timeout
 可以通过 ipvsadm --set tcp tcpfin udp 来调整 TCP 和 UDP 的超时。
+如： ipvsadm --set 300 30 300
+
+ipvsadm -lcn 可以看到 ESTABLISHED, SYN_RECV 等标志。
+http://www.linuxsir.org/bbs/showthread.php?t=248500
 
 b) 手动重载 /etc/ha.d/ldirectord.cf
 # /etc/ha.d/resource.d/ldirectord restart
