@@ -26,7 +26,6 @@ net.ipv4.conf.all.arp_ignore = 1
 net.ipv4.conf.eth0.arp_ignore = 1
 net.ipv4.conf.all.arp_announce = 2
 net.ipv4.conf.eth0.arp_announce = 2
-net.ipv4.conf.lo.rp_filter = 0
 
 
 注解（对应 proc 文件）：
@@ -84,3 +83,4 @@ ip_conntrack        7844  10800    384   10    1
 
 
 LVS 的内核设置
+屏蔽 ARP 响应。
