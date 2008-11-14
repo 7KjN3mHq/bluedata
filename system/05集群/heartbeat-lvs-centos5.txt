@@ -158,3 +158,23 @@ perl-DBI, libdbi, perl-CGI, mysql, libdbi-dbd-mysql and perl-DBD-MySQL.
 
 CentOS3.x: perl-CGI
 CentOS4.x: perl-FCGI
+
+
+更正：
+线性模式下，即调度器和真实服务器为同一主机
+DEVICE=lo:0
+IPADDR=202.75.216.173
+NETMASK=255.255.255.255
+NETWORK=202.75.216.160
+BROADCAST=202.75.216.175
+ARP=no
+ONBOOT=yes
+NAME=loopback
+
+/sbin/ifup lo
+
+net.ipv4.ip_forward = 1
+
+
+http://www.ultramonkey.org/3/topologies/sl-ha-lb-eg.html
+http://zih.it.com.cn/articles/108984.htm

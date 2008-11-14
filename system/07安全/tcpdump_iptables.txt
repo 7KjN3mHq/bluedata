@@ -1,0 +1,26 @@
+抓取来自指定 IP 访问某一主机 80 端口的包
+tcpdump -Xl -s 0 -i eth0 -w /data/tmp.txt dst host 202.91.231.173 and src 222.212.197.94 and port 3128 &
+
+
+iptables -I INPUT -i eth0 -s 222.212.197.94 -p tcp -d 202.91.231.173 --dport 80 -j DROP
+iptables -I INPUT -i eth0 -s 222.212.197.94 -p tcp -d 202.75.216.173 --dport 80 -j DROP
+
+iptables -D INPUT -i eth0 -s 222.212.197.94 -p tcp -d 202.75.216.173 --dport 80 -j DROP
+iptables -D INPUT -i eth0 -s 222.212.197.94 -p tcp -d 202.91.231.173 --dport 80 -j DROP
+
+tcpdump -Xl -s 0 -v -i eth0 dst host 202.75.216.173 and src 222.212.197.94 and port 80 > /data/cnt.txt
+tcpdump -Xl -s 0 -v -i eth0 dst host 202.91.231.173 and src 222.212.197.94 and port 80 > /data/cnc.txt
+
+device eth0 entered promiscuous mode
+device eth0 left promiscuous mode
+
+
+/var/log/message
+Nov 14 02:39:38 ld1 kernel: martian source 192.168.0.1 from 202.91.231.173, on dev eth0
+202.108.7.56 441 2008-11-14 02:55:01
+202.108.7.56 4988 2008-11-14 03:00:02
+202.108.7.56 2375 2008-11-14 03:05:01
+
+
+
+iptables -I INPUT -i eth0 -s 222.212.197.94 -d 202.91.231.173 -p tcp --syn --dport 80 -j REJECT
