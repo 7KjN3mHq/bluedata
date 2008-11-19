@@ -1,0 +1,9 @@
+http://sourceforge.net/project/showfiles.php?group_id=69227&package_id=68081&release_id=624676
+cwRsync_2.1.5_Installer.zip
+下载，安装。
+
+我的电脑 -> 属性 -> 高级 -> 环境变量 -> 系统变量 -> Path
+添加： ;C:\Program Files\cwRsync\bin
+
+本地同步： rsync -a --delete /cygdrive/i/worklog/ /cygdrive/e/worklog/
+远程备份： rsync --exclude="/home/foo/tmp/" -avz foo@www.foobar.net:foobar.net/ MySites\www.foobar.net\
