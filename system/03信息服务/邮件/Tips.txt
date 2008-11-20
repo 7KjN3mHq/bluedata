@@ -9,6 +9,7 @@ mailq:
                                          bluedata_cn@163.com
 
 
+amavisd-new 黑白名单设置
 vi /etc/amavisd.conf
 read_hash(\%whitelist_sender, '/var/spool/vscan/.spamassassin/whitelist');
 read_hash(\%blacklist_sender, '/var/spool/vscan/.spamassassin/blacklist');
@@ -16,6 +17,13 @@ read_hash(\%blacklist_sender, '/var/spool/vscan/.spamassassin/blacklist');
 cd /var/spool/vscan/.spamassassin/
 touch whitelist
 touch blacklist
+
+chown amavis:amavis whitelist
+chown amavis:amavis blacklist
+
+test@test.com  #单个邮件地址
+test.com  #整个域
+.test1.com  #整个域及其子域
 
 /etc/init.d/amavisd restart
 
