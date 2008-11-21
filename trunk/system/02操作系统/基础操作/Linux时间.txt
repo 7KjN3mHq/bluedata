@@ -23,3 +23,7 @@ reach：已經向上層 NTP 伺服器要求更新的次數
 delay：網路傳輸過程當中延遲的時間，單位為 10^(-6) 秒 
 offset：時間補償的結果，單位與 10^(-6) 秒 
 jitter：Linux 系統時間與 BIOS 硬體時間的差異時間， 單位為 10^(-6) 秒。
+
+
+UNIX 时间转换为标准格式时间
+date -d '1970-01-01 UTC 946684800 seconds' +"%F %T"
