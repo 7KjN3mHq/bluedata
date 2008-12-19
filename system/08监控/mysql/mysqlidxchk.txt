@@ -1,0 +1,6 @@
+http://hackmysql.com/mysqlidxchk
+wget http://hackmysql.com/scripts/mysqlidxchk
+
+mysqlbinlog --database=xnjcw_branch --user=root --password=xnjcwmysql --host 192.168.0.11 --port 3307 --start-date="2008-12-19 18:09:59" --stop-date="2008-12-19 18:19:59" /var/log/mysqld/relay-bin.000023 > tmp.log
+
+mysqlidxchk --databases xnjcw_branch --user root --password xnjcwmysql --host 192.168.0.11 --port 3307 --no-mycnf --general tmp.log
