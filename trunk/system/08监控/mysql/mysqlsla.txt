@@ -1,0 +1,37 @@
+http://hackmysql.com/mysqlsla
+wget http://hackmysql.com/scripts/mysqlsla-2.03.tar.gz
+
+tar zxvf mysqlsla-2.03.tar.gz
+cd mysqlsla-2.03
+
+perl -e 'use Time::HiRes'
+perl -e 'use File::Temp'
+perl -e 'use Data::Dumper'
+perl -e 'use DBI'
+perl -e 'use Getopt::Long'
+perl -e 'use Storable'
+
+yum install perl-Time-HiRes
+
+perl Makefile.PL
+make
+make install
+
+mysqlsla -lt slow /var/log/mysqld/slow_queries.log
+
+格式说明如下:
+总查询次数 (queries total), 去重后的sql数量 (unique)
+输出报表的内容排序(sorted by)
+最重大的慢sql统计信息, 包括 平均执行时间, 等待锁时间, 结果行的总数, 扫描的行总数.
+ 
+Count, sql的执行次数及占总的slow log数量的百分比.
+Time, 执行时间, 包括总时间, 平均时间, 最小, 最大时间, 时间占到总慢sql时间的百分比.
+95% of Time, 去除最快和最慢的sql, 覆盖率占95%的sql的执行时间.
+Lock Time, 等待锁的时间.
+95% of Lock , 95%的慢sql等待锁时间.
+Rows sent, 结果行统计数量, 包括平均, 最小, 最大数量.
+Rows examined, 扫描的行数量.
+Database, 属于哪个数据库
+Users, 哪个用户,IP, 占到所有用户执行的sql百分比
+Query abstract, 抽象后的sql语句
+Query sample, sql语句
