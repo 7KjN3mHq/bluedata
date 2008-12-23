@@ -1,0 +1,58 @@
+介绍
+Fedora 统一网络控制器 Func（Fedora Unified Network Controller https://fedorahosted.org/func）
+可以在主控机上一次管理任意多台服务器，或任意多个服务器组。
+
+
+安装
+yum -y install func
+
+Installing: func
+Installing for dependencies: certmaster
+主控端和被控端都需要安装。
+RHEL/CentOS 可以通过 Fedora EPEL 安装。
+
+
+配置
+服务端配置：
+vi /etc/certmaster/certmaster.conf
+autosign = yes
+chkconfig --level 345 certmaster on
+service certmaster start
+
+客户端配置：
+vi /etc/certmaster/minion.conf
+certmaster = yourcertmaster.example.org
+chkconfig --level 345 funcd on
+service funcd start
+
+
+查看客户端是否注册成功
+在服务端上看有多少台客户端注册：
+certmaster-ca --list-sign
+或：
+ls /var/lib/certmaster/certmaster/certs/
+
+删除客户端主机：
+certmaster-ca -c hostname
+或：
+rm /var/lib/certmaster/certmaster/certs/hostname.cert
+
+
+使用
+查看所有服务器的状态： func '*' ping
+查看所有服务器的硬件信息： func '*' call hardware info
+查看所有服务器上的 80 端口是否开启： func '*' call networktest isportopen localhost 80
+查看 web1 上的系统负载： func web1 call command run uptime
+启动 web2 上的 httpd 服务： func web2 call service start httpd
+强制重启 web3 上的 httpd 进程： func web3 call process kill httpd SIGHUP
+在所有服务器上统一挂载某个存储目录： func '*' call mount xxx:/yyy/zzz /path/to/dir
+
+
+问题
+如果客户端主机重装了怎么办？
+必须在服务端删除此客户机的 cert 文件
+rm -f /var/lib/certmaster/certmaster/certs/hostname.cert
+
+如果在服务端删掉了客户端的 .cert 文件怎么办？
+可以将 client 的 /etc/pki/certmaster/hostname.cert 拷贝过来。
+将 client 的 /etc/pki/certmaster/hostname.* 也删掉，再重启 funcd, cert 文件会自动传输过来。

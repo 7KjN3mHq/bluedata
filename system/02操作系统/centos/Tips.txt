@@ -19,6 +19,12 @@ cpio -i < foo.cpio
 扩展YUM源（DAG）
 http://dag.wieers.com/rpm/FAQ.php#B
 
+使用 Fedora 源
+http://fedoraproject.org/wiki/EPEL
+rpm -Uvh http://download.fedora.redhat.com/pub/epel/4/i386/epel-release-4-9.noarch.rpm
+rpm -Uvh http://download.fedora.redhat.com/pub/epel/4/x86_64/epel-release-4-9.noarch.rpm
+rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noarch.rpm
+
 
 YUM 使用 DVD 光盘或 ISO 文件
 先把光盘或 ISO 文件挂载到文件系统：
