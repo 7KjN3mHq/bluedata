@@ -1,0 +1,28 @@
+apt-get update
+
+apt-get install apt-spy
+
+apt-spy update
+
+测试亚洲地区的源的速度，并自动写入 sources.list:
+apt-spy -d stable -a Asia -t 3
+
+使用方法: apt-spy [options]
+选项：
+-d distribution 选择 debian 的发行版本，例如 stable 。除升级外，必须使用此参数。
+-a area 选择进行测试的区域，例如 Aisa 。
+-c config 指定配置文档。
+-e number 指定测试的服务器数量。
+-f file 测试时抓取定制的文档（文档相对 debian base 的路径）。
+-i file 指定输入的文档，配合 -w 参数使用。
+-m mirror-list 指定要升级的映像列表文档。
+-o output-file 重定向输出到指定文档。
+-p proxy 指定使用的代理服务器，需要遵从 [server]:[port] 的格式。
+-s country_list 指定要进行测试的国家。不能和 -a 参数同时使用。
+-t time 指定进行测试时每台服务器的超时时间，只能是正整数。
+-u update-URL 从指定的 URL 获得映像列表更新。
+-w file 输出 -i 参数提供的服务器列表中速度最快的前几台映像服务器（缺省是前 5 台）。
+-n number 定制 -w 参数输出的服务器数量。
+-v 输出版本信息。
+-h 输出当前帮助信息
+update 升级映像站点列表。
