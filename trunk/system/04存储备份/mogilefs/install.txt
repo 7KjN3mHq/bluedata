@@ -12,3 +12,21 @@ rpm -Uvh  ttp://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-2.noar
 yum -y install mogstored mogstored-backend-perlbal
 mogstored-backend-lighttpd mogstored-backend-apache perl-MogileFS-Client
 perl-MogileFS-Utils
+
+
+http://software.usrportage.de/php-mogilefs/
+http://svn.wikimedia.org/viewvc/mediawiki/trunk/extensions/MogileClient/
+
+获取 MogileFS
+mkdir mogilefs-src
+cd mogilefs-src
+svn checkout http://code.sixapart.com/svn/mogilefs/trunk
+
+
+安装
+# mysql
+mysql> CREATE DATABASE mogilefs;
+mysql> GRANT ALL ON mogilefs.* TO 'mogile'@'%';
+mysql> SET PASSWORD FOR 'mogile'@'%' = OLD_PASSWORD( 'sekrit' );
+mysql> FLUSH PRIVILEGES;
+mysql> quit

@@ -1,0 +1,78 @@
+安装：
+apt-get install subversion subversion-tools
+
+创建一个新的储存库：
+svnadmin create /home/svn
+在/home/svn目录创建一个新的空储存库，数据储存方式默认采用Berkeley DB。
+
+导入源码：
+svn import /home/software file:///home/svn/software
+把 /home/software 整个目录导入到储存库中的 software 目录中，储存库的 software 目录会自动创建。
+
+显示储存库内容：
+svn list file:///home/svn/software
+lighttpd/
+nginx/
+php/
+sphinx/
+显示 software 目录内容，成功导入。
+
+
+与Apache组合通过WebDAV方式访问Subversion库的方式：
+首先要安装好Apache2，并安装好提供WebDAV访问和svn访问的的mod_dav模块和mod_dav_svn模块：
+apt-get install apache2 libapache2-svn
+
+配置文件位于/etc/apache2/mods-enabled/目录下，
+配置文件共有两个，分别是dav_svn.conf和dav_svn.load，dav_svn.load文件负责装载必要的模块，内容如下：
+# Load mod_dav_svn when apache starts
+LoadModule dav_svn_module /usr/lib/apache2/modules/mod_dav_svn.so
+LoadModule authz_svn_module /usr/lib/apache2/modules/mod_authz_svn.so
+
+在装载mod_dav_svn.so前，必须先装载mod_dav.so模块。它由dav.load文件控制，内容如下：
+LoadModule dav_module /usr/lib/apache2/modules/mod_dav.so
+
+ln -s ../mods-available/dav.load .
+
+dav_svn.conf是mod_dav_svn.so模块的配置文件，内容如下：
+<Location /svn>                                      #设置访问路径
+    DAV svn                                          #启用
+    SVNPath /home/svn                                #设置储存库路径，仅支持单个储存库，该路径要可被Apache进程访问。
+    #SVNParentPath /home/svn                         #如果subversion下有多个储存库，则用SVNParentPath
+    AuthType Basic                                   #启用Apache基础验证
+    AuthName "Subversion Repository"                 #设置验证框标题
+    AuthUserFile /etc/apache2/dav_svn.passwd         #指定验证用户文件名
+    AuthzSVNAccessFile /etc/apache2/dav_svn.authz    #启用目录级别授权，dav_svn.authz是授权配置文档
+    #<LimitExcept GET PROPFIND OPTIONS REPORT>       #允许匿名访问，不允许Commit，不能与AuthzSVNAccessFile同时使用
+        Require valid-user                         
+    #</LimitExcept>
+</Location>
+
+按下面的步骤创建Apache用户验证文件
+htpasswd -c /etc/apache2/dav_svn.passwd test
+
+修改/data/subversion目录访问权限使它可被Apache进程访问，我的Apache是用www-data启动的，所以设置方法如下：
+chown -R www-data.www-data /home/svn
+
+通过Apache的用户验证功能可以区别匿名用户和验证用户，从而赋予匿名用户读权限和验证用户读/写的权限。
+这些权限只能在全局范围内设置，不能设置具体的某个目录是否能被某个用户操作。
+要实现目录级别的授权，就要使用mod_authz_svn.so模块提供的 AuthzSVNAccessFile指令。
+它会指定一个授权文档，该授权文档设置具体的目录权限。根据上面的配置，授权文档名叫 dav_svn.authz，它的内容如下：
+[groups]              #定义组
+admin=jims,ringkee
+tests=tester1,tester2
+
+[erp:/]              #定义erp储存库根目录的访问权限
+@admin=rw            #admin组有读写权限
+tests=r              #test用户只有读权限
+
+[oa:/test]           #定义oa储存库下test目录的访问权限
+*=                   #禁止所有用户访问，星号代表所有用户，权限为空代表没有任何权限
+ringkee=rw           #打开ringkee用户的读写权限
+
+在该文件中使用的用户需在apache2的用户文件/etc/apache2/dav_svn.passwd中预先设置好。
+我们也可以通过OpenLDAP服务器来进行用户验证。设置方法同本书中安装MoinMoin服务器中"使用Apache+LDAP进行用户验证"一节的内容。
+
+
+svnadmin create --fs-type fsfs /home/svn/test
+
+http://man.chinaunix.net/linux/debian/debian_learning/ch09s14.html
