@@ -1,8 +1,3 @@
 http://blog.csdn.net/liuyuan_jq/archive/2008/02/21/2110814.aspx
 
-yum install subversion
-
-
-
-≈‰∫œ Apache  π”√£∫
-yum install httpd httpd-devel mod_dav_svn mod_auth_svn
+yum install subversion httpd httpd-devel mod_dav_svn
