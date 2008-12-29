@@ -1,0 +1,28 @@
+http://code.google.com/p/memcachedb/downloads/list
+http://monkey.org/~provos/libevent/
+http://www.oracle.com/technology/global/cn/software/products/berkeley-db/index.html
+
+wget http://memcachedb.googlecode.com/files/memcachedb-1.2.0.tar.gz
+wget http://monkey.org/~provos/libevent-1.4.9-stable.tar.gz
+
+yum install libevent-devel.x86_64
+tar zxvf db-4.7.25.tar.gz
+cd db-4.7.25
+cd build_unix
+../dist/configure
+make
+make install
+
+echo "/usr/local/BerkeleyDB.4.7/lib" >> /etc/ld.so.conf.d/BerkeleyDB-x86_64.conf
+ldconfig
+
+tar zxvf memcachedb-1.2.0.tar.gz
+cd memcachedb-1.2.0
+./configure
+make
+make install
+
+
+memcachedb -p21201 -d -r -u root -f master.db -H /home/data -N -P /var/run/memcachedb.pid -R 0.0.0.0:31201 -M
+
+memcachedb -p21202 -d -r -u root -f slave.db -H /home/data -N -P /var/run/memcachedb.pid -R 0.0.0.0:31202 -O 0.0.0.0:31201 -S
