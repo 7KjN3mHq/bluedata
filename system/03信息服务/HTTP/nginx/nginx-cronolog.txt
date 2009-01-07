@@ -1,0 +1,9 @@
+先创建一个命名管道，
+
+mkfifo /path/to/nginx/logs/access_log_pipe ，当然也可以直接用命名管道代替原来的日志文件。
+
+然后让 cronolog 从这个文件读：
+
+/path/to/cronolog /path/to/log/access_%Y%m%.log <  /path/to/nginx/logs/access_log_pipe &
+
+把 nginx 的日志路径指到那个命名管道然后重启一下就可以了。之后在 nginx 的启动脚本里要把启动 cronolog 放在启动nginx 之前。
