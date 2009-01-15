@@ -1,0 +1,132 @@
+slockd中各种插件的配置，都依赖于软件包里config/plugin.cf文件。
+
+以下是每个配置的介绍，请根据自己的需求打开或关闭其中有关的插件/选项。
+
+注意：Slockd 的插件载入/执行先后顺序，与“插件名称__plugin = yes”在配置文件中的先后
+
+有着紧密联系，例如anvil和localctrl，如果localctrl_plugin = yes 比anvil_plugin = yes
+
+的位置靠文件前头，则先执行localctrl，然后再到anvil，具体的可以打开debug_level = 4，
+
+在日志文件里看到子进程启动时加载插件的顺序。
+
+
+# plugins configuration
+#
+# Author: He zhiqiang <hzqbbc@hzqbbc.com>
+# License: GPL v2
+# Date: 2006-04-09
+
+#----------------------#
+# global configuration #
+#----------------------#
+
+# debug or not?
+
+# 是否打开调试？no则关闭
+debug = yes
+# 调试的等级，0表示出错才显示，1则表示警告，2则表示提示，3则表示信息，4则表示
+# 全部的调试信息都显示，级别越高，在日志里看到的信息越多
+debug_level = 4
+# 调试信息默认输出到哪里？默认是stderr，输出到自定义的日志文件里。
+debug_method = stderr
+
+# Async DNS setting
+# dns最大重试次数，主要是对于一些慢速的dns操作，需要重试，注意不要将次数设置
+# 太大，否则影响slockd的反应速度，按默认3次即可
+dns_max_retry = 3
+# dns请求最大重发次数，该参数主要控制重发请求的次数，如果dns良好，请尽量不要
+# 设置超过默认的3次
+dns_max_resend = 3
+# dns 等待超时值，单位秒，如果等待超过这个值，则进行重试或重发
+dns_timeout = 2
+
+#---------------#
+# plugin config #
+#---------------#
+
+# localctrl plugin - for white/black list
+# 是否打开localctrl 插件，yes打开，no则关闭，相关的localctrl设置一并无效
+localctrl_plugin = yes
+# 配置黑名单路径，这里采用相对路径
+localctrl_bl = config/blacklist
+# 配置白名单的路径，这里采用相对路径
+localctrl_wl = config/whitelist
+
+# the tarpit delay plugin
+# 是否打开tarpit 插件
+tarpit_plugin = no
+# how long will tarpit plugin delay the response, in second
+# tarpit延迟多少秒？
+tarpit_delay = 5
+
+# the concurency statstic plugin
+# 是否打开anvil，并发连接控制插件
+anvil_plugin = yes
+# the interval to release the lock in seconds
+# 监测一个ip是否超过连接频率的周期，默认360秒
+anvil_interval = 360
+# the max request per anvil_interval, client will be blocked
+# if the request counter larger than it
+# 单位周期（anvil_interval）内最多允许的连接次数（默认5次）
+anvil_max_req = 5
+# set soft_reject to yes will reject yes will return 450 instead
+# of 550 smtp error code
+# 拒绝代码是硬错误还是软错误？（yes为软错误，返回4xx，no则为硬错误，反回5xx）
+anvil_soft_reject = yes
+
+# the FQDN validation plugin
+# 是否打开fqdn插件
+fqdn_plugin = yes
+# set soft_reject to yes will reject the client with 450 instead
+# of 550 smtp error code
+# 拒绝代码是硬错误还是软错误？（yes为软错误，返回4xx，no则为硬错误，反回5xx）
+fqdn_soft_reject = no
+
+# the Greaylist implemention plugin
+# 是否打开greylist插件
+greylist_plugin = yes
+# the greylist db full path, eg: (hash|btree):/path/to/greaylist.db
+# greylist 存储记录的数据库路径，请包含全路径+文件名，并确保slockd对那个目录可写
+greylist_db = /var/lib/greylist.db
+# the greylist delay time in seconds, default 300
+# 默认的延迟时间，单位秒，默认为300秒，即300秒后重试的邮件被放行
+greylist_delay = 300
+
+# the RBL lookup plugin
+# 是否打开rbl插件
+dnsbl_plugin = yes
+# set soft_reject to yes will reject the client with 450 instead
+# off 5xx smtp error code
+# 拒绝代码是硬错误还是软错误？（yes为软错误，返回4xx，no则为硬错误，反回5xx）
+dnsbl_soft_reject = no
+# rbl server list, using postfix style configuration
+# rbl 服务器列表，每个一行，以逗号结束
+dnsbl_server_list =
+  bl.spamcop.net,
+  cbl.anti-spam.org.cn,
+  sbl-xbl.spamhaus.org,
+
+# the Modified SPF and combined Black list plugin
+# 是否打开msbl插件？
+msbl_plugin = yes
+# the msbl server list, using postfix style configuration
+# msbl 服务器地址，这个非常重要，目前仅支持msbl.extmail.net，请不要更改
+msbl_server_list = msbl.extmail.net
+
+# 是否打开hostname插件
+hostname_plugin = yes
+# yes to enable helo matching test, no to disable
+# 是否打开helo 主机名与ip地址匹配的检查？
+hostname_chk_helo = yes
+# yes to enable mx matching test, no to disable
+# 是否打开来信域mx记录与客户ip地址匹配的检查？
+hostname_chk_mx = yes
+# set soft_reject to yes will reject the client with 450 instead
+# off 5xx smtp error code
+#  拒绝代码是硬错误还是软错误？（yes为软错误，返回4xx，no则为硬错误，反回5xx）
+hostname_soft_reject = yes
+
+
+
+slockd的日志支持彩色结果显示，即在SCRT或putty等环境下，配合bash等支持彩色的shell，可以清晰的看到日志里拒绝或通过信息的记录，红色表示拦截，绿色表示通过。

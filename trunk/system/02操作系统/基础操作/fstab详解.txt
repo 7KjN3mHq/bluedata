@@ -1,0 +1,58 @@
+通常情况下，一个Linux系统将拥有很多的文件系统，然而，仅仅通过一个或非常少的文件系统来配置Linux系统也是可能的，你希望创建多个文件系统 的一个原因就是通过使用/etc/fstab文件中指定的mount选项来控制对它们的访问。
+
+/etc/fstab文件的内容主要包括六项：
+
+/dev/hda1     /              ext3    defaults  1 1
+/dev/hda5     /usr           ext3    defaults  1 2
+/dev/hda1     /home          ext3    defaults  1 2
+/dev/hda6     /var           ext3    defaults  1 1
+/dev/hda7     swap           swap    defaults  0 0
+/dev/fd0      /mnt/floppy    ext3    noauto    0 0
+/dev/cdrom    /mnt/cdrom     iso9660 noauto,ro 0 0
+none          /proc          proc    defaults  0 0
+
+
+第一列：设备名或者设备卷标名，（/dev/sda10 或者 LABEL=/）
+第二列：设备挂载目录        （例如上面的“/”或者“/mnt/D/”）
+第三列：设备文件系统          （例如上面的“ext3”或者“vfat”）
+第四列：挂载参数     （看帮助man mount）
+对于已经挂载好的设备，例如上面的/dev/sda2，现在要改变挂载参数，这时可以不用卸载该设备，而可以使用下面的命令（没有挂载的设备，remount 这个参数无效）
+#mount /mnt/cdrom/ -o remount,ro  （改defaults为ro）
+为了安全起见，可以指明其他挂载参数，例如：
+   default 设置该安装选项为rw，suid（允许SUID和SGID执行），dev（允许字符和块专用设备），exec（允许二进制文件的执行），auto（允许 mount -a），nouser（只有根用户能配置该文件系统，不允许普通用户挂载）和async（异步I/O）
+   nodev 不解释或允许在该文件系统上创建字符或块专用文件（设备文件）,（不允许挂载设备文件）
+   noexec 在该文件系统上不允许二进制文件或脚本的执行，（不允许可执行文件可执行，但千万不要把根分区挂为noexec，那就无法使用系统了，连mount 命令都无法使用了，这时只有重新做系统了！
+   ro 设置此文件系统为只读
+   user 允许除根用户以外的用户配置该文件系统。除非被明令撤销否则该选项会自动设置noexec，nosuid和nodev选项
+   nosuid,nosgid 不允许SUID或SGID对该文件系统产生作用（不允许有suid和sgid属性）
+   noatime 取缔在此文件系统内所有文件和目录上的访问时间更新，该选项在2.2.x版及其之后的内核中可以使用
+第五列：指明是否要备份。（0为不备份，1为要备份，一般根分区要备份）
+第六列：指明自检顺序。 （0为不自检，1或者2为要自检，如果是根分区要设为1，其他分区只能是2）
+
+在安装之前，请仔细考虑你的用户需要的访问类型，这样可以更好的对创建的系统提出要求。对于本地文件系统，考试下列这些选取mount选项的指导方针：
+（1）用户主目录不应当成为SUID脚本和程序的发源地，而且也不应该拥有字符和块专用文件。
+（2）任何文件系统如果拥有可被除根用户以外的人定入的目录，在最低程度上都应该使用nosuid选项。/var文件系统就是这样一个文件系统，并且该文件系统对于你的系统至关重要。
+（3）任何不需要被写入的文件系统（特殊情况除外）应当被安装设置为只读文件。
+
+我们应对/var文件系统应用第二条指导原则，而对/home文件系统应用第一条指导原则。为了方便用户，我们还希望将user选项增加到 /mnt/cdrom上，这样便可以允许非根用户在没有根用户干预的情况下安装CD-ROM。与user选项相联系的那些附加限制选项如nosuid, noexec和nodev应该为此提供足够的安全保障。
+
+假设在/usr文件系统中拥有一个/usr/local/bin子目录，该子目录包含了那些被很多用户使用的可执行程序，如果这些可执行文件不会经常改变，你或许希望创建一个单独的文件系统并用ro选项对/usr/local/bi目录进行配置。可惜的是，如果确实这样去做了，那么每当需要修改 /usr/local/bin或/usr/local/lib目录中的文件时，都要重新配置它的rw选项（最好是以单用户模式）。在不出意外的情况下，增强系统和网络的安全性。将会影响到性能或用户的方便性。
+
+一个更安全的/etc/fstab表
+/dev/hda1     /              ext3    defaults              1 1
+/dev/hdb4     sr/local/bin   ext3    ro,nosuid             1 2
+/dev/hdb9     sr/local/lib   ext3    ro,nosuid             1 2
+/dev/hda5     /usr           ext3    defaults              1 2
+/dev/hdb1     /home          ext3    noexec,nodev,nosuid   1 2
+/dev/hda6     /var           ext3    nosuid                1 1
+/dev/hda7     swap           swap    defaults              0 0
+/dev/fd0      /mnt/floppy    ext3    noauto                0 0
+/dev/cdrom    /mnt/cdrom     iso9660 noauto,ro,user        0 0
+none          /proc          proc    defaults              0 0
+ 
+ 
+    1，加或不加auto,开机时会自动挂载；加noauto时不自动挂载，当执行mount －a的时候也不能挂载，只有通过手动挂载。
+ 
+    2，user 允许除根用户以外的用户配置该文件系统。
+
+    3，noexec 在该文件系统上不允许二进制文件或脚本的执行

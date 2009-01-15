@@ -1,0 +1,95 @@
+配置环境：
+OS: RHEL5 with kernel 2.6.18-8.1.1.el5
+httpd-2.2.3-6.el5.i386.rpm
+apache-tomcat-6.0.14.tar.gz
+jdk-6u3-linux-i586.bin
+mod_jk-1.2.23-apache-2.2.x-linux-i686.so
+
+一、安装配置jdk及tomcat
+1、安装jdk及tomcat
+tar zxvf apache-tomcat-6.0.14.tar.gz -C /usr/local/
+# mv jdk-6u3-linux-i586.bin /usr/local/
+# cd /usr/local
+# chmod a+x jdk-6u3-linux-i586.bin
+# ./jdk-6u3-linux-i586.bin
+
+2、配置环境
+
+ln -sf /usr/local/apache-tomcat-6.0.14 /usr/local/tomcat
+# ln -sf /usr/local/jdk1.6.0_03 /usr/local/jdk6
+# ln -sf /usr/local/jdk6/bin/java /usr/bin/
+# ln -sf /usr/local/tomcat/bin/startup.sh /usr/bin/tomcat-up
+# ln -sf /usr/local/tomcat/bin/shutdown.sh /usr/bin/tomcat-down
+
+
+添加一个名为“aa”的管理员用户
+vi /usr/local/tomcat/conf/tomcat-users.xml
+<user username="aa" password="123456" roles="manager,admin"/>
+
+设置环境变量
+
+
+# vi /etc/profile
+JAVA_HOME=/usr/local/jdk6
+CATALINA_HOME=/usr/local/tomcat
+CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$CATALINA_HOME/lib/servlet-api.jar
+PATH=$JAVA_HOME/bin:$PATH
+export JAVA_HOME CATALINA_HOME CLASSPATH PATH
+
+
+# source /etc/profile
+
+3、测试tomcat服务
+#/usr/bin/tomcat-up
+或者直接执行
+#/usr/local/tomcat/bin/startup.sh
+
+
+检查tomcat是否启动
+
+# netstat -anp | grep 8080
+
+在浏览器里访问http://localhost:8080/，可以看到tomcat的网页界面，并可以使用
+用户“aa”登陆管理
+
+二 安装配制sip2_1_6_6.zip
+1 将sip2_1_6_6.zip上传至计算机
+#unzip sip2_1_6_6.zip
+#cd sip2_1_6_6
+#chmod 755 proxy.war
+#cp proxy.war /usr/local/tomcat/webapps/
+
+2 重启tomcat
+#tomcat-down
+#tomcat-up
+
+3 测试并激活sip
+浏览：http://loaclhost:8080/proxy
+再此sip服务端要输入产品ID:BREA5F0100075591
+
+注：这里有提示即如果有网络可连接互连网请单击激活
+或者下载一个名为udf.dat的数字签名文件，可上传并激活
+
+如果sip激活顺利进行，可弹出登陆界面，其中系统默认管理员为
+Username: sa
+Password: sa
+
+三 sip客户端安装
+
+
+1 sip客户端推荐：
+
+adoresoftphone
+RecordingSoftphone
+AdoreIMBeta
+Express Talk
+
+2 安装过程：根据提示安装
+安装环境： windows
+操作过程：在windows下安装并根据其提示申请添加帐户
+此时可在sip服务器上看到刚生成的用户和帐户，之后在
+客户端上登录，帐户之间可以相互通话以测试sip
+
+注：Express Talk功能比较强大，它支持语音和视频还有录音等功能，但是安装相应插件
+很多。相比起来Adore系列客户端操作简单，易于推广。其中AdoreIMBeta可以通话和实
+时聊天，不过通话和聊天不可同时进行！
