@@ -1,0 +1,93 @@
+memcachedb跟memcache一样，网络socket数据处理依赖于libevent，所以，在安装之前需要下载三个安装包，即libevent、Berkeley Db以及memcachedb。
+
+Libevent 下载页面：http://monkey.org/~provos/libevent/ ，下载最新稳定版本就行。
+
+Berkeley Db下载页面：http://www.oracle.com/technology/software/products/berkeley-db/index.html 需要安装4.6版本
+
+memcachedb下载页面：http://code.google.com/p/memcachedb/  下载最新版本 0.1.0版本
+
+按照顺序安装，Libevent和Berkeley Db按照常规安装即可，这里以Linux 环境为标准。
+
+[======Libevent=====]
+
+tar -zxvf libevent-1.3e.tar.gz
+
+cd libevent-1.3e
+
+./configure
+
+make && make install
+
+[======Berkeley Db=====]
+
+ tar -zxvf db-4.6.19.tar.gz
+
+#需要进入特定操作系统编译环境，更常规软件的编译有些区别
+
+cd db-4.6.19/build_unix/
+
+#然后才能够开始编译
+
+  ../dist/configure
+
+make && make install
+
+#如果没有指定特殊安装路径，编译完成，需要将Berkeley Db运行库的路径添加到系统配置里面
+
+echo "/usr/local/BerkeleyDB.4.6/lib/" >> /etc/ld.so.conf
+
+#重载系统Ld运行库
+
+ldconfig
+
+[======Memcachedb=====]
+
+tar -zxvf memcachedb-0.1.0.tar.gz
+
+cd memcachedb-0.1.0
+
+#如果您要存储的内容的键值的长度和单笔内容的长度有变化,您需要更改一个文件 memcachedb.h
+
+vim memcachedb.h
+
+//////////////////////////////////////////////////////////// 
+
+#define END_LEN 32               ----> 这是是 Key+Value 的最大长度
+#define END_LEN_STR "31"   ---> 这是是 key 的最大长度
+
+ /////////////////////////////////////////////////////////
+
+ #默认key键值只预留了31个字节的长度，单笔数据最长是32个字节数。
+
+#例如您如果需要用这个玩艺来存储文本内容数据，假设您的键值是一个32个字节的md5，单笔数据允许最长10K，那您可以设定
+
+//////////////////////////////////////////////////////////// 
+
+#define END_LEN 102400               ----> 这是是 Key+Value 的最大长度
+#define END_LEN_STR "32"   ---> 这是是key的最大长度
+
+ /////////////////////////////////////////////////////////
+
+#修改完之后，直接make就行
+
+make
+
+#编译完之后，将生成可执行memcachedb拷贝到 /usr/sbin/
+
+cp -f memcachedb  /usr/sbin/
+
+ #启动 memcachedb
+
+#第一种，读写合并模式，即不做辅拷贝，即读又写，不做冗余备份
+
+memcachedb -p21211 -d -r -u root -H  /data/mdb_11211  -N
+
+#第二种，读写分离/备份模式
+
+#主服务器 192.168.0.1 读写监听 11211 ，同步通过31211的端口完成，不占用繁忙的主服务端口
+
+memcachedb -p21211 -d -r -u root -H  /data/mdb_11211_m -N -R 127.0.0.1:31211 -M
+
+# 辅服务器 192.168.0.2  只读监听 21212，从192.168.0.1 的 31211端口同步数据，同时再开一个31212端口对外提供数据同步服务
+
+memcachedb -p21212 -d -r -u root -H  /data/mdb_11211_from_16801_s -O 192.168.0.1:31211 -R 192.168.0.2:31212 -S

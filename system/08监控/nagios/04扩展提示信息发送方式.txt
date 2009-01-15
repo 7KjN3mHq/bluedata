@@ -93,6 +93,8 @@ chmod +x /usr/local/nagios/libexec/msn_send.sh
 
 再把前面设置的 MSN 提醒命令中的 msn_send.pl 改为 msn_send.sh 就可以使用了。
 
+支持发送离线信息的 MSN Class: http://code.google.com/p/phpmsnclass/downloads/list
+
 
 3. 发送 短信 提醒
 简单的，在 www.139.com 注册移动的邮箱，设置邮件短信提醒。这样就可以发送邮件的标题到注册的手机号码上。

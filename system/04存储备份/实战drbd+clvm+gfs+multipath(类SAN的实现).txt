@@ -1,0 +1,431 @@
+1.环境及说明:
+vmware 6.0
+node1 (192.168.0.5) node2 (192.168.0.6) 网关 192.168.0.1
+硬件设置均为 2cpu/256M/sda(4G)/sdb(1G)/sdc(1G) (sdb,sdc在系统安装完成后增加）
+
+相关说明
+1)#command  command要在node1与node2分别执行一次。
+2)node[12]#command 指command只在node1或2上执行.
+3)----/路径/文件 配置文件,下面是文件内容.
+
+2.安装：
+1)操作系统安装(此时sdb,sdc未增加）
+centos4.5 (2.6.9-55.ELsmp) 最小化安装到sda,sda的分区在安装过程中自动生成.安装完成后，增加两个新盘sdb(1G),sdc(1G).
+
+2)更新系统，安装相关软件包.
+cd /etc/yum.repos.d/
+
+wget http://mirror.centos.org/centos/4.5/csgfs/CentOS-csgfs.repo
+
+yum -y install yum-plugin-fastestmirror
+
+yum -y update
+
+yum remove kernel-smp-2.6.9-55.0.2.EL kernel-2.6.9-55.0.2.EL
+
+yum -y install device-mapper-multipath perl-Net-Telnet magma magma-devel magma-plugins ccs ccs-devel cman-kernel  cman-kernel-smp cman-kernheaders cman cman-devel dlm-kernel dlm-kernel-smp dlm-kernheaders dlm dlm-devel fence GFS GFS-kernel  GFS-kernel-smp GFS-kernheaders gnbd-kernel gnbd-kernel-smp  gnbd-kernheaders gnbd gulm gulm-devel iddev iddev-devel  piranha ipvsadm  lvm2-cluster pyorbit gcc kernel-smp-devel-2.6.9-55.EL.i686 kernel-devel-2.6.9-55.EL.i686 rpm-build flex
+
+3)安装drbd:(使用8.0.*版，因为在gfs下支持primary/primary方式)
+cd /root
+
+wget http://oss.linbit.com/drbd/8.0/drbd-8.0.4.tar.gz
+
+tar -zxvf drbd-8.0.4.tar.gz
+
+cd drbd-8.0.4
+
+make rpm KDIR=/usr/src/kernels/2.6.9-55.EL-smp-i686
+
+rpm -ivh dist/RPMS/i386/drbd-8.0.4-3.i386.rpm dist/RPMS/i386/drbd-km-2.6.9_55.ELsmp-8.0.4-3.i386.rpm
+
+make clean
+make rpm KDIR=/usr/src/kernels/2.6.9-55.EL-i686
+rpm -ivh dist/RPMS/i386/drbd-km-2.6.9_55.EL-8.0.4-3.i386.rpm
+
+3.配置与相关操作:
+1)配置启动
+/boot/grub.conf
+default=0
+timeout=5
+splashimage=(hd0,0)/grub/splash.xpm.gz
+hiddenmenu
+title CentOS-4 i386 (2.6.9-55.ELsmp)
+        root (hd0,0)
+        kernel /vmlinuz-2.6.9-55.ELsmp ro root=/dev/VolGroup00/LogVol00
+        initrd /initrd-2.6.9-55.ELsmp.img
+title CentOS-4 i386-up (2.6.9-55.EL)
+        root (hd0,0)
+        kernel /vmlinuz-2.6.9-55.EL ro root=/dev/VolGroup00/LogVol00
+        initrd /initrd-2.6.9-55.EL.img
+使用2.6.9-55ELsmp内核为默认启动内核
+
+2)配置drbd
+----/etc/drbd.conf
+       global { usage-count yes; }
+       common { syncer { rate 100M; } }
+       resource r0 {
+            protocol C;
+            net {
+                 cram-hmac-alg sha1;
+                 shared-secret "FooFunFactory";
+                 allow-two-primaries;
+            }
+            on node1 {
+                 device    /dev/drbd0;
+                 disk      /dev/sdb;
+                 address   192.168.0.5:7789;
+                 flexible-meta-disk  internal;
+            }
+            on node2 {
+                 device    /dev/drbd0;
+                 disk      /dev/sdb;
+                 address   192.168.0.6:7789;
+                 flexible-meta-disk  internal;
+            }
+       }
+       resource r1 {
+            protocol C;
+            net {
+                 cram-hmac-alg sha1;
+                 shared-secret "FooFunFactory";
+                 allow-two-primaries;
+            }
+            on node1 {
+                 device    /dev/drbd1;
+                 disk      /dev/sdc;
+                 address   192.168.0.5:7788;
+                 flexible-meta-disk  internal;
+            }
+            on node2 {
+                 device    /dev/drbd1;
+                 disk      /dev/sdc;
+                 address   192.168.0.6:7788;
+                 flexible-meta-disk  internal;
+            }
+       }
+
+分别镜像两个机子的sdb与sdc,生成drbd0与drbd1.
+#drbdadm create-md r0 (上面定义的resource)
+
+#drbdadm create-md r1
+
+#service drbd start
+
+#drbdadm --  --overwrite-data-of-peer primary all (系统启动是 drbd0,drbd1均为secondary，不可访问，此命令要加入到合适的服务启动脚本中，以使后续使用drbd0,drbd1设备的服务能正常启动)
+
+#service drbd status
+drbd driver loaded OK; device status:
+version: 8.0.4 (api:86/proto:86)
+SVN Revision: 2947 build by root@node1, 2007-07-03 16:04:10
+0: cs:Connected st:Primary/Primary ds:UpToDate/UpToDate C r---
+    ns:151596 nr:16 dw:92 dr:154552 al:0 bm:26 lo:0 pe:0 ua:0 ap:0
+        resync: used:0/31 hits:9455 misses:13 starving:0 dirty:0 changed:13
+        act_log: used:0/127 hits:18 misses:0 starving:0 dirty:0 changed:0
+1: cs:Connected st:Primary/Primary ds:UpToDate/UpToDate C r---
+    ns:68 nr:12 dw:80 dr:2328 al:0 bm:0 lo:0 pe:0 ua:0 ap:0
+        resync: used:0/31 hits:0 misses:0 starving:0 dirty:0 changed:0
+        act_log: used:0/127 hits:16 misses:0 starving:0 dirty:0 changed:0
+
+好了，drbd安装正常。
+
+3）配置cluster
+----/etc/cluster/cluster.conf
+<?xml version="1.0"?>
+<cluster name="cluster1" config_version="1">  
+<cman two_node="1" expected_votes="1">  
+</cman>  
+<clusternodes>  
+<clusternode name="node1" votes="1">  
+<fence>  
+<method name="single">  
+<device name="human" ipaddr="192.168.0.5"/>  
+</method>  
+</fence>  
+</clusternode>  
+<clusternode name="node2" votes="1">  
+<fence>  
+<method name="single">  
+<device name="human" ipaddr="192.168.0.6"/>  
+</method>  
+</fence>  
+</clusternode>  
+</clusternodes>  
+<fencedevices>  
+<fencedevice name="human" agent="fence_gnbd" option="multipath" servers="192.168.0.5 192.168.0.6"/>  
+</fencedevices>  
+</cluster>
+
+使用fence_gnbd.
+
+----/etc/sysconfig/cluster (目的，是在集群开始前插入模块）
+modprobe lock_dlm
+modprobe gnbd
+modprobe gfs
+
+----/etc/hosts
+127.0.0.1               localhost.localdomain localhost
+192.168.0.5             node1
+192.168.0.6             node2
+
+#service ccsd start
+
+#service cman start
+
+#service fenced start
+
+#ccs_tool lsnode
+Cluster name: cluster1, config_version: 1
+Nodename                        Votes Nodeid Iface Fencetype
+node1                              1               human
+node2                              1               human
+
+# ccs_tool lsfence
+Name             Agent
+human            fence_gnbd
+
+# cman_tool services
+Service          Name                              GID LID State     Code
+Fence Domain:    "default"                           2   2 run       -
+[1 2]
+
+好了，一切正常.
+
+4)配置clvm
+----/etc/lvm/lvm.conf
+devices {
+    dir = "/dev"
+    scan = [ "/dev" ]
+    filter = [ "r|/dev/cdrom|", "r|/dev/sdb|","r|/dev/sdc|", "a|/dev/sda|","a|/dev/drbd|","r|.*|"]
+    (此处修改是为的避免出现duplicate uuid的错误,与实战1)和2)相关)
+    #filter = [ "r|/dev/cdrom|", "r|/dev/sdb|","r|/dev/sdc|", "a|/dev/sda|","a|/dev/mpath|","r|.*|"]
+    (此处修改是为的避免出现duplicate uuid的错误,与实战3)相关，使用此设置，注释掉上面的filter)
+    cache = "/etc/lvm/.cache"
+    write_cache_state = 1
+    sysfs_scan = 1
+    md_component_detection = 1
+    ignore_suspended_devices = 0
+}
+log {
+    verbose = 0
+    syslog = 1
+    file = "/var/log/lvm2.log"
+    overwrite = 0
+    level = 0
+   
+    indent = 1
+    command_names = 0
+    prefix = "  "
+}
+backup {
+    backup = 1
+    backup_dir = "/etc/lvm/backup"
+    archive = 1
+    archive_dir = "/etc/lvm/archive"
+   
+    retain_min = 10
+    retain_days = 30
+}
+shell {
+    history_size = 100
+}
+global {
+    library_dir = "/usr/lib"
+   
+    umask = 077
+    test = 0
+    activation = 1
+    proc = "/proc"
+    locking_type = 3 (此处改为3,使clvm生效)
+    fallback_to_clustered_locking = 1
+    fallback_to_local_locking = 1
+    locking_dir = "/var/lock/lvm"
+}
+activation {
+    missing_stripe_filler = "/dev/ioerror"
+    reserved_stack = 256
+    reserved_memory = 8192
+    process_priority = -18
+    mirror_region_size = 512
+    mirror_log_fault_policy = "allocate"
+    mirror_device_fault_policy = "remove"
+}
+
+#service clvmd start
+
+5)配置multipath
+----/etc/multipath.conf
+devnode_blacklist {
+        devnode "^sd[a-z]"  (此处两行目的是不检查本地磁盘)
+        devnode "^hd[a-z]"
+}
+defaults {
+        user_friendly_names yes
+        udev_dir                /dev
+        polling_interval        10
+        selector                "round-robin 0"
+        prio_callout            /bin/true
+        path_checker            readsector0
+        rr_min_io               100
+        rr_weight               priorities
+        failback                immediate
+        no_path_retry           fail
+}
+        device {
+                vendor                  "GNBD"
+                product                 "GNBD"
+                path_grouping_policy    multibus
+                getuid_callout          "/sbin/gnbd_import -q -U /block/%n"
+                path_checker            directio
+        }
+
+#service multipath start
+
+至此所有配置完成。
+#chkconfig drbd on
+
+#chkconfig ccsd on
+
+#chkconfig cman on
+
+#chkconfig fenced on
+
+#chkconfig clvmd on
+
+#chkconfig multipath on
+
+#chkconfig gfs on
+
+确保相关服务自动启动。重启系统。
+
+4.实战篇：
+由于有多种顺序组合来形成最后的系统，下面开始分别实践主要的几种.
+
+注意/etc/lvm/lvm.conf中filter的不同.
+
+由于clvm的使用,lvm的相关命令只需在其中的一台机子上执行即可.
+
+1)在本地形成lv,然后导出(导入).
+node1#pvcreate /dev/drbd0 /dev/drbd1
+
+node1#vgcreate test /dev/drbd0 /dev/drbd1
+
+#service clvmd restart (不知道rhel 5.0中是否有改进,可以不重启)
+
+#gnbd_serv -v
+
+node1#lvcreate -L 1.99G test
+
+node1#gnbd_export -d /dev/test/lvol0 -e gfs -u 1
+
+node2#gnbd_export -d /dev/text/lvol0 -e gfs1 -u 1 （两个导出设备的uid相同，视为对同一个设备的多路径导出）
+
+node1#gnbd_import -i node1 (此处是为了实验multipath，不建议导入本机的导出设备）
+
+node1#gnbd_import -i node2
+
+node1#multipath -ll
+mpath0 (1)
+[size=1 GB][features="0"][hwhandler="0"]
+\_ round-robin 0 [active]
+\_ #:#:#:#     gnbd0 252:0 [active][ready]
+\_ #:#:#:#     gnbd1 252:1 [active][ready]
+
+node1#gfs_mkfs -j 2 -p lock_dlm -t cluster1:gfs /dev/mpath/mpath0
+
+#mount -t gfs /dev/mpath/mpath0 /mnt
+
+好了，可以正常使用了。
+
+/***********************************
+下面回到未导出(导入)的状态.
+#umount /mnt
+
+#dmsetup remove /dev/mpath/mpath0
+
+#gnbd_import -R
+
+#gnbd_export -R
+*************************************/
+
+2)在本地形成gfs,然后导出(导入).
+node1#gfs_mkfs -j 2 -p lock_dlm -t cluster1:gfs /dev/test/lvol0
+
+node1#gnbd_export -d /dev/test/lvol0 -e gfs -u 1
+
+node2#gnbd_export -d /dev/test/lvol0 -e gfs1 -u 1 （两个导出设备的uid相同，视为对同一个设备的多路径导出）
+
+#gnbd_import -i node1 (此处是为了实验multipath，不建议导入本机的导出设备）
+
+#gnbd_import -i node2
+
+#multipath -ll
+mpath0 (1)
+[size=1 GB][features="0"][hwhandler="0"]
+\_ round-robin 0 [active]
+\_ #:#:#:#     gnbd0 252:0 [active][ready]
+\_ #:#:#:#     gnbd1 252:1 [active][ready]
+
+node1#mount -t gfs /dev/mpath/mpath0 /mnt
+
+/***********************************
+下面回到未使用lvm前的状态.
+#umount /mnt
+
+#dmsetup remove /dev/mpath/mpath0
+
+#gnbd_import -R
+
+#gnbd_export -R
+
+node1#lvchange -an /dev/test/lvol0
+
+node1#lvremove /dev/test/lvol0
+
+node1#vgremove test
+
+node1#pvremove /dev/drbd0 /dev/drbd1
+*************************************/
+
+3)直接导出(导入)设备drbd0,drbd1.（推荐使用，client分担了server的设备管理的部分负载，可以提高性能）
+node1#gnbd_export -d /dev/drbd0 -e gfs -u 1
+
+node2#gnbd_export -d /dev/drbd0 -e gfs1 -u 1
+
+node1#gnbd_export -d /dev/drbd1 -e gfs2 -u 2
+
+node2#gnbd_export -d /dev/drbd1 -e gfs3 -u 2
+
+#gnbd_import -i node1
+
+#gnbd_import -i node2
+
+#multipath -ll
+mpath1 (2)
+[size=1023 MB][features="0"][hwhandler="0"]
+\_ round-robin 0 [enabled]
+\_ #:#:#:#     gnbd2 252:2 [active][ready]
+\_ #:#:#:#     gnbd0 252:0 [active][ready]
+mpath0 (1)
+[size=1023 MB][features="0"][hwhandler="0"]
+\_ round-robin 0 [enabled]
+\_ #:#:#:#     gnbd3 252:3 [active][ready]
+\_ #:#:#:#     gnbd1 252:1 [active][ready]
+
+node1#pvcreate /dev/mpath/mpath0 /dev/mpath/mpath1
+
+node1#vgcreate test /dev/mpath/mpath0 /dev/mpath/mpath1
+
+#service clvmd restart (不知道rhel 5.0中是否有改进,可以不重启)
+
+node1#lvcreate -L 1.9G test
+
+node1#gfs_mkfs -j 2 -p lock_dlm -t cluster1:gfs /dev/test/lvol0
+
+#mount -t gfs /dev/test/lvol0 /mnt
+
+5.结束语
+写此文档的目的是为了提供给大家一个关于gfs应用的一个基本的范例，将关于clvm,drbd,multipath的概念变成实在的东西供大家来学习讨论。
+参照此文，稍加修改后，多gnbd_server,多路径及使用drbd来构建便宜的SAN应用都不会有太多的问题。
+
+6.不足之处
+对于更细化的概念有赖于读者的自行补充，尚可加入lvs，未提及。fence,multipath未充分使用。

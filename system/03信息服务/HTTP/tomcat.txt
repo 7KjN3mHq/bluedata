@@ -1,0 +1,10 @@
+http://tomcat.apache.org/
+
+tar jxvf apache-tomcat-6.0.18.tar.gz -C /usr/local/
+
+echo -ne "
+export TOMCAT_HOME=/usr/local/apache-tomcat-6.0.18" >> /etc/profile
+
+source /etc/profile
+
+/usr/local/apache-tomcat-6.0.18/bin/startup.sh

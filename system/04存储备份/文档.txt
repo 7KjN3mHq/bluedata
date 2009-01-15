@@ -1,0 +1,3 @@
+A Journey On DRBD For MySQL: http://blog.irwan.name/?p=118
+通过QDisk增强Red Hat Cluster Suite的仲裁机制： http://www.redhat-club.com/product/p10.htm
+Serial ATA (SATA) on Linux: http://linuxmafia.com/faq/Hardware/sata.html
