@@ -103,3 +103,24 @@ root      2309  2269  0 21:27 ?        00:00:00 supervise mysql-proxy
 root     29640 29639 36 21:31 ?        00:00:01 /usr/local/sbin/mysql-proxy --proxy-address=:3306 --proxy-backend-addresses=192.168.0.9:3306 --proxy-read-only-backend-addresses=192.168.0.10:3307 --proxy-lua-script=/usr/local/share/mysql-proxy/rw-splitting.lua
 
 可以看到，mysql-proxy 进程依然还在，不过 PID 已经变了。
+
+Bug:
+ERROR 1105 (07000): can't change DB  to on slave
+出现这个错误的时候需要先 use dbname; 后才能进行正常的数据库操作。
+发生的原因是 rw-splitting.lua 脚本无法定义到 slave 数据库的名称。
+日志表现为：
+server default db: dbname
+client default db:
+syncronizing
+client default db 未正确定义。
+
+解决方法，在 rw-splitting.lua 脚本中增加代码如下：
+-- if client and server db don't match, adjust the server-side 
+--   
+-- skip it if we send a INIT_DB anyway   
+if cmd.type ~= proxy.COM_INIT_DB and c.default_db and c.default_db ~= "" and c.default_db ~= s.default_db then     
+print("    server default db: '" .. s.default_db .. "'")     
+print("    client default db: '" .. c.default_db .. "'")     
+print("    syncronizing")     
+proxy.queries:prepend(2, string.char(proxy.COM_INIT_DB) .. c.default_db)   
+end
