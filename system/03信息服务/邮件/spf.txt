@@ -1,0 +1,78 @@
+http://old.openspf.org/wizard.html
+
+------------------------------------------------------------------------------------------------------
+输入你的域名，点击Begin，然后会自动得到你域名的一些相关信息。
+a 你域名的A记录，一般选择yes，因为他有可能发出邮件。
+mx 一般也是yes，MX服务器会有退信等。
+ptr 选择no，官方建议的。
+ip4： 你还有没有其他的ip发信？可能你的smtp服务器是独立出来的，那么就填入你的IP地址或者网段。
+include: 如果有可能通过一个isp来发信，这个有自己的SPF记录，则填入这个isp的域名，比如：extmail.org
+~all: 意思是除了上面的，其他的都不认可。当然是yes了。
+好了，点击Continue.....
+自动生成了一条SPF记录，比如extmail.org的是
+v=spf1 a mx ~all
+------------------------------------------------------------------------------------------------------
+
+jc001.cn -> Begin
+ip4: -> 202.75.216.160/28 202.91.231.160/28 221.10.254.178
+
+dig spf.163.com any
+dig sohu.com any
+
+jc001.cn. IN TXT "v=spf1 ip4:202.75.216.160/28 ip4:202.91.231.160/28 ip4:221.10.254.178 ~all" -> Continue
+
+Bind:
+@ IN TXT "v=spf1 ip4:202.75.216.160/28 ip4:202.91.231.160/28 ip4:221.10.254.178 ~all"
+
+
+
+yum install perl-Mail-SPF
+
+
+http://www.openspf.org/Software
+wget http://www.openspf.org/blobs/postfix-policyd-spf-perl-2.007.tar.gz
+
+tar zxf postfix-policyd-spf-perl-*.tar.gz
+cd postfix-policyd-spf-perl-*
+cp postfix-policyd-spf-perl /usr/libexec/postfix/policyd-spf-perl
+
+
+vi /etc/postfix/master.cf
+#加入以下內容 (第二行 user 前面一定要有空格)
+spfpolicy unix - n n - - spawn
+    user=nobody argv=/usr/bin/perl /usr/libexec/postfix/policyd-spf-perl
+
+
+vi /etc/postfix/main.cf
+#加入以下內容
+    smtpd_recipient_restrictions =
+        permit_sasl_authenticated,
+        permit_mynetworks,
+        reject_unauth_destination,
+        check_policy_service unix:private/spfpolicy
+
+拒收 SPF: softfail
+vi /etc/postfix/main.cf
+mailbox_command = /usr/bin/procmail
+
+vi /etc/procmailrc
+:0
+* ^Received-SPF: softfail
+/dev/null
+
+
+/etc/init.d/postfix restart
+
+測試
+
+    從 ip4:xx.xx.xx.xx (DNS v=spf1 設定) 之外的 IP, 以 telnet 連入 mail server 進行測試
+
+    telnet your.mail.server 25
+
+        ehlo whatever.com
+
+        mail from: your_account@your.mail.server
+
+        550 5.7.1 your_account@your.mail.server... Please see http://www.openspf.org/why.html?sender=your_account@your.mail.server&ip=xx.xx.xx.xx&receiver=your.mail.server
+
+    ps. 若 DNS 的 TXT 設定為 "v=spf1 ... ~all", 則 Mail Server 會接受 mail from: xxx@your.mail.server 指令, 但該封 e-mail 的 header 會註記 "softfail"
