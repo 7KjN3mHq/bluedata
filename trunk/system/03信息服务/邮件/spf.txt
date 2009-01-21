@@ -76,3 +76,8 @@ vi /etc/procmailrc
         550 5.7.1 your_account@your.mail.server... Please see http://www.openspf.org/why.html?sender=your_account@your.mail.server&ip=xx.xx.xx.xx&receiver=your.mail.server
 
     ps. 若 DNS 的 TXT 設定為 "v=spf1 ... ~all", 則 Mail Server 會接受 mail from: xxx@your.mail.server 指令, 但該封 e-mail 的 header 會註記 "softfail"
+
+
+http://cha.homeip.net/blog/archives/2008/11/_sendmailpostfi.html
+http://www.openspf.org/SPF_Record_Syntax
+http://www.juyimeng.com/sending-mail-using-telnet-with-smtp-auth.html
