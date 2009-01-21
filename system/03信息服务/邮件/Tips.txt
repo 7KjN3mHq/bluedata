@@ -35,6 +35,12 @@ if (/^X-Spam-Flag:.*YES/)
   to "$HOME/Maildir/.Junk/."
 }
 
+Ö±½ÓÉ¾³ýÓÊ¼þ£º
+if (/^X-Spam-Flag:.*YES/)
+{
+  to /dev/null
+}
+
 
 vi /etc/mail/spamassassin/local.cf
 ##################################################
