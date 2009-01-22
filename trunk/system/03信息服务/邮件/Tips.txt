@@ -75,12 +75,12 @@ grep 'X-Envelope-From:' /var/spool/vscan/virusmails | cut -d '@' -f 2 | cut -d '
 
 
 
-find `find /home/domains -type d -name ".Junk"` -type f -exec rm {} \;
+find /home/domains -type d -name ".Junk"` -exec rm -rf {} \;
 
-find `find /home/domains -type d -name "cur"` -type f -atime +90 -exec rm {} \;
+find `find /home/domains -type d -name "cur" -maxdepth 4` -type f -atime +90 -exec rm {} \;
 
 
-for x in `find /home/domains -type d -name "cur"` ; do
+for x in `find /home/domains -type d -name "cur" -maxdepth 4` ; do
 find $x -type f -atime +90 -exec rm {} \;
 done
 
