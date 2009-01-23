@@ -1,0 +1,20 @@
+amavisd.conf
+
+
+$sa_tag_level_deflt = 0; #如果超过这个值的话，将在邮件头信息里加入
+X-Spam-Status: No, score=1.522 tagged_above=0 required=5
+tests=[MIME_BASE64_TEXT=1.522]
+X-Spam-Score: 1.522 #这个是垃圾指数越高，垃圾邮件可能性越大。
+X-Spam-Level: *
+
+$sa_tag2_level_deflt = 5; #如果超过这个值的话，将在邮件"主题" 加入****SPAM****
+(依据参数$sa_spam_subject_tag = '***SPAM*** ';)
+
+$sa_kill_level_deflt = 14; # 超过该值，则被发送到垃圾邮件专用账号里，不超过则发送到目的地。
+
+$sa_dsn_cutoff_level = 15; # 这个不太清楚，好像不怎么用？
+
+$sa_quarantine_cutoff_level = 20; # 超过该值的，直接删除
+
+$virus_admin = "virusAdmin\@YourMail.com"; //接受病毒邮件邮箱
+$spam_admin = "SpamAdmin\@YourMail.com"; //接受垃圾指数超过标准（$sa_kill_level_deflt）,低于$sa_quarantine_cutoff_level的邮件

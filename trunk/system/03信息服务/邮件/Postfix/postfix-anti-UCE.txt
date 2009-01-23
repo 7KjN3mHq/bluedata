@@ -1,0 +1,1614 @@
+
+				         Created: Mon Dec 31 17:39:29 EST 2001
+					 Updated: Fri Jun 29 11:31:05 EDT 2007
+
+Jim Seymour's suggestions/examples for Postfix anti-UCE configuration.
+                    (Aka: Postfix Anti-UCE Cheat Sheet)
+
+			    USE AT YOUR OWN RISK!
+
+            Note that *my* configuration may not be suitable for
+            *your* purposes.  That is one reason I put lots of
+            comments and so-forth in here.  Read it, understand
+	    it, and formulate a stance that best suits *your*
+	    needs.
+
+The "general flow" of the smtp_recipient_restrictions in main.cf is as
+follows (and yes: the order *is* important):
+
+    1. (1st 6 statements): ensure the HELO/EHLO and smtp envelope stuff
+       are "sane."  Prohibit verification checks of recipient addresses.
+    2. Dis-allow command "pipelining."  (Generally only spamware tries
+       to pipeline--particularly during dictionary attacks.)
+    3. Permit anything that passes the above restrictions and is from my
+       network.  (Destination doesn't matter.)
+    4. Out-right reject anything from outside that's not destined for my
+       network.
+    5. Check certain recipient addresses before any local blacklisting
+       or DNSbl checks.
+    6. Check the local black-lists, white-lists and combined black-/white-
+       lists (HELO/EHLO, sender [envelope from] and client [sending server]
+       checks).
+    7. Check the DNSbls and RHSbls
+
+Check the Postfix docs for what it all means, in detail.  If you're in
+doubt: join the postfix-users mailing list and ask.
+
+For 1.x versions of Postfix:
+
+    /etc/postfix/main.cf:
+
+	smtpd_helo_required = yes
+	disable_vrfy_command = yes
+
+	maps_rbl_domains =
+	    cbl.abuseat.org,
+	    list.dsbl.org,
+	    sbl.spamhaus.org,
+	    pbl.spamhaus.org
+
+	smtpd_recipient_restrictions =
+	    reject_invalid_hostname,
+	    reject_non_fqdn_hostname,
+	    reject_non_fqdn_sender,
+	    reject_non_fqdn_recipient,
+	    reject_unknown_sender_domain,
+	    reject_unknown_recipient_domain,
+	    reject_unauth_pipelining,
+	    permit_mynetworks,
+	    reject_unauth_destination,
+	    check_recipient_access pcre:/etc/postfix/recipient_checks.pcre,
+	    check_helo_access dbm:/etc/postfix/helo_checks,
+	    check_sender_access dbm:/etc/postfix/sender_checks,
+	    check_client_access dbm:/etc/postfix/client_checks,
+	    check_client_access pcre:/etc/postfix/client_checks.pcre,
+	    reject_maps_rbl,
+	    permit
+
+For 2.x versions of Postfix:
+
+    /etc/postfix/main.cf:
+
+	smtpd_helo_required = yes
+	disable_vrfy_command = yes
+
+	smtpd_recipient_restrictions =
+	    reject_invalid_hostname,
+	    reject_non_fqdn_hostname,
+	    reject_non_fqdn_sender,
+	    reject_non_fqdn_recipient,
+	    reject_unknown_sender_domain,
+	    reject_unknown_recipient_domain,
+	    permit_mynetworks,
+	    reject_unauth_destination,
+	    check_recipient_access pcre:/etc/postfix/recipient_checks.pcre,
+	    check_helo_access dbm:/etc/postfix/helo_checks,
+	    check_sender_access dbm:/etc/postfix/sender_checks,
+	    check_client_access dbm:/etc/postfix/client_checks,
+	    check_client_access pcre:/etc/postfix/client_checks.pcre,
+	    reject_rbl_client cbl.abuseat.org,
+	    reject_rbl_client list.dsbl.org,
+	    reject_rbl_client sbl.spamhaus.org,
+	    reject_rbl_client pbl.spamhaus.org
+	    permit
+
+	smtpd_data_restrictions =
+	    reject_unauth_pipelining,
+	    permit
+
+    # IMPORTANT NOTES
+    #
+    # "dbm" or "hash" depends on your system.  The above is for my Sun
+    # SPARC Solaris boxen.  Linux usually uses "hash".
+    #
+    # You need to have PCRE support built into Postfix at compile time to
+    # use the "pcre:" types.
+    #
+    # If it's necessary that the mail server accept SMTP connections
+    # from internal machines that don't HELO properly, you'll have to
+    # move at least reject_non_fqdn_hostname, and possibly also
+    # reject_invalid_hostname, to *after* permit_mynetworks.  There's no
+    # harm in doing this, should you find it necessary.  See FAQ items
+    # 2-4 for more on this topic.
+    #
+    # The trailing "permits" aren't necessary, strictly speaking, because
+    # there's an earlier "permit_mynetworks."  I just put them there
+    # because it makes clear that whatever passes the earlier "check" and
+    # "reject" tests will be permitted.  I like "self-documenting ``code''".
+    #
+    # You'll observe that all of my anti-UCE checks are under
+    # smtpd_recipient_restrictions, instead of having a separate
+    # smtpd_client_restrictions, etc.  This is because, unless you have set
+    # smtpd_delay_reject = no (default is "yes"), no rejecting takes place
+    # until after RCPT TO anyway.  It's easier, cleaner and more
+    # predictable when all of the anti-UCE stuff is under recipient
+    # restrictions.  (Except for reject_unauth_pipelining under Postfix
+    # 2.x.  See FAQ Q16/A16.  There are also possible performance issues
+    # doing things this way.  See "Understanding The Order In Which
+    # Restrictions Are Applied" for more info.)
+    #
+    # Note that SpamHaus' xbl zone is a super-set of the CBL, and, in turn,
+    # SpamHaus' zen zone is all three SpamHaus zones.  So, for efficiency's
+    # sake, one could replace the CBL and two SpamHaus zones with a
+    # single check of zen.spamhaus.org.
+
+
+/etc/postfix/recipient_checks.pcre:
+
+    # Note: You must have PCRE support support built in to Postfix at
+    # compile time to use this.  (Tho I've been told the following are
+    # valid POSIX RE's ["regexp:" map type], as well.)
+    #
+    # Postfix doesn't relay by default.  But it may *appear* to do so
+    # to some testers.  The first two statements below remove all
+    # doubt.
+
+    /^\@/		550 Invalid address format.
+    /[!%\@].*\@/	550 This server disallows weird address syntax.
+
+    # Let email to the following destinations bypass all the remaining
+    # "reject" and "check" tests.  We always want to let email for these
+    # recipients in.
+
+    /^postmaster\@/	OK
+    /^hostmaster\@/	OK
+    /^abuse\@/	OK
+
+	# Note: The "OK"s above, for postmaster, etc., will *not*
+	# bypass header and body checks.  There is currently no way
+	# to do so with Postfix :(
+	#
+	# Remember where I said, at the very beginning, about how
+	# order is important?  Whatever you do, do *not* place an
+	# access map like this one before the "permit mynetworks"
+	# and "reject_unauth_destination" statements.  Not unless
+	# you want to be an open relay, anyway.
+
+
+/etc/postfix/helo_checks:
+
+    # This file has to be "compiled" with "postmap"
+
+    # Reject anybody that HELO's as being in our own domain(s)
+    # (Note that if you followed the order suggested in the main.cf
+    # examples, above, that machines in mynetworks will be okay.)
+
+    example.tld			REJECT You are not in example.tld
+    foobarbaz.tld		REJECT You are not in foobarbaz.tld
+
+    # Somebody HELO'ing with our IP address?
+    192.168.1.2			REJECT You are not 192.168.1.2
+
+    # Somebody HELO'ing as "localhost?"  Impossible, we're "localhost"
+    localhost			REJECT You are not me
+
+
+/etc/postfix/helo_checks.pcre:
+
+    # Note: You must have PCRE support support built in to Postfix at
+    # compile time to use this.
+    #
+    # No, you won't find this entry in my "smtpd_recipient_restrictions,"
+    # above.  I'm not doing this check (at this time).
+
+    # If you want to be really picky about it: HELO'ing with an IP
+    # address is RFC-compliant - *if* it's enclosed in square-brackets
+    # ("[]"s).  (One would think "reject_invalid_hostname" checks for
+    # this, but it does not.)
+    #
+    # Somebody HELO'ing with a non-RFC-compliant dotted-quad IP
+    # address?  For shame!  (I don't do this check, btw.)
+    /^[0-9]+(\.[0-9]+){3}$/	REJECT Invalid hostname
+
+
+/etc/postfix/sender_checks:
+
+    # This file must be "compiled" with "postmap"
+
+    # Using a domain name
+    example.tld			554 Spam not tolerated here
+
+    # Maybe example2.tld is on a DNSbl, but we want to let their
+    # email in anyway.
+    example2.tld		OK
+
+    # We get lots of spam from example3.tld, but we have somebody
+    # there from which we do want to hear
+    someuser@example3.tld	OK
+    example3.tld		REJECT
+
+
+/etc/postfix/client_checks:
+
+    # This file must be "compiled" with "postmap"
+
+    # Using a domain name
+    example.tld			554 Spam not tolerated here
+
+    # Maybe example2.tld is on a DNSbl, but we want to let their
+    # email in anyway.
+    example2.tld		OK
+
+    # Checking by IP address
+    # 10.0.0.0/8
+    10				554 Go away!
+
+    # 172.16/16
+    172.16			554 Bugger off!
+
+    # 192.168.4/24 is bad, but 192.168.4.128 is okay
+    192.168.4.128		OK
+    192.168.4			554 Take a hike!
+
+
+/etc/postfix/client_checks.pcre:
+
+    # Postfix' dbm/hash files don't allow CIDR notation, netmasks
+    # or address ranges, but you can achieve the same end with
+    # regular expressions.
+    #
+    # Again: these are in PCRE notation.  But you could accomplish
+    # the same with POSIX RE's.  (I just don't know how.)
+
+    # 10.9.8.0 - 10.9.9.255
+    /10\.9\.[89]\.\d+/		REJECT
+
+    # 10.9.8.0 - 10.9.10.255 is generally no good, but 10.9.8.7 is OK
+    /10\.9\.8\.7/		OK
+    /10\.9\.([89]|10)\.\d+/	554 Go away. We don't want any!
+
+    # A much more complex example of listing a (CIDR) IP range
+    # (If this makes your eyes cross, just ignore it for now)
+    # 10.33.192.0/19 = 10.33.192.0 - 10.33.223.255         
+    /^10\.33\.((19[2-9])|(2(0[0-9]|1[0-9]|2[0-3])))\.\d{1,3}$/    REJECT
+
+    # Postfix experimental release 20030706 contains experimental
+    # support for CIDR-based lookup tables, so the regexp-type lookups
+    # for address ranges may soon no longer be necessary.  To see if
+    # your version of Postfix supports CIDR-based maps, do a "man
+    # cidr_table" and look for "cidr" in the output of "postconf -m".
+
+
+General Notes On "hostname," "helo," "client," "sender" and "recipient"
+Access Lists and Restrictions
+
+    What "hostname," "helo," "sender" and "client" mean
+
+	HELO/EHLO is what the sending machine *tells* your machine it
+	is.  It is easily spoofed and frequently mis-configured.
+	Thus it may have no basis in reality.
+
+	    HELO/EHLO is checked with the "helo" and "hostname"
+	    smtpd restrictions and checks.
+
+	"Sender" is the envelope-sender address (SMTP "MAIL FROM"), not
+	the client machine's IP address or host name, or the "From:"
+	field in the headers.  (Though envelope-sender may well match
+	"From:" in the headers.)
+
+	    "Sender" is checked with the smtpd sender restrictions
+	    and checks.
+
+	"Client" is the sending machine's IP address--and possibly host
+	name (if one can be derived from a reverse lookup of the IP
+	address).
+
+	    "Client" is checked with the smtpd client restrictions
+	    and checks.
+
+    "Recipient" refers to the email address passed in the SMTP RCPT TO,
+    not the "To:," "Cc:" or other fields in the header.
+
+	"Recipient" is checked with the smtpd recipient restrictions
+	and checks.
+
+    If you put access lists *before* the DNSbl checks, as shown in the
+    "main.cf" examples, above, they can serve as combined whitelists and
+    blacklists.
+
+	WARNING: You must be very careful with white-listing!  For
+	example: If you "OK" something in smtpd_recipient_restrictions
+	*before* reject_unauth_destination, you can turn your server
+	into an open mail relay for whatever you "OK"d or whomever
+	spoofs it (if it's spoof-able).
+
+	See: "Understanding The Order In Which Restrictions Are Applied"
+	for more detail.
+
+    If you want smtpd access map entries to match hosts and sub-domains
+    on just the domain part (e.g.: "example.com" matches "host.example.com"
+    and "host.subdomain.example.com," you must specify:
+
+	parent_domain_matches_subdomains = smtpd_access_maps
+
+    in main.cf.  Otherwise, you have to do things like:
+
+	example.com	REJECT
+	.example.com	REJECT
+
+    The "parent_domain_matches_subdomains" parameter became available in
+    Postfix versions as of 20011119.  Prior to that, you must use the
+    "multiple/leading-dot entry" solution.
+
+    Postfix experimental release 20030706 contains experimental support
+    for CIDR-based lookup tables, so the regexp-type lookups for address
+    ranges may soon no longer be necessary.  To see if your version of
+    Postfix supports CIDR-based maps, do a "man cidr_table" and look for
+    "cidr" in the output of "postconf -m".
+
+    See the FAQ regarding "null senders."  (Aka: Empty MAIL FROM or empty
+    envelope sender.)
+
+
+Understanding The Order In Which UCE Checks Are Applied
+
+    Anti-UCE/Anti-Virus processing is applied in the following order:
+
+	1. SMTPD Restrictions
+	2. Header/body Checks
+	3. Content Filters
+
+
+Understanding The Order In Which SMTPD Restrictions Are Applied
+
+    There are three parts to restrictions:
+
+	restriction "stages"
+	restrictions
+	access lists (or maps)
+
+    Postfix' restriction stages are as follows, and are processed in the
+    following order:
+
+	smtpd_client_restrictions
+	smtpd_helo_restrictions
+	smtpd_sender_restrictions
+	smtpd_recipient_restrictions
+	smtpd_data_restrictions
+
+    regardless of the order in which they're listed in main.cf.
+
+    Processing *within* a restriction stage ends on the first match,
+    with the exception of a "DUNNO" result.
+
+	What means "DUNNO?"  "DUNNO" means "I don't know, somebody
+	else decide."  DUNNO is covered in more detail, later.
+
+    Each restriction stage must evaluate to "OK" or "DUNNO" for processing
+    to continue with the next stage.
+
+    The default value of the smtpd_recipient_restrictions stage is the
+    result of "permit_mynetworks, reject_unauth_destination".  The default
+    for every other stage is empty--the default action for which is
+    "DUNNO".
+
+    Individual restrictions (within a restriction stage) are evaluated in
+    the order in which they're listed.
+
+    Items in an access list are are matched depending on the type of
+    access list.  Regular expression tables, such as pcre and regexp, are
+    checked in the order in which entries are listed.  Indexed table
+    map types such as hash, dbm, btree, etc., use the value being checked
+    as an index key.
+
+    Here are some simple (and *not* fully-functional!) examples to
+    demonstrate the principles described above:
+
+	Notes:
+
+	    We'll assume /etc/postfix is Postfix' configuration
+	    directory.
+
+	    "mumble:" refers to an indexed map type, such as
+	    "hash:," "dbm:," etc.
+
+    Suppose you have client_checks and sender_checks access maps that look
+    like this:
+
+	/etc/postfix/client_checks:
+	    # Block most clients in 10.*
+	    # But not 10.1.2.3, specifically
+	    10.1.2.3    DUNNO
+	    10          REJECT
+	    # We specifically white-list 172.16.4.5
+	    172.16.4.5  OK
+	    # We specifically black-list 192.168.6.7
+	    192.168.6.7 REJECT
+
+	/etc/postfix/sender_checks:
+	    joe@example.com  OK
+	    bob@example.com  REJECT
+
+    If placed in separate restriction stages:
+
+	/etc/postfix/main.cf (partial):
+	    ...
+
+	    smtpd_client_restrictions =
+		<first client restriction>,
+		check_client_access mumble:/etc/postfix/client_checks,
+		<third client restriction>,
+		etc...
+
+	    smtpd_sender_restrictions =
+		<first sender restriction>,
+		check_sender_access mumble:/etc/postfix/sender_checks,
+		<third sender restriction>,
+		etc...
+
+	    ...
+
+    A client address of 192.168.6.7 will result in a REJECT, and that's
+    it.  If Joe's email was coming from that address, he's out of luck.
+    Processing will never reach smtpd_sender_restrictions.
+
+    A client address of 172.16.4.5 will stop further processing of
+    additional client checks - so "<third client restriction>" will not be
+    processed.  But since that restriction stage evaluated to "OK,"
+    smtpd_sender_restrictions will still be processed.  A sender of
+    bob@example.com will result in a REJECT.
+
+    If instead you were to put client_checks and sender_checks in the same
+    restriction stage, something like this:
+
+	/etc/postfix/main.cf (partial):
+	    ...
+
+	    smtpd_sender_restrictions =
+		<first restriction>,
+		check_client_access mumble:/etc/postfix/client_checks,
+		check_sender_access mumble:/etc/postfix/sender_checks,
+		<fourth restriction>,
+		etc...
+
+	    ...
+
+    The "OK" of 172.16.4.5 would stop further processing of the sender
+    restrictions stage, and good ol' Bob would get through.
+
+    What do you mean, "DUNNO?"
+
+	It was noted earlier that a match stops further processing of an
+	access list, and of the restriction stage that "called" it.  But
+	what does a restriction return when there's no match?  Well, it
+	returns "DUNNO."  ("I don't know, somebody else decide.")
+
+	It can be handy to explicitly specify DUNNO in certain
+	circumstances, such as to suppress further lookups in an access
+	list, but where you don't necessarily want to "OK" something.
+	Postfix lets you do this.
+
+	In the examples above, a client address of 10.1.2.3 would halt
+	further checks in the client_checks access map, just as if an OK
+	or REJECT were specified, but processing would resume with the
+	next restriction check in that stage.
+
+	How might this come in handy?
+
+	    Well, let's say:
+
+		You don't want to accept connections from 10.* IPs
+
+		Except for example.com, at 10.1.2.3, which you do want
+
+		But you don't want to hear from Bob.
+
+	    Using the *second* example of smtpd_sender_restrictions, above:
+
+		Everything in 10.*.*.* except 10.1.2.3 will result in a
+		REJECT because of the first two client_checks entries.
+
+		Since 10.1.2.3 resulted in a DUNNO, rather than an OK,
+		processing will resume with the sender checks.
+
+		Bob will get REJECTed by the entry in the sender checks
+		file.
+
+    In summary:
+
+	"REJECT" stops processing entirely.
+
+	"OK" stops processing of an access list and the restriction stage
+	that contains it.  Processing resumes with the next restriction
+	stage (if any).
+
+	"DUNNO" stops processing of an access list.  Processing resumes
+	with the next item in the restriction stage (if any).
+
+    Finally, remember that unless you have set smtpd_delay_reject = no
+    (default is "yes"), no actual rejecting takes place until after RCPT
+    TO in the SMTP exchange.  In fact...
+
+    You can put all restrictions under one restriction class?
+
+	Yes.  As Liviu Daia notes:
+
+	    Any of the smtpd restrictions may contain checks
+	    referring to a preceding SMTP stage
+	    (check_sender_access may appear [for example] in
+	    smtpd_recipient_restrictions), with the exception of
+	    smtpd_data_restrictions, which, as a rule of thumb,
+	    should not refer to restrictions specific to
+	    recipient checks.
+
+        Victor Duchovni added:
+
+	    With "smtpd_delay_reject = yes" (that is by
+	    default), *all* the built-in restriction lists other
+	    than "smtpd_data_restrictions" are evaluated for
+	    every recipient. So if possible expensive checks on
+	    the client ip or name, HELO name, or sender address
+	    that are independent of the recipient address should
+	    be moved to the "data" restrictions.  In this
+	    scenario smtpd_recipient_restrictions can be used
+	    for just relay control!
+
+	    Note that results of RBL lookups are cached, so
+	    these are cheap to evaluate multiple times.
+
+	So, for performance reasons, one might be tempted to put all
+	restrictions in smtpd_data_restrictions.  But note also this
+	comment by Victor Duchovni:
+
+	    Multi-recipient messages do not have a "distinguished"
+	    recipient. So all restrictions that look at recipient
+	    addresses evaluate to "DUNNO" when used in the data
+	    restrictions. This is why they are not generally useful
+	    in that context.
+
+	There's another possible danger with putting all restrictions
+	under smtpd_recipient_restrictions.  You must be very careful with
+	white-listing!  For example: If you "OK" something in
+	smtpd_recipient_restrictions *before* reject_unauth_destination,
+	you can turn your server into an open mail relay for whatever you
+	"OK"d or whomever spoofs it (if it's spoof-able).
+
+	Lastly: For Postfix 2.x versions, reject_unauth_pipelining should
+	always be placed in smtpd_data_restrictions, even if it's the only
+	one you put there.  See FAQ Q16/A16.
+
+    Acknowledgments
+
+	This section was created from contributions by Noel Jones,
+	Liviu Daia, Victor Duchovni and Wietse Venema in the
+	postfix-users mailing list.
+
+
+Understanding Header and Body Checks
+
+    Header and body checks files are not access maps.  You *don't*
+    "postmap" them.  Nor do you "postmap" any other regexp or pcre file.
+    (You do have to do a "postfix reload" after changing them, however.)
+
+    Header checks regular expressions are applied in the order in which
+    they are listed in your header checks file.  First match wins.   They
+    are applied to each header in the email in the order in which the
+    headers are seen.  Body checks work similarly, except against the
+    email body, line-by-line.
+
+    You cannot whitelist a sender or client in an access list to bypass
+    header or body checks.  Header and body checks take place whether you
+    explicitly "OK" a client or sender, in access lists, or not.
+
+    Also, as Noel Jones noted in reply to a question in postfix-users:
+
+	The FILTER action isn't performed until after the mail
+	has been fully accepted stored in the queue.  Therefore,
+	you cannot bypass header/body checks using the FILTER
+	action.
+
+    You cannot "OK" an entire set of headers based on one header.
+
+    For example:  One might be tempted to try:
+
+	/^To: postmaster@yourdom.ain/	OK
+	/^To: abuse@yourdom.ain/	OK
+	/^From: .*@example.com/		REJECT
+
+    in an attempt to block everything from example.com, except if it's
+    sent to "postmaster" or "abuse" at your end.
+
+    This will not work.  Postfix header checks are header-by-header.  Even
+    if you "OK" one header, the other headers will be checked
+    independently.  Even were that not so: You have no way of knowing in
+    what order headers will be present.  So, in the example above, if the
+    "From:" is seen before the "To:", you'd be out-of-luck anyway.
+
+    What *will* work is the following:
+
+	/^From: joe@example.com/	OK
+	/^From: .*@example.com/		REJECT
+
+    to reject everything from users in example.com except Joe.
+
+	Note: The above are not functional regular expressions.
+	They're for demonstration purposes only.  Proper regular
+	expression construction is beyond the scope of this
+	document.
+
+    Body checks are likewise: Evaluated line-by-line.
+
+    Postfix presents multi-line text headers, e.g.:
+
+	Received: from host.example.com (host.example.com [192.168.1.2])
+	    by mail.example.com (Postfix) with ESMTP id 157B64304
+	    for <phred@example.com>; Sun, 31 Aug 2003 09:20:55 -0400 (EDT)
+
+    and (if it's a newer, "MIME-aware" version of Postfix):
+
+	Content-Disposition: attachment;
+	    filename=textfile.txt
+    
+    to header_checks as a single text string, with embedded newlines.
+
+    Conditional Header Checks
+
+	People often ask if they can check one kind of header based on the
+	existence of something, or the lack thereof, in a different
+	header.
+
+	For example:
+
+	    if !/^To:.*postmaster@example\.com/
+		/^Subject: .*Make Money Fast!/ REJECT
+	    endif
+
+	The goal above obviously being to check for headers with "Make
+	Money Fast!" in the Subject only if the recipient is *not* the
+	postmaster.
+
+	This won't work!  Remember: Header (and body) checks process one
+	header (or line, with body checks) at a time.  Since it's
+	impossible for the "To:" header to be "on the same line" as the
+	"Subject:" header, the example above does nothing interesting.
+
+	By the way, there's another problem with the example above: Do not
+	indent lines within "if" conditionals.  Start all lines in header
+	and body checks at the left margin.
+
+
+Understanding DNSbl's and RHSbl's
+
+    A DNSbl (DNS BlockList) works for IP addresses only.  Thus one can
+    check client IP address' against DNSbl's, but not sender addresses.
+
+    An RHSbl (Right-Hand Side BlockList - so-called because they are
+    primarily meant to check the "right-hand side" of sender addresses)
+    works on host and domain names.  Postfix 2.x supports the use of these
+    for client host and domain names, as well, but the check is meaningful
+    only *if* the client address has a hostname associated with it.
+
+    Examples:
+
+	Note: The following is for illustration purposes only, and
+	does NOT constitute endorsement of the lists used.
+
+	reject_rbl_client sbl.spamhaus.org      valid - check client IP
+						address' against the
+						SpamHaus DNSbl
+
+	reject_rhsbl_sender rhsbl.sorbs.net     valid - check the RHS of
+						sender addresses against
+						the SORBS RHSbl
+
+	reject_rhsbl_client rhsbl.sorbs.net     valid - check the client's
+						domain against the SORBS
+						RHSbl.  Doesn't work if
+						client is "unknown"
+
+	reject_rbl_client rhsbl.sorbs.net       INVALID - attempt to check
+						client IP address' against
+						an RHSbl
+
+	reject_rhsbl_sender sbl.spamhaus.org    INVALID - attempt to check
+						sender domain names against
+						a DNSbl
+
+	reject_rhsbl_client sbl.spamhaus.org    INVALID - attempt to check
+						client domain names
+						against SpamHaus DNSbl
+
+    See Also: "A Note About DNS BlackLists (DNSbl's and RHSbl's)," later
+    in this document.
+
+    If you're unclear on what's meant by "client" and "sender," see the
+    section ``What "helo," "sender" and "client" mean,'' under ``General
+    Notes On "recipient," "helo," "sender" and "client" Access Lists,''
+    above.
+
+    Lastly: Postfix 1.x versions support DNSbls *only*, via the
+    "maps_rbl_domains" list and the "reject_maps_rbl" restriction.
+
+
+Stopping Forged Freemail
+
+    In main.cf, create an smtpd restriction class and, to that restriction
+    class, add a client checks that lists all the "OK" hosts, followed by
+    a reject.  Add a check_sender_access rule that checks against a list
+    of freemail hosts.
+
+    /etc/postfix/main.cf:
+	smtpd_restriction_classes = from_freemail_host
+	from_freemail_host = check_client_access dbm:/etc/postfix/freemail_hosts,
+	    reject
+
+	smtpd_recipient_restrictions =
+	    check_sender_access dbm:/etc/postfix/freemail_access
+
+    In the check_sender_access file, list all the freemail hosts you wish
+    to check, and have the check defer to the from_freemail_host
+    restriction class.
+
+    /etc/postfix/freemail_access:
+	yahoo.com	from_freemail_host
+	earthlink.net	from_freemail_host
+	excite.com	from_freemail_host
+
+    In the restriction class' check_client_access list (file), "OK"
+    freemail hosts only.
+
+    /etc/postfix/freemail_hosts:
+	yahoo.com		OK
+	earthlink.net		OK
+	excite.com		OK
+	excitenetwork.com	OK
+
+    What happens is: client host connects and attempts to deliver email.
+    If the senders domain is listed in the freemail_access file, the
+    restriction class causes the client host to be checked to see if it,
+    too, is one of the freemail hosts.  If it is, it's "OK".  If it's not
+    (e.g.: sender claims to be from yahoo.com and the client host is
+    really in spamhaven.net), the terminating reject rule kills it.
+
+    It should go without saying: Users that are in the habit of mailing
+    through their ISP's SMTP server, but with a freemail sender address,
+    will be rejected by restriction classes such as this unless they're
+    whitelisted before-hand.
+
+    As noted under the "main.cf" examples at the beginning: "dbm" or
+    "hash" depends on your system.  The above is for my Sun SPARC
+    Solaris boxen.  Linux usually uses "hash".
+
+    See also: FAQ Q1/A1 and Q15/A15.
+
+
+When Anti-Spam Measures Collide: Sender Address Verifications Rejected
+
+    I recently found myself unable to email anybody with a Verizon
+    email address.  After a bit of investigating, I figured-out it
+    was because Verizon uses a form of Sender Address Verification
+    (SAV), spam from Verizon space had caused much of it to be
+    blacklisted on my mailserver, so Verizon's servers' SAV probes
+    were being rejected, resulting in even legitimate email addresses
+    on my mail server looking to Verizon as if they weren't.
+
+    Restriction classes to the rescue!
+
+    /etc/postfix/main.cf:
+	smtpd_restriction_classes = from_verizon_sav
+	from_verizon_sav = check_client_access pcre:/etc/postfix/verizon_sav_client.pcre,
+	    reject
+
+	smtpd_recipient_restrictions =
+	    ...
+	    check_sender_access pcre:/etc/postfix/verizon_sav_sender.pcre,
+	    ...
+
+    /etc/postfix/verizon_sav_client.pcre:
+	/^s[cv]\d+pub\.verizon\.net$/          OK
+
+    /etc/postfix/verizon_sav_sender.pcre:
+	/^antispam\d+@\S+\.verizon\.net$/   from_verizon_sav
+
+
+    Basically, this simply says: If the (envelope) sender is
+    "antispamNNN@mumble.verizon.net" *and* the client hostname is
+    "scNNNpub.verizon.net" or "svNNNpub.verizon.net," OK it.  If it's
+    "antispamNNN@mumble.verizon.net" and it's *not* a valid host, reject
+    it.
+
+    Make sure to put the smtpd_recipient_restrictions entry before any of
+    the anti-UCE checks you want to skip, but *after* the
+    "permit_mynetworks" and "reject_unauth_destination" pair.
+
+    This actually neatly kills two birds with one stone: Not only can it
+    enable Verizon's SAV-like mechanism to work (with your mail server)
+    again, but it'll also reject attempts to spoof a Verizon "antispam..."
+    email address.
+
+    Note: It would *appear* Verizon caches the results of its SAV tests.
+    If Verizon has recently rejected an email from your server due to it
+    rejecting the SAV test message, there will be an unknown (to me,
+    anyway) delay before they'll accept email from it again.
+
+
+Back-Scatter To Non-Sending (Role) Addresses
+
+    If spammers are spoofing one of your non-sending role address', such
+    as "info@" or "www@," you will undoubtedly get hit with back-scatter
+    from ill-designed/-configured "accept and bounce" electronic mail
+    systems.  This can be at least partially mitigated against by refusing
+    to accept bounces to addresses that do not send.
+
+    Restriction classes to the rescue, again!
+
+    /etc/postfix/main.cf:
+	smtpd_restriction_classes = check_bounce_recipient
+
+	check_bounce_recipient = check_recipient_access dbm:/etc/postfix/non-sending_recipients
+
+	smtpd_recipient_restrictions =
+	    ...
+	    check_sender_access dbm:/etc/postfix/check_bounce_sender,
+	    ...
+
+    /etc/postfix/check_bounce_sender:
+	<>      check_bounce_recipient
+
+    /etc/postfix/non-sending_recipients:
+	info@example.com        REJECT Address does not accept bounces as it does not send email
+
+    Basically, this simply says: If the (envelope) sender is the null
+    sender, check to see if the recipient is one that never sends email
+    and, if so, 5xx with an informative explanation.
+
+    You can add additional senders to check_bounce_sender.  I've found the
+    following useful:
+
+	MAILER-DAEMON@
+	Gateway_SMTP@
+	devnull@
+	MDaemon@
+	imsspostmaster@
+	Administrator@
+	imss@
+	majordomo@
+	symantec_antivirus_for_smtp_gateways@
+	postmaster@
+	Symantec_Mail_Security_for_SMTP@
+	Mail_Security_for_SMTP@
+
+    Don't forget to postmap the two access files and "postfix reload"
+    after changes to main.cf.
+
+    Note also that the "dbm:" type will have to be "hash:" on some
+    systems.
+
+
+Compensating For Verisign's Abuse Of The Domain Name System (DNS)
+
+    (And other uses for check_*_mx_access.)
+
+    On or about September 16th, 2003, Verisign put in wildcard records for
+    the .com and .net top-level domains, causing lookups on non-existent
+    domains, or even domains that simply have no DNS, to return a DNS
+    record pointing to one of their own servers.  The result of this, from
+    a mail server administrator's perspective, is that checks for valid
+    sender and recipient domains (reject_unknown_sender_domain and
+    reject_unknown_recipient_domain, respectively, in Postfix) wouldn't
+    work for the .com and .net TLDs any more, because now *all* .com and
+    .net domains would appear to be "valid."  Say "Thank you, Verisign."
+
+    Wietse quickly released a new Postfix snapshot to address this
+    problem.  You use it like this:
+
+	/etc/postfix/main.cf:
+	    smtpd_recipient_restrictions =
+		...
+		reject_unknown_sender_domain,
+		check_sender_mx_access dbm:/etc/postfix/mx_access,
+		reject_unknown_recipient_domain,
+		check_recipient_mx_access dbm:/etc/postfix/mx_access,
+		...
+
+	/etc/postfix/mx_access:
+	    # IP address Verisign returns for otherwise invalid
+	    # .com and .net domains
+	    64.94.110.11	REJECT Verisign hijacked domain
+
+    Then "postmap" the mx_access file, "postfix reload" and you're all
+    set.
+
+	Remember: "dbm" or "hash" depends on your system.  The
+	above is for my Sun SPARC Solaris boxen.  Linux usually
+	uses "hash".
+
+    If you wanted to *really* make sure, change the map types to "cidr:"
+    and make the mx_access file look like this, for example:
+
+	/etc/postfix/mx_access:
+            # Netblock returned by Verisign domain hijacking
+	    # .com and .net domains
+	    64.94.110/24        REJECT Verisign hijacked domain
+
+    Support for this requires snapshot release postfix-2.0.16-20030917,
+    or later.
+
+	While you're at it, you might wish to consider doing:
+
+	    route add -net 64.94.110.0 -netmask 255.255.255.0 127.0.0.1 1
+
+	as well.  Just to show Verisign you really care ;).
+
+    Here are some other things you can do with check_*_mx_access (this is
+    a "cidr:" map type):
+
+	0.0.0.0/8	REJECT Domain MX in broadcast network
+	10.0.0.0/8	REJECT Domain MX in RFC 1918 private network
+	127.0.0.0/8	REJECT Domain MX in loopback network
+	169.254.0.0/16	REJECT Domain MX in link local network
+	172.16.0.0/12	REJECT Domain MX in RFC 1918 private network
+	192.0.2.0/24	REJECT Domain MX in TEST-NET network
+	192.168.0/16	REJECT Domain MX in RFC 1918 private network
+	224.0.0.0/4	REJECT Domain MX in class D multicast network
+	240.0.0.0/5	REJECT Domain MX in class E reserved network
+	248.0.0.0/5	REJECT Domain MX in reserved network
+
+    The point here being: Why accept email from senders, or attempt to
+    deliver it to recipients, whose MX resolve to machines you can't
+    possibly contact?
+
+    Two Cautions are in order:
+
+	If you're running "split horizon" (aka:  "split namespace") DNS,
+	where hosts on your LAN, including your mail server, have a
+	different view of IP addresses than hosts outside your LAN, and
+	your LAN addressing is RFC 1918, you can end up rejecting all
+	email to your own mail server.  (Yes, I'm sad to say, this author
+	did this to himself!)  To work around this you need to either put
+	"check_recipient_mx_access," and perhaps "check_sender_mx_access,"
+	*after* permit_mynetworks, or whitelist the IP addresses in
+	question.
+
+	If you're using "check_recipient_mx_access" on a mail gateway or
+	Internet-connected mailserver, and the destination for outgoing
+	email has a large number of MX' whose A records don't resolve,
+	with "warning: Unable to look up MX host...", the SMTP client may
+	time-out awaiting a response from the Internet-connected MTA, as
+	the latter spends a long time running each unresolvable
+	MX through check_recipient_mx_access, resulting in the email never
+	being moved to the Internet-connected MTA, even though it may
+	actually be deliverable.
+
+    It has come to my attention that some "anti-spammers" have taken to
+    listing 127.0.0.1 and the like as one of their domain MX' in the
+    belief that it stops or reduces spam.  (For those whom are interested
+    in my opinion: No, I don't think doing this is a particularly good
+    idea--for a variety of reasons.  See FAQ Q18/A18.)  The configuration
+    detailed above will cause email from such domains to be rejected.
+
+
+Some Common Anti-UCE-Related Postfix Logfile Messages
+
+    Here's a sub-set of logfile entries you might see, resulting from some
+    of the anti-UCE measures discussed here.  This is *not* a comprehensive
+    list!  Such a list would be impractical.
+
+    Client host rejected: cannot find your reverse hostname
+
+	reject_unknown_reverse_client_hostname (Postfix 2.3 and later)
+
+    Client host rejected: cannot find your hostname
+
+	reject_unknown_client_hostname (reject_unknown_client in earlier
+	versions)
+
+	(See FAQ Q7/A7)
+
+    Client host rejected: <reason>
+
+	check_client_access maptype:mapname
+
+	If a custom reject message is specified in the access list, that
+	will be <reason>, else the generic "Access denied" will be
+	logged.
+
+    Client host [ip address] blocked using ...
+
+	reject_rbl_client (Postfix 2.x) or
+	reject_maps_rbl + maps_rbl_domains (Postfix 1.x).
+
+    Helo command rejected: Host not found
+
+	reject_unknown_helo_hostname
+	(reject_unknown_hostname in earlier versions)
+
+	(See FAQ Q7/A7)
+
+    Helo command rejected: Invalid name
+
+	reject_invalid_hostname
+
+    Helo command rejected: need fully-qualified hostname
+
+	reject_non_fqdn_hostname
+
+    Helo command rejected: <reason>
+
+	check_helo_access maptype:mapname
+
+	If a custom reject message is specified in the access list, that
+	will be <reason>, else the generic reason will be logged.
+
+    Recipient address rejected: Domain not found
+
+	reject_unknown_recipient_domain
+
+    Recipient address rejected: Improper use of SMTP command pipelining
+
+	reject_unauth_pipelining
+
+    Recipient address rejected: need fully-qualified address
+
+	reject_non_fqdn_recipient
+
+    Relay access denied
+
+	reject_unauth_destination
+
+    Sender address rejected: Domain not found
+
+	reject_unknown_sender_domain
+
+    Sender address rejected: need fully-qualified address
+
+	reject_non_fqdn_sender
+
+    Sender address rejected: <reason>
+
+	check_sender_access maptype:mapname
+
+	If a custom reject message is specified in the access list, that
+	will be <reason>, else the generic "Access denied" will be
+	logged.
+
+    Sender address [user@some.domain] blocked using...
+
+	reject_rbl_client (Postfix 2.x only)
+
+    Unable to look up MX host ... for Recipient address ...: Host not found,
+    try again
+
+	check_recipient_mx_access
+	
+	One-or-more of the recipient domain's MX hosts are unresolvable.
+	This *may* result in otherwise deliverable email being stalled.
+
+
+A Note About DNS BlackLists (DNSbl's and RHSbl's)
+
+    This bit's non-technical.  I put it in here, not so much for the
+    experienced mail admin., but for those new to the game.  And because,
+    as with the info above, I've been asked repeatedly for my opinion.
+
+    Think about your use of DNSbl's carefully.  If you use a DNSbl to
+    block/reject email, you are effectively giving some outside party
+    control over your mail server.  This is not *necessarily* a Bad
+    Thing--it's just something to keep in mind.  Choose wisely.
+
+    Another thing that's *absolutely* critical, if you're going to use
+    a DNSbl or RHSbl, is that you keep up-to-date on its status.
+    Sometimes, when a blocklist goes out-of-service, you can end-up
+    rejecting *all* email.
+
+    That being said...
+
+    DNSbl's I Currently Use (in alphabetical order)
+
+	cbl.abuseat.org
+	list.dsbl.org
+	sbl.spamhaus.org
+	pbl.spamhaus.org
+
+    Currently Under Evaluation
+
+	I currently am not evaluating any new DNSbls or RHSbls.
+
+    DNSbl's and RHSbl's I Specifically Recommend Against (And Why)
+
+	relays.osirusoft.com - Out-of-service since Aug. 26, 2003.
+	    Announced to multiple forums and mailing lists at the time.
+
+	SPEWS - I used to use SPEWS, but became concerned about its
+	    policies after a couple of what I felt to be "questionable"
+	    listings, so I stopped using it.  I don't have a big problem
+	    with SPEWS, per se (in fact: I generally support its listing
+	    policies and methodology), I just don't use it nor recommend
+	    others do so.  My thanks to SPEWS for the use of its list in
+	    the past.
+
+	    As of March, 2007, it would appear SPEWS data hasn't been
+	    updated since August, 2006.  Who knows what the nature of the
+	    problem might be, but I'd argue a list that combines SPEWS'
+	    level of aggressiveness with this degree of undependability
+	    shouldn't be used.
+
+	proxies.relays.monkeys.com - Out-of-service since Monday, Sep.
+	    22nd, 2003.  Announced to news.admin.net-abuse.email, at
+	    least.  Thanks to its maintainer for his contributions.
+
+	    Update: Announced to news.admin.net-abuse.email (and
+	    elsewhere?), on Tuesday, Feb. 10, 2004, that
+	    *.relays.monkeys.com nameservers would be decommissioned,
+	    thus resulting in future lookups going unanswered.
+
+	    Update: As of 15 March, 2004, relays.monkeys.com appears to be
+	    returning positive responses for all addresses.
+
+	nomorefunn.moensted.dk - This sorry excuse for a DNSbl has my IP
+	    netblock listed because it's a DSL netblock?  A business class
+	    DSL netblock with static, routable IP address assignments?
+	    Heh.  If you bounce me because you're using this abomination,
+	    I will locally, permanently blacklist your domain at
+	    LinxNet.com.
+
+	xbl.selwerd.cx - Out-of-service since Monday, Nov. 10th, 2003.
+	    Announced to news.admin.net-abuse.email and
+	    news.admin.net-abuse.blocklisting, at least.
+
+	DRBL - Allegedly "Distributed Realtime Blocking List".  Appears
+	    to be operated by Russian ISPs and administrators?  Hard to
+	    say, being as every web site I went to that referred to this
+	    "organization" was down or displayed a default Apache
+	    installation page.  Anyway, they have all of the DSL space in
+	    which I'm located blackholed.  That's their prerogative.  It's
+	    also my prerogative to permanently locally blacklist anybody
+	    that bounces my email because they're using it.
+
+	rfc-ignorant.org - Technically a Right-Hand Side blocklist
+	    (RHSbl), rather than a DNSbl.  RFCI's listing criteria takes
+	    RFC requirements far too literally, in my opinion, and, some
+	    argue, interprets them incorrectly.
+
+	dorkslayers.com - Dead since May, 2003.  Announced to
+	    news.admin.net-abuse.email, at least.  Wasn't set to
+	    purposefully return "hits" on everything when it was
+	    de-commissioned, but when Verisign pulled its recent .com and
+	    .net hijack stunt, that's what happened.
+
+	easynet.nl - On Friday, November 21, 2003, the admin of the
+	    easynet.nl DNSbl and RHSbl zones announced their retirement.
+	    They have been discontinued as of December 1, 2003.  Ben:
+	    Thanks for your contributions.
+
+	wirehub.net - Wirehub was purchased by easynet.nl and all wirehub
+	    DNSbl zones were renamed to easynet zones.  This change was
+	    announced back on May 25, 2003.  Subsequent to this, the
+	    easynet.nl DNSbl's and RHSbl's were discontinued.  (See
+	    above.)
+
+	opm.blitzed.org - Blitzed.org's OPM (Open Proxy Monitor) zones
+	    were discontinued as of May, 2006.  See
+	    http://wiki.blitzed.org/OPM_status
+
+	ORDB.org - Open Relay DataBase announced its shut-down on December
+	    18, 2006.
+
+    See Also: "Understanding DNSbl's and RHSbl's," earlier in this
+              document.
+
+
+When There's No Point To A Secondary MX
+
+    This doesn't relate directly to anti-UCE measures, per se, but the
+    question often comes up "How do I reject spam relayed via my secondary
+    MX?" - when the secondary MX isn't one under the user's control.
+
+    Admins often configure things to specify their ISP's mail server, or
+    some other mail server not under their control, as their domain's
+    secondary MX.  One imagines the thinking is that this secondary MX
+    will collect email destined for their domain if the primary MX is down
+    or unreachable, and forward it on when the primary again becomes
+    available.
+
+    There's really no advantage to be gained by specifying such a
+    host as a secondary MX, and, in fact, there are two distinct
+    disadvantages to doing so.
+
+    A backup MX that isn't under your control, where you can enforce
+    the same anti-UCE restrictions as you do on your primary MX, only
+    provides a way for spammers to get around your anti-UCE
+    restrictions.  And spammers *will* exploit it.  Anti-UCE HELO and
+    client checks can't be enforced at all on email relayed from such
+    a secondary MX.
+
+    The second disadvantage is that recipient, sender, header and body
+    checks, and any other content checks (e.g.: anti-virus filters) at
+    your mail server, on email relayed from the secondary MX, *will*
+    result in rejects, but, since the email has already been accepted on
+    your domain's behalf by the secondary MX, it will be bounced by your
+    secondary MX--probably to a spoofed, innocent 3rd party.  At this
+    point you become part of the Internet's problem.
+
+    Most any modern MTA will queue email for delivery for 3-5 days
+    anyway, so a backup MX that only ends-up delivering to your
+    primary MX doesn't do anything actually useful for you.
+
+    The only time a secondary MX makes sense is if it's a mail server
+    under *your* control, where you can enforce rules consistent
+    between it and your primary MX, it's on an independent network
+    connection, and that can relay incoming email via an independent,
+    usually private, connection.  E.g. (simplified):
+
+				   lan/wan
+	Internet --- primary MX -----------+
+		      gateway              | lan
+					   +----- internal mail
+					   |         server
+	Internet --- secondary MX ---------+
+		      gateway      lan/wan
+
+    Or perhaps:
+
+		     Internet --- primary MX and mail server ---- lan
+					      ^
+					      |
+					      |
+	Internet --- secondary MX ------------+
+				      wan
+
+
+Frequently Asked Questions (FAQs)
+
+    Q1. Is there any reason why the "freemail senders" checks can't be
+        extended to check other hosts that are commonly spoofed for UCE
+        purposes?  AOL, for example, is commonly spoofed.
+
+    A1. Not at all.  But understand what's really happening with the
+        "freemail senders" check.  All it's doing is checking that if it's
+        any of the listed freemail senders, the host is any of the listed
+        freemail senders.  It does *not* check to make sure that the sender
+        domain and host are consistent with one another.  To accomplish
+	the latter, precisely, you'd have to have separate restriction
+	classes for each domain you wanted to check.
+
+	See also: FAQ Q15/A15.
+
+    Q2. Regarding your checks "reject_invalid_hostname,"
+        "reject_non_fqdn_hostname" and "check_helo_access": Isn't rejecting
+        on HELO/EHLO not being a valid and FQDN'd hostname a violation of
+        the RFC's?
+
+    A2. Why yes, yes it is.  Doing so is a judgement call.  In *my*
+        experience: it stops more spam than it does result in "false
+        positives."  And in the few cases where it has resulted in false
+        positives, I've found that a friendly dialog with the offending
+        mail server's owner got it straightened out.  Your mileage may
+        vary.
+
+	Machines outside "mynetworks" should *never* HELO/EHLO as being in
+	your domain.  So even if you want to forego
+	"reject_invalid_hostname" and "reject_non_fqdn_hostname," it seems
+	to me perfectly reasonable to still do the "check_helo_access"
+	restriction.
+
+    Q3. But MUAs under Microsoft Windows send HELO with only the
+        hostname part, no domain name!  Apple Mail sets it to only
+	the domain part from the client email address!
+
+    A3. For internal machines (i.e.: on your LAN) this is a non-issue
+        *if* "permit_mynetworks" precedes "reject_invalid_hostname" and
+        "reject_non_fqdn_hostname."   (The examples I give above are
+        primarily designed for Internet email gateways.)  Likewise
+	"permit_sasl_authenticated," if you're using it.
+
+    Q4. But a lot of people use Microsoft mail clients!
+
+    A4. With regards to that point, I am guided by this philosophy:
+
+	"If fifty million people say a stupid thing,
+	 it is still a stupid thing."
+				   - Anatole France
+
+        Simply substitute "do" for "say" ;)
+
+    Q5. Couldn't one do the same thing with check_sender_access
+        (envelope-sender) as with the check_helo_access with regards to
+        checking for somebody spoofing ones own domain?
+
+    A5. Dangerous.  There are a number of scenarios where a sender from
+        outside mynetworks might legitimately have an envelope-sender
+        address in (one of) your domain(s).  E.g.:
+
+	fred@yourdom.ain sends mail to jim@example.com
+
+	But jim@example.com has, unknown to fred, a .forward pointing
+	to jim@yourdom.ain
+
+	That results in example.com's mailserver legitimately sending
+	that email with yourdom.ain in the envelope-sender
+
+        (Thanks a tip o' the hat to Andrew of SuperNews for pointing
+	 this gotcha out.)
+
+    Q6. Why are all of your restrictions under recipient restrictions?
+
+    A6. You didn't read the comments below those examples, did you?
+        Please go back and do so.  See also: "Understanding The Order In
+	Which Restrictions Are Applied"
+
+    Q7. Why don't you use reject_unknown_helo_hostname
+	(reject_unknown_hostname in earlier versions) or
+        reject_unknown_client_hostname (reject_unknown_client in earlier
+	versions)?
+
+    A7. Too many "false positives" (that is: rejects too much non-spam
+        email), in my experience.
+
+	(By the way, Derrick 'dman' Hudson brought up a very
+	good point in the postfix-users mailing list: If you're
+	going to use reject_unknown_hostname anyway, you
+	probably want to put it *after* reject_non_fqdn_hostname
+	to prevent an unqualified hostname from matching one in
+	your own domain.)
+
+    Q8. Do you use header and body checks?
+
+    A8. Yes
+
+    Q9. Why don't you put header and body checks suggestions on a web
+        page?
+
+    A9. Two reasons: 1) I don't feel the need to show spammers how to get
+        around them and 2) They change too frequently for anything
+        published to stay up-to-date.  Sorry.  I do, however, have some
+	of my anti-virus/worm/trojan header and body checks expressions
+	shown here:
+
+	    http://jimsun.linxnet.com/misc/header_checks.txt
+	    http://jimsun.linxnet.com/misc/body_checks.txt
+
+    Q10. I notice you have both sbl.spamhaus.org *and*
+	 blackholes.easynet.nl in your list of DNSbls.  Since the latter
+	 includes the former: What's the point?
+
+    A10: You'll observe in my main.cf examples that I check the SBL before
+	 blackholes.easynet.nl.  I do this so I can track SBL "hits"
+	 separately.  There's no particular reason for this.  I just like
+	 to do it.
+
+	 Update: As of August 6, 2003, Steve Linford of the Spamhaus
+	 Project announced that the SBL will no longer be available via
+	 other DNSbls.  If you want to use the SBL, you'll have to use
+	 sbl.spamhaus.org.
+
+	 Update: As of Friday, November 21, 2003, the administrator of
+	 the easynet.nl DNSbl and RHSbl zones announced they would be
+	 discontinued as of December 1, 2003.
+
+    Q11. Why do you use the DNSbl's/RHSbl's you use?
+
+    A11. The main criteria is my personal determination, based in part on
+	 the opinions of people I know and trust, as to whether I feel I
+	 can trust the honesty, integrity, competence, consistency and,
+	 well...  "sanity" of the list maintainer(s).  Then, of course,
+	 what the list's published listing policy is.  (The latter is
+	 meaningless w/o the former.)
+
+	 In many cases: I've had one-on-one interaction with the
+	 maintainer(s) of the DNSbl's I use.
+
+	 Please note that a particular DNSbl's absence on my "uses" list
+	 is NOT a condemnation.  It more likely means that the DNSbls I'm
+	 using seem sufficient.  It might also mean that I've tried a
+	 particular DNSbl and found that it doesn't catch anything that
+	 the others I'm already using don't catch--so there's no point.
+
+    Q12. Shouldn't "reject_unknown_sender_domain" reject email with an
+	 empty envelope sender (empty MAIL FROM or "null sender")?
+
+    A12. No!  The null sender (<>) is used to send bounces.  According to
+	 RFCs, "An empty reverse path MUST be supported."  (Ref: RFC1123,
+	 section 5.2.9)
+
+    Q13. Is there a way to get Postfix to do DNSbl or RHSbl checks on
+         "Received:" headers?
+
+    A13. Not "natively."  That is: Not without an add-on of some type,
+         such as SpamAssassin.
+
+	 If you're trying to do this because you have a secondary MX
+	 that's not under your control: I recommend you consider doing
+	 away with the secondary MX.  See "When There's No Point To A
+	 Secondary MX," above, for a detailed discussion.
+
+    Q14. When I issue "postmap header_checks" command I get things like
+	 ``postmap: warning: header_checks, line 2: record is in "key:
+	 value" format; is this an alias file?"  What is wrong?
+
+    A14: You don't "postmap" header or body checks files, nor any other
+	 "regexp:" or "pcre:" type file.  However you must "postfix
+	 reload", after changing these, if you want your changes to take
+	 effect immediately.
+
+    Q15. As regards your "Stopping Forged Freemail" section, and FAQ
+	 Q1/A1: Other than complexity of the configuration, what prevents
+	 you from setting a from_freemail_host_yahoo,
+	 from_freemail_host_excite, from_freemail_host_netscape, et al and
+	 then having your /etc/postfix/freemail_access reference the
+	 appropriate matching list for each one.
+
+    A15: Nothing at all.  Feel free :)
+
+	 See also: FAQ Q1/A1
+
+    Q16. Why, for the Postfix 2.x version of your smtpd_*_restrictions,
+	 have you moved reject_unauth_pipelining to the new
+	 smtpd_data_restrictions stage?
+
+    A16. Because it's more effective there.  For more information, search
+	 the postfix--users mailing list archives for the thread subject
+	 "Where Goes reject_unauth_pipelining?," during the month of
+	 November, 2003.
+
+    Q17. Something got through body_checks that shouldn't have.  But when
+	 I forwarded it, *then* it got rejected.  What's up?
+
+    A17. Most likely the original was in base-64 or some other encoding
+	 scheme that your email client application decoded for you.
+	 Postfix' body_checks code doesn't decode these.
+
+    Q18. What have you got against listing 127.0.0.1, or some equally
+	 non-deliverable-to IP address, as ones lowest-priority MX?  It
+	 reduces spam!
+
+    A18. Many things: 1) It breaks DNS MX.  2) It's a short-term "cure,"
+	 at best.  3) It's of questionable efficacy.  In any event: If
+	 you're going to purposefully break your DNS configuration, don't
+	 complain when people don't accept your email *because* you have a
+	 broken DNS configuration.
+
+    Q19. How can I show my appreciation for your contributions?
+
+    A19. A simple "thanks" would be sufficient :).  Really.  But if you
+	 wish to do something more concrete, and can afford to do so,
+	 please consider making a tax-deductible donation to the SpamCon
+	 Foundation Legal Fund at:
+	 
+	     http://www.spamcon.org/legalfund/
+
+	 Thanks!
+
+
+Other Resources
+
+    Some other stuff I've tripped across that's related to what's on this
+    page.  In no particular order.  Mention here does not necessarily
+    constitute endorsement.
+
+    Advosys White Papers: Filtering malware and spam with Postfix
+    http://www.advosys.ca/papers/printable/postfix-filtering.html
+
+    Security Sage Support Guides
+    POSTFIX UNSOLICITED COMMERCIAL EMAIL / ANTI-SPAM GUIDE - MAIN.CF
+    http://www.securitysage.com/guides/postfix_uce_main.html
+
+    Ralf Hildebrandt: Mailhub Configuration Mailhub
+    http://www.stahl.bau.tu-bs.de/~hildeb/postfix/postfix_mailhub.shtml
+
+    River of Stars: Spam Block List Implementation
+    http://www.river.com/ops/nospam/mailconf.html
+
+    Fairly-Secure Anti-SPAM Gateway Using OpenBSD, Postfix, Amavisd-new,
+    SpamAssassin, Razor and DCC
+    http://lawmonkey.org/anti-spam.html
+
+    My Understanding Of How UCE Actually Works
+    http://www.mengwong.com/misc/postfix-uce-guide.txt
+
+    Postfix: Anti-Spam Utilities
+    http://www.hispalinux.es/~data/postfix/
+
+    And, of course...
+
+    Postfix Documentation, Howtos and FAQs
+    http://www.postfix.org/docs.html
+
+
+Change History (in reverse-chronological [latest first] order)
+
+    Fri Jun 29 11:31:05 EDT 2007
+
+	Added docs for reject_unknown_reverse_client_hostname (Postfix 2.3
+	and later)
+
+    Thu Jun 28 09:41:58 EDT 2007
+
+	Updated to reflect reject_unknown_hostname ->
+	reject_unknown_helo_hostname and reject_unknown_client ->
+	reject_unknown_client_hostname changes.
+
+    Mon Mar 19 10:33:09 EDT 2007
+
+	Added back-scatter solution.  Thanks and a tip o' the hat to Mikhail.
+
+    Wed Mar  7 10:42:45 EST 2007
+
+	Added note about SPEWS data being stale.
+
+    Thu Mar  1 09:49:40 EST 2007
+
+	Added note about dangers of using check_recipient_mx_access when
+	destination may have multiple unresolvable MX'.
+
+    Wed Jan 31 13:31:04 EST 2007
+
+	Added note about zen.spamhaus.org
+
+    Sun Jan 28 18:00:52 EST 2007
+
+	Removed SORBS from my list of used/recommended DNSbls.
+
+    Sat Jan  6 23:23:46 EST 2007
+
+	Removed ordb.org from examples.  Doh!
+
+    Mon Dec 18 11:37:53 EST 2006
+
+	Updated for end of ORDB.org
+
+    Tue Aug  8 09:06:07 EDT 2006
+
+	Updated for end of opm.blitzed.org
+
+    Sun Jun 12 08:25:16 EDT 2005
+
+	Updated "When Anti-Spam Measures Collide: Sender Address
+	Verifications Rejected" to include Verizon's "svNNNpub..."
+	hosts.  Added note about VZ apparently caching SAV test
+	results.
+
+    Wed Mar 16 06:53:58 EST 2005
+
+	Added note to "Stopping Forged Freemail" about users that send via
+	their ISPs' mailservers using a freemail sender address.  Expanded
+	slightly on FAQ item Q1/A1.
+
+    Tue Dec 14 13:03:31 EST 2004
+
+	Added "When Anti-Spam Measures Collide: Sender Address
+	Verifications Rejected" section.
+
+    Wed Jul 14 07:38:41 EDT 2004
+
+	Added note about "permit_sasl_authenticated" and Apple Mail to
+	FAQ Q3/A3.  (Thanks to Steve Sisak)
+
+    Mon Mar 15 14:57:25 EST 2004
+
+	Added note about how relays.monkeys.com was now returning positive
+	responses for all queries.
+
+    Tue Feb 10 15:41:29 EST 2004
+
+	Note about relays.monkeys.com nameservers being decommissioned.
+
+    Sat Jan  3 10:42:18 EST 2004
+
+	Added dul.dnsbl.sorbs.net to my "recommended" list of DNSbls.
+
+    Sun Dec 28 12:15:09 EST 2003
+
+	Minor updates to "A Note About DNS BlackLists (DNSbl's and
+	RHSbl's)" section.
+
+    Sat Dec 20 00:25:54 EST 2003
+
+	Expanded on the "127.0.0.1 MX" discussion.  Added FAQ Q18/A18.
+
+    Fri Dec 19 12:08:47 EST 2003
+
+	Added a note check_blurfl_mx_access discussion about how some
+	"anti-spammers" have listed 127.0.0.1 as one of their domain MX'.
+
+    Wed Dec  3 18:31:05 EST 2003
+
+	Started this section.  Added short "Understanding The Order In
+	Which UCE Checks Are Applied" section.  Renamed "Understanding The
+	Order In Which SMTPD Restrictions Are Applied."
+
+    Fri Dec  5 17:03:27 EST 2003
+
+	Added FAQ about why things that apparently shouldn't sometimes get
+	through body_checks.
+
