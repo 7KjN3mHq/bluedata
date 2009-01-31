@@ -41,6 +41,13 @@ if (/^X-Spam-Flag:.*YES/)
   to /dev/null
 }
 
+#delete-spam
+if (/^X-Spam-Level: \*\*\*\*\*\*\*\*/)
+{
+  to /dev/null
+}
+
+http://www.rsreese.com/2008/02/1.html
 
 vi /etc/mail/spamassassin/local.cf
 ##################################################
