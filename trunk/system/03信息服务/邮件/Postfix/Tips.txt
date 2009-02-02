@@ -82,7 +82,7 @@ grep 'X-Envelope-From:' /var/spool/vscan/virusmails | cut -d '@' -f 2 | cut -d '
 
 
 
-find /home/domains -type d -name ".Junk"` -exec rm -rf {} \;
+find /home/domains -type d -name ".Junk" -exec rm -rf {} \;
 
 find `find /home/domains -type d -name "cur" -maxdepth 4` -type f -atime +90 -exec rm {} \;
 
@@ -114,3 +114,10 @@ maildrop: Unable to open mailbox.
 .Junk
 
 postsuper -d ALL
+
+
+…Ë÷√±√˚
+vi /etc/postfix/aliases
+apache:        bluedata@jc001.cn
+
+newaliases
