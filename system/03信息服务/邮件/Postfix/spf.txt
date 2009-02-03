@@ -81,3 +81,9 @@ vi /etc/procmailrc
 http://cha.homeip.net/blog/archives/2008/11/_sendmailpostfi.html
 http://www.openspf.org/SPF_Record_Syntax
 http://www.juyimeng.com/sending-mail-using-telnet-with-smtp-auth.html
+
+
+vi /etc/mail/spamassassin/sa-mimedefang.cf
+header SPF_NONE                 Received-SPF =~ /none/
+describe SPF_NONE               Received-SPF header says NONE
+score SPF_NONE                  3.1

@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <!-- saved from url=(0051)http://www.extmail.org/docs/extmail_solution_linux/ -->
-<HTML><HEAD><TITLE>CentOS 4.3 ExtMail Solution Howto</TITLE>
+<HTML><HEAD><TITLE>CentOS 4.6 ExtMail Solution Howto</TITLE>
 <META http-equiv=Content-Type content="text/html; charset=utf-8">
 <STYLE>.line {
 	BORDER-RIGHT: #ccc 1px solid; PADDING-RIGHT: 5px; BORDER-TOP: #ccc 1px solid; PADDING-LEFT: 5px; PADDING-BOTTOM: 5px; BORDER-LEFT: #ccc 1px solid; PADDING-TOP: 5px; BORDER-BOTTOM: #ccc 1px solid
@@ -22,13 +22,13 @@ IMG {
 }
 </STYLE>
 
-<META content="MSHTML 6.00.2900.3020" name=GENERATOR></HEAD>
+<META content="MSHTML 6.00.2900.3492" name=GENERATOR></HEAD>
 <BODY>
 <H1>ExtMail Solution HOWTO for Linux</H1>
 <H3>版权声明：</H3>
 <P><B>本文版权归作者所有，如其他个人、第三方网站或媒体报刊等需转载全文或节选，为支持我们的工作，请务必注明如下信息：</B> 
 <UL>
-  <LI>作者信息：hzqbbc &lt;hzqbbc (at) hzqbbc (dot) com&gt; 
+  <LI>文档所有者：Extmail Dev Team; 
   <LI>文章原始出处：<A 
   href="http://www.extmail.org/docs/extmail_solution_linux/">http://www.extmail.org/docs/extmail_solution_linux/</A> 
 
@@ -37,6 +37,7 @@ IMG {
 <P></P>
 <H3>变更说明</H3>
 <UL>
+  <LI>0.21 2008-03-23：文档及其涉及软件的全面更新， 作者 Ray 
   <LI>0.20 2006-11-26：增加对uidnumber/gidnumber说明，感谢elm 
   <LI>0.19 2006-11-25：增加对maildrop增加vuser/vgroup说明，感谢elm 
   <LI>0.18 2006-09-04：修正一处输入错误，一处不明确的地方 
@@ -45,18 +46,21 @@ IMG {
   <LI>0.15 2006-08-17：增加mysql/httpd开机自启动的支持 </LI></UL>
 <H3>关于此文</H3>
 <UL>
-  <LI>版　　本：0.20 
-  <LI>作　　者：He zhiqiang &lt;hzqbbc (at) hzqbbc (dot) com&gt; 
+  <LI>版　　本：0.21 
+  <LI>作　　者：He zhiqiang &lt;hzqbbc (at) extmail (dot) org&gt; , Ray 
+  &lt;raykingecs (at) extmail (dot) org&gt; 
   <LI>项目主页：<A href="http://www.extmail.org/">http://www.extmail.org/</A> 
   <LI>个人主页：<A href="http://www.hzqbbc.com/">http://www.hzqbbc.com/</A> 
-  <LI>最后更新：2006-11-26 </LI></UL>
-<P>本文档以<B><I>2005-07-25</I></B>的早期文档为蓝本，以RPM系统为基础。所涉及软件全部是OpenSource软件，版权以GPL为主，作为企业应用没有任何版权/法律问题。</P>
-<P>基于RPM系统具有方便、快捷，易快速复制和重现的优点。如果用户希望获得这些RPM包的源码包，可以与作者联系。</P>
-<P>编写本文的初衷，是给那些希望快速架设邮件系统而不想过多了解复杂的系统知识的网管/用户，为了使软件之间的结合更紧密，部分软件的配置及测试方面进行了增强改进，因此本文的一些操作步骤作者不能保证在其他场合能完全适用，敬请注意。 
-</P>
-<P>本文假定读者是在<B><I>CentOS 4.x或 RedHat EnterPrise Linux 
-4.x</I></B>平台上安装，并具有一定的Unix平台 / 
+  <LI>最后更新：2008-3-20 </LI></UL>
+<P>本文档以<B><I>2005-07-25</I></B>的早期文档为蓝本，以RPM系统为基础（基于RPM系统具有方便、快捷，易快速复制和重现的优点。如果用户希望获得这些RPM包的源码包，可以与Extmail 
+Dev Team联系）。所涉及软件全部是OpenSource软件，版权以GPL为主，作为企业应用没有任何版权/法律问题。</P>
+<P>编写本文的初衷，是给那些希望快速架设邮件系统而不想过多了解复杂的系统知识的网管/用户，为了使软件之间的结合更紧密，部分软件的配置及测试方面进行了增强改进，因此本文的一些操作步骤Extmail 
+Dev Team不保证在其他场合能完全适用，敬请注意。 </P>
+<P>本文档假设读者在CentOS 4.x或 RedHat EnterPrise Linux 4.x平台上安装，并具有一定的Unix平台 / 
 Linux平台系统经验，懂得rpm基本命令及常规的系统操作，如文件的删除，目录创建，改名，和vi编辑器的基本使用等。</P>
+<P>本文档假设待安装邮局的域名为extmail.org并已在DNS设置MX记录指向mail.extmai.org。读者请根据自身实际情况予以修改。</P>
+<P>本文档所有内容均在Centos4.6系统安装、测试通过。</P>
+<P>本文档由Extmail项目组负责解释，并根据Extmail项目的建设和发展，适时予以更新。如手册与实际项目情况有冲突，以文档服从实际为原则。</P>
 <H3>文档目录</H3>
 <UL>
   <LI><A 
@@ -160,12 +164,12 @@ ExtMail 和ExtMan， Courier系列软件。是一个功能相对比较齐全的�
     <TD>备注</TD></TR>
   <TR>
     <TD><SPAN>操作系统（</SPAN>OS<SPAN>）</SPAN></TD>
-    <TD>CentOS 4.3</TD>
+    <TD>CentOS 4.6</TD>
     <TD>CentOS<SPAN>和</SPAN>RHEL<SPAN>是一样的，而且升级免费</SPAN></TD></TR>
   <TR>
     <TD><SPAN>邮件传输代理（</SPAN>MTA<SPAN>）</SPAN></TD>
-    <TD>Postfix 2.3snapshot</TD>
-    <TD><SPAN>使用</SPAN>2.3 snapshot<SPAN>，虽然不是最新但是对一般人而言足够用了</SPAN></TD></TR>
+    <TD>Postfix 2.5.1</TD>
+    <TD><SPAN>使用最新版本2.5.1</SPAN></TD></TR>
   <TR>
     <TD><SPAN>数据库/目录服务</SPAN></TD>
     <TD>MySQL 4.1</TD>
@@ -177,7 +181,7 @@ ExtMail 和ExtMan， Courier系列软件。是一个功能相对比较齐全的�
     <TD><SPAN>支持过滤和强大功能</SPAN></TD></TR>
   <TR>
     <TD>Web<SPAN>帐户管理后台</SPAN></TD>
-    <TD>ExtMan 0.16-pre1</TD>
+    <TD>ExtMan 0.2.4</TD>
     <TD><SPAN>支持无限域名、无限用户</SPAN></TD></TR>
   <TR>
     <TD>POP3 <SPAN>服务器</SPAN></TD>
@@ -185,19 +189,19 @@ ExtMail 和ExtMan， Courier系列软件。是一个功能相对比较齐全的�
     <TD><SPAN>只使用pop3部分，对于大部分企业而言完全足够</SPAN></TD></TR>
   <TR>
     <TD>WebMail <SPAN>系统</SPAN></TD>
-    <TD>ExtMail 0.24-pre8</TD>
+    <TD>ExtMail 1.0.4</TD>
     <TD><SPAN>支持多语言、全部模板化，功能基本齐全</SPAN></TD></TR>
   <TR>
     <TD><SPAN>防病毒软件（</SPAN>Anti-Virus<SPAN>）</SPAN></TD>
-    <TD>ClamAV 0.88</TD>
+    <TD>ClamAV 0.92-2</TD>
     <TD><SPAN>最热门的开源杀毒软件</SPAN></TD></TR>
   <TR>
     <TD>SMTP<SPAN>阶段反垃圾邮件工具</SPAN></TD>
-    <TD>Spam Locker 0.083</TD>
+    <TD>Spam Locker 0.10</TD>
     <TD>基于SMTP<SPAN>行为识别的</SPAN>Antispam<SPAN>软件，大量可选插件</SPAN></TD></TR>
   <TR>
     <TD><SPAN>内容过滤器</SPAN></TD>
-    <TD>Amavisd-new 2.40</TD>
+    <TD>Amavisd-new 2.5.4</TD>
     <TD>Content-Filte<SPAN>r软件</SPAN>，支持与clamav/sa的挂接</TD></TR>
   <TR>
     <TD><SPAN>内容级别的反垃圾邮件工具</SPAN></TD>
@@ -209,7 +213,7 @@ ExtMail 和ExtMan， Courier系列软件。是一个功能相对比较齐全的�
     <TD><SPAN>标准的</SPAN>SASL<SPAN>实现库，可以支持</SPAN>Courier authlib</TD></TR>
   <TR>
     <TD><SPAN>其他数据认证库</SPAN></TD>
-    <TD>Courier Authlib 0.57</TD>
+    <TD>Courier Authlib 0.60</TD>
     <TD>authlib<SPAN>是</SPAN>maildrop, courier-imap<SPAN>等服务的关键部件</SPAN></TD></TR>
   <TR>
     <TD><SPAN>日志分析及显示</SPAN></TD>
@@ -222,11 +226,11 @@ ExtMail 和ExtMan， Courier系列软件。是一个功能相对比较齐全的�
 <H3><A name=hardware></A>硬件配置</H3>
 <P>要流畅地运行邮件系统，建议的硬件配置如下：</P>
 <UL>
-  <LI>物理内存：256M+ 推荐512M 
-  <LI>交换区：2倍物理内存大小 
-  <LI>CPU：PIII 1G+ 推荐P4 
-  <LI>主板：推荐Intel原装 
-  <LI>网卡：100M/1000M 推荐3Com/Intel </LI></UL>
+  <LI>物理内存：512M+ 推荐1024M; 
+  <LI>交换区：2倍物理内存大小; 
+  <LI>CPU：PIII 1G+ 推荐P4及其以上级别; 
+  <LI>主板：推荐Intel原装; 
+  <LI>网卡：100M/1000M 推荐3Com/Intel; </LI></UL>
 <H3><A name=os></A>操作系统安装</H3>
 <P>本文档支持RedHat Enterprise 4.x 及CentOS 4.x版本。要注意的是安装系统时，只安装如下的组件： 
 <UL>
@@ -240,66 +244,66 @@ ExtMail 和ExtMan， Courier系列软件。是一个功能相对比较齐全的�
   class=sm_title>VIM编辑器</DIV>强烈建议安装vim-enhanced软件包，它支持main.cf<B>彩色高亮语法分析</B> 
   </LI></UL>
 <P>其余的Xwindows, 打印，KDE/Gnore, 
-服务器配置工具，网络工具，开发包等全部都不要选上。安装完毕进入操作系统后，建议禁止root直接登陆，并增加一个非root帐户，例如叫sysadmin。这样要以root权限操作的话，必须先以sysadmin身份登陆再su到root执行。方法：</P>
-<H4>CentOS4.3安装步骤图解</H4>
+服务器配置工具，网络工具，开发包等全部都不是必选组件。安装完毕进入操作系统后，为增加系统安全性，建议禁止root直接登陆，并增加一个非root帐户，例如sysadmin。这样无法以root账户直接登陆系统，必须先以sysadmin身份登陆再su到root执行。方法：</P>
+<H4>CentOS4.6安装步骤图解</H4>
 <P>以下将以详细的图解来介绍如何安装CentOS4.3</P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm1.gif"><BR>CentOS启动光盘的启动画面，直接回车即可。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm1.gif"><BR>CentOS启动光盘的启动画面，直接回车即可。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm2.gif"><BR>系统提示“是否需要校验CD媒质”，请选择“Skip”。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm2.gif"><BR>系统提示“是否需要校验CD媒质”，请选择“Skip”。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm3.gif"><BR>选择“English”作为安装界面的语言。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm3.gif"><BR>选择“English”作为安装界面的语言。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm4.gif"><BR>安装类型请务必选择“Custom”，以便之后详细选择要装的软件包。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm4.gif"><BR>安装类型请务必选择“Custom”，以便之后详细选择要装的软件包。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm5.gif"><BR>磁盘分区设置请选择“Manually 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm5.gif"><BR>磁盘分区设置请选择“Manually 
 partition with disk Druid”（手工分区）。 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm6.gif"><BR>如图，我们将/，/usr，/var，/var/spool/postfix等单独分成一个分区，注意：如果磁盘大小允许，请将/var/spool/vscan目<BR>录也单独成一个分区，该目录主要存放被过滤的临时邮件。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm6.gif"><BR>如图，我们将/，/usr，/var，/var/spool/postfix等单独分成一个分区，注意：如果磁盘大小允许，请将/var/spool/vscan目录也单独成一个分区，该目录主要存放被过滤的临时邮件。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm7.gif"><BR>配置网卡及子网掩码，记得点选“Activate 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm7.gif"><BR>设置服务器IP地址及子网掩码，记得点选“Activate 
 boot”。 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm8.gif"><BR>配置网关及DNS，请将离你的服务器最近DNS服务器IP地址填入“Primary 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm8.gif"><BR>设置服务器网关及DNS，请将离你的服务器最近DNS服务器IP地址填入“Primary 
 DNS”。 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm9.gif"><BR>防火墙配置时，打开防火墙（选Enable 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm9.gif"><BR>防火墙配置时，打开防火墙（选Enable 
 FireWall），并放行常规的服务（服务列表全选），最重要的是记得打开SELinux（选Active） </P>
-<P><IMG src="CentOS 4_3 ExtMail Solution Howto.files/vm10.gif"><BR>时区选“上海”。 </P>
+<P><IMG src="CentOS 4_6 ExtMail Solution Howto.files/vm10.gif"><BR>时区选“上海”。 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm11.gif"><BR>输入root帐户密码，建议使用较长的密码，并混杂数字与字母及特殊字符。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm11.gif"><BR>输入root帐户密码，建议使用较长的密码，并混杂数字与字母及特殊字符。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm12.gif"><BR>进入软件组的选择对话界面后，我们只选择Editors组。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm12.gif"><BR>进入软件组的选择对话界面后，我们只选择Editors组。 
 </P>
-<P><IMG src="CentOS 4_3 ExtMail Solution Howto.files/vm13.gif"><BR>其次选择是Web 
+<P><IMG src="CentOS 4_6 ExtMail Solution Howto.files/vm13.gif"><BR>其次选择是Web 
 Server及FTP Server组。 </P>
-<P><IMG src="CentOS 4_3 ExtMail Solution Howto.files/vm14.gif"><BR>再次选择MySQL 
+<P><IMG src="CentOS 4_6 ExtMail Solution Howto.files/vm14.gif"><BR>再次选择MySQL 
 DataBase组，并点击右边的Details </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm15.gif"><BR>在Details对话框里，确保libdbi-dbd-mysql，mysql-server，perl-DBD-MySQL等模块都被选中。extmail依赖这些软件包。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm15.gif"><BR>在Details对话框里，确保libdbi-dbd-mysql，mysql-server，perl-DBD-MySQL等模块都被选中。extmail依赖这些软件包。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm16.gif"><BR>最后，确认一下所做的选择。其他没有被提到的软件模块/组全部都去掉。总共软件大小有814MB左右。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm16.gif"><BR>最后，确认一下所做的选择。其他没有被提到的软件模块/组全部都去掉。总共软件大小有900MB左右。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm17.gif"><BR>点Next后，安装系统提示必须要准备好CentOS的第1，2，3张光盘。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm17.gif"><BR>点Next后，安装系统提示必须要准备好CentOS的第1，2，3张光盘。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm18.gif"><BR>系统进行初始化，磁盘分区等。 </P>
+src="CentOS 4_6 ExtMail Solution Howto.files/vm18.gif"><BR>系统进行初始化，磁盘分区等。 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm19.gif"><BR>系统安装到后面时，需要换安装盘。请将盘2及盘3按提示放入光驱。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm19.gif"><BR>系统安装到后面时，需要换安装盘。请将盘2及盘3按提示放入光驱。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm20.gif"><BR>安装完毕后，出现祝贺完成的界面，点Reboot重新启动。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm20.gif"><BR>安装完毕后，出现祝贺完成的界面，点Reboot重新启动。 
 </P>
 <P><IMG 
-src="CentOS 4_3 ExtMail Solution Howto.files/vm21.gif"><BR>如无意外，系统进入登陆提示符界面。至此，CentOS4.3的安装就结束了。 
+src="CentOS 4_6 ExtMail Solution Howto.files/vm21.gif"><BR>如无意外，系统进入登陆提示符界面。至此，CentOS4.6的安装就结束了。 
 </P>
 <P>以root身份登进系统后，增加一个非root帐户，名称为sysadmin，密码按您的需求设置一个即可。接下来我们要禁止root直接登陆，编辑/etc/ssh/sshd_config 
 修改以下配置为： 
@@ -323,26 +327,26 @@ setsebool mysqld_disable_trans=1
 Solution软件包，并用ftp以sysadmin帐户的身份，上载到服务器。</P>
 <H4>下载软件包</H4>我们统一将软件包下载到/root目录里。 <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">su - root
 cd /root
-wget <A href="http://www.extmail.org/source/ExtMail-Solution-Linux-0.1.tar.gz">http://www.extmail.org/source/ExtMail-Solution-Linux-0.1.tar.gz</A>
+wget <A href="http://www.extmail.org/source/ExtMail-Solution-Linux-0.2.tar.gz">http://www.extmail.org/source/ExtMail-Solution-Linux-0.2.tar.gz</A>
 </PRE>
 <H4>校验</H4>
-<P>下载的文件必须校验确认过没损坏才能使用。命令如下：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">wget <A href="http://www.extmail.org/source/md5sum.es_linux-0.1">http://www.extmail.org/source/md5sum.es_linux-0.1</A>
-cat md5sum.es_linux-0.1
-md5sum ExtMail-Solution-Linux-0.1.tar.gz 
+<P>下载的文件必须校验确认过没损坏才能使用。命令如下：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">wget <A href="http://www.extmail.org/source/md5sum.es_linux-0.2">http://www.extmail.org/source/md5sum.es_linux-0.2</A>
+cat md5sum.es_linux-0.2
+md5sum ExtMail-Solution-Linux-0.2.tar.gz 
 </PRE>
-<P>一个可能的结果：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid"># cat md5sum.es_linux-0.1
-168eced41c0cac0ed9f981e791f3783b ExtMail-Solution-Linux-0.1.tar.gz
-# md5sum ExtMail-Solution-Linux-0.1.tar.gz
-168eced41c0cac0ed9f981e791f3783b ExtMail-Solution-Linux-0.1.tar.gz
+<P>一个可能的结果：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid"># cat md5sum.es_linux-0.2
+168eced41c0cac0ed9f981e791f3783b ExtMail-Solution-Linux-0.2.tar.gz
+# md5sum ExtMail-Solution-Linux-0.2.tar.gz
+168eced41c0cac0ed9f981e791f3783b ExtMail-Solution-Linux-0.2.tar.gz
 </PRE>
 <P>由于软件包不断的变更，所以上述结果和您的结果可能不一致，请以下载的md5sum为准</P>
 <H4>解压</H4>
-<P>目前最新的ExtMail-Solution软件包版本号为0.1，软件包文件名为：ExtMail-Solution-Linux-0.1.tar.gz，下载回来后，在/root目录解开：</P>
-<DIV class=line>tar xfz ExtMail-Solution-Linux-0.1.tar.gz </DIV>
+<P>目前最新的ExtMail-Solution软件包版本号为0.2，软件包文件名为：ExtMail-Solution-Linux-0.2.tar.gz，下载回来后，在/root目录解开：</P>
+<DIV class=line>tar xfz ExtMail-Solution-Linux-0.2.tar.gz </DIV>
 <P>此外，我们假设本次安装默认域是extmail.org，主机名为：mail.extmail.org，ExtMail 
-Solution的文件目录是/root/ExtMail-Solution-Linux-0.1/</P>
+Solution的文件目录是/root/ExtMail-Solution-Linux-0.2/</P>
 <DIV class=sm_title>重要步骤：</DIV>
-<P>我们进入/root/ExtMail-Solution-Linux-0.1/目录，该目录下包括如下文件/目录： <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">conf/
+<P>我们进入/root/ExtMail-Solution-Linux-0.2/目录，该目录下包括如下文件/目录： <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">conf/
 docs/
 RPMS/
 src/
@@ -350,14 +354,13 @@ README
 </PRE>
 <P>其中RPMS目录是本文的重点，里面包含了所需要的全部rpm包，src目录则是存放webmail, 
 anti-spam等相关软件的源码，而README则是说明文件，docs目录则是本文档相关的html及图片。</P>
-<P>下文所涉及的操作，绝大部分都是发生在/root/ExtMail-Solution-Linux-0.1目录里，请确保当前目录为：<B><I>/root/ExtMail-Solution-Linux-0.1</I></B></P>
+<P>下文所涉及的操作，绝大部分都是发生在/root/ExtMail-Solution-Linux-0.2目录里，请确保当前目录为：<B><I>/root/ExtMail-Solution-Linux-0.2</I></B></P>
 <H3><A name=postfix></A>配置Postfix MTA</H3>删除冲突软件,sendmail，需要执行: 
 <DIV class=line>rpm -e --nodeps sendmail</DIV><BR>
 <DIV class=sm_title>mysql有关软件：</DIV>
 <P>CentOS4.x/ RedHat EL4.x 都自带mysql-server，请用户自行安装好，包括mysql-client和devel等包</P>
 <DIV class=sm_title>安装postfix</DIV>
-<DIV class=line>rpm -ivh --nodeps RPMS/postfix-2.3.20050716-1hzq.i386.rpm 
-</DIV><BR>
+<DIV class=line>rpm -ivh --nodeps RPMS/postfix-2.5.1-2ext.i386.rpm </DIV><BR>
 <DIV class=sm_title>配置postfix</DIV>简化postfix配置: <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">postconf -n &gt; /etc/postfix/main2.cf
 mv /etc/postfix/main.cf /etc/postfix/main.cf.old
 mv /etc/postfix/main2.cf /etc/postfix/main.cf
@@ -413,10 +416,10 @@ where_field = username
 </PRE>
 <H3><A name=authlib></A>配置Courier-Authlib</H3>
 <H4>安装Courier-Authlib</H4>
-<P>运行如下命令安装相关软件包</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/libtool-libs-1.5.6-4.EL4.1.c4.3.i386.rpm
-rpm -ivh RPMS/courier-authlib-0.57-1hzq.i386.rpm
-rpm -ivh RPMS/courier-authlib-devel-0.57-1hzq.i386.rpm
-rpm -ivh RPMS/courier-authlib-mysql-0.57-1hzq.i386.rpm
+<P>运行如下命令安装相关软件包</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/libtool-libs-1.5.6-4.EL4.2.i386.rpm
+rpm -ivh RPMS/courier-authlib-0.60.2-1ext.i386.rpm
+rpm -ivh RPMS/courier-authlib-devel-0.60.2-1ext.i386.rpm
+rpm -ivh RPMS/courier-authlib-mysql-0.60.2-1ext.i386.rpm
 </PRE>
 <P>编辑/etc/authlib/authmysqlrc文件，并将其内容清空，然后增加如下内容：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">MYSQL_SERVER            localhost
 MYSQL_USERNAME          extmail
@@ -443,36 +446,35 @@ MYSQL_SELECT_CLAUSE     SELECT username,password,"",uidnumber,gidnumber,\
                         WHERE username = '$(local_part)@$(domain)'
 </PRE>
 <P>存盘退出后启动courier-authlib：</P>
-<DIV class=line>/etc/init.d/courier-authlib start </DIV>
+<DIV class=line>service courier-authlib start </DIV>
 <P>如一切正常，命令行将返回如下信息：</P>
 <DIV class=line>Starting Courier authentication services: authdaemond </DIV><BR>
 <DIV class=sm_title>修改authdaemon 
 socket目录权限</DIV><BR>如果该目录权限不正确修改，maildrop及postfix等将无法正确获取用户的信息及密码认证： 
 <DIV class=line>chmod 755 /var/spool/authdaemon/ </DIV><BR>
 <H3><A name=maildrop></A>安装Maildrop</H3>
-<DIV class=sm_title>注意事项：</DIV>
-<P><B>1.</B>如果您需要重新编译maildrop软件包，首先必须获得其源码rpm包，其次必须先装好courier-authlib及其devel软件包，否则编译maildrop之后将无法打开authlib支持。</P>
-<P><B>2.</B>maildrop 
-RPM包安装时，会自动创建vuser用户及vgroup用户组，专门用于邮件的存储，vuser:vgroup的uid/gid都是1000，这与一般的邮件文档中提及用postfix用户存邮件不一样。因为postfix用户的uid一般都低于500，而Suexec模块编译时对UID/GID的要求是要大于500，因此显然用postfix用户不能满足，会导致报错。其次，如果用maildrop作为投递（MDA），以postfix身份投递的话，postfix 
-mta也会报错的。</P>
-<DIV class=sm_title>安装maildrop</DIV><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/maildrop-2.0.1-1hzq.i386.rpm
-rpm -ivh RPMS/maildrop-man-2.0.1-1hzq.i386.rpm
+<DIV class=sm_title>安装maildrop</DIV><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/maildrop-2.0.4-1ext.i386.rpm
+rpm -ivh RPMS/maildrop-man-2.0.4-1ext.i386.rpm
 </PRE><BR>
 <DIV 
 class=sm_title>配置master.cf</DIV>为了使Postfix支持Maildrop，必须修改/etc/postfix/master.cf文件，注释掉原来的maildrop的配置内容，并改为： 
 <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">maildrop   unix        -       n        n        -        -        pipe
-    #flags=DRhu user=vmail argv=/usr/local/bin/maildrop -d ${recipient}
     flags=DRhu user=vuser argv=maildrop -w 90 -d ${user}@${nexthop} ${recipient} ${user} ${extension} {nexthop}
 </PRE>
 <DIV class=sm_title>配置main.cf</DIV>
 <P>由于maildrop不支持一次接收多个收件人，因此必须在main.cf里增加如下参数：</P>
 <DIV class=line>maildrop_destination_recipient_limit = 1</DIV>
 <P>最后重新启动postfix即可</P><BR>
+<DIV class=sm_title>注意事项：</DIV>
+<P><B>1.</B>如需重新编译Maildrop软件包，必须先获得其源码rpm包，并且必须先行安装courier-authlib及其devel软件包，否则编译后的maildrop将无法打开authlib支持。</P>
+<P><B>2.</B>maildrop 
+RPM包安装时，会自动创建vuser用户及vgroup用户组，专门用于邮件的存储，vuser:vgroup的uid/gid都是1000，这与一般的邮件文档中提及用postfix用户存邮件不一样。因为postfix用户的uid一般都低于500，而Suexec模块编译时对UID/GID的要求是要大于500，因此使用postfix用户不能满足要求。其次，如果用Maildrop作为投递代理（MDA），以postfix身份投递的话，会导致postfix 
+MTA错误。</P>
 <H3><A name=apache></A>配置Apache</H3>编辑httpd.conf： 
 <DIV class=line>vi 
 /etc/httpd/conf/httpd.conf</DIV><BR>在730行左右，屏蔽掉AddDefaultCharset： 
 <DIV class=line>#AddDefaultCharset UTF-8 </DIV><BR>使apache开机默认启动：<BR>
-<DIV class=line>chkconfig --level 3 httpd on </DIV><BR>
+<DIV class=line>chkconfig httpd on </DIV><BR>
 <H4>虚拟主机设置</H4>编辑/etc/httpd/conf/httpd.conf文件，在最后一行加上：<BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">NameVirtualHost *:80
 Include conf/vhost_*.conf
 </PRE><BR>编辑/etc/httpd/conf/vhost_extmail.conf，里面定义虚拟主机的相关内容，包括主目录，以及ExtMail和ExtMan的相关配置，Suexec的设置等。 
@@ -491,26 +493,28 @@ Alias /extman/ /var/www/extsuite/extman/html/
 SuexecUserGroup vuser vgroup
 &lt;/VirtualHost&gt;
 </PRE>重新启动apache: 
-<DIV class=line>/etc/init.d/httpd restart</DIV>
+<DIV class=line>service httpd restart</DIV>
 <P><B>注意：</B>此时重新启动apache会产生以下警告信息，可不必理会</P>
 <DIV class=line>Starting httpd: Warning: DocumentRoot 
 [/var/www/extsuite/extmail/html/] does not exist </DIV><BR>
 <H3><A name=extmail></A>安装ExtMail</H3>建立/var/www/extsuite并复制源码到该目录，相关命令： <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">mkdir /var/www/extsuite
-cp -r src/extmail-0.24-pre8 /var/www/extsuite/extmail
+tar -zxvf src/extmail-1[1][1].0.4.tar.gz -C src
+cp -r src/extmail-1.0.4 /var/www/extsuite/extmail
 cd /var/www/extsuite/extmail
 cp webmail.cf.default webmail.cf
 cd $OLDPWD
 </PRE>
-<P><B>注意：</B>上面命令行中最后一个cd $OLDPWD是返回原始路径（即ExtMail Solution软件包根目录）</P>
+<P><B>注意：</B>上面命令行中最后一个cd $OLDPWD是返回原始路径（即ExtMail 
+Solution软件包根目录）</P>安装perl-Unix-Syslog包 <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/perl-Unix-Syslog-1.0-1ext.i386.rpm
+</PRE>
 <DIV 
-class=sm_title>编辑webmail.cf</DIV><BR>用vi打开/var/www/extsuite/extmail/webmail.cf，并按2次ESC键以确保进入命令模式，然后输入： 
-<BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">:1, $ s#/var/www/cgi-bin#/var/www/extsuite#g
-</PRE>上述命令的作用是将默认路径从/var/www/cgi-bin下换到/var/www/extsuite下，处理完毕后，修改webmail.cf里的其他参数，主要变动的内容见下： 
+class=sm_title>编辑webmail.cf</DIV>修改/var/www/extsuite/extmail/webmail.cf里的其他参数，主要变动的内容见下： 
 <BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">SYS_USER_LANG = zh_CN
 SYS_USER_CHARSET = gb2312
 
 SYS_MFILTER_ON = 1
 SYS_NETDISK_ON = 1
+SYS_SHOW_SIGNUP = 1
 
 SYS_MYSQL_USER = extmail
 SYS_MYSQL_PASS = extmail
@@ -521,20 +525,24 @@ SYS_G_ABOOK_FILE_CHARSET = gb2312
 
 </PRE>
 <P>其中SYS_MFILTER_ON及SYS_NETDISK_ON 
-设置为1是为了打开网络磁盘和过滤器。全局地址本默认为ldap格式，现在也改为文本格式，并将地址本的转换编码改为GB2312 </P>
+设置为1是为了打开网络磁盘和过滤器；SYS_SHOW_SIGNUP控制首页是否显示免费注册邮箱按钮；全局地址本默认为ldap格式，现在也改为文本格式，并将地址本的转换编码改为GB2312 
+</P>
 <DIV class=sm_title>更新cgi目录权限</DIV>
 <P>由于SuEXEC的需要，必须将extmail的cgi目录修改成vuser:vgroup权限：</P>
 <DIV class=line>chown -R vuser:vgroup /var/www/extsuite/extmail/cgi/ </DIV>
 <H3><A name=extman></A>安装ExtMan - web后台</H3>
-<P>在ExtMail-Solution软件包根目录下执行：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">cp -r src/extman-0.16-pre1 /var/www/extsuite/extman/
+<P>在ExtMail-Solution软件包根目录下执行：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">tar -zxvf src/extman-0[1][1].2.4.tar.gz -C src
+cp -r src/extman-0.2.4 /var/www/extsuite/extman/
 </PRE><BR>
 <DIV 
-class=sm_title>配置webman.cf</DIV><BR>用vi编辑/var/www/extsuite/extman/webman.cf，并连按2次ESC，确保进入命令模式，然后输入如下命令： 
-<PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">:1, $ s#/var/www/cgi-bin#/var/www/extsuite#g
-</PRE><BR>处理完毕后修改SYS_CHARSET及SYS_LANG参数为： <BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">SYS_CHARSET = gb2312
+class=sm_title>配置webman.cf</DIV>修改/var/www/extsuite/extman/webman.cf内SYS_CHARSET及SYS_LANG参数为： 
+<BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">SYS_CAPTCHA_ON = 1
+# SYS_CAPTCHA_ON参数控制首页是否采用校验码登陆
+SYS_CHARSET = gb2312
 SYS_LANG = zh_CN
 </PRE>
-<P>其他参数基本上可以使用默认值。 </P>
+<P>其他参数基本上可以使用默认值。 </P>安装perl-GD包 <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/perl-GD-2.35-2ext.i386.rpm
+</PRE>
 <DIV class=sm_title>更新cgi目录权限</DIV>
 <P>由于SuEXEC的需要，必须将extman的cgi目录修改成vuser:vgroup权限：</P>
 <DIV class=line>chown -R vuser:vgroup /var/www/extsuite/extman/cgi/ </DIV><BR>
@@ -543,11 +551,11 @@ SYS_LANG = zh_CN
 ax的办法查看进程列表是否有mysqld进程：</P>
 <DIV class=line>rpm -aq|grep -i mysql-server </DIV>
 <P>正常情况下应该可以看到mysql-server被安装：</P>
-<DIV class=line>mysql-server-4.1.12-3.RHEL4.1 </DIV>
+<DIV class=line>mysql-server-4.1.20-2.RHEL4.1.0.1 </DIV>
 <P>如果没有，则表示没有安装好mysql-server，可以从本软件包RPMS目录里安装，也可以找安装光盘安装：</P>
-<DIV class=line>rpm -ivh RPMS/mysql-server-4.1.12-3.RHEL4.1.i386.rpm </DIV>
+<DIV class=line>rpm -ivh RPMS/mysql-server-4.1.20-2.RHEL4.1.0.1.i386.rpm </DIV>
 <P>安装完毕后必须初始化mysql，然后重新启动</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">/usr/bin/mysql_install_db
-/etc/init.d/mysqld start
+service mysqld start
 </PRE>
 <P>正常情况下将启动成功：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">Starting MySQL:                                            [  <FONT color=green>OK</FONT>  ]
 </PRE>
@@ -565,16 +573,11 @@ Sl 0:00 /usr/libexec/mysqld --defaults-file=/etc/my.cnf --basedir=/usr
 <P>执行以下命令导入mysql数据库结构及初始化数据，<B>注意必须逐行输入以下命令，root密码默认为空</B>，不可直接用鼠标复制两行命令直接输入，否则会报错！</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">mysql -u root -p &lt; /var/www/extsuite/extman/docs/extmail.sql
 mysql -u root -p &lt; /var/www/extsuite/extman/docs/init.sql
 </PRE>
-<DIV 
-class=sm_title>链接基本库到Extmail</DIV><BR>由于ExtMan的体系与ExtMail比较类似，因此ExtMan需要使用ExtMail中几个基础perl 
-模块，在extman的源码包里，包含了一个叫buildlink.sh 的小脚本，该脚本完成了这些链接的工作，使用方法： <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">cd /var/www/extsuite/extman/libs/Ext
-./buildlink.sh build /var/www/extsuite/extmail/libs/Ext
-mkdir /tmp/extman
+<DIV class=sm_title>链接基本库到Extmail</DIV><BR>建立临时文件夹： <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">mkdir /tmp/extman
 chown -R vuser:vgroup /tmp/extman
-cd $OLDPWD
 </PRE>
-<P>操作完毕后，需要建立刚才导入mysql的test@extmail.org帐户的Maildir，请输入如下命令：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">cd /var/www/extsuite/extman/tools
-./maildirmake.pl /home/domains/extmail.org/test/Maildir
+<P>建立刚才导入mysql的postmaster@extmail.org帐户的Maildir，请输入如下命令：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">cd /var/www/extsuite/extman/tools
+./maildirmake.pl /home/domains/extmail.org/postmaster/Maildir
 chown -R vuser:vgroup /home/domains/extmail.org
 cd $OLDPWD
 </PRE>
@@ -587,23 +590,24 @@ webman.cf将临时目录修改到另一个地方。此处暂以/tmp/extman默认
 <P></P>
 <DIV class=sm_title>测试authlib</DIV>
 <P>在命令行下执行：</P>
-<DIV class=line>/usr/sbin/authtest -s login test@extmail.org test </DIV>
+<DIV class=line>/usr/sbin/authtest -s login postmaster@extmail.org extmail 
+</DIV>
 <P>结果如下：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">Authentication succeeded.
 
-     Authenticated: test@extmail.org  (uid 1000, gid 1000)
-    Home Directory: /home/domains/extmail.org/test
-           Maildir: /home/domains/extmail.org/test/Maildir/
-             Quota: 5242880
-Encrypted Password: {crypt}uywiuN.XggXXc
-Cleartext Password: test
+     Authenticated: postmaster@extmail.org  (uid 1000, gid 1000)
+    Home Directory: /home/domains/extmail.org/postmaster
+           Maildir: /home/domains/extmail.org/postmaster/Maildir/
+             Quota: 104857600S
+Encrypted Password: $1$phz1mRrj$3ok6BjeaoJYWDBsEPZb5C0
+Cleartext Password: extmail
            Options: (none)
 </PRE>
 <P>这样表明ExtMan的正确安装，数据库也正确导入，courier-authlib能正确连接到mysql数据库</P>
 <P>最后访问<A 
-href="http://mail.extmail.org/extmail/">http://mail.extmail.org/extmail/</A>，如无意外，将看到webmail的登陆页，不过此时还没有加正式的用户，所以不能登陆，包括test@extmail.org也不行。必须要登陆到<A 
+href="http://mail.extmail.org/extmail/">http://mail.extmail.org/extmail/</A>，如无意外，将看到webmail的登陆页，不过此时还没有加正式的用户，所以不能登陆，包括postmaster@extmail.org也不行。必须要登陆到<A 
 href="http://mail.extmail.org/extman/">http://mail.extmail.org/extman/</A> 
 里增加一个新帐户才能登陆。</P>
-<P>ExtMan的默认超级管理员帐户是root@extmail.org，密码是extmail，登陆成功后，建议将密码修改，以确保安全。</P>
+<P>ExtMan的默认超级管理员帐户：root@extmail.org，初始密码：extmail*123*，登陆成功后，建议将密码修改，以确保安全。</P>
 <H3><A name=mailgraph_ext></A>配置Mailgraph_ext</H3>
 <P>自ExtMan 0.14-pre2 
 开始，系统集成了Mailgraph_ext插件，该插件使extman具备图形化显示邮件日志的能力。mailgraph_ext融合了mailgraph和queuegraph两个软件包，除增加了更多的日志分析及图形显示能力外，还重写了web模块，集成到ExtMan后台里，这样邮件日志将只能给经过授权的用户查看，提高了安全性。</P>
@@ -615,9 +619,9 @@ href="http://mail.extmail.org/extman/">http://mail.extmail.org/extman/</A>
 </PRE>
 <P>RHEL/CentOS一般自带了perl-Time-HiRes(1.5x)所以以下的rpm安装也许会报错（提示冲突），可以不必理会。如果想安装本文所带的新版Time-HiRes模块，可以用如下命令删除系统自带的包：</P>
 <DIV class=line>rpm -e perl-Time-HiRes --nodeps </DIV><BR>
-<DIV class=sm_title>安装依赖包/RRDtool</DIV><BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/rrdtool-1.2.12-1hzq.i386.rpm RPMS/perl-rrdtool-1.2.12-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Time-HiRes-1.72-1hzq.i386.rpm
-rpm -ivh RPMS/perl-File-Tail-0.99.3-1hzq.i386.rpm
+<DIV class=sm_title>安装依赖包/RRDtool</DIV><BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/rrdtool-1.2.12-2ext.i386.rpm RPMS/perl-rrdtool-1.2.12-2ext.i386.rpm
+rpm -ivh RPMS/perl-Time-HiRes-1.72-2ext.i386.rpm
+rpm -ivh RPMS/perl-File-Tail-0.99.3-2ext.i386.rpm
 </PRE>
 <DIV class=sm_title>复制mailgraph_ext</DIV>
 <P>执行以下命令：</P>
@@ -661,12 +665,12 @@ mech_list: PLAIN LOGIN
 authdaemond_path:/var/spool/authdaemon/socket
 </PRE>
 <P>存盘退出后，重新启动postfix：</P>
-<DIV class=line>/etc/init.d/postfix restart </DIV><BR>
+<DIV class=line>service postfix start </DIV><BR>
 <DIV class=sm_title>测试SMTP认证</DIV>
-<P>通过以下命令获得test@extmail.org的用户名及密码的BASE64编码：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">perl -e 'use MIME::Base64; print encode_base64("test\@extmail.org")'
-dGVzdEBleHRtYWlsLm9yZw==
-perl -e 'use MIME::Base64; print encode_base64("test")'
-dGVzdA==
+<P>通过以下命令获得postmaster@extmail.org的用户名及密码的BASE64编码：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">perl -e 'use MIME::Base64; print encode_base64("postmaster\@extmail.org")'
+cG9zdG1hc3RlckBleHRtYWlsLm9yZw==
+perl -e 'use MIME::Base64; print encode_base64("extmail")'
+ZXh0bWFpbA==
 </PRE>
 <P>然后本机测试，其过程如下（蓝色的文字是我们输入/发送到Postfix的）</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid"><FONT color=blue>telnet localhost 25</FONT>
 Trying 127.0.0.1...
@@ -686,9 +690,9 @@ Escape character is '^]'.
 250 DSN
 <FONT color=blue>auth login</FONT>
 334 VXNlcm5hbWU6
-<FONT color=blue>dGVzdEBleHRtYWlsLm9yZw==</FONT>
+<FONT color=blue>cG9zdG1hc3RlckBleHRtYWlsLm9yZw==</FONT>
 334 UGFzc3dvcmQ6
-<FONT color=blue>dGVzdA==</FONT>
+<FONT color=blue>ZXh0bWFpbA==</FONT>
 235 2.0.0 Authentication successful
 <FONT color=blue>quit</FONT>
 221 2.0.0 Bye
@@ -712,14 +716,14 @@ Escape character is '^]'.
 <P>然后重新启动courier-imap：</P>
 <DIV class=line>/etc/init.d/courier-imap start </DIV><BR>
 <DIV class=sm_title>测试POP3</DIV>
-<P>请按如下步骤输入pop3命令测试其是否正常工作，注意蓝色的信息是我们输入到POP3服务器的</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid"><FONT color=blue>telnet localhost 110</FONT>
+<P>请按如下步骤输入pop3命令测试其是否正常工作，注意蓝色的信息是我们输入到POP3服务器的(请首先登录extman自行建立test@extmail.org用户，密码:extmail)</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid"><FONT color=blue>telnet localhost 110</FONT>
 Trying 127.0.0.1...
 Connected to localhost.localdomain (127.0.0.1).
 Escape character is '^]'.
 +OK Hello there.
 <FONT color=blue>user test@extmail.org</FONT>
 +OK Password required.
-<FONT color=blue>pass test</FONT>
+<FONT color=blue>pass extmail</FONT>
 +OK logged in.
 <FONT color=blue>list</FONT>
 +OK POP3 clients that break here, they violate STD53.
@@ -735,36 +739,39 @@ Connection closed by foreign host.
 <DIV class=line>rpm -e --nodeps perl-Net-DNS </DIV>
 <P>Amavisd-new 
 及SpamAssassin需要依赖大量的第三方perl软件包，下列要安装的部分RPM在上述的操作中已经安装了，为了给出较明确的依赖关系，我们依然将这些包的名称列出，<B><I>如果安装时提示有安装包已安装过，或者提示冲突，请不必惊慌</I></B>。请安装如下的RPM软件包：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/perl-Digest-SHA1-2.07-5.i386.rpm
-rpm -ivh RPMS/perl-Digest-HMAC-1.01-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Net-IP-1.24-1hzq.i386.rpm
+rpm -ivh RPMS/perl-Digest-HMAC-1.01-2ext.i386.rpm
+rpm -ivh RPMS/perl-Net-IP-1.24-2ext.i386.rpm
 rpm --nodeps -ivh RPMS/perl-Net-DNS-0.57-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Time-HiRes-1.72-1hzq.i386.rpm
+rpm -ivh RPMS/perl-Time-HiRes-1.72-2ext.i386.rpm
 rpm -ivh RPMS/perl-HTML-Tagset-3.03-30.noarch.rpm
 rpm -ivh RPMS/perl-HTML-Parser-3.35-6.i386.rpm    
-rpm -ivh RPMS/spamassassin-3.0.5-3.el4.i386.rpm
-rpm -ivh RPMS/perl-IO-stringy-2.110-1hzq.i386.rpm
-rpm -ivh RPMS/perl-IO-Multiplex-1.08-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Net_SSLeay.pm-1.30-1hzq.i386.rpm
-rpm -ivh RPMS/perl-IO-Socket-SSL-0.97-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Net-Server-0.93-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Unix-Syslog-0.100-1hzq.i386.rpm
-rpm -ivh RPMS/perl-TimeDate-1.16-1hzq.i386.rpm
-rpm -ivh RPMS/perl-MailTools-1.67-1hzq.i386.rpm
-rpm -ivh --force RPMS/perl-MIME-Base64-3.05-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Convert-BinHex-1.119-1hzq.i386.rpm
-rpm -ivh RPMS/perl-MIME-tools-5.418-1hzq.i386.rpm
-rpm -ivh RPMS/perl-BerkeleyDB-0.26-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Convert-TNEF-0.17-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Convert-UUlib-1.051-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Compress-Zlib-1.41-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Archive-Zip-1.16-1hzq.i386.rpm
-rpm -ivh RPMS/perl-IO-Zlib-1.04-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Archive-Tar-1.26-1hzq.i386.rpm
-rpm -ivh RPMS/arc-5.21o-1hzq.i386.rpm
-rpm -ivh RPMS/zoo-2.10-9hzq.i386.rpm
-rpm -ivh RPMS/unarj-2.65-49hzq.i386.rpm
+rpm -ivh RPMS/perl-libwww-perl-5.79-5.noarch.rpm
+rpm -ivh RPMS/spamassassin-3.1.9-1.el4.i386.rpm
+rpm -ivh RPMS/perl-IO-stringy-2.110-2ext.i386.rpm
+rpm -ivh RPMS/perl-IO-Multiplex-1.08-2ext.i386.rpm
+rpm -ivh RPMS/perl-Net-SSLeay-1.30-1.ext.i386.rpm
+rpm -ivh RPMS/perl-IO-Socket-SSL-0.97-2ext.i386.rpm
+rpm -ivh RPMS/perl-Net-Server-0.93-2ext.i386.rpm
+rpm -ivh RPMS/perl-TimeDate-1.16-2ext.i386.rpm
+rpm -ivh RPMS/perl-MailTools-1.67-2ext.i386.rpm
+rpm -ivh --force RPMS/perl-MIME-Base64-3.05-2ext.i386.rpm
+rpm -ivh RPMS/perl-Convert-BinHex-1.119-2ext.i386.rpm
+rpm -ivh RPMS/perl-MIME-tools-5.418-2ext.i386.rpm
+rpm -ivh RPMS/perl-BerkeleyDB-0.26-2ext.i386.rpm
+rpm -ivh RPMS/perl-Convert-TNEF-0.17-2ext.i386.rpm
+rpm -ivh RPMS/perl-Convert-UUlib-1.051-2ext.i386.rpm
+rpm -ivh RPMS/perl-Compress-Zlib-1.41-2ext.i386.rpm
+rpm -ivh RPMS/perl-Archive-Zip-1.23-1ext.i386.rpm
+rpm -ivh RPMS/perl-IO-Zlib-1.04-2ext.i386.rpm
+rpm -ivh RPMS/perl-Archive-Tar-1.38-1ext.i386.rpm
+rpm -ivh RPMS/arc-5.21o-2ext.i386.rpm
+rpm -ivh RPMS/zoo-2.10-10ext.i386.rpm
+rpm -ivh RPMS/unarj-2.65-50ext.i386.rpm
 export LANG=C
-rpm -ivh RPMS/amavisd-new-2.4.0-1hzq.i386.rpm
+rpm -ivh RPMS/amavisd-new-2.5.4-1ext.i386.rpm
+mkdir -p /var/amavis/tmp /var/amavis/db
+chown amavis.amavis /var/amavis/tmp /var/amavis/db
+chmod 777 –R /var/amavis
 chown amavis.amavis /var/spool/vscan/db/
 chkconfig --add amavisd
 </PRE>
@@ -810,10 +817,10 @@ www.ccert.edu.cn/spam/sa/Chinese_rules.cf; /etc/init.d/amavisd restart </DIV>
 <P>存盘退出即可。最后运行以下调试命令以确认amavisd没有错误：</P>
 <DIV class=line>/usr/sbin/amavisd debug </DIV>
 <P>如果没有异常提示或报错退出则表示一切都正常，按ctrl+c终止，然后正常启动，若提示pid不存在等错误，不必理会，只要最后启动成功即可： </P>
-<DIV class=line>/etc/init.d/amavisd start </DIV>
-<H3><A name=filter_clamav></A>安装ClamAV</H3>执行如下命令： <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/clamav-db-0.88.3-1hzq.i386.rpm
-rpm -ivh RPMS/clamav-0.88.3-1hzq.i386.rpm
-rpm -ivh RPMS/clamd-0.88.3-1hzq.i386.rpm
+<DIV class=line>service amavisd start chkconfig amavisd on </DIV>
+<H3><A name=filter_clamav></A>安装ClamAV</H3>执行如下命令： <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/ clamav-db-0.92-2.ext.i386.rpm
+rpm -ivh RPMS/ clamav-0.92-2.ext.i386.rpm
+rpm -ivh RPMS/ clamd-0.92-2.ext.i386.rpm
 </PRE><BR>
 <P>编辑/etc/clamd.conf文件，去掉 'LocalSocket /var/run/clamav/clamd.sock'的注释，并注释掉 
 'TCPSocket 3310'，我们将使用unix socket而不是TCP，两者不可并存。修改完毕后，保存，变动内容见下：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid"># Path to a local socket file the daemon will listen on.
@@ -837,7 +844,7 @@ chmod 750 /var/spool/vscan/tmp
 /var/spool/vscan/tmp/amavis-20050519T083853-01752/parts: Access denied. 
 ERROR\n<BR>May 19 08:38:53 as3 amavis[1752]: (01752-01) WARN: all primary virus 
 scanners failed, considering backups </DIV><BR>
-<DIV class=sm_title>启动ClamAV及freshclam</DIV><BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">/etc/rc.d/init.d/clamd start
+<DIV class=sm_title>启动ClamAV及freshclam</DIV><BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">service clamd start
 freshclam --daemon
 </PRE>
 <DIV class=sm_title>将freshclam增加到自启动</DIV>
@@ -845,12 +852,12 @@ freshclam --daemon
 <DIV class=line>echo "/usr/bin/freshclam --daemon" &gt;&gt; 
 /etc/rc.d/rc.local</DIV>
 <H4><A 
-name=filter_amavis></A>配置Amavisd与Clamav结合</H4>为了使Amavisd-new能与clamav结合，需要修改/etc/amavisd.conf文件，打开clamav的支持代码，编辑/etc/amavisd.conf文件，大概在300行左右，去掉clamav的支持代码注释，并将socket路径改为/var/run/clamav/clamd.sock，如下： 
+name=filter_amavis></A>配置Amavisd与Clamav结合</H4>为了使Amavisd-new能与clamav结合，需要修改/etc/amavisd.conf文件，打开clamav的支持代码，编辑/etc/amavisd.conf文件，大概在360行左右，去掉clamav的支持代码注释，并将socket路径改为/var/run/clamav/clamd.sock，如下： 
 <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">['ClamAV-clamd',
   \&amp;ask_daemon, ["CONTSCAN {}\n", "/var/run/clamav/clamd.sock"],
   qr/\bOK$/, qr/\bFOUND$/,
   qr/^.*?: (?!Infected Archive)(.*) FOUND$/ ],
-</PRE>在110行左右，修改投递/拦截的方法：<BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">$final_virus_destiny      = D_DISCARD;
+</PRE>在154行左右，修改投递/拦截的方法：<BR><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">$final_virus_destiny      = D_DISCARD;
 $final_banned_destiny     = D_BOUNCE;
 $final_spam_destiny       = D_PASS;
 $final_bad_header_destiny = D_PASS;
@@ -885,13 +892,13 @@ receive_override_options = no_address_mappings
 </PRE>
 <P><B>注意：</B>receive_override_options 
 这里必须增加，禁止地址展开/影射，否则如果遇到别名的时候会引起冗余邮件的产生。</P>
-<P>保存后/etc/init.d/postfix restart </P>
+<P>保存后service postfix restart </P>
 <H4><A name=filter_test></A>测试Clamav</H4>然后输入如下命令： 每输入一行后等待1秒左右： <PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid"><FONT color=blue>telnet localhost 25</FONT>
 Trying 127.0.0.1...
 Connected to localhost.localdomain (127.0.0.1).
 Escape character is '^]'.
 220 mail.extmail.org ESMTP Postfix - by extmail.org
-<FONT color=blue>mail from:&lt;test@extmail.org&gt;</FONT>
+<FONT color=blue>mail from:&lt;postmaster@extmail.org&gt;</FONT>
 250 2.1.0 Ok
 <FONT color=blue>rcpt to:&lt;test@extmail.org&gt;</FONT>
 250 2.1.5 Ok
@@ -905,10 +912,11 @@ Escape character is '^]'.
 Connection closed by foreign host.
 </PRE>
 <P>在邮件日志里，应该有相应的信息出现：</P>
-<DIV class=line>May 19 10:11:44 as3 amavis[2770]: (02770-01) Blocked INFECTED 
-(Eicar-Test-Signature), <FOO@HOTMAIL.COM>-&gt; <TEST@EXTMAIL.ORG>, quarantine: 
-virus-20050519-101144-02770-01, Message-ID: 
-&lt;20050519141143.F224828AA8@mail.extmail.org&gt;, Hits: - </DIV>
+<DIV class=line>Mar 22 06:43:15 localhost amavis[15405]: (15405-01) Blocked 
+INFECTED (Eicar-Test-Signature), [192.168.0.235] <POSTMASTER@EXTMAIL.ORG>-&gt; 
+<TEST@EXTMAIL.ORG>, quarantine: virus-mI6vbjkWZ2Tz, Message-ID: 
+&lt;003401c88c1a$74706360$eb00a8c0@nbk00045&gt;, mail_id: mI6vbjkWZ2Tz, Hits: -, 
+size: 1757, 474 ms</DIV>
 <P>如果看到类似这样的日志，表明Clamav+Amavisd-new工作正常。</P>
 <H3><A name=slockd></A>Spam Locker配置与安装</H3>
 <H4>安装需求</H4><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">支持Linux / BSD或Solaris，HP-UX等操作系统
@@ -922,13 +930,14 @@ Digest::HMAC
 Net::IP
 </PRE>
 <H4><A name=slockd_prepare></A>解包软件</H4>
-<DIV class=line>cp -r src/slockd-0.083 /usr/local/slockd </DIV>
+<DIV class=line>tar -zxvf src/slockd-0[1][1].10.tar.gz -C src<BR>cp -r 
+src/slockd-0.10 /usr/local/slockd </DIV>
 <H4><A name=spam_prepare></A>安装相关Perl模块</H4>
 <P>由于slockd是以smtp特征检测为主的软件，因此很大程度依赖dns库，必须安装Net::DNS库才能正常工作。除此外还有诸如HMAC，MD5及SHA1, 
 Net-IP等模块。</P>
 <P>执行以下命令安装需要的模块，<B>注意：</B>这些模块在上文安装Amavisd-new时已经安装过，这里重复是为了强调slockd依赖这些软件包</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">rpm -ivh RPMS/perl-Digest-SHA1-2.07-5.i386.rpm
-rpm -ivh RPMS/perl-Digest-HMAC-1.01-1hzq.i386.rpm
-rpm -ivh RPMS/perl-Net-IP-1.24-1hzq.i386.rpm
+rpm -ivh RPMS/ perl-Digest-HMAC-1.01-2ext.i386.rpm
+rpm -ivh RPMS/ perl-Net-IP-1.24-2ext.i386.rpm
 rpm -ivh --nodeps RPMS/perl-Net-DNS-0.57-1hzq.i386.rpm
 </PRE>
 <H4>配置resolv.conf</H4>
@@ -991,7 +1000,7 @@ check_policy_service inet:127.0.0.1:10030 这一行记录增加到smtpd_recipien
   <FONT color=blue>check_policy_service inet:127.0.0.1:10030</FONT>
 </PRE>
 <P>最后，重新启动postfix以使配置生效</P>
-<DIV class=line>/etc/init.d/postfix restart </DIV>
+<DIV class=line>service postfix restart </DIV>
 <DIV class=sm_title>注意事项：</DIV>
 <P>上述配置是将slockd的查询放到最后，这也是进一步提高资源利用律的办法，因为有部分功能postfix已实现了，所以就先由postfix检测，如果检测不到再由slockd完成。</P>
 <H3><A name=last_test></A>最终测试</H3>
@@ -1056,7 +1065,7 @@ make top_dir=/etc/httpd install
 </PRE>
 <DIV class=sm_title>安装perl-FCGI</DIV>
 <P>除了Apache需要FCGI的支持外，extmail也需要相应的perl-FCGI模块。用以下命令安装： </P>
-<DIV class=line>rpm -ivh RPMS/perl-FCGI-0.67-2hzq.i386.rpm </DIV>
+<DIV class=line>rpm -ivh RPMS/perl-FCGI-0.67-3ext.i386.rpm </DIV>
 <P>接下来将配置Apache，将如下的信息增加到/etc/httpd/conf/vhost_extmail.conf的虚拟主机配置之后：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">LoadModule fastcgi_module modules/mod_fastcgi.so
 
 &lt;Ifmodule mod_fastcgi.c&gt;
@@ -1076,25 +1085,6 @@ SetHandler fastcgi-script
 <DIV class=line>/var/www/extsuite/extmail/dispatch-init start </DIV>
 <P>如果没有意外将启动10个dispatch.fcgi守护进程，可以通过以下命令将启动命令加到rc.local中，实现自启动：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">echo "/var/www/extsuite/extmail/dispatch-init start" &gt;&gt; /etc/rc.d/rc.local
 </PRE>
-<H4><A name=extra_courier-imap></A>编译Courier-IMAP SRPM包</H4>
-<P>需要自己重新编译Courier-IMAP的朋友，可以通过如下方式完成。</P>
-<DIV class=sm_title>下载软件包</DIV><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">wget <A href="http://jaist.dl.sourceforge.net/sourceforge/courier/courier-imap-4.1.0.tar.bz2">http://jaist.dl.sourceforge.net/sourceforge/courier/courier-imap-4.1.0.tar.bz2</A>
-</PRE>
-<DIV class=sm_title>制作RPM包</DIV>
-<P>由于courier-imap需要非root帐户进行编译，因此必须su到sysadmin这个非root用户，然后输入如下指令：</P><PRE style="BORDER-RIGHT: #ccc 1px solid; BORDER-TOP: #ccc 1px solid; BORDER-LEFT: #ccc 1px solid; BORDER-BOTTOM: #ccc 1px solid">mkdir $HOME/rpm
-mkdir $HOME/rpm/SOURCES
-mkdir $HOME/rpm/SPECS
-mkdir $HOME/rpm/BUILD
-mkdir $HOME/rpm/SRPMS
-mkdir $HOME/rpm/RPMS
-mkdir $HOME/rpm/RPMS/i386
-echo "%_topdir $HOME/rpm" &gt;&gt; $HOME/.rpmmacros
-</PRE>
-<P>解开courier-imap-4.1.0.tar.bz2，取出courier-imap.spec文件，复制到$HOME/rpm/SPECS里，然后再复制courier-imap-4.1.0.tar.bz2到$HOME/rpm/SOURCE里</P>
-<DIV class=sm_title>注意事项：</DIV>
-<P>此版本的courier-imap需要openldap等相关包，所以编译前务必安装好openldap-devel等包</P>
-<DIV class=line>rpmbuild --ba $HOME/rpm/SPECS/courier-imap.spec </DIV>
-<P>编译完毕，在$HOME/rpm/RPMS/i386/下就有所有编译成功的rpm包了！</P>
 <H3><A name=end></A>结束语</H3>
 <P>通过此文档，读者应该能够较容易地架设一个功能较齐全的电子邮件系统。当使用一段时间后，用户将发现这个系统还有很多比较粗糙的地方，不尽人意。日后，本文档将继续保持更新，逐步将一些高级的设置方法公布出来，争取ExtMail 
 Solution更加完整，力求完美。 </P>
@@ -1110,10 +1100,6 @@ Solution更加完整，力求完美。 </P>
 <UL>
   <LI>退信模板还是英文的 
   <LI>产生的汇报信息不够友好 </LI></UL>
-<DIV class=sm_title>Postfix</DIV>
-<UL>
-  <LI>本版本还不支持退信模板定制 
-  <LI>版本不是最新版 </LI></UL>
 <DIV class=sm_title>Spam Locker</DIV>
 <UL>
   <LI>错误识别一些配置异常的mail服务器 
@@ -1124,5 +1110,4 @@ Solution更加完整，力求完美。 </P>
   <LI>支持SMTP 及 POP3/IMAP的TLS/SSL加密 
   <LI>HTTP及SMTP/POP3等CA证书的配置 
   <LI>更精细的Anti-Spam策略及关键字过滤 
-  <LI>系统安全配置（基于iptables） 
-  <LI>BSD平台的ExtMail Solution文档 </LI></UL></BODY></HTML>
+  <LI>系统安全配置（基于iptables） </LI></UL>&gt; </BODY></HTML>
