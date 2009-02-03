@@ -1,0 +1,54 @@
+wget http://www.nagiosexchange.org/cgi-bin/jump.cgi?ID=2492&view=File2;d=1
+chmod +x check_mysqld.pl
+
+./check_mysqld.pl -H 192.168.0.250 -P 3306 -u USER -p PASSWORD
+MYSQL 5.0.33-log OK
+
+./check_mysqld.pl -H db2 -P 3307 -u USER -p PASSWORD -s
+MYSQL 5.0.33-log OK slave_running=ON
+
+cp check_mysqld.pl /usr/local/nagios/libexec/check_mysqld
+chown nagios:nagios /usr/local/nagios/libexec/check_mysqld
+
+vi /usr/local/nagios/libexec/check_mysqld
+
+use lib '/usr/lib/nagios/plugins';
+->
+use lib '/usr/local/nagios/libexec';
+
+
+vi objects/commands.cfg
+# 'check_mysqld' command definition
+define command{
+        command_name    check_mysqld
+        command_line    $USER1$/check_mysqld -H $HOSTADDRESS$ -P $ARG1$ -u $ARG2$ -p $ARG3$ $ARG4$
+        }
+
+vi services/mysqld.cfg
+define service {
+host_name db1,db2
+service_description check_mysqld
+check_period 24x7
+max_check_attempts 3
+normal_check_interval 30
+contact_groups admins
+retry_check_interval 10
+notification_interval 14400
+notification_period 24x7
+notification_options w,u,c,r
+check_command check_mysqld!3307!USER!PASSWORD!-s ON
+}
+
+define service {
+host_name cache1,cache2,app1
+service_description check_mysqld
+check_period 24x7
+max_check_attempts 3
+normal_check_interval 30
+contact_groups admins
+retry_check_interval 10
+notification_interval 0
+notification_period 24x7
+notification_options w,u,c,r
+check_command check_mysqld!3306!USER!PASSWORD
+}
