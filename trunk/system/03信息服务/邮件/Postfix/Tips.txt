@@ -121,3 +121,7 @@ vi /etc/postfix/aliases
 apache:        bluedata@jc001.cn
 
 newaliases
+
+
+Ñ§Ï°¹¦ÄÜ£º
+http://antbsd.twbbs.org/~ant/FNP/Old/amavisd-new.htm
