@@ -251,16 +251,53 @@ create ->
 save, 之后就可以把这个图形添加到 Graph Tree 里去了。
 
 
-Cacti 监控 MySQL
+Cacti 监控 MySQL & Memcached
+http://www.faemalia.net/mysqlUtils/
 wget http://www.faemalia.net/mysqlUtils/teMySQLcacti-20060810.tar.gz
 tar zxvf teMySQLcacti-20060810.tar.gz
 cd teMySQLcacti
-./convertXmlTo5minutePollingInterval.sh
-These graphs assume a 1-minute Poller cron frequency! If you use the default 5-minute interval, run convertXmlTo5minutePollingInterval.sh, which will make a step=300, heartbeat=600 version of the XML file for you to import.
-
 cp mysql_stats.php dumpMemcachedStats.php /data/cacti/scripts/
 
 在 Cacti 管理界面导入 cacti_host_template_temysql_host-step300-heartbeat600.xml, cacti_host_template_memcached_host-step300-heartbeat600.xml 模板文件。
 
 被监控的 MySQL 数据库服务器需要加入以下权限：
 mysql> grant process,super on *.* to 'cacti'@'cacti server ip' identified by 'password';
+
+GRAPH CREATION
+==============
+0. Make sure you installed mysql_stats.php and dumpMemcachedStats.php.
+1. Go to Management/Devices.
+2. Add a new device.
+3. Description can be whatever you want.
+4. Hostname should resolve to IP of database machine.
+5. Host template is teMySQL or memcached Host.
+6. Now choose the "Create Graphs" link.
+7. Highlight all graphs for the host (assuming you want them all).
+8. Choose "Create"
+9. A page will come up with several Password/Username pairs, fill them
+   all in with the cactipasswd/cactiuser you chose above. Hint: If you're
+   using Firefox, the second host you do this for you can just press down-
+   arrow twice, then tab, and the value will be filled in automatically
+   by the browser. The first time, I suggest typing in the username, copying
+   it, then doing a "paste-tab-tab-paste-tab-tab..." key combo until they're
+   all filled in, then repeat for the password. Painful, but doable.
+
+
+http://code.google.com/p/mysql-cacti-templates/
+tar zxvf mysql-cacti-templates-1.1.1.tar.gz
+cd mysql-cacti-templates-1.1.1
+cp ss_get_mysql_stats.php /data/cacti/scripts/
+
+
+yum install python-setuptools
+wget ftp://ftp.tummy.com/pub/python-memcached/python-memcached-latest.tar.gz
+tar zxvf python-memcached-latest.tar.gz
+cd python-memcached-*
+python setup.py install
+
+
+http://dealnews.com/developers/cacti/memcached.html
+tar zxvf cacti-memcached-1.0.tar.gz
+cd cacti-memcached-1.0
+cp memcached.py /data/cacti/scripts/
+导入 cacti_memcached_host_template.xml 模板文件。
