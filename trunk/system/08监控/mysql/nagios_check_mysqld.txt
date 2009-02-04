@@ -1,3 +1,4 @@
+http://www.nagiosexchange.org/cgi-bin/page.cgi?g=Detailed%2F2492.html;d=1
 wget http://www.nagiosexchange.org/cgi-bin/jump.cgi?ID=2492&view=File2;d=1
 chmod +x check_mysqld.pl
 
@@ -52,3 +53,13 @@ notification_period 24x7
 notification_options w,u,c,r
 check_command check_mysqld!3306!USER!PASSWORD
 }
+
+
+check_mysql_replication.pl
+wget http://www.james.rcpt.to/svn/trunk/nagios/check_mysql_replication/check_mysql_replication.pl
+mv check_mysql_replication.pl /usr/local/nagios/libexec/check_mysql_replication
+chmod 755 /usr/local/nagios/libexec/check_mysql_replication
+建立nagios监控用户
+slave服务器需要设置File/Process/Super权限，master服务器需要设置replication slave/replication client/super权限
+mysql> grant file,process,super on *.* to nagios@’nagiosServerIP’ identified by ‘Vale.com-init’;
+mysql> grant replication client,super on *.* to ‘nagios’@'nagiosServerIP’ identified by ‘Vale.com-init’;
