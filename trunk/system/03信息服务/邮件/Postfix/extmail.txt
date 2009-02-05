@@ -1,0 +1,123 @@
+ExtMan
+tar zxvf extman-0.2.5.tar.gz -C /var/www/extsuite/
+cd /var/www/extsuite
+mv extman-0.2.5 extman
+cd extman
+
+vi webman.cf
+SYS_CAPTCHA_ON = 0    // 禁用登录验证码
+SYS_GROUPMAIL_SENDER = bluedata@jc001.cn
+SYS_DEFAULT_SERVICES = webmail,smtpd,smtp,pop3,imap
+SYS_USER_DEFAULT_QUOTA = 100
+SYS_CRYPT_TYPE = crypt
+
+cd html/default
+vi navbar.html
+<!--
+禁用 rpc chkupdate ，最后一段的几个 js
+-->
+
+添加用户时，不允许使用 netdisk
+vi edit_user.html
+把 <td><%netdiskquota%></td><td><input type=text size=30 name=netdiskquota value="<%NDQUOTA%>"></td>
+改为 <td><%netdiskquota%></td><td><input type=text size=30 name=netdiskquota value="<%NDQUOTA%>" disabled></td>
+把 <li><input type=checkbox name=SERVICES_netdisk <!-- IF NOCHK_netdisk -->disabled<!-- END NOCHK_netdisk --> <!-- IF SERVICES_netdisk -->checked<!-- END SERVICES_netdisk -->>netdisk</li>
+改为 <li><input type=checkbox name=SERVICES_netdisk disabled>netdisk</li>
+
+
+Extmail
+tar zxvf extmail-1.0.5.tar.gz -C /var/www/extsuite/
+cd /var/www/extsuite
+mv extmail-1.0.5 extmail
+cp webmail.cf.default webmail.cf
+
+vi webmail.cf
+SYS_USER_PSIZE = 100
+SYS_USER_LANG = zh_CN
+SYS_USER_CHARSET = gb2312
+SYS_USER_CCSENT = 0    // 不选中发送邮件时的“发送同时保存草稿到发件箱”选项
+SYS_NETDISK_ON = 0    // 关闭网络磁盘
+SYS_SHOW_SIGNUP = 0    // 首页不显示免费注册邮箱按钮
+SYS_CRYPT_TYPE = crypt
+SYS_MYSQL_USER = extmail
+SYS_MYSQL_PASS = extmail
+SYS_G_ABOOK_FILE_CHARSET = gb2312
+
+cd html/default
+vi welcome.html
+<!--
+禁用 rpc
+-->
+
+默认不保存草稿到发件箱
+vi compose.html
+把
+<input tabindex="7" type=checkbox name=ccsent <!-- IF CCSENT -->checked<!-- END CCSENT -->> <%ccsent%>
+的 " <!-- IF CCSENT -->checked<!-- END CCSENT -->" 删除
+
+
+私有化：
+vi TOP_BAN.html
+把
+        <a target=_blank href="http://www.extmail.org/support/<%LANG%>/about.html"><%about%></a> |
+        <a target=_blank href="http://www.extmail.org/support/<%LANG%>/help.html"><%help%></a></span>
+改为
+        <a target=_blank href="http://www.jc001.cn/"><%about%></span>
+
+vi BOTTOM.html
+Runtime: <%TIME%><br>
+
+vi index.html
+##########
+把如下几行
+<DIV class=lg><A href="http://www.extmail.org/" target=_blank><IMG alt=ExtMail
+src="/extmail/default/images/logo.gif" border=0></A></DIV><!--//logo -->
+<div class=donate><a href="http://www.extmail.org/support/<%LANG%>/index.html" target="_blank">
+<b><%support_link%></b></a> |
+<img style="vertical-align: middle" src="/extmail/images/donate.png">
+<a href="http://www.extmail.org/donate/" target="_blank"><b style="color: #5678A6"><%donate%></b></a>
+</div>
+改为
+<DIV class=lg><IMG alt=JC001 src="/extmail/default/images/logo.gif" border=0></A></DIV><!--//logo -->
+##########
+
+##########
+在
+        <TR>
+                <TD><%password%></TD>
+                <TD><INPUT TYPE="password" class="input_n" NAME="password"></TD>
+        </TR>
+前添加
+        <TR>
+                <TD><%domain%></TD>
+                <TD><INPUT TYPE="text" class="input_n" NAME="domain"><br/>
+                <span id="tip" class="tip"><%hint_webmail_login_domain%></span>
+                </TD>
+        </TR>
+再把下面几行删除
+        <TR>
+                <TD><%domain%></TD>
+                <TD><INPUT TYPE="text" class="input_n" NAME="domain"></TD>
+        </TR>
+##########
+
+##########
+把
+                POP3 <b>:</b>&nbsp;&nbsp;pop3.yourdomain.com<br />
+                SMTP <b>:</b>&nbsp;&nbsp;smtp.yourdomain.com<br />
+改为
+                POP3 <b>:</b>&nbsp;&nbsp;&nbsp;&nbsp;pop.jc001.cn<br />
+                SMTP <b>:</b>&nbsp;&nbsp;smtp.jc001.cn<br />
+##########
+
+##########
+把
+<div class=pb>Powered by <font style="font-weight: bold; color: #000"><%VERSION%></font> &copy 2004-2006 ExtMail.Org Runtime: <%TIME%></div>
+改为
+<div class=pb><%extmail_whatis%></div>
+##########
+
+cd images
+替换 logo.gif
+
+修改 lang 目录下的语言文件。

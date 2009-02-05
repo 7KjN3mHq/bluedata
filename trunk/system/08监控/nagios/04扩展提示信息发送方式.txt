@@ -9,11 +9,11 @@ tar zxvf sendEmail-v1.55.tar.gz
 mv sendEmail-v1.55/sendEmail /usr/local/bin/
 
 发送邮件的示例：
-sendEmail -f nagios@test.com -t admin@test.com -s smtp.test.com -u "test" -xu nagios@test.com -xp password -m "test."
+sendEmail -f nagios@test.com -t admin@test.com -s smtp.test.com -u "test" -xu nagios@test.com -xp password -m "test." -o message-charset=gb2312
 
 vi objects/commands.cfg
 把 notify-host-by-email 和 notify-service-by-email 的邮件发送部分改为：
-/usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s smtp.test.com -u "$HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$" -xu nagios@test.com -xp password
+/usr/local/bin/sendEmail -f nagios@test.com -t $CONTACTEMAIL$ -s smtp.test.com -u "$HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$" -xu nagios@test.com -xp password -o message-charset=gb2312
 
 
 2. 发送 MSN 提醒
