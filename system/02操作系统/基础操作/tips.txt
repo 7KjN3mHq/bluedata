@@ -1,6 +1,7 @@
 Linux 下 iconv 转换文件编码
-命令格式：iconv -f “文件目前编码” -t “文件转换后的编码” -o “转换后生成的新文件名” “源文件名”
-ex: iconv -f gb2312 -t utf-8 -o index.php index.php.bak
+查看文件编码： file -i filename
+命令格式： iconv -f “文件目前编码” -t “文件转换后的编码” -o “转换后生成的新文件名” “源文件名”
+例如： iconv -f gb2312 -t utf-8 -o index.php index.php.bak
 
 挂载 ISO 文件
 mount -t iso9660 -o loop /path/to/iso_file /cdrom
