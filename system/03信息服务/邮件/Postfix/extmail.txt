@@ -25,7 +25,7 @@ vi edit_user.html
 改为 <li><input type=checkbox name=SERVICES_netdisk disabled>netdisk</li>
 
 
-Extmail
+Extmail (http://www.extmail.org/docs/Extmail_Parameter_Intro/)
 tar zxvf extmail-1.0.5.tar.gz -C /var/www/extsuite/
 cd /var/www/extsuite
 mv extmail-1.0.5 extmail
@@ -78,7 +78,7 @@ src="/extmail/default/images/logo.gif" border=0></A></DIV><!--//logo -->
 <a href="http://www.extmail.org/donate/" target="_blank"><b style="color: #5678A6"><%donate%></b></a>
 </div>
 改为
-<DIV class=lg><IMG alt=JC001 src="/extmail/default/images/logo.gif" border=0></A></DIV><!--//logo -->
+<DIV class=lg><IMG alt=<%about%> src="/extmail/default/images/logo.gif" border=0></A></DIV><!--//logo -->
 ##########
 
 ##########
