@@ -1,6 +1,5 @@
 amavisd.conf
 
-
 $sa_tag_level_deflt = 0; #如果超过这个值的话，将在邮件头信息里加入
 X-Spam-Status: No, score=1.522 tagged_above=0 required=5
 tests=[MIME_BASE64_TEXT=1.522]
@@ -18,3 +17,13 @@ $sa_quarantine_cutoff_level = 20; # 超过该值的，直接删除
 
 $virus_admin = "virusAdmin\@YourMail.com"; //接受病毒邮件邮箱
 $spam_admin = "SpamAdmin\@YourMail.com"; //接受垃圾指数超过标准（$sa_kill_level_deflt）,低于$sa_quarantine_cutoff_level的邮件
+
+
+# 白名单 & 黑名单
+read_hash(\%whitelist_sender, '/var/spool/vscan/.spamassassin/whitelist');
+read_hash(\%blacklist_sender, '/var/spool/vscan/.spamassassin/blacklist');
+
+whitelist 和 blacklist 的写法，例如：
+test@test.com.cn    // 单个邮件地址
+test.com    // 整个域
+.test1.com    // 整个域及其子域（注意前面的写法中 . ）

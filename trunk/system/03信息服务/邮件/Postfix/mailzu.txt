@@ -1,0 +1,19 @@
+
+http://www.mailzu.net/docs/INSTALL
+vi /etc/amavisd.conf
+# for mailzu
+@storage_sql_dsn = @lookup_sql_dsn;
+$inet_socket_bind = undef;
+$inet_socket_port = [10024,9998];
+$interface_policy{'9998'} = 'AM.PDP';
+$policy_bank{'AM.PDP'} = {
+  protocol => 'AM.PDP',
+  inet_acl => [qw( 127.0.0.1 [::1] )],
+};
+
+/etc/init.d/amavisd restart
+telnet 127.0.0.1 9998
+
+
+cp -a config.php.sample config.php
+
