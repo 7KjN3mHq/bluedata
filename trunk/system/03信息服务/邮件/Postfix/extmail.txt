@@ -11,6 +11,10 @@ SYS_DEFAULT_SERVICES = webmail,smtpd,smtp,pop3,imap
 SYS_USER_DEFAULT_QUOTA = 100
 SYS_CRYPT_TYPE = crypt
 
+过滤内容需要先编码
+vi /etc/maildroprc
+DECODER="/var/www/extsuite/extmail/tools/decode"
+
 cd html/default
 vi navbar.html
 <!--
