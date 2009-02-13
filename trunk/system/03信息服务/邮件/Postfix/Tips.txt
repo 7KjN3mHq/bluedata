@@ -127,27 +127,6 @@ newaliases
 http://antbsd.twbbs.org/~ant/FNP/Old/amavisd-new.htm
 
 
-vi /etc/mail/spamassassin/sa-mimedefang.cf
-header LOCAL_SUBJECT_1   Subject =~ /Julia/
-describe LOCAL_SUBJECT_1 Subject contains "Julia"
-score LOCAL_SUBJECT_1    2.1
-
-header LOCAL_CN_SUBJECT_1   Subject =~ /瀛商网/
-describe LOCAL_CN_SUBJECT_1 Subject contains "瀛商网"
-score LOCAL_CN_SUBJECT_1    4.1
-
-header LOCAL_CN_SUBJECT_2   Subject =~ /大连三恩翻译/
-describe LOCAL_CN_SUBJECT_2 Subject contains "大连三恩翻译"
-score LOCAL_CN_SUBJECT_2    4.1
-
-body LOCAL_BODY_1        /polk1359011/
-describe LOCAL_BODY_1    Body contains "polk1359011@126.com"
-score LOCAL_BODY_1       4.1
-
-body LOCAL_BODY_2        /hqpx@yahoo\.cn/
-describe LOCAL_BODY_2    Body contains "hqpx@yahoo.cn"
-score LOCAL_BODY_2       4.1
-
-rawbody LOCAL_CN_BODY_1  /深圳海天实业公司/
-describe LOCAL_CN_BODY_1 Body contains "深圳海天实业公司"
-score LOCAL_CN_BODY_1    4.4
+SpamAssassin 自动升级
+vi /etc/crontab
+0 0 1 * * root /usr/share/spamassassin/sa-update.cron ; /etc/init.d/amavisd restart

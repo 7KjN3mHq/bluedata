@@ -1,9 +1,5 @@
 -----
-vi /etc/apt/sources.list
-deb http://debian.cn99.com/debian testing main non-free contrib
-deb http://debian.cn99.com/debian testing-proposed-updates main contrib non-free
-deb http://debian.cn99.com/debian-security testing/updates main contrib non-free
-
+apt-spy -d testing -a Asia -t 3
 apt-get update && apt-get upgrade
 
 -----
