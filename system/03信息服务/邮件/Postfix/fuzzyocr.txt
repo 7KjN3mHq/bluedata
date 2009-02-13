@@ -1,0 +1,81 @@
+yum install netpbm.x86_64 netpbm-progs gifsicle libungif.x86_64 libungif-progs gocr ocrad perl-String-Approx perl-MLDBM-Sync ImageMagick
+Installing for dependencies: perl-FreezeThaw perl-MLDBM
+
+wget http://users.own-hero.net/~decoder/fuzzyocr/fuzzyocr-3.5.1-devel.tar.gz
+tar zxvf fuzzyocr-3.5.1-devel.tar.gz
+cd FuzzyOcr-3.5.1
+cp -rf FuzzyOcr* /etc/mail/spamassassin/
+
+
+/etc/init.d/amavisd restart
+##check /var/log/maillog
+yum install perl-Tie-Cache perl-Log-Agent
+Installing for dependencies: perl-Carp-Assert perl-Tie-Cache-LRU perl-enum
+
+##test
+cd samples
+spamassassin -tD < ocr-animated.eml
+
+
+
+wget http://tesseract-ocr.googlecode.com/files/tesseract-2.03.tar.gz
+tar zxvf tesseract-2.03.tar.gz
+cd tesseract-2.03
+./configure --prefix=/usr
+make
+make install
+
+yum install subversion
+Installing for dependencies: neon
+svn -r 131 co https://svn.own-hero.net/fuzzyocr/trunk/devel
+mv devel FuzzyOcr-3.5.0-rc1
+wget http://www200.pair.com/mecham/spam/FuzzyOcr-3.5.0-rc1.netpbm_less_than_10.34.patch
+patch -p0 < FuzzyOcr-3.5.0-rc1.netpbm_less_than_10.34.patch
+cd FuzzyOcr-3.5.0-rc1
+wget http://www200.pair.com/mecham/spam/FuzzyOcr-3.5.0-rc1.netpbm_less_than_10.34.patch2
+wget http://www200.pair.com/mecham/spam/FuzzyOcr-3.5.0-rc1.netpbm_less_than_10.34.patch3
+patch -p0 < FuzzyOcr-3.5.0-rc1.netpbm_less_than_10.34.patch2
+patch -p0 < FuzzyOcr-3.5.0-rc1.netpbm_less_than_10.34.patch3
+
+
+wget http://www200.pair.com/mecham/spam/gary.3.5.0-rc1.old.netpbm.patch1
+wget http://www200.pair.com/mecham/spam/gary.3.5.0-rc1.old.netpbm.patch2
+wget http://www200.pair.com/mecham/spam/gary.3.5.0-rc1.old.netpbm.patch3
+patch -p0 < gary.3.5.0-rc1.old.netpbm.patch1
+patch -p0 < gary.3.5.0-rc1.old.netpbm.patch2
+patch -p0 < gary.3.5.0-rc1.old.netpbm.patch3 
+
+
+cp -rf FuzzyOcr /etc/mail/spamassassin
+cp FuzzyOcr.cf /etc/mail/spamassassin
+cp FuzzyOcr.pm /etc/mail/spamassassin
+cp FuzzyOcr.preps /etc/mail/spamassassin
+cp FuzzyOcr.scansets /etc/mail/spamassassin
+cp FuzzyOcr.words /etc/mail/spamassassin
+
+vi /etc/mail/spamassassin/FuzzyOcr.cf 
+focr_verbose 2
+focr_logfile /var/log/FuzzyOcr.log
+focr_timeout 15
+focr_enable_image_hashing 2
+focr_digest_db /etc/mail/spamassassin/FuzzyOcr.hashdb
+focr_db_hash /etc/mail/spamassassin/FuzzyOcr.db
+focr_db_safe /etc/mail/spamassassin/FuzzyOcr.safe.db
+
+spamassassin -tD < ocr-animated.eml
+spamassassin -tD < ocr-gif.eml
+spamassassin -tD < ocr-jpg.eml
+spamassassin -tD < ocr-multi.eml
+spamassassin -tD < ocr-obfuscated.eml
+spamassassin -tD < ocr-png.eml
+spamassassin -tD < ocr-wrongext.eml
+
+chown amavis:amavis /var/log/FuzzyOcr.log
+sendmail bluedata@jc001.cn < ocr-animated.eml
+sendmail bluedata@jc001.cn < ocr-gif.eml
+
+http://fuzzyocr.own-hero.net/wiki/Installation-3.5.x
+http://www.howtoforge.com/fight_image_spam_with_fuzzyocr_spamassassin
+http://www.wains.be/index.php/2006/12/29/install-fuzzyocr-on-centos/
+http://blog.delphij.net/archives/001630.html
+http://www200.pair.com/mecham/spam/image_spam2.html
