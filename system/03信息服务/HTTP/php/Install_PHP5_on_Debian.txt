@@ -58,27 +58,79 @@ chown -R www-data:www-data /var/cache/eaccelerator
 
 
 # Configure Apache
+vi /etc/apache2/apache2.conf
 Timeout 30
 KeepAlive Off
 
 ServerLimit         1024
 MaxClients          1024
 
+vi /etc/apache2/httpd.conf
+<Directory />
+Options FollowSymLinks
+AllowOverride None
+</Directory>
+
+
 a2enmod include
+vi /etc/apache2/mods-enabled/dir.conf
+DirectoryIndex 增加 index.shtml
+/etc/apache2/mods-enabled/mime.conf 中应该已经有
+AddType text/html .shtml
+AddOutputFilter INCLUDES .shtml
+对目录还需要加上 Options +Includes
+
+
 a2enmod rewrite
 a2dissite default
 a2ensite nvkan
 
-tar zxvf cronolog-1.6.2.tar.gz
-cd cronolog-1.6.2
-./configure
-make
-make install
+a2enmod deflate
+vi /etc/apache2/mods-enabled/deflate.conf
+<IfModule mod_deflate.c>
+          DeflateCompressionLevel 9
+          AddOutputFilterByType DEFLATE text/html text/plain text/xml
+          AddOutputFilter DEFLATE css js
+</IfModule>
 
+
+a2enmod headers expires
+vi /etc/apache2/httpd.conf
+Header append Via: www.nvkan.com
+ExpiresActive On
+ExpiresDefault A3600
+ExpiresByType text/html A600
+ExpiresByType text/css A2592000
+ExpiresByType application/x-javascript A2592000
+ExpiresByType image/gif A2592000
+ExpiresByType image/jpeg A2592000
+ExpiresByType application/x-shockwave-flash A2592000
+
+
+apt-get install cronolog
 vi /etc/apache2/apache2.conf
+#ErrorLog /var/log/apache2/error.log
+ErrorLog "|/usr/bin/cronolog /var/log/apache2/error_log.%Y%m%d"
 #CustomLog /var/log/apache2/other_vhosts_access.log vhost_combined
-CustomLog "|/usr/local/sbin/cronolog /var/log/apache2/access_log.%Y%m%d" combined
+CustomLog "|/usr/bin/cronolog /var/log/apache2/access_log.%Y%m%d" combined
 
+
+mod_encoding 解决 URL 中文编码问题
+apt-get install libapache2-mod-encoding
+a2enmod encoding
+vi /etc/apache2/httpd.conf
+<IfModule mod_headers.c>
+Header add MS-Author-Via "DAV"
+</IfModule>
+<IfModule mod_encoding.c>
+EncodingEngine on
+NormalizeUsername on
+SetServerEncoding GBK
+DefaultClientEncoding UTF-8 GBK GB2312
+AddClientEncoding "(Microsoft .* DAV $)" UTF-8 GBK GB2312
+AddClientEncoding "Microsoft .* DAV" UTF-8 GBK GB2312
+AddClientEncoding "Microsoft-WebDAV*" UTF-8 GBK GB2312
+</IfModule>
 
 
 # Configure MySQL
