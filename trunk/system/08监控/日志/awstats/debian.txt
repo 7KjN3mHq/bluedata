@@ -1,0 +1,151 @@
+apt-get install awstats
+
+# 解决中文搜索引擎统计问题
+LoadPlugin="decodeutfkeys"
+需要安装 URI/Escape.pm
+apt-get install liburi-perl
+
+LogFormat=1
+DNSLookup=0
+
+vi /etc/awstats/awstats.conf
+ExtraTrackedRowsLimit=500000
+
+
+wget http://www.bluedata.org/software/linux/awstats/lib.tgz
+tar zxvf lib.tgz
+cp -rf lib/* /usr/share/awstats/lib/
+
+wget http://www.google.com/tools/dlpage/res/chrome/images/chrome-16.png -O /usr/share/awstats/icon/browser/chrome.png
+
+
+插件：
+apt-get install libgeo-ip-perl
+wget http://www.bluedata.org/software/linux/awstats/GeoIP.dat -O /usr/share/awstats/plugins/GeoIP.dat
+vi /etc/awstats/awstats.conf
+LoadPlugin="geoip GEOIP_STANDARD /usr/share/awstats/plugins/GeoIP.dat"
+
+apt-get install libnet-xwhois-perl
+wget http://www.bluedata.org/software/linux/awstats/qqwry/QQWry.Dat -O /usr/share/awstats/plugins/QQWry.Dat
+wget http://www.bluedata.org/software/linux/awstats/qqwry/qqhostinfo.pm -O /usr/share/awstats/plugins/qqhostinfo.pm
+wget http://www.bluedata.org/software/linux/awstats/qqwry/qqwry.pl -O /usr/share/awstats/plugins/qqwry.pl
+
+vi /usr/share/awstats/plugins/qqhostinfo.pm
+push @INC, "/usr/share/awstats/plugins/plugins";
+require "/usr/share/awstats/plugins/qqwry.pl";
+
+vi /usr/share/awstats/plugins/qqwry.pl
+my $ipfile="/usr/share/awstats/plugins/QQWry.Dat";
+
+vi /etc/awstats/awstats.conf.local
+LoadPlugin="qqhostinfo"
+
+
+vi /etc/awstats/awstats.conf.local
+ExtraSectionName1="Baidu crawls - Top 50"
+ExtraSectionCodeFilter1="200 304"
+ExtraSectionCondition1="UA,(.*Baiduspider.*)"
+ExtraSectionFirstColumnValues1="URL,(.*)"
+ExtraSectionFirstColumnFormat1="%s"
+ExtraSectionStatTypes1=PHBL
+ExtraSectionAddAverageRow1=0
+ExtraSectionAddSumRow1=1
+MaxNbOfExtra1=50
+MinHitExtra1=1
+
+ExtraSectionName2="Google crawls - Top 50"
+ExtraSectionCodeFilter2="200 304"
+ExtraSectionCondition2="UA,(.*Googlebot.*)"
+ExtraSectionFirstColumnValues2="URL,(.*)"
+ExtraSectionFirstColumnFormat2="%s"
+ExtraSectionStatTypes2=PHBL
+ExtraSectionAddAverageRow2=0
+ExtraSectionAddSumRow2=2
+MaxNbOfExtra2=50
+MinHitExtra2=1
+
+ExtraSectionName3="Yahoo Slurp crawls - Top 50"
+ExtraSectionCodeFilter3="200 304"
+ExtraSectionCondition3="UA,(.*Slurp.*)"
+ExtraSectionFirstColumnValues3="URL,(.*)"
+ExtraSectionFirstColumnFormat3="%s"
+ExtraSectionStatTypes3=PHBL
+ExtraSectionAddAverageRow3=0
+ExtraSectionAddSumRow3=3
+MaxNbOfExtra3=50
+MinHitExtra3=1
+
+ExtraSectionName4="MSN crawls - Top 50"
+ExtraSectionCodeFilter4="200 304"
+ExtraSectionCondition4="UA,(.*msnbot.*)"
+ExtraSectionFirstColumnValues4="URL,(.*)"
+ExtraSectionFirstColumnFormat4="%s"
+ExtraSectionStatTypes4=PHBL
+ExtraSectionAddAverageRow4=0
+ExtraSectionAddSumRow4=4
+MaxNbOfExtra4=50
+MinHitExtra4=1
+
+ExtraSectionName5="Soso crawls - Top 50"
+ExtraSectionCodeFilter5="200 304"
+ExtraSectionCondition5="UA,(.*Sosospider.*)"
+ExtraSectionFirstColumnValues5="URL,(.*)"
+ExtraSectionFirstColumnFormat5="%s"
+ExtraSectionStatTypes5=PHBL
+ExtraSectionAddAverageRow5=0
+ExtraSectionAddSumRow5=5
+MaxNbOfExtra5=50
+MinHitExtra5=1
+
+
+vi /etc/awstats/awstats.nvkan.com.conf
+Include "awstats.conf"
+LoadPlugin="decodeutfkeys"
+LogFile="/var/log/apache2/access_log.%YYYY-24%MM-24%DD-24"
+SiteDomain="nvkan.com"
+HostAliases="www.nvkan.com old.nvkan.com www.shoumeiren.com shoumeiren.com bbs.nvkan.com join.nvkan.com 35.nvkan.com zone.nvkan.com blog.nvkan.com shop.nvkan.com maga.nvkan.com"
+DirData="/home/awstats/data/nvkan/"
+
+
+vi /etc/apache2/sites-enabled/nvkan
+<VirtualHost *:80>
+DocumentRoot "/home/shoumeiren"
+ServerName www.nvkan.com
+
+Alias /awstats-icon/ /usr/share/awstats/icon/
+<Directory /usr/share/awstats/icon>
+    Options None
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+
+Alias /awstats/ /home/awstats/www/
+<Directory "/home/awstats/www">
+    Options None
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+    AuthName "AWStats Access"
+    AuthType Basic
+    AuthUserFile /etc/apache2/htpasswd.users
+    Require valid-user
+</Directory>
+
+Alias /awstats-icon/ /usr/share/awstats/icon/
+<Directory /usr/share/awstats/icon>
+  Options None
+  AllowOverride None
+  Order allow,deny
+  Allow from all
+</Directory>
+
+ScriptAlias /awstats/ "/usr/lib/cgi-bin/"
+</VirtualHost>
+
+
+/usr/lib/cgi-bin/awstats.pl -update -databasebreak=day -config=nvkan.com
+
+http://www.nvkan.com/cgi-bin/awstats.pl?config=nvkan.com&year=2009&month=02&databasebreak=day&day=16
+
+vi /usr/lib/cgi-bin/awstats.pl
