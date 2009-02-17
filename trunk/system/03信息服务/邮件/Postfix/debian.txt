@@ -1,0 +1,267 @@
+参考：
+http://www.extmail.org/docs/extmail_solution_linux/
+http://blog.chinaunix.net/u2/73230/showart_1412112.html
+http://hi.baidu.com/wader2006/blog/item/5757c895eb7a804bd1135ef9.html
+http://www.extmail.org/forum/thread-650-1-1.html
+http://www.postfix.org/spam.html
+http://www.5dmail.net/html/2006-3-11/2006311101036.htm
+http://blog.taragana.com/index.php/archive/6-simple-safe-postfix-changes-for-over-95-spam-reduction/zh_TW/
+
+
+下载软件
+http://www.extmail.org/cgi-bin/download.cgi
+extmail-1.0.5  extman-0.2.5  slockd-0.2
+
+mkdir /var/www/extsuite
+tar zxvf extmail-1.0.5.tar.gz -C /var/www/extsuite/
+tar zxvf extman-0.2.5.tar.gz -C /var/www/extsuite/
+cd /var/www/extsuite
+mv extmail-1.0.5 extmail
+mv extman-0.2.5 extman
+
+创建用户
+groupadd -g 1000 vgroup
+useradd -G vgroup -g 1000 -u 1000 -d /home/domains vuser -m
+
+准备数据库
+apt-get install mysql-client
+如果要把 MySQL 服务器放在同一台机器上还要
+apt-get install mysql-server
+
+cd /var/www/extsuite/extman/docs
+cp extmail.sql init.sql /tmp/
+extmail.sql 和 init.sql 的相关设置后
+mysql -u root -p < /tmp/extmail.sql
+mysql -u root -p < /tmp/init.sql
+
+vi webman.cf
+SYS_CAPTCHA_ON = 0    // 禁用登录验证码
+SYS_GROUPMAIL_SENDER = postmaster@nvkan.com
+SYS_DEFAULT_SERVICES = webmail,smtpd,smtp,pop3,imap
+SYS_USER_DEFAULT_QUOTA = 100
+SYS_MYSQL_HOST = mysql
+
+cp webmail.cf.default webmail.cf
+vi webmail.cf
+SYS_USER_PSIZE = 100
+SYS_USER_LANG = zh_CN
+SYS_USER_CHARSET = gb2312
+SYS_USER_CCSENT = 0    // 不选中发送邮件时的“发送同时保存草稿到发件箱”选项
+SYS_NETDISK_ON = 0    // 关闭网络磁盘
+SYS_SHOW_SIGNUP = 0    // 首页不显示免费注册邮箱按钮
+SYS_MYSQL_USER = extmail
+SYS_MYSQL_PASS = extmail
+SYS_MYSQL_HOST = mysql
+SYS_G_ABOOK_FILE_CHARSET = gb2312
+
+apt-get install libunix-syslog-perl
+
+
+Apache 虚拟主机的配置
+apt-get install apache2-suexec
+a2enmod suexec
+vi /etc/apache2/sites-enabled/nvkan
+<VirtualHost *:80>
+ServerName mail.nvkan.com
+DocumentRoot /var/www/extsuite/extmail/html/
+ScriptAlias /extmail/cgi/ /var/www/extsuite/extmail/cgi/
+Alias /extmail/ /var/www/extsuite/extmail/html/
+ScriptAlias /extman/cgi/ /var/www/extsuite/extman/cgi/
+Alias /extman/ /var/www/extsuite/extman/html/
+SuexecUserGroup vuser vgroup
+</VirtualHost>
+
+mkdir /tmp/extman
+chown -R vuser:vgroup /tmp/extman
+chown -R vuser:vgroup /var/www/extsuite/extmail/cgi
+chown -R vuser:vgroup /var/www/extsuite/extman/cgi
+
+cd /var/www/extsuite/extman/tools
+./maildirmake.pl /home/domains/nvkan.com/postmaster/Maildir
+chown -R vuser:vgroup /home/domains/nvkan.com
+
+extman 默认密码 extmail*123*
+
+
+安装 Postfix
+apt-get install postfix postfix-mysql
+OK -> No configuration
+cp /var/www/extsuite/extman/docs/mysql_virtual_*.cf /etc/postfix/
+vi /etc/postfix/main.cf
+# Base
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+mynetworks = 127.0.0.1 125.64.92.34 125.64.92.35 125.64.93.226
+myhostname = mail.nvkan.com
+mydestination = $myhostname
+smtpd_banner = nvkan.com ESMTP Mail System
+smtpd_error_sleep_time = 0s
+unknown_local_recipient_reject_code = 450
+virtual_mailbox_base = /home/domains
+# MySQL
+virtual_alias_maps = mysql:/etc/postfix/mysql_virtual_alias_maps.cf
+virtual_mailbox_domains = mysql:/etc/postfix/mysql_virtual_domains_maps.cf
+virtual_mailbox_maps = mysql:/etc/postfix/mysql_virtual_mailbox_maps.cf
+virtual_mailbox_limit_maps = mysql:/etc/postfix/mysql_virtual_mailbox_limit_maps.cf
+# Quota
+virtual_create_maildirsize = yes
+virtual_mailbox_extended = yes
+virtual_mailbox_limit_override = yes
+virtual_maildir_limit_message = Sorry, the user's maildir has overdrawn his diskspace quota, please tray again later.
+virtual_overquota_bounce = yes
+
+修改 /etc/postfix 目录下 mysql_virtul_*.cf 的 MySQL 相关信息。
+
+newaliases 创建 /etc/aliases.db
+
+
+安装 cyrus-sasl2
+apt-get install libsasl2-2 libsasl2-modules libsasl2-modules-sql libpam-mysql sasl2-bin
+vi /etc/default/saslauthd
+START=yes
+OPTIONS="-c -m /var/spool/postfix/var/run/saslauthd -r"
+
+vi /etc/pam.d/smtp
+auth    required   pam_mysql.so user=extmail passwd=extmail host=mysql db=extmail table=mailbox usercolumn=username passwdcolumn=password crypt=1
+account sufficient pam_mysql.so user=extmail passwd=extmail host=mysql db=extmail table=mailbox usercolumn=username passwdcolumn=password crypt=1
+
+vi /etc/postfix/sasl/smtpd.conf
+pwcheck_method:saslauthd
+mech_list:plain login
+allow_plaintext: true
+auxprop_plugin: mysql
+sql_hostnames: mysql
+sql_user: extmail
+sql_password: extmail
+sql_database: extmail
+log_level:7
+sql_select: SELECT password FROM mailbox WHERE username='%u@%r' and domain='%r'
+
+vi /etc/postfix/main.cf
+# SMTP AUTH (SASL)
+smtpd_sasl_auth_enable = yes
+broken_sasl_auth_clients = yes
+smtpd_sasl_local_domain = $myhostname
+smtpd_sasl_security_options = noanonymous
+# SMTPD
+smtpd_recipient_restrictions =
+        permit_mynetworks,
+        permit_sasl_authenticated,
+        reject_unauth_destination,
+        reject_unauth_pipelining
+
+smtpd_client_restrictions = permit_sasl_authenticated
+
+rm -rf /var/run/saslauthd
+mkdir -p /var/spool/postfix/var/run/saslauthd
+ln -s /var/spool/postfix/var/run/saslauthd /var/run
+chgrp sasl /var/spool/postfix/var/run/saslauthd
+adduser postfix sasl
+
+/etc/init.d/postfix restart
+/etc/init.d/saslauthd restart
+
+测试
+perl -e 'use MIME::Base64; print encode_base64("postmaster\@nvkan.com")'
+cG9zdG1hc3RlckBudmthbi5jb20=
+perl -e 'use MIME::Base64; print encode_base64("extmail")'
+ZXh0bWFpbA==
+
+telnet mail.nvkan.com 25
+220 nvkan.com ESMTP Mail System
+ehlo bluedata
+250-mail.nvkan.com
+250-PIPELINING
+250-SIZE 10240000
+250-VRFY
+250-ETRN
+250-AUTH PLAIN LOGIN
+250-AUTH=PLAIN LOGIN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 DSN
+auth login
+334 VXNlcm5hbWU6
+cG9zdG1hc3RlckBudmthbi5jb20=
+334 UGFzc3dvcmQ6
+ZXh0bWFpbA==
+235 2.7.0 Authentication successful
+
+http://www.jimmy.co.at/weblog/?p=52
+
+
+
+
+
+
+安装 courier-imap
+apt-get install courier-base courier-authdaemon courier-authlib-mysql courier-pop courier-imap courier-pop-ssl courier-imap-ssl
+Configuring courier-base -> No
+Configuring courier-ssl -> Ok
+
+POP 验证
+vi /etc/courier/authdaemonrc
+authmodulelist="authmysql"
+cp /etc/courier/authmysqlrc /etc/courier/authmysqlrc~
+vi /etc/courier/authmysqlrc
+MYSQL_SERVER            mysql
+MYSQL_USERNAME          extmail
+MYSQL_PASSWORD          extmail
+MYSQL_SOCKET            /var/run/mysql/mysql.sock
+MYSQL_PORT              3306
+MYSQL_OPT               0
+MYSQL_DATABASE          extmail
+MYSQL_USER_TABLE        mailbox
+MYSQL_CRYPT_PWFIELD     password
+MYSQL_UID_FIELD         uidnumber
+MYSQL_GID_FIELD         gidnumber
+MYSQL_LOGIN_FIELD       username
+MYSQL_HOME_FIELD        homedir
+MYSQL_NAME_FIELD        name
+MYSQL_MAILDIR_FIELD     maildir
+MYSQL_QUOTA_FIELD       quota
+MYSQL_SELECT_CLAUSE     SELECT username,password,"",uidnumber,gidnumber,\
+                        CONCAT('/home/domains/',homedir),               \
+                        CONCAT('/home/domains/',maildir),               \
+                        quota,                                          \
+                        name,                                           \
+                        CONCAT("disablesmtpd=",disablesmtpd,            \
+                        ",disablesmtp=",disablesmtp,                    \
+                        ",disablewebmail=",disablewebmail,              \
+                        ",disablenetdisk=",disablenetdisk,              \
+                        ",disableimap=",disableimap,                    \
+                        ",disablepop3=",disablepop3,                    \
+                        ",netdiskquota=",netdiskquota)                  \
+                        FROM mailbox                                    \
+                        WHERE username = '$(local_part)@$(domain)'
+
+配置 Courier-POP3
+vi /etc/courier/pop3d
+MAILDIRPATH=/home/domains/
+
+配置 Courier-IMAP
+vi /etc/courier/imapd
+MAILDIRPATH=/home/domains/
+
+/etc/init.d/courier-authdaemon restart
+测试
+authtest -s login postmaster@nvkan.com extmail
+
+
+Anti-Spam
+http://www.postfix.org/spam.html
+
+
+
+安装 Maildrop
+aptitude install maildrop
+
+配置 Maildrop
+vi master.cf
+注释掉原来的内容，改为
+maildrop   unix        -       n        n        -        -        pipe
+    flags=DRhu user=vuser argv=maildrop -w 90 -d ${user}@${nexthop} ${recipient} ${user} ${extension} {nexthop}
+
+vi main.cf
+virtual_transport = maildrop:
+maildrop_destination_recipient_limit = 1
