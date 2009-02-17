@@ -5,7 +5,7 @@ http://hi.baidu.com/wader2006/blog/item/5757c895eb7a804bd1135ef9.html
 http://www.extmail.org/forum/thread-650-1-1.html
 http://www.postfix.org/spam.html
 http://www.5dmail.net/html/2006-3-11/2006311101036.htm
-http://blog.taragana.com/index.php/archive/6-simple-safe-postfix-changes-for-over-95-spam-reduction/zh_TW/
+http://blog.taragana.com/index.php/archive/6-simple-safe-postfix-changes-for-over-95-spam-reduction/
 
 
 下载软件
@@ -30,7 +30,7 @@ apt-get install mysql-server
 
 cd /var/www/extsuite/extman/docs
 cp extmail.sql init.sql /tmp/
-extmail.sql 和 init.sql 的相关设置后
+修改 extmail.sql 和 init.sql 中的相关设置后
 mysql -u root -p < /tmp/extmail.sql
 mysql -u root -p < /tmp/init.sql
 
@@ -190,10 +190,6 @@ ZXh0bWFpbA==
 http://www.jimmy.co.at/weblog/?p=52
 
 
-
-
-
-
 安装 courier-imap
 apt-get install courier-base courier-authdaemon courier-authlib-mysql courier-pop courier-imap courier-pop-ssl courier-imap-ssl
 Configuring courier-base -> No
@@ -202,6 +198,7 @@ Configuring courier-ssl -> Ok
 POP 验证
 vi /etc/courier/authdaemonrc
 authmodulelist="authmysql"
+authmodulelistorig="authmysql"
 cp /etc/courier/authmysqlrc /etc/courier/authmysqlrc~
 vi /etc/courier/authmysqlrc
 MYSQL_SERVER            mysql
@@ -243,25 +240,93 @@ MAILDIRPATH=/home/domains/
 vi /etc/courier/imapd
 MAILDIRPATH=/home/domains/
 
+chmod -R 755 /var/run/courier/authdaemon
+
 /etc/init.d/courier-authdaemon restart
 测试
 authtest -s login postmaster@nvkan.com extmail
+Authentication succeeded.
+
+     Authenticated: postmaster@nvkan.com  (uid 1000, gid 1000)
+    Home Directory: /home/domains/nvkan.com/postmaster
+           Maildir: /home/domains/nvkan.com/postmaster/Maildir/
+             Quota: 104857600S
+Encrypted Password: $1$phz1mRrj$3ok6BjeaoJYWDBsEPZb5C0
+Cleartext Password: extmail
+           Options: disablesmtpd=0,disablesmtp=0,disablewebmail=0,disablenetdisk=0,disableimap=0,disablepop3=0,netdiskquota=52428800S
+
+telnet mail.nvkan.com 110
++OK Hello there.
+user postmaster@nvkan.com
++OK Password required.
+pass extmail
++OK logged in.
+list
++OK POP3 clients that break here, they violate STD53.
+.
+quit
++OK Bye-bye.
 
 
-Anti-Spam
-http://www.postfix.org/spam.html
+Anti-Spam 设置
+http://server.it168.com/server/2006-02-11/20060211002301.shtml
+基础验证
+disable_vrfy_command = yes
+strict_rfc821_envelopes = yes
 
+smtpd_client_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated
+
+smtpd_helo_required = yes
+smtpd_helo_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    reject_invalid_hostname,
+    reject_non_fqdn_hostname,
+
+invalid_hostname_reject_code = 554
+
+smtpd_sender_restrictions =
+    reject_non_fqdn_sender,
+    reject_unknown_sender_domain
+
+unknown_sender_reject_code = 554
+
+smtpd_recipient_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    reject_invalid_hostname,
+    reject_non_fqdn_hostname,
+    reject_non_fqdn_sender,
+    reject_unknown_sender_domain,
+    reject_non_fqdn_recipient,
+    reject_unknown_recipient_domain,
+    reject_unauth_destination,
+    reject_unauth_pipelining
+	  
 
 
 安装 Maildrop
-aptitude install maildrop
+apt-get install maildrop
 
-配置 Maildrop
 vi master.cf
 注释掉原来的内容，改为
 maildrop   unix        -       n        n        -        -        pipe
-    flags=DRhu user=vuser argv=maildrop -w 90 -d ${user}@${nexthop} ${recipient} ${user} ${extension} {nexthop}
+  flags=DRhu user=vuser argv=maildrop -w 90 -d ${user}@${nexthop} ${recipient} ${user} ${extension} {nexthop}
 
 vi main.cf
+# maildrop
 virtual_transport = maildrop:
 maildrop_destination_recipient_limit = 1
+
+vi /etc/maildroprc
+logfile "/var/log/maildrop.log"
+
+
+图形日志
+apt-get install mailgraph
+cp -r /var/www/extsuite/extman/addon/mailgraph_ext /usr/local/mailgraph_ext
+vi /usr/local/mailgraph_ext/mailgraph-init
+MAIL_LOG=/var/log/mail.log
+/usr/local/mailgraph_ext/mailgraph-init start
