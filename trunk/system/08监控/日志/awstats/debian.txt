@@ -112,7 +112,7 @@ vi /etc/apache2/sites-enabled/nvkan
 DocumentRoot "/home/shoumeiren"
 ServerName www.nvkan.com
 
-Alias /awstats-icon/ /usr/share/awstats/icon/
+Alias /awstats-icon /usr/share/awstats/icon
 <Directory /usr/share/awstats/icon>
     Options None
     AllowOverride None
@@ -120,7 +120,7 @@ Alias /awstats-icon/ /usr/share/awstats/icon/
     Allow from all
 </Directory>
 
-Alias /awstats/ /home/awstats/www/
+Alias /awstats /home/awstats/www
 <Directory "/home/awstats/www">
     Options None
     AllowOverride None
@@ -132,7 +132,7 @@ Alias /awstats/ /home/awstats/www/
     Require valid-user
 </Directory>
 
-Alias /awstats-icon/ /usr/share/awstats/icon/
+Alias /awstats-icon /usr/share/awstats/icon
 <Directory /usr/share/awstats/icon>
   Options None
   AllowOverride None
@@ -140,9 +140,10 @@ Alias /awstats-icon/ /usr/share/awstats/icon/
   Allow from all
 </Directory>
 
-ScriptAlias /awstats/ "/usr/lib/cgi-bin/"
+ScriptAlias /awstats /usr/lib/cgi-bin
 </VirtualHost>
 
+htpasswd -c /etc/awstats/htpasswd.setup awstats
 
 /usr/lib/cgi-bin/awstats.pl -update -databasebreak=day -config=nvkan.com
 

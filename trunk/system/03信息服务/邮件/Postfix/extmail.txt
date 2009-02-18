@@ -9,7 +9,6 @@ SYS_CAPTCHA_ON = 0    // 禁用登录验证码
 SYS_GROUPMAIL_SENDER = bluedata@jc001.cn
 SYS_DEFAULT_SERVICES = webmail,smtpd,smtp,pop3,imap
 SYS_USER_DEFAULT_QUOTA = 100
-SYS_CRYPT_TYPE = crypt
 
 过滤内容需要先编码
 vi /etc/maildroprc
@@ -69,6 +68,9 @@ vi TOP_BAN.html
         <a target=_blank href="http://www.jc001.cn/"><%about%></span>
 
 vi BOTTOM.html
+把
+Powered by <%VERSION%> &copy 2006 ExtMail.Org  Runtime: <%TIME%><br>
+改为
 Runtime: <%TIME%><br>
 
 vi index.html
