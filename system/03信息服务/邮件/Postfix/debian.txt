@@ -38,7 +38,7 @@ vi webman.cf
 SYS_CAPTCHA_ON = 0    // 禁用登录验证码
 SYS_GROUPMAIL_SENDER = postmaster@nvkan.com
 SYS_DEFAULT_SERVICES = webmail,smtpd,smtp,pop3,imap
-SYS_USER_DEFAULT_QUOTA = 100
+SYS_USER_DEFAULT_QUOTA = 1000
 SYS_MYSQL_HOST = mysql
 
 cp webmail.cf.default webmail.cf
@@ -63,11 +63,11 @@ a2enmod suexec
 vi /etc/apache2/sites-enabled/nvkan
 <VirtualHost *:80>
 ServerName mail.nvkan.com
-DocumentRoot /var/www/extsuite/extmail/html/
-ScriptAlias /extmail/cgi/ /var/www/extsuite/extmail/cgi/
-Alias /extmail/ /var/www/extsuite/extmail/html/
-ScriptAlias /extman/cgi/ /var/www/extsuite/extman/cgi/
-Alias /extman/ /var/www/extsuite/extman/html/
+DocumentRoot /var/www/extsuite/extmail/html
+ScriptAlias /extmail/cgi /var/www/extsuite/extmail/cgi
+Alias /extmail /var/www/extsuite/extmail/html
+ScriptAlias /extman/cgi /var/www/extsuite/extman/cgi
+Alias /extman /var/www/extsuite/extman/html
 SuexecUserGroup vuser vgroup
 </VirtualHost>
 
@@ -81,6 +81,13 @@ cd /var/www/extsuite/extman/tools
 chown -R vuser:vgroup /home/domains/nvkan.com
 
 extman 默认密码 extmail*123*
+
+图形日志
+apt-get install mailgraph
+cp -r /var/www/extsuite/extman/addon/mailgraph_ext /usr/local/mailgraph_ext
+vi /usr/local/mailgraph_ext/mailgraph-init
+MAIL_LOG=/var/log/mail.log
+/usr/local/mailgraph_ext/mailgraph-init start
 
 
 安装 Postfix
@@ -204,7 +211,6 @@ vi /etc/courier/authmysqlrc
 MYSQL_SERVER            mysql
 MYSQL_USERNAME          extmail
 MYSQL_PASSWORD          extmail
-MYSQL_SOCKET            /var/run/mysql/mysql.sock
 MYSQL_PORT              3306
 MYSQL_OPT               0
 MYSQL_DATABASE          extmail
@@ -267,6 +273,8 @@ list
 quit
 +OK Bye-bye.
 
+ports: 110 143 993 995
+
 
 Anti-Spam 设置
 http://server.it168.com/server/2006-02-11/20060211002301.shtml
@@ -291,8 +299,20 @@ smtpd_sender_restrictions =
     reject_non_fqdn_sender,
     reject_unknown_sender_domain
 
-unknown_sender_reject_code = 554
+unknown_address_reject_code = 554
 
+smtpd_recipient_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    reject_non_fqdn_recipient,
+    reject_unknown_recipient_domain,
+    reject_unauth_destination,
+    reject_unauth_pipelining
+
+可以合并写作
+smtpd_helo_required = yes
+invalid_hostname_reject_code = 554
+unknown_address_reject_code = 554
 smtpd_recipient_restrictions =
     permit_mynetworks,
     permit_sasl_authenticated,
@@ -304,7 +324,6 @@ smtpd_recipient_restrictions =
     reject_unknown_recipient_domain,
     reject_unauth_destination,
     reject_unauth_pipelining
-	  
 
 
 安装 Maildrop
@@ -323,10 +342,50 @@ maildrop_destination_recipient_limit = 1
 vi /etc/maildroprc
 logfile "/var/log/maildrop.log"
 
+touch /var/log/maildrop.log
+chown vuser:vgroup maildrop.log
 
-图形日志
-apt-get install mailgraph
-cp -r /var/www/extsuite/extman/addon/mailgraph_ext /usr/local/mailgraph_ext
-vi /usr/local/mailgraph_ext/mailgraph-init
-MAIL_LOG=/var/log/mail.log
-/usr/local/mailgraph_ext/mailgraph-init start
+
+SPF
+apt-get install postfix-policyd-spf-perl
+vi /etc/postfix/master.cf
+spfpolicy unix  -       n       n       -       -       spawn
+  user=nobody argv=/usr/bin/perl /usr/sbin/postfix-policyd-spf-perl
+
+vi /etc/postfix/main.cf
+smtpd_recipient_restrictions 段末加上
+check_policy_service unix:private/spfpolicy
+
+vi /etc/maildroprc
+# delete-spf-softfail
+if (/^Received-SPF: softfail/)
+{
+  to /dev/null
+}
+
+
+slockd
+perl -e 'Net::DNS'
+perl -e 'POSIX'
+perl -e 'Fcntl'
+perl -e 'Digest::MD5'
+perl -e 'Digest::SHA1'
+perl -e 'Digest::HMAC'
+perl -e 'Net::IP'
+
+例如安装
+apt-get install libnet-dns-perl
+
+tar zxvf slockd-0.2.tar.gz -C /usr/local/
+mv slockd-0.2 slockd
+
+/usr/local/slockd/slockd-init start
+
+cd /usr/local/slockd/tools
+perl policy_sig -h localhost -p 10030 --helo FOOBAR --ip 192.168.0.1 --from test@foo.com --to test@bar.com
+正常会有如下信息：
+action=504 <FOOBAR>: rejected, see http://bl.extmail.org/cgi/why?t=fqdn&ip=192.168.0.1
+
+vi /etc/postfix/main.cf
+smtpd_recipient_restrictions 段末加上
+check_policy_service inet:127.0.0.1:10030

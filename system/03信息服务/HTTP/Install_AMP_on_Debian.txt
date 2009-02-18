@@ -1,3 +1,5 @@
+Debian GNU/Linux 5.0
+
 apt-get install php5
 会安装所依赖的 apache2
 
@@ -94,17 +96,32 @@ vi /etc/apache2/mods-enabled/deflate.conf
 </IfModule>
 
 
+设置缓存
+http://www.php-oa.com/2008/08/27/headers.html
 a2enmod headers expires
 vi /etc/apache2/httpd.conf
-Header append Via: www.nvkan.com
+# Turn on Expires and set default expires to 3 days
 ExpiresActive On
-ExpiresDefault A3600
-ExpiresByType text/html A600
-ExpiresByType text/css A2592000
-ExpiresByType application/x-javascript A2592000
-ExpiresByType image/gif A2592000
-ExpiresByType image/jpeg A2592000
-ExpiresByType application/x-shockwave-flash A2592000
+ExpiresDefault A259200
+
+# Set up caching on media files for 1 month
+<FilesMatch "\.(ico|gif|jpg|jpeg|png|flv|pdf|swf|mov|mp3|wmv|ppt)$">
+ExpiresDefault A2419200
+Header append Cache-Control "public"
+</FilesMatch>
+
+# Set up 2 Hour caching on commonly updated files
+<FilesMatch "\.(xml|txt|html|js|css|shtml)$">
+ExpiresDefault A7200
+Header append Cache-Control "private, must-revalidate"
+</FilesMatch>
+
+# Force no caching for dynamic files
+<FilesMatch "\.(php|cgi|pl)$">
+ExpiresDefault A0
+Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+Header set Pragma "no-cache"
+</FilesMatch>
 
 
 apt-get install cronolog
@@ -157,3 +174,16 @@ log_slow_queries        = /var/log/mysql/mysql-slow.log
 long_query_time = 1
 
 skip-innodb
+
+
+# phpMyAdmin
+apt-get install phpmyadmin
+vi /etc/apache2/conf.d/phpmyadmin.conf
+#Alias /phpmyadmin /usr/share/phpmyadmin
+#       <Files setup.php>
+#       </Files>
+
+在允许使用 phpMyAdmin 的虚拟主机加上
+Alias /phpmyadmin /usr/share/phpmyadmin
+
+htpasswd -c /etc/phpmyadmin/htpasswd.setup admin
