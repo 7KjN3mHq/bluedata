@@ -292,8 +292,10 @@ smtpd_helo_restrictions =
     permit_sasl_authenticated,
     reject_invalid_hostname,
     reject_non_fqdn_hostname,
+    reject_unknown_hostname
 
 invalid_hostname_reject_code = 554
+unknown_hostname_reject_code = 554
 
 smtpd_sender_restrictions =
     reject_non_fqdn_sender,
@@ -312,12 +314,14 @@ smtpd_recipient_restrictions =
 可以合并写作
 smtpd_helo_required = yes
 invalid_hostname_reject_code = 554
+unknown_hostname_reject_code = 554
 unknown_address_reject_code = 554
 smtpd_recipient_restrictions =
     permit_mynetworks,
     permit_sasl_authenticated,
     reject_invalid_hostname,
     reject_non_fqdn_hostname,
+    reject_unknown_hostname,
     reject_non_fqdn_sender,
     reject_unknown_sender_domain,
     reject_non_fqdn_recipient,
@@ -389,3 +393,8 @@ action=504 <FOOBAR>: rejected, see http://bl.extmail.org/cgi/why?t=fqdn&ip=192.1
 vi /etc/postfix/main.cf
 smtpd_recipient_restrictions 段末加上
 check_policy_service inet:127.0.0.1:10030
+
+
+DSPAM
+http://www.kirya.net/articles/setting-up-dspam-as-a-filter-for-postfix-on-debian-etch/
+http://www.howtoforge.com/etch_postfix_dspam_clamav
