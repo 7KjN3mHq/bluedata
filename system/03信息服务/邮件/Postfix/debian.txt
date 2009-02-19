@@ -195,6 +195,7 @@ ZXh0bWFpbA==
 235 2.7.0 Authentication successful
 
 http://www.jimmy.co.at/weblog/?p=52
+ssl: http://www.projektfarm.com/en/support/howto/postfix_smtp_auth_tls.html
 
 
 °²×° courier-imap
@@ -398,3 +399,4 @@ check_policy_service inet:127.0.0.1:10030
 DSPAM
 http://www.kirya.net/articles/setting-up-dspam-as-a-filter-for-postfix-on-debian-etch/
 http://www.howtoforge.com/etch_postfix_dspam_clamav
+http://www.howtoforge.com/dspam_webui_debian_sid
