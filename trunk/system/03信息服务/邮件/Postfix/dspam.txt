@@ -1,0 +1,195 @@
+http://hi.baidu.com/delphiss/blog/item/24da4611395c33fac3ce79c3.html
+安装
+wget http://dspam.nuclearelephant.com/sources/dspam-3.8.0.tar.gz
+tar zxvf dspam-3.8.0.tar.gz
+
+dspam-3.8.0/src
+
+
+cd dspam-3.8.0
+./configure \
+--prefix=/usr/local/dspam \
+--enable-daemon \
+--enable-clamav \
+--enable-debug \
+--enable-syslog \
+--enable-preferences-extension \
+--enable-long-usernames \
+--enable-virtual-users \
+--with-dspam-home=/var/dspam \
+--with-dspam-home-owner=vuser \
+--with-dspam-home-group=vgroup \
+--with-dspam-mode=2510 \
+--with-dspam-owner=vuser \
+--with-dspam-group=vgroup \
+--with-delivery-agent=/usr/sbin/sendmail \
+--with-storage-driver=mysql_drv \
+--with-mysql-includes=/usr/include/mysql \
+--with-mysql-libraries=/usr/lib64/mysql \
+--with-logdir=/var/log/dspam
+
+#or --enable-domain-scale
+
+make
+make install
+
+cd src/tools.mysql_drv
+mysql -u root -p -e "create database dspam"
+mysql -u root -p -e "grant all on dspam.* to dspam@localhost identified by 'dspam'"
+
+在 mysql_objects-4.1.sql 和 virtual_users.sql 的最前面增加一行：
+use dspam;
+
+mysql -u dspam -p < mysql_objects-4.1.sql
+mysql -u dspam -p < virtual_users.sql
+
+
+mysql -e "create database dspam"
+mysql < mysql_objects-4.1.sql
+mysql < virtual_users.sql
+
+
+配置
+vi /usr/local/dspam/etc/dspam.conf
+#Trust root
+#Trust mail
+#Trust mailnull
+#Trust smmsp
+#Trust daemon
+Trust vuser
+Trust vgroup
+
+#Preference "spamAction=quarantine"
+#Preference "signatureLocation=message" # 'message' or 'headers'
+#Preference "showFactors=on"
+Preference "spamAction=tag"
+Preference "signatureLocation=headers"
+Preference "showFactors=on"
+
+MySQLServer            /var/lib/mysql/mysql.sock
+MySQLUser              dspam
+MySQLPass              dspam
+MySQLDb                dspam
+MySQLCompress          true
+
+MySQLSupressQuote       on
+
+MySQLUIDInSignature    on
+
+和 Postfix 的整合
+------------------------------------------------------------------------
+vi /etc/postfix/dspam_filter_access
+# Everything beginning with either ham or spam avoids the filter
+/^(spam|ham)@.*$/ OK
+ 
+# The rest is redirected to be filtered
+/./ FILTER dspam:dspam
+
+postmap /etc/postfix/dspam_filter_access
+
+vi /etc/postfix/main.cf
+smtpd_client_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    check_client_access pcre:/etc/postfix/dspam_filter_access
+
+dspam_destination_recipient_limit = 1
+
+vi /etc/postfix/master.cf
+dspam                 unix    -       n       n       -       -    pipe
+    flags=Ru user=vuser argv=/usr/local/dspam/bin/dspam --client --deliver=innocent,spam --user ${recipient} --mail-from=${sender}
+
+localhost:10026 inet  n -       n       -       -        smtpd
+    -o content_filter=
+    -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks
+    -o smtpd_helo_restrictions=
+    -o smtpd_client_restrictions=
+    -o smtpd_sender_restrictions=
+    -o smtpd_recipient_restrictions=permit_mynetworks,reject
+    -o mynetworks=127.0.0.0/8
+    -o smtpd_authorized_xforward_hosts=127.0.0.0/8
+
+vi /etc/postfix/aliases
+ham: ham@ham.ham
+spam: spam@spam.spam
+
+postalias /etc/postfix/aliases
+
+vi /etc/postfix/transports
+spam.spam    dspam-retrain:spam
+ham.ham      dspam-retrain:innocent
+
+postmap /etc/postfix/transports
+
+vi /etc/postfix/main.cf
+transport_maps = hash:/etc/postfix/transports
+
+vi /etc/postfix/master.cf
+dspam-retrain         unix    -       n       n       -      -     pipe
+  flags=Rhq user=vuser argv=/usr/local/dspam/bin/dspam --client --mode=teft --class=$nexthop --source=error --user dspam
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+vi /etc/postfix/master.cf
+smtp      inet  n       -       n       -       -       smtpd
+    -o content_filter=dspam:
+dspam   unix    -       n       n       -       10      pipe
+    flags=Rhqu user=vuser argv=/usr/local/dspam/bin/dspam --deliver=innocent --user dspam -i -f $sender -- $recipient
+
+vi /etc/postfix/dspam_filter_access
+/./     FILTER  dspam:dspam
+
+postmap /etc/postfix/dspam_filter_access
+
+vi /etc/postfix/main.cf
+smtpd_recipient_restrictions 段末加上
+    check_client_access hash:/etc/postfix/dspam_filter_access
+
+dspam_destination_recipient_limit = 1
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+vi /etc/postfix/master.cf
+smtp      inet  n       -       n       -       -       smtpd
+    -o content_filter=dspam:
+dspam   unix    -       n       n       -       10      pipe
+    flags=Rhqu user=vuser argv=/usr/local/dspam/bin/dspam --deliver=innocent --user $user -i -f $sender -- $recipient
+spam    unix    -       n       n       -       10      pipe
+    flags=Ru user=vuser argv=/usr/local/dspam/bin/dspam --class=spam --source=error --user dspam
+notspam unix    -       n       n       -       10      pipe
+    flags=Ru user=vuser argv=/usr/local/dspam/bin/dspam --class=innocent --source=error --user dspam
+
+vi /etc/postfix/main.cf
+transport_maps = hash:/etc/postfix/transports
+smtpd_client_restrictions = check_client_access hash:/etc/postfix/dspam_filter_access
+
+local_recipient_maps = proxy:unix:passwd.byname $transport_maps $alias_maps
+dspam_destination_recipient_limit = 1
+
+vi /etc/postfix/dspam_filter_access
+/./     FILTER dspam:dspam
+
+postmap /etc/postfix/dspam_filter_access
+
+vi /etc/postfix/transports
+spam@jc001.cn        spam
+notspam@jc001.cn        notspam
+
+postmap transports
+------------------------------------------------------------------------
+
+
+/usr/local/dspam/bin/dspam --daemon &
+/etc/init.d/postfix restart
+
+
+wget http://spamassassin.apache.org/publiccorpus/20050311_spam_2.tar.bz2
+wget http://spamassassin.apache.org/publiccorpus/20030228_easy_ham_2.tar.bz2
+tar xvfj 20050311_spam_2.tar.bz2
+tar xvfj 20030228_easy_ham_2.tar.bz2
+
+/usr/local/dspam/bin/dspam_train dspam spam_2/ easy_ham_2/
+
+
+
+配置 DSPAM Web Control
