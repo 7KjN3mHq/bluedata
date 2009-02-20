@@ -16,7 +16,7 @@ cd dspam-3.8.0
 --enable-preferences-extension \
 --enable-long-usernames \
 --enable-virtual-users \
---with-dspam-home=/var/dspam \
+--with-dspam-home=/var/spool/dspam \
 --with-dspam-home-owner=vuser \
 --with-dspam-home-group=vgroup \
 --with-dspam-mode=2510 \
@@ -50,31 +50,58 @@ mysql < virtual_users.sql
 
 
 配置
-vi /usr/local/dspam/etc/dspam.conf
-#Trust root
-#Trust mail
-#Trust mailnull
-#Trust smmsp
-#Trust daemon
+cat /usr/local/dspam/etc/dspam.conf | grep -v '^#' | grep -v '^[ ]*$'
+Home /var/dspam
+StorageDriver /usr/local/dspam/lib/libmysql_drv.so
+TrustedDeliveryAgent "/usr/sbin/sendmail"
+OnFail error
 Trust vuser
 Trust vgroup
-
-#Preference "spamAction=quarantine"
-#Preference "signatureLocation=message" # 'message' or 'headers'
-#Preference "showFactors=on"
+TrainingMode teft
+TestConditionalTraining on
+Feature whitelist
+Algorithm graham burton
+Tokenizer chain
+PValue bcr
+WebStats on
 Preference "spamAction=tag"
 Preference "signatureLocation=headers"
 Preference "showFactors=on"
-
+AllowOverride trainingMode
+AllowOverride spamAction spamSubject
+AllowOverride statisticalSedation
+AllowOverride enableBNR
+AllowOverride enableWhitelist
+AllowOverride signatureLocation
+AllowOverride showFactors
+AllowOverride optIn optOut
+AllowOverride whitelistThreshold
 MySQLServer            /var/lib/mysql/mysql.sock
 MySQLUser              dspam
 MySQLPass              dspam
 MySQLDb                dspam
 MySQLCompress          true
-
 MySQLSupressQuote       on
-
-MySQLUIDInSignature    on
+HashRecMax              98317
+HashAutoExtend          on
+HashMaxExtents          0
+HashExtentSize          49157
+HashPctIncrease 10
+HashMaxSeek             10
+HashConnectionCache     10
+Notifications   off
+PurgeSignatures 14          # Stale signatures
+PurgeNeutral    90          # Tokens with neutralish probabilities
+PurgeUnused     90          # Unused tokens
+PurgeHapaxes    30          # Tokens with less than 5 hits (hapaxes)
+PurgeHits1S     15          # Tokens with only 1 spam hit
+PurgeHits1I     15          # Tokens with only 1 innocent hit
+LocalMX 127.0.0.1
+SystemLog on
+UserLog   on
+Opt out
+ProcessorURLContext on
+ProcessorBias on
 
 和 Postfix 的整合
 ------------------------------------------------------------------------
@@ -187,9 +214,98 @@ wget http://spamassassin.apache.org/publiccorpus/20050311_spam_2.tar.bz2
 wget http://spamassassin.apache.org/publiccorpus/20030228_easy_ham_2.tar.bz2
 tar xvfj 20050311_spam_2.tar.bz2
 tar xvfj 20030228_easy_ham_2.tar.bz2
-
 /usr/local/dspam/bin/dspam_train dspam spam_2/ easy_ham_2/
 
+wget http://www.ccert.edu.cn/spam/sa/2005-Jun.tar.gz
+/usr/local/dspam/bin/dspam_train dspam spam/ ham/
+
+cat /home/domains/jc001.cn/bluedata/Maildir/.Junk/cur/* | /usr/local/dspam/bin/dspam --mode=teft --source=corpus --class=spam --feature=noise --user dspam
+
+/usr/local/dspam/bin/dspam_train dspam /home/domains/jc001.cn/bluedata/Maildir/.Junk/cur/ /home/domains/jc001.cn/bluedata/Maildir/cur/
+
+chown -R vuser:vgroup /var/spool/dspam
 
 
 配置 DSPAM Web Control
+mkdir /var/www/cgi-bin/dspam
+cp -R webui/cgi-bin/* /var/www/cgi-bin/dspam/
+cp webui/htdocs/base.css /var/www/cgi-bin/dspam/
+cp webui/htdocs/dspam-logo-small.gif /var/www/cgi-bin/dspam/
+chown -R vuser:vgroup /var/www/cgi-bin/dspam
+vi /etc/httpd/conf.d/vhosts_extmail.conf
+Alias /dspam /var/www/cgi-bin/dspam
+<Directory "/var/www/cgi-bin/dspam">
+DirectoryIndex dspam.cgi
+Options +ExecCGI
+Addhandler cgi-script .cgi
+Order deny,allow
+Allow from all
+AuthType Basic
+AuthName "DSPAM Control Center"
+AuthUserFile /etc/httpd/conf.d/htpasswd.dspam
+Require valid-user
+</Directory>
+
+htpasswd -c /etc/httpd/conf.d/htpasswd.dspam dspam
+
+Can't locate GD/Graph/lines3d.pm
+yum install perl-GD-Graph3d
+
+vi /var/www/cgi-bin/dspam/configure.pl
+$CONFIG{'DSPAM_HOME'}   = "/var/spool/dspam";
+$CONFIG{'DSPAM_BIN'}    = "/usr/local/dspam/bin";
+$CONFIG{'LOCAL_DOMAIN'} = "jc001.cn";
+
+extmail 1.0.5 dspam 垃圾邮件举报补丁包
+libs/Ext/App/Message.pm
+html/default/readmsg.html  
+lang/zh_CN
+html/default/css/newstyle.css 
+
+备份后直接覆盖
+lang/zh_CN 在 lang_readmsg 段增加了：
+    report_err => '邮件举报失败，邮件id可能有错，请重试',
+    report_as_spam => '这是垃圾邮件',
+    report_as_nonspam => '这不是垃圾邮件',
+
+注意：libs/Ext/App/Message.pm  第149行为提交dspam训练识别为垃圾邮件，第151行为提交dspam训练识别为非垃圾邮件，请根据你实际的dsapm安装配置修改程序路径和 user 参数。xueron 的方案在此处使用的是固定的全局用户来训练和识别，如果你的dspam配置为每个用户有单独的训练识别user，请自行修改user参数或不要安装本补丁包！
+
+
+./configure \
+--prefix=/usr/local/dspam \
+--enable-daemon \
+--enable-clamav \
+--enable-preferences-extension \
+--enable-long-usernames \
+--enable-virtual-users \
+--with-dspam-home=/var/spool/dspam \
+--with-dspam-home-owner=vuser \
+--with-dspam-home-group=vgroup \
+--with-dspam-mode=2510 \
+--with-dspam-owner=vuser \
+--with-dspam-group=vgroup \
+--with-delivery-agent=/usr/sbin/sendmail \
+--with-logdir=/var/log/dspam
+
+make
+make install
+
+cd /usr/local/dspam/etc
+cp dspam.conf dspam.conf~
+cat dspam.conf~ | grep -v '^#' | grep -v '^[ ]*$' > dspam.conf
+vi dspam.conf
+Trust vuser
+Trust vgroup
+Preference "spamAction=tag"
+Preference "spamSubject= "
+Preference "signatureLocation=headers"
+Preference "showFactors=off"
+
+/usr/local/dspam/bin/dspam_train dspam /home/domains/jc001.cn/bluedata/Maildir/.Junk/cur/ /home/domains/jc001.cn/bluedata/Maildir/cur/
+
+vi /etc/maildroprc
+xfilter "/usr/local/dspam/bin/dspam --user dspam --stdout --deliver=innocent,spam"
+if (/^X-DSPAM-Result: Spam.*$/)
+{
+  to "$HOME/Maildir/.Junk/."
+}
