@@ -1,0 +1,2 @@
+Vista ¿ªÆô Administrator ÕÊºÅ
+net user administrator /active:yes
