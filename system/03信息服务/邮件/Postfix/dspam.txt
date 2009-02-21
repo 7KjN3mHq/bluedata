@@ -258,9 +258,9 @@ $CONFIG{'LOCAL_DOMAIN'} = "jc001.cn";
 
 extmail 1.0.5 dspam 垃圾邮件举报补丁包
 libs/Ext/App/Message.pm
-html/default/readmsg.html  
+html/default/readmsg.html
 lang/zh_CN
-html/default/css/newstyle.css 
+html/default/css/newstyle.css
 
 备份后直接覆盖
 lang/zh_CN 在 lang_readmsg 段增加了：
