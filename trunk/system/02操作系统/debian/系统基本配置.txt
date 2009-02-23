@@ -1,9 +1,13 @@
 -----
+apt-get install apt-spy
 apt-spy -d testing -a Asia -t 3
+cd /etc/apt
+mv sources.list sources.list~
+cp sources.list.d/apt-spy.list sources.list
 apt-get update && apt-get upgrade
 
 -----
-apt-get install ssh vim ntp rcconf psmisc
+apt-get install ssh vim ntp
 
 vi /etc/vim/vimrc
 syntax on

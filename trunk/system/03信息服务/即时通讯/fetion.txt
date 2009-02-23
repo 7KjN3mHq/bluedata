@@ -1,3 +1,42 @@
+命令行模式
+wget http://www.bluedata.org/software/linux/fetion/lib.tar.gz
+tar zxvf lib.tar.gz
+mv lib /usr/local/lib/fetion
+echo "/usr/local/lib/fetion" > /etc/ld.so.conf.d/fetion-i386.conf
+ldconfig
+
+再安装飞信的命令行客户端：
+wget http://www.bluedata.org/software/linux/fetion/fetion_linux_20080402.tar.gz
+tar zxvf fetion_linux_20080402.tar.gz -C /usr/local/bin/
+
+vi /usr/local/bin/sms.sh
+#!/bin/sh
+/usr/local/bin/sms -f 159xxxxxxxx -p password -t $1 -m "$2"
+
+chmod +x /usr/local/bin/sms.sh
+
+sms.sh 159xxxxxxxx test
+
+
+2009 Version
+wget http://www.bluedata.org/software/linux/fetion/library_linux.tar.gz
+mkdir -p /usr/local/lib/fetion
+tar zxvf library_linux.tar.gz -C /usr/local/lib/fetion/
+echo "/usr/local/lib/fetion" > /etc/ld.so.conf.d/fetion-i386.conf
+ldconfig
+
+wget http://www.bluedata.org/software/linux/fetion/fetion20090203003-linux.tar.gz
+tar zxvf fetion20090203003-linux.tar.gz
+cp -a install/fetion /usr/local/bin/
+cp install/sample.conf /usr/local/etc/fetion.conf
+
+fetion --mobile=15982058812 --pwd=password --to=137xxxxxxxx --msg-utf8=测试
+fetion --sid=6630321 --pwd=password --to=137xxxxxxxx --msg-utf8=测试
+fetion --config=/usr/local/etc/fetion.conf --index=1 --to=137xxxxxxxx --msg-utf8=测试
+
+
+
+Damon 监听模式
 wget http://www.it-adv.net/fetion/libraryrh4x32.tar.gz
 tar zxvf libraryrh4x32.tar.gz
 mv lib*so* /usr/lib/
@@ -18,9 +57,6 @@ vi /usr/local/bin/fetion.sh
 nohup /usr/local/bin/fetion -u 159xxxxxxxx -p password > /dev/null 2>1 &
 
 chmod +x /usr/local/bin/sms.sh
-
-telnet localhost 40000
-
 
 
 登录后，您可以输入 help 命令获得该命令列表：
