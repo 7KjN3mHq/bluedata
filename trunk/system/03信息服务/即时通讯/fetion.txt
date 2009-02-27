@@ -1,11 +1,12 @@
-命令行模式
-wget http://www.bluedata.org/software/linux/fetion/lib.tar.gz
-tar zxvf lib.tar.gz
-mv lib /usr/local/lib/fetion
+库的安装
+wget http://www.bluedata.org/software/linux/fetion/library_linux.tar.gz
+mkdir -p /usr/local/lib/fetion
+tar zxvf library_linux.tar.gz -C /usr/local/lib/fetion/
 echo "/usr/local/lib/fetion" > /etc/ld.so.conf.d/fetion-i386.conf
 ldconfig
 
-再安装飞信的命令行客户端：
+
+老的命令行模式
 wget http://www.bluedata.org/software/linux/fetion/fetion_linux_20080402.tar.gz
 tar zxvf fetion_linux_20080402.tar.gz -C /usr/local/bin/
 
@@ -17,26 +18,74 @@ chmod +x /usr/local/bin/sms.sh
 
 sms.sh 159xxxxxxxx test
 
+PHP 调用
+vi sms.php
+<?php
+$to=$_GET['to'];
+$message=iconv('GBK','UTF-8',$_GET['message']);
+echo exec("/usr/local/bin/sms.sh $to $message");
+?>
 
-2009 Version
-wget http://www.bluedata.org/software/linux/fetion/library_linux.tar.gz
-mkdir -p /usr/local/lib/fetion
-tar zxvf library_linux.tar.gz -C /usr/local/lib/fetion/
-echo "/usr/local/lib/fetion" > /etc/ld.so.conf.d/fetion-i386.conf
-ldconfig
+http://sms.jc001.cn/sms.php?to=159xxxxxxxx&message=测试
 
+
+新的命令行模式 (2009 Version)
 wget http://www.bluedata.org/software/linux/fetion/fetion20090203003-linux.tar.gz
 tar zxvf fetion20090203003-linux.tar.gz
 cp -a install/fetion /usr/local/bin/
 cp install/sample.conf /usr/local/etc/fetion.conf
 
-fetion --mobile=15982058812 --pwd=password --to=137xxxxxxxx --msg-utf8=测试
+fetion --mobile=159xxxxxxxx --pwd=password --to=137xxxxxxxx --msg-utf8=测试
 fetion --sid=6630321 --pwd=password --to=137xxxxxxxx --msg-utf8=测试
 fetion --config=/usr/local/etc/fetion.conf --index=1 --to=137xxxxxxxx --msg-utf8=测试
 
+vi /usr/local/bin/fetion.sh
+#!/bin/sh
+/usr/local/bin/fetion --config=/usr/local/etc/fetion.conf --index=$1 --to=$2 --msg-utf8=$3
+
+chmod +x /usr/local/bin/fetion.sh
+
+vi /usr/local/etc/fetion.conf
+159xxxxxxxx     159xxxxxxxx     password
+2       138xxxx         1234234
+
+PHP 调用
+vi fetion.php
+$from=$_GET['from'];
+$to=$_GET['to'];
+$message=iconv('GBK','UTF-8',$_GET['message']);
+echo exec("/usr/local/bin/fetion.sh $from $to $message");
+
+http://sms.jc001.cn/fetion.php?from=159xxxxxxxx&to=159xxxxxxxx&message=%B2%E2%CA%D4
 
 
-Damon 监听模式
+Daemon 监听模式
+tar zxvf fetion20080910048-linux.tar.gz
+mv install /usr/local/fetion
+
+vi /usr/local/fetion/conf/fetion.conf
+1       159xxxxxxxx     password        40000
+
+nohup /usr/local/fetion/fetion -c /usr/local/fetion/conf/fetion.conf -i 1 > /dev/null 2>1 &
+
+PHP 调用
+vi daemon.php
+$to=$_GET['to'];
+$message=iconv('GBK','UTF-8',$_GET['message']);
+$svc_port = 40000;
+$command = "sms $to $message";
+$fetion_svc_socket = socket_create(AF_INET,SOCK_DGRAM,0);
+@socket_sendto($fetion_svc_socket,$command,strlen($command),0,'127.0.0.1', $svc_port);
+socket_close($fetion_svc_socket);
+
+http://sms.jc001.cn/daemon.php?to=159xxxxxxxx&message=%B2%E2%CA%D4
+
+$message=mb_convert_encoding($_GET['message'],"UTF-8","GBK");
+http://www.jc001.cn/sms.php?to=15982058812&message=%D6%D0%B9%FA%BD%A8%B2%C4%B5%DA%D2%BB%CD%F8
+
+
+----------------------------------------------------------------------------------
+RHEL4
 wget http://www.it-adv.net/fetion/libraryrh4x32.tar.gz
 tar zxvf libraryrh4x32.tar.gz
 mv lib*so* /usr/lib/
@@ -57,6 +106,7 @@ vi /usr/local/bin/fetion.sh
 nohup /usr/local/bin/fetion -u 159xxxxxxxx -p password > /dev/null 2>1 &
 
 chmod +x /usr/local/bin/sms.sh
+----------------------------------------------------------------------------------
 
 
 登录后，您可以输入 help 命令获得该命令列表：

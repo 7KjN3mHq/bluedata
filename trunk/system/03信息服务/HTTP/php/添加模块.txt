@@ -1,0 +1,13 @@
+tar jxvf php-4.4.9.tar.bz2
+cd php-4.4.9/ext/sockets
+/usr/local/php-fcgi/bin/phpize
+./configure --with-php-config=/usr/local/php-fcgi/bin/php-config
+make
+make install
+
+vi /usr/local/php-fcgi/etc/php.ini
+extension_dir = "/usr/local/php-fcgi/lib/php/extensions/no-debug-non-zts-20020429"
+extension=sockets.so
+
+/usr/local/php-fcgi/bin/php-cgi -m | grep sockets
+/usr/local/php-fcgi/sbin/php-fpm restart
