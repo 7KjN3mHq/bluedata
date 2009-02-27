@@ -1,3 +1,13 @@
+## "Starting MTA..." 造成启动慢
+vi /etc/exim4/update-exim4.conf.conf
+dc_minimaldns='true'
+
+或
+apt-get install sysv-rc-conf
+sysv-rc-conf
+取消 exim4 的选项
+
+
 ## adsl
 #!/bin/bash
 
