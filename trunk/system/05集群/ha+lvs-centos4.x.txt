@@ -40,17 +40,18 @@ ping 202.75.216.161
 c) haresources
 master:
 ld1 \
-IPaddr::202.75.216.172/28/eth0 \
-IPaddr::202.75.216.173/28/eth0 \
-IPaddr::202.91.231.173/28/eth0 \
+IPaddr2::202.75.216.172/28/eth0/202.75.216.175 \
+IPaddr2::202.75.216.173/28/eth0/202.75.216.175 \
+IPaddr2::202.91.231.172/28/eth0/202.91.231.175 \
+IPaddr2::202.91.231.173/28/eth0/202.91.231.175 \
 ldirectord
 
 backup:
 ld2 \
-LVS \
-IPaddr::202.75.216.172/28/eth0 \
-IPaddr::202.75.216.173/28/eth0 \
-IPaddr::202.91.231.173/28/eth0 \
+IPaddr2::202.75.216.172/28/eth0/202.75.216.175 \
+IPaddr2::202.75.216.173/28/eth0/202.75.216.175 \
+IPaddr2::202.91.231.172/28/eth0/202.91.231.175 \
+IPaddr2::202.91.231.173/28/eth0/202.91.231.175 \
 ldirectord
 
 ×¢£º202.75.216.172 Îª HA DNS µÄ IP ¡£
@@ -86,51 +87,19 @@ virtual=202.91.231.173:80
 #        persistent=1
         protocol=tcp
 
-e) LVS
-# vi /etc/ha.d/resource.d/LVS
-#!/bin/sh
-# chkconfig: 2345 90 10
-# description: Preparing for Load Balancer and Real Server switching.
+e) VIP Arp
+cd /etc/sysconfig/network-scripts
+vi ifcfg-lo:0
+DEVICE=lo:0
+IPADDR=202.75.216.172
+NETMASK=255.255.255.255
+NETWORK=202.75.216.160
+BROADCAST=202.75.216.175
+ARP=no
+ONBOOT=yes
+NAME=loopback
 
-. /etc/init.d/functions
-
-unset LANG
-LC_ALL=C
-export LC_ALL
-
-VIP1="202.75.216.173"
-VIP2="202.91.231.173"
-IFACE="eth0"
-
-case "$1" in
-    start)
-        echo "Preparing for Load Balancer"
-        sysctl -w net.ipv4.ip_forward=1
-        ifconfig lo:0 down
-        ifconfig lo:1 down
-        sysctl -w net.ipv4.conf.all.arp_ignore=0
-        sysctl -w net.ipv4.conf.$IFACE.arp_ignore=0
-        sysctl -w net.ipv4.conf.all.arp_announce=0
-        sysctl -w net.ipv4.conf.$IFACE.arp_announce=0
-        sysctl -w net.ipv4.conf.lo.rp_filter=1
-        ;;
-    stop)
-        echo "Preparing for Real Server"
-        sysctl -w net.ipv4.ip_forward=0
-        ifconfig lo:0 $VIP1 netmask 255.255.255.255 up
-        ifconfig lo:1 $VIP2 netmask 255.255.255.255 up
-        sysctl -w net.ipv4.conf.all.arp_ignore=1
-        sysctl -w net.ipv4.conf.$IFACE.arp_ignore=1
-        sysctl -w net.ipv4.conf.all.arp_announce=2
-        sysctl -w net.ipv4.conf.$IFACE.arp_announce=2
-        sysctl -w net.ipv4.conf.lo.rp_filter=0
-        ;;
-    *)
-        echo "Usage: LVS {start|stop}"
-        exit 1
-esac
-
-# chmod +x /etc/ha.d/resource.d/LVS
+ifcfg-lo:1  ifcfg-lo:2  ifcfg-lo:3  ......
 
 f) Other Configs
 # vi /etc/hosts

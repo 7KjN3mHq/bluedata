@@ -51,8 +51,8 @@ mysql < virtual_users.sql
 
 ÅäÖÃ
 cat /usr/local/dspam/etc/dspam.conf | grep -v '^#' | grep -v '^[ ]*$'
-Home /var/dspam
-StorageDriver /usr/local/dspam/lib/libmysql_drv.so
+Home /var/spool/dspam
+StorageDriver /usr/local/dspam/lib/libhash_drv.so
 TrustedDeliveryAgent "/usr/sbin/sendmail"
 OnFail error
 Trust vuser
@@ -65,8 +65,9 @@ Tokenizer chain
 PValue bcr
 WebStats on
 Preference "spamAction=tag"
-Preference "signatureLocation=headers"
-Preference "showFactors=on"
+Preference "spamSubject= "
+Preference "signatureLocation=headers"  # 'message' or 'headers'
+Preference "showFactors=off"
 AllowOverride trainingMode
 AllowOverride spamAction spamSubject
 AllowOverride statisticalSedation
@@ -76,12 +77,6 @@ AllowOverride signatureLocation
 AllowOverride showFactors
 AllowOverride optIn optOut
 AllowOverride whitelistThreshold
-MySQLServer            /var/lib/mysql/mysql.sock
-MySQLUser              dspam
-MySQLPass              dspam
-MySQLDb                dspam
-MySQLCompress          true
-MySQLSupressQuote       on
 HashRecMax              98317
 HashAutoExtend          on
 HashMaxExtents          0
@@ -97,7 +92,7 @@ PurgeHapaxes    30          # Tokens with less than 5 hits (hapaxes)
 PurgeHits1S     15          # Tokens with only 1 spam hit
 PurgeHits1I     15          # Tokens with only 1 innocent hit
 LocalMX 127.0.0.1
-SystemLog on
+SystemLog off
 UserLog   on
 Opt out
 ProcessorURLContext on
@@ -247,6 +242,9 @@ Require valid-user
 </Directory>
 
 htpasswd -c /etc/httpd/conf.d/htpasswd.dspam dspam
+
+ln -s /var/www/dspam/base.css /var/www/extsuite/extmail/html/
+ln -s /var/www/dspam/dspam-logo-small.gif /var/www/extsuite/extmail/html/
 
 Can't locate GD/Graph/lines3d.pm
 yum install perl-GD-Graph3d

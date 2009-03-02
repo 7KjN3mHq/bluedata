@@ -397,6 +397,126 @@ check_policy_service inet:127.0.0.1:10030
 
 
 DSPAM
-http://www.kirya.net/articles/setting-up-dspam-as-a-filter-for-postfix-on-debian-etch/
-http://www.howtoforge.com/etch_postfix_dspam_clamav
-http://www.howtoforge.com/dspam_webui_debian_sid
+apt-get install dspam
+The following NEW packages will be installed:
+  clamav clamav-base clamav-daemon clamav-freshclam dspam dspam-doc libclamav5
+  libdspam7 procmail
+
+apt-get install dspam-webfrontend
+The following NEW packages will be installed:
+  dspam-webfrontend libgd-gd2-noxpm-perl libgd-graph-perl libgd-graph3d-perl
+  libgd-text-perl
+
+Debian 自带的 dspam 3.6.8 有问题
+dpkg -P dspam dspam-doc libdspam7 procmail dspam-webfrontend
+rm -rf /var/spool/dspam
+
+wget http://dspam.nuclearelephant.com/sources/dspam-3.8.0.tar.gz
+tar zxvf dspam-3.8.0.tar.gz
+cd dspam-3.8.0
+./configure \
+--prefix=/usr/local/dspam \
+--enable-clamav \
+--enable-preferences-extension \
+--enable-long-usernames \
+--enable-virtual-users \
+--with-dspam-home=/var/spool/dspam \
+--with-dspam-home-owner=vuser \
+--with-dspam-home-group=vgroup \
+--with-dspam-mode=2510 \
+--with-dspam-owner=vuser \
+--with-dspam-group=vgroup \
+--with-delivery-agent=/usr/sbin/sendmail \
+--with-logdir=/var/log/dspam
+
+make
+make install
+
+cd /usr/local/dspam/etc
+cp dspam.conf dspam.conf~
+cat dspam.conf~ | grep -v '^#' | grep -v '^[ ]*$' > dspam.conf
+vi dspam.conf
+Trust root
+Trust vuser
+Preference "spamAction=tag"
+Preference "spamSubject= "
+Preference "signatureLocation=headers"
+Preference "showFactors=off"
+
+wget http://spamassassin.apache.org/publiccorpus/20050311_spam_2.tar.bz2
+wget http://spamassassin.apache.org/publiccorpus/20030228_easy_ham_2.tar.bz2
+tar jxvf 20050311_spam_2.tar.bz2
+tar jxvf 20030228_easy_ham_2.tar.bz2
+/usr/local/dspam/bin/dspam_train dspam spam_2/ easy_ham_2/
+
+wget http://www.ccert.edu.cn/spam/sa/2005-Jun.tar.gz
+tar zxvf 2005-Jun.tar.gz
+tar zxvf 2005-Jun/data/ham.tar.gz -C ./
+tar zxvf 2005-Jun/data/spam.tar.gz -C ./
+/usr/local/dspam/bin/dspam_train dspam spam/ ham/
+
+chown -R vuser:vgroup /var/spool/dspam
+
+vi /etc/maildroprc
+# spammy2junk
+xfilter "/usr/local/dspam/bin/dspam --user dspam --stdout --deliver=innocent,spam"
+if (/^X-DSPAM-Result: Spam.*$/)
+{
+  to "$HOME/Maildir/.Junk/."
+}
+
+DSPAM Web Control
+mkdir /var/www/dspam
+cp -R webui/cgi-bin/* /var/www/dspam/
+cp webui/htdocs/base.css /var/www/dspam/
+cp webui/htdocs/dspam-logo-small.gif /var/www/dspam/
+chown -R vuser:vgroup /var/www/dspam
+vi /etc/apache2/sites-enabled/nvkan
+Alias /dspam /var/www/dspam
+<Directory "/var/www/dspam">
+DirectoryIndex dspam.cgi
+Options +ExecCGI
+Addhandler cgi-script .cgi
+Order deny,allow
+Allow from all
+AuthType Basic
+AuthName "DSPAM Control Center"
+AuthUserFile /usr/local/dspam/etc/htpasswd.dspam
+Require valid-user
+</Directory>
+
+htpasswd -c /usr/local/dspam/etc/htpasswd.dspam dspam
+
+ln -s /var/www/dspam/base.css /var/www/extsuite/extmail/html/
+ln -s /var/www/dspam/dspam-logo-small.gif /var/www/extsuite/extmail/html/
+
+ClamAV
+vi /etc/clamav/clamd.conf
+#LocalSocket /var/run/clamav/clamd.ctl
+TCPSocket 3310
+
+/etc/init.d/clamav-daemon restart
+
+vi /usr/local/dspam/etc/dspam.conf
+ClamAVPort     3310
+ClamAVHost     127.0.0.1
+ClamAVResponse reject
+
+extmail 1.0.5 dspam 垃圾邮件举报补丁包
+wget http://www.bluedata.org/software/linux/extmail/extmail-1.0.5-dspam-patch.tar.bz2
+tar jxvf extmail-1.0.5-dspam-patch.tar.bz2
+
+备份 /var/www/extsuite/extmail 目录下的如下文件
+libs/Ext/App/Message.pm
+html/default/readmsg.html
+lang/zh_CN
+html/default/css/newstyle.css
+
+cp -arf extmail-1.0.5-dspam-patch/* /var/www/extsuite/extmail/
+
+lang/zh_CN 在 lang_readmsg 段增加了：
+    report_err => '邮件举报失败，邮件id可能有错，请重试',
+    report_as_spam => '如果这是垃圾邮件，点击移动到垃圾邮件箱',
+    report_as_nonspam => '如果这不是垃圾邮件，点击放回收件箱',
+
+注意： libs/Ext/App/Message.pm  第 149 行为提交 dspam 训练识别为垃圾邮件，第 151 行为提交 dspam 训练识别为非垃圾邮件，根据实际的 dsapm 安装配置修改程序路径和 user 参数。此处使用的是固定的全局用户来训练和识别，如果 dspam 配置为每个用户有单独的训练识别 user ，需要修改 user 参数。

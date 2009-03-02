@@ -34,14 +34,12 @@ ping 192.168.1.245
 # vi haresources
 master:
 ld1 \
-LVS \
-IPaddr::192.168.1.246/24/eth0 \
+IPaddr2::192.168.1.246/24/eth0/192.168.1.255 \
 ldirectord
 
 backup:
 ld2 \
-LVS \
-IPaddr::192.168.1.246/24/eth0 \
+IPaddr2::192.168.1.246/24/eth0/192.168.1.255 \
 ldirectord
 
 # vi ldirectord.cf
@@ -58,47 +56,15 @@ virtual=192.168.1.246:80
 #        persistent=1
         protocol=tcp
 
-# vi /etc/ha.d/resource.d/LVS
-#!/bin/sh
-# chkconfig: 2345 90 10
-# description: Preparing for Load Balancer and Real Server switching.
-
-. /etc/init.d/functions
-
-unset LANG
-LC_ALL=C
-export LC_ALL
-
-VIP1="192.168.1.246"
-IFACE="eth0"
-
-case "$1" in
-    start)
-        echo "Preparing for Load Balancer"
-        sysctl -w net.ipv4.ip_forward=1
-        ifconfig lo:0 down
-        sysctl -w net.ipv4.conf.all.arp_ignore=0
-        sysctl -w net.ipv4.conf.$IFACE.arp_ignore=0
-        sysctl -w net.ipv4.conf.all.arp_announce=0
-        sysctl -w net.ipv4.conf.$IFACE.arp_announce=0
-        sysctl -w net.ipv4.conf.lo.rp_filter=1
-        ;;
-    stop)
-        echo "Preparing for Real Server"
-        sysctl -w net.ipv4.ip_forward=0
-        ifconfig lo:0 $VIP1 netmask 255.255.255.255 up
-        sysctl -w net.ipv4.conf.all.arp_ignore=1
-        sysctl -w net.ipv4.conf.$IFACE.arp_ignore=1
-        sysctl -w net.ipv4.conf.all.arp_announce=2
-        sysctl -w net.ipv4.conf.$IFACE.arp_announce=2
-        sysctl -w net.ipv4.conf.lo.rp_filter=0
-        ;;
-    *)
-        echo "Usage: LVS {start|stop}"
-        exit 1
-esac
-
-# chmod +x /etc/ha.d/resource.d/LVS
+# vi /etc/sysconfig/network-scripts/ifcfg-lo:0
+DEVICE=lo:0
+IPADDR=192.168.1.246
+NETMASK=255.255.255.255
+NETWORK=192.168.1.0
+BROADCAST=192.168.1.255
+ARP=no
+ONBOOT=yes
+NAME=loopback
 
 # vi /etc/hosts
 192.168.1.240  ld1

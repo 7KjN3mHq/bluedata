@@ -6,6 +6,14 @@ mv sources.list sources.list~
 cp sources.list.d/apt-spy.list sources.list
 apt-get update && apt-get upgrade
 
+cd /etc/apt
+mv sources.list sources.list~
+vi sources.list
+
+deb http://mirrors.163.com/debian lenny main non-free contrib
+deb http://mirrors.163.com/debian lenny-proposed-updates main contrib non-free
+deb http://mirrors.163.com/debian-security lenny/updates main contrib non-free
+
 -----
 apt-get install ssh vim ntp
 
