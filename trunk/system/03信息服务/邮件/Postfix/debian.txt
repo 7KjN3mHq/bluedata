@@ -442,6 +442,7 @@ Preference "spamAction=tag"
 Preference "spamSubject= "
 Preference "signatureLocation=headers"
 Preference "showFactors=off"
+SystemLog off
 
 wget http://spamassassin.apache.org/publiccorpus/20050311_spam_2.tar.bz2
 wget http://spamassassin.apache.org/publiccorpus/20030228_easy_ham_2.tar.bz2
@@ -456,6 +457,11 @@ tar zxvf 2005-Jun/data/spam.tar.gz -C ./
 /usr/local/dspam/bin/dspam_train dspam spam/ ham/
 
 chown -R vuser:vgroup /var/spool/dspam
+
+vi /usr/local/dspam/etc/dspam.conf
+TrainingMode toe
+
+> /var/spool/dspam/data/dspam/dspam.log
 
 vi /etc/maildroprc
 # spammy2junk

@@ -81,12 +81,15 @@ grep 'X-Envelope-From:' /var/spool/vscan/virusmails | cut -d '<' -f 2 | cut -d '
 grep 'X-Envelope-From:' /var/spool/vscan/virusmails | cut -d '@' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/domain.txt
 
 
-
+删除垃圾邮件目录
 find /home/domains -type d -name ".Junk" -exec rm -rf {} \;
+
+删除垃圾箱中的邮件
+find `find /home/domains -type d -name "cur" | grep ".Trash"` -type f -exec rm {} \; &
 
 find `find /home/domains -type d -name "cur" -maxdepth 4` -type f -atime +90 -exec rm {} \;
 
-
+删除收件箱中超过 90 天的邮件
 for x in `find /home/domains -type d -name "cur" -maxdepth 4` ; do
 find $x -type f -atime +90 -exec rm {} \;
 done

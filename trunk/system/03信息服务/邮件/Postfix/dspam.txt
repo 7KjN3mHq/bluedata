@@ -307,3 +307,16 @@ if (/^X-DSPAM-Result: Spam.*$/)
 {
   to "$HOME/Maildir/.Junk/."
 }
+
+
+toe 	train-on-error 遇到错误才学习
+优点：数据库写操作少些，学习效率高
+缺点：准确性低一些
+teft 	train-everything 学习所有
+优点：简单实时
+缺点：数据库增长很快，I/O频繁易出错 
+tum 	train-until-mature 学习到成熟
+介于Teft和Toe之间的一个方法
+tune	train-until-no-errors 学习到没有错误
+优点：准确率很高
+缺点：学习需要的时间很长
