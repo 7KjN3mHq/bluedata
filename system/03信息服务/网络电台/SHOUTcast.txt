@@ -4,6 +4,7 @@ wget http://yp.shoutcast.com/downloads/sc1-9-8/sc_serv_1.9.8_Linux.tar.gz
 wget http://yp.shoutcast.com/downloads/sc_trans_posix_040.tgz
 
 mkdir /usr/local/shoutcast
+mkdir /var/log/shoutcast
 tar zxvf sc_serv_1.9.8_Linux.tar.gz -C /usr/local/shoutcast/
 tar zxvf sc_trans_posix_040.tgz
 mv sc_trans_040/sc_trans_linux /usr/local/shoutcast/
@@ -14,14 +15,19 @@ vi sc_serv.conf
 MaxUser=256
 # 服务端允许的最大链接听众，计算方式：连接数＝你的总带宽X0.9÷每个连接带宽
 Password=changeme
+LogFile=/var/log/shoutcast/sc_serv.log
+W3CLog=/var/log/shoutcast/sc_w3c.log
 PublicServer=always
-
 
 vi sc_trans.conf
 PlaylistFile=playlist.lst
 ServerIP=localhost
 ServerPort=8000
 Password=yourpassword
+StreamTitle=Nvkan Radio
+StreamURL=http://www.nvkan.com:8000
+Genre=Nvkan Radio
+LogFile=/var/log/shoutcast/sc_trans.log
 
 find /path/to/mp3/directory -type f -name "*.mp3" > playlist.lst
 
