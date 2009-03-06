@@ -87,3 +87,16 @@ vi /etc/mail/spamassassin/sa-mimedefang.cf
 header SPF_NONE                 Received-SPF =~ /none/
 describe SPF_NONE               Received-SPF header says NONE
 score SPF_NONE                  3.1
+
+
+Bug:
+Mar  6 17:55:11 mail postfix/smtpd[19512]: NOQUEUE: reject: RCPT from smtpbg77.qq.com[119.147.10.236]: 450 <xzsy@xzsy.com>: Recipient address rejected: SPF-Result=smtpbg77.qq.com: 'SERVFAIL' error on DNS 'SPF' lookup of 'smtpbg77.qq.com'; from=<5022189@qq.com> to=<xzsy@xzsy.com> proto=SMTP helo=<smtpbg77.qq.com>
+
+chmod 644 /usr/lib/perl5/vendor_perl/5.8.5/Mail/SPF/Server.pm
+vi /usr/lib/perl5/vendor_perl/5.8.5/Mail/SPF/Server.pm
+## 574 line:
+$packet->header->rcode =~ /^(NOERROR|NXDOMAIN|SERVFAIL)$/
+
+chmod 444 /usr/lib/perl5/vendor_perl/5.8.5/Mail/SPF/Server.pm
+
+https://bugs.launchpad.net/ubuntu/+source/postfix-policyd-spf-perl/+bug/161133
