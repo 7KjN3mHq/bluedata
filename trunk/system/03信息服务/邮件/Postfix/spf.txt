@@ -25,33 +25,21 @@ Bind:
 @ IN TXT "v=spf1 ip4:202.75.216.160/28 ip4:202.91.231.160/28 ip4:221.10.254.178 ~all"
 
 
-
+http://www.openspf.org/Software
+Perl:
 yum install perl-Mail-SPF
 
-
-http://www.openspf.org/Software
 wget http://www.openspf.org/blobs/postfix-policyd-spf-perl-2.007.tar.gz
-
 tar zxf postfix-policyd-spf-perl-*.tar.gz
 cd postfix-policyd-spf-perl-*
 cp postfix-policyd-spf-perl /usr/libexec/postfix/policyd-spf-perl
 
-
 vi /etc/postfix/master.cf
-#加入以下內容 (第二行 user 前面一定要有空格)
-spfpolicy unix - n n - - spawn
+spfpolicy unix  -       n       n       -       -       spawn
     user=nobody argv=/usr/bin/perl /usr/libexec/postfix/policyd-spf-perl
 
-
-vi /etc/postfix/main.cf
-#加入以下內容
-    smtpd_recipient_restrictions =
-        permit_sasl_authenticated,
-        permit_mynetworks,
-        reject_unauth_destination,
-        check_policy_service unix:private/spfpolicy
-
 拒收 SPF: softfail
+procmail:
 vi /etc/postfix/main.cf
 mailbox_command = /usr/bin/procmail
 
@@ -60,8 +48,68 @@ vi /etc/procmailrc
 * ^Received-SPF: softfail
 /dev/null
 
+maildrop:
+vi /etc/postfix/main.cf
+virtual_transport = maildrop:
+maildrop_destination_recipient_limit = 1
+
+vi /etc/maildroprc
+if (/^Received-SPF: softfail/)
+{
+  to "/dev/null"
+}
+
+perl-spf 对 Neutral 状态的邮件也会放行，需要通过 Spamassassin 或 Maildrop 进一步限制，如：
+vi /etc/mail/spamassassin/local.cf
+score SPF_NEUTRAL 6.000
+
+postfix-policyd-spf-perl Bug:
+Mar  6 17:55:11 mail postfix/smtpd[19512]: NOQUEUE: reject: RCPT from smtpbg77.qq.com[119.147.10.236]: 450 <xzsy@xzsy.com>: Recipient address rejected: SPF-Result=smtpbg77.qq.com: 'SERVFAIL' error on DNS 'SPF' lookup of 'smtpbg77.qq.com'; from=<5022189@qq.com> to=<xzsy@xzsy.com> proto=SMTP helo=<smtpbg77.qq.com>
+
+https://bugs.launchpad.net/ubuntu/+source/postfix-policyd-spf-perl/+bug/161133
+
+
+Python:
+wget http://pypi.python.org/packages/source/p/pydns/pydns-2.3.3.tar.gz
+tar zxvf pydns-2.3.3.tar.gz
+cd pydns-2.3.3
+python setup.py build
+python setup.py install
+
+wget http://pypi.python.org/packages/source/p/pyspf/pyspf-2.0.5.tar.gz
+tar zxvf pyspf-2.0.5.tar.gz
+cd pyspf-2.0.5
+python setup.py build
+python setup.py install
+
+svn co http://www.openspf.org/svn/software/postfix-policyd-spf-python/trunk python-spf
+cd python-spf
+python setup.py build
+python setup.py install
+
+vi /etc/postfix/master.cf
+spfpolicy unix  -       n       n       -       -       spawn
+    user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
+
+
+vi /etc/postfix/main.cf
+在 smtpd_recipient_restrictions 段末加入
+check_policy_service unix:private/spfpolicy
 
 /etc/init.d/postfix restart
+
+
+加大 SPF: None 邮件分值，再对不支持 SPF 的 Yahoo 邮箱发出的邮件减分。
+vi /etc/mail/spamassassin/local.cf
+##SPF_NONE
+header SPF_NONE    Received-SPF =~ /None/
+describe SPF_NONE    Received-SPF header says None
+score SPF_NONE    4.000
+
+header FROM_YAHOO    From =~ /(?:yahoo\.)/
+describe FROM_YAHOO    From contains "yahoo."
+score FROM_YAHOO    -1.500
+
 
 測試
 
@@ -81,22 +129,3 @@ vi /etc/procmailrc
 http://cha.homeip.net/blog/archives/2008/11/_sendmailpostfi.html
 http://www.openspf.org/SPF_Record_Syntax
 http://www.juyimeng.com/sending-mail-using-telnet-with-smtp-auth.html
-
-
-vi /etc/mail/spamassassin/sa-mimedefang.cf
-header SPF_NONE                 Received-SPF =~ /none/
-describe SPF_NONE               Received-SPF header says NONE
-score SPF_NONE                  3.1
-
-
-Bug:
-Mar  6 17:55:11 mail postfix/smtpd[19512]: NOQUEUE: reject: RCPT from smtpbg77.qq.com[119.147.10.236]: 450 <xzsy@xzsy.com>: Recipient address rejected: SPF-Result=smtpbg77.qq.com: 'SERVFAIL' error on DNS 'SPF' lookup of 'smtpbg77.qq.com'; from=<5022189@qq.com> to=<xzsy@xzsy.com> proto=SMTP helo=<smtpbg77.qq.com>
-
-chmod 644 /usr/lib/perl5/vendor_perl/5.8.5/Mail/SPF/Server.pm
-vi /usr/lib/perl5/vendor_perl/5.8.5/Mail/SPF/Server.pm
-## 574 line:
-$packet->header->rcode =~ /^(NOERROR|NXDOMAIN|SERVFAIL)$/
-
-chmod 444 /usr/lib/perl5/vendor_perl/5.8.5/Mail/SPF/Server.pm
-
-https://bugs.launchpad.net/ubuntu/+source/postfix-policyd-spf-perl/+bug/161133

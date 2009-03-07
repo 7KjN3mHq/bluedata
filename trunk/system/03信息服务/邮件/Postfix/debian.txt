@@ -295,6 +295,8 @@ smtpd_helo_restrictions =
     reject_non_fqdn_hostname,
     reject_unknown_hostname
 
+reject_unknown_hostname 可能造成误判，如 163.com 的部分 smtp 主机送出的 helo 信息没有 A/MX 记录。
+
 invalid_hostname_reject_code = 554
 unknown_hostname_reject_code = 554
 
@@ -352,21 +354,17 @@ chown vuser:vgroup maildrop.log
 
 
 SPF
-apt-get install postfix-policyd-spf-perl
+apt-get install postfix-policyd-spf-python
+The following NEW packages will be installed:
+  postfix-policyd-spf-python python-central python-dns python-spf
+
 vi /etc/postfix/master.cf
 spfpolicy unix  -       n       n       -       -       spawn
-  user=nobody argv=/usr/bin/perl /usr/sbin/postfix-policyd-spf-perl
+  user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
 
 vi /etc/postfix/main.cf
 smtpd_recipient_restrictions 段末加上
 check_policy_service unix:private/spfpolicy
-
-vi /etc/maildroprc
-# delete-spf-softfail
-if (/^Received-SPF: softfail/)
-{
-  to /dev/null
-}
 
 
 slockd
