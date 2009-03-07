@@ -100,72 +100,47 @@ ProcessorBias on
 
 和 Postfix 的整合
 ------------------------------------------------------------------------
-vi /etc/postfix/dspam_filter_access
-# Everything beginning with either ham or spam avoids the filter
-/^(spam|ham)@.*$/ OK
- 
-# The rest is redirected to be filtered
-/./ FILTER dspam:dspam
-
-postmap /etc/postfix/dspam_filter_access
-
-vi /etc/postfix/main.cf
-smtpd_client_restrictions =
-    permit_mynetworks,
-    permit_sasl_authenticated,
-    check_client_access pcre:/etc/postfix/dspam_filter_access
-
-dspam_destination_recipient_limit = 1
-
 vi /etc/postfix/master.cf
-dspam                 unix    -       n       n       -       -    pipe
-    flags=Ru user=vuser argv=/usr/local/dspam/bin/dspam --client --deliver=innocent,spam --user ${recipient} --mail-from=${sender}
-
-localhost:10026 inet  n -       n       -       -        smtpd
-    -o content_filter=
-    -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks
-    -o smtpd_helo_restrictions=
+127.0.0.1:10026 inet    n       -       n       -       -       smtpd
+    -o local_recipient_maps=
+    -o relay_recipient_maps=
+    -o smtpd_restriction_classes=
     -o smtpd_client_restrictions=
+    -o smtpd_helo_restrictions=
     -o smtpd_sender_restrictions=
     -o smtpd_recipient_restrictions=permit_mynetworks,reject
     -o mynetworks=127.0.0.0/8
-    -o smtpd_authorized_xforward_hosts=127.0.0.0/8
+    -o strict_rfc821_envelopes=yes
+    -o smtpd_error_sleep_time=0
+    -o smtpd_soft_error_limit=1001
+    -o smtpd_hard_error_limit=1000
+    -o receive_override_options=
 
-vi /etc/postfix/aliases
-ham: ham@ham.ham
-spam: spam@spam.spam
-
-postalias /etc/postfix/aliases
-
-vi /etc/postfix/transports
-spam.spam    dspam-retrain:spam
-ham.ham      dspam-retrain:innocent
-
-postmap /etc/postfix/transports
+dspam                unix      -      n      n      -      -      pipe
+    flags=Rhqu user=vuser argv=/usr/local/dspam/bin/dspam --deliver=innocent,spam --user dspam -i -f $sender -- $recipient
 
 vi /etc/postfix/main.cf
-transport_maps = hash:/etc/postfix/transports
+transport_maps = hash:/etc/postfix/dspam_filter_access
 
-vi /etc/postfix/master.cf
-dspam-retrain         unix    -       n       n       -      -     pipe
-  flags=Rhq user=vuser argv=/usr/local/dspam/bin/dspam --client --mode=teft --class=$nexthop --source=error --user dspam
-------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-vi /etc/postfix/master.cf
-smtp      inet  n       -       n       -       -       smtpd
-    -o content_filter=dspam:
-dspam   unix    -       n       n       -       10      pipe
-    flags=Rhqu user=vuser argv=/usr/local/dspam/bin/dspam --deliver=innocent --user dspam -i -f $sender -- $recipient
+dspam_destination_recipient_limit = 1
+dspam-add_destination_recipient_limit = 1
+dspam-fp_destination_recipient_limit = 1
 
 vi /etc/postfix/dspam_filter_access
 /./     FILTER  dspam:dspam
 
 postmap /etc/postfix/dspam_filter_access
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+vi /etc/postfix/master.cf
+dspam   unix    -       n       n       -       -       pipe
+  flags=Rqu user=vuser argv=/usr/local/dspam/bin/dspam --user dspam -t DEFAULT=/home/domains/${nexthop}/${user}/Maildir/ HOME=/home/domains/${nexthop}/${user}
 
 vi /etc/postfix/main.cf
-smtpd_recipient_restrictions 段末加上
-    check_client_access hash:/etc/postfix/dspam_filter_access
+mailbox_command = /usr/local/dspam/bin/dspam --user dspam -t DEFAULT=/home/domains/"$DOMAIN"/"$USER"/Maildir/
+
+virtual_transport = dspam
 
 dspam_destination_recipient_limit = 1
 ------------------------------------------------------------------------
@@ -198,6 +173,32 @@ spam@jc001.cn        spam
 notspam@jc001.cn        notspam
 
 postmap transports
+------------------------------------------------------------------------
+
+
+和 Amavisd 整合
+------------------------------------------------------------------------
+./configure \
+--prefix=/usr/local/dspam \
+--enable-daemon \
+--enable-preferences-extension \
+--enable-long-usernames \
+--enable-virtual-users \
+--with-dspam-home=/var/spool/dspam \
+--with-dspam-home-owner=amavis \
+--with-dspam-home-group=amavis \
+--with-dspam-mode=2510 \
+--with-dspam-owner=amavis \
+--with-dspam-group=amavis \
+--with-delivery-agent=/usr/sbin/sendmail \
+--with-logdir=/var/log/dspam
+
+chown -R amavis:amavis /var/spool/dspam
+chown -R amavis:amavis /var/log/dspam
+
+vi /etc/amavisd.conf
+$dspam = '/usr/local/dspam/bin/dspam';
+/etc/init.d/amavisd restart
 ------------------------------------------------------------------------
 
 
