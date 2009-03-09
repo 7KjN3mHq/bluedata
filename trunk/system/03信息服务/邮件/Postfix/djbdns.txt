@@ -1,0 +1,26 @@
+http://www.qmailtoaster.org/
+
+yum -y install rpm-build
+
+wget http://www.qmailtoaster.org/download/stable/daemontools-toaster-0.76-1.3.4.src.rpm
+wget http://www.qmailtoaster.org/download/stable/ucspi-tcp-toaster-0.88-1.3.6.src.rpm
+wget http://www.qmailtoaster.org/download/stable/djbdns-1.05-1.0.6.src.rpm
+
+rpm -ivh daemontools-toaster-0.76-1.3.4.src.rpm
+rpm -ivh ucspi-tcp-toaster-0.88-1.3.6.src.rpm
+rpm -ivh djbdns-1.05-1.0.6.src.rpm
+
+cd /usr/src/redhat/SPECS
+rpmbuild --bb daemontools-toaster.spec
+rpmbuild --bb ucspi-tcp-toaster.spec
+rpmbuild --bb djbdns.spec
+
+cd /usr/src/redhat/RPMS/x86_64
+rpm -ivh daemontools-toaster-0.76-1.3.4.x86_64.rpm ucspi-tcp-toaster-0.88-1.3.6.x86_64.rpm
+rpm -ivh djbdns-1.05-1.0.6.x86_64.rpm djbdns-localcache-1.05-1.0.6.x86_64.rpm
+
+rm -f {/var/djbdns/,/}service/{axfrdns,tinydns}    // 只需要 dnscache 服务
+echo -n 10000000 > /var/djbdns/dnscache/env/CACHESIZE    // 修改 DNS 内存 cache 大小为 10M
+echo -n 30000000 > /var/djbdns/dnscache/env/DATALIMIT
+echo nameserver 127.0.0.1 > /etc/resolv.conf
+/etc/init.d/djbdns start

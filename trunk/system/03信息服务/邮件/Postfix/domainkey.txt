@@ -1,0 +1,126 @@
+http://sourceforge.net/projects/dk-milter/
+wget http://nchc.dl.sourceforge.net/sourceforge/dk-milter/dk-milter-1.0.2.tar.gz
+
+rpm for centos5:
+http://www.topdog-software.com/oss/dk-milter/
+wget http://www.topdog-software.com/oss/dk-milter/dk-milter-1.0.2-0.x86_64.rpm
+
+rpm for centos4:
+wget http://www.c-corp.net/linux/centos/4/generic/RPMS/i386/dk-milter-0.6.0-1.i386.rpm
+
+
+yum -y install sendmail-devel
+tar zxvf dk-milter-1.0.2.tar.gz
+cd dk-milter-1.0.2
+sh Build -c
+sh Build install
+cp obj.Linux.2.6.9-67.0.20.ELsmp.x86_64/dk-filter/dk-filter.8 /usr/share/man/man8/
+cd dk-filter
+./gentxt.csh default jc001.cn
+将公匙记录到 DNS Server 上：
+default._domainkey IN TXT "k=rsa; t=y; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANlTb+AOwFmUi5W2xG+LnHc4S4LjqdEO5fVr3C51oahC+i4u/xUhIlghmWZuHWW0HGi4gskVR/mD7WWt3Y9NbPsCAwEAAQ==" ; ----- DomainKey default for jc001.cn
+
+dig -t txt default._domainkey.jc001.cn
+
+cp default.private /etc/postfix/jc001.cn.key.pem
+chmod 600 /etc/postfix/jc001.cn.key.pem
+
+vi /etc/sysconfig/dk-filter
+#!/bin/bash
+SOCKET="inet:8891@localhost"
+CANON="simple"
+DOMAIN="jc001.cn"
+PRIVATE_KEY="/etc/postfix/jc001.cn.key.pem"
+USER=smmsp
+HEADER_IGNORE="subject,date,message-id,to"
+SELECTOR=$(date +%Y)
+FILTER_RULE="bad=r,dns=r,int=r,no=a,miss=r"
+
+vi /etc/init.d/dk-filter
+#!/bin/bash
+
+RETVAL=0
+prog="dk-filter"
+
+if [ -x /usr/bin/$prog ] ; then
+    PROGDIR=/usr/bin
+elif [ -x /usr/local/bin/$prog ] ; then
+    PROGDIR=/usr/local/bin
+else
+    exit 0
+fi
+
+
+SOCKET="inet:8891@localhost"
+# Source configuration
+if [ -f /etc/sysconfig/$prog ] ; then
+    . /etc/sysconfig/$prog
+fi
+
+start() {
+    ulimit -s 2048
+    $PROGDIR/$prog -H -h -l -P /var/run/dk-filter.pid   \
+        $([ -n "$FILTER_RULE" ] && echo "-C $FILTER_RULE") \
+        $([ -n "$DOMAIN" ] && echo "-d $DOMAIN") \
+        $([ -n "$SELECTOR" ] && echo "-S $SELECTOR") \
+        $([ -n "$PRIVATE_KEY" ] && echo "-s $PRIVATE_KEY") \
+        $([ -n "$CANON" ] && echo "-c $CANON") \
+        $([ -n "$USER" ] && echo "-u $USER") \
+        $([ -n "$HEADER_IGNORE" ] && echo "-o $HEADER_IGNORE") \
+        -p $SOCKET
+    echo $cmd
+    echo
+
+    # Start daemon
+    echo  "Starting $prog: [OK]"
+    [ -e $SOCKET ] && rm -f $SOCKET
+    return $RETVAL
+}
+
+stop() {
+    # Stop daemon
+    echo -n "Shutting down $prog: [OK]"
+    killall -9 $prog
+    RETVAL=$?
+    echo
+
+    [ -e $SOCKET ] && rm -f $SOCKET
+
+    # Stop daemon
+    echo -n "Shutting down $prog: "
+    killproc $prog
+    echo
+    [ -e $MX_SOCKET ] && rm -f $MX_SOCKET
+}
+
+# See how we were called.
+case "$1" in
+    start)
+    start
+    ;;
+    stop)
+    stop $2
+    ;;
+    restart)
+    stop
+    start
+    RETVAL=$?
+    ;;
+    *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+esac
+
+exit $RETVAL
+
+chmod +x /etc/init.d/dk-filter
+
+/etc/init.d/dk-filter start
+
+vi /etc/postfix/main.cf
+smtpd_milters = inet:localhost:8891
+non_smtpd_milters = inet:localhost:8891
+
+/usr/bin/dk-filter -A -l -p inet:8891@localhost -d jc001.cn -s /etc/postfix/jc001.cn.key.pem -S default    // 启动dk-filter签名服务
+
+/etc/init.d/postfix restart
