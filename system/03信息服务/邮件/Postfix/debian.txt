@@ -367,6 +367,22 @@ smtpd_recipient_restrictions ∂Œƒ©º”…œ
 check_policy_service unix:private/spfpolicy
 
 
+DomainKeys
+apt-get install dkim-filter
+mkdir /var/dkim-filter
+cd /var/dkim-filter
+wget http://www.topdog-software.com/files/dkim-genkey.sh
+chmod +x dkim-genkey.sh
+./dkim-genkey.sh -d nvkan.com
+mv default.private /var/dkim-filter/nvkan.com_default.key.pem
+/etc/init.d/dkim-filter start
+vi /etc/postfix/main.cf
+milter_default_action = accept
+milter_protocol = 2
+smtpd_milters = inet:localhost:8891
+non_smtpd_milters = inet:localhost:8891
+
+
 slockd
 perl -e 'Net::DNS'
 perl -e 'POSIX'
