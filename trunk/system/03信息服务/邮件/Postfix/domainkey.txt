@@ -5,124 +5,79 @@ rpm for centos5:
 http://www.topdog-software.com/oss/dk-milter/
 wget http://www.topdog-software.com/oss/dk-milter/dk-milter-1.0.2-0.x86_64.rpm
 
-rpm for centos4:
-wget http://www.c-corp.net/linux/centos/4/generic/RPMS/i386/dk-milter-0.6.0-1.i386.rpm
 
+http://jason.long.name/dkfilter/
+wget http://jason.long.name/dkfilter/dkfilter.tgz
+tar zxvf dkfilter.tgz
+cd dkfilter-0.8
+./configure --prefix=/usr/local/dkfilter
+make install
 
-yum -y install sendmail-devel
-tar zxvf dk-milter-1.0.2.tar.gz
-cd dk-milter-1.0.2
-sh Build -c
-sh Build install
-cp obj.Linux.2.6.9-67.0.20.ELsmp.x86_64/dk-filter/dk-filter.8 /usr/share/man/man8/
-cd dk-filter
-./gentxt.csh default jc001.cn
-将公匙记录到 DNS Server 上：
-default._domainkey IN TXT "k=rsa; t=y; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANlTb+AOwFmUi5W2xG+LnHc4S4LjqdEO5fVr3C51oahC+i4u/xUhIlghmWZuHWW0HGi4gskVR/mD7WWt3Y9NbPsCAwEAAQ==" ; ----- DomainKey default for jc001.cn
+vi /etc/postfix/master.cf
+#
+# Before-filter SMTP server. Receive mail from the network and
+# pass it to the content filter on localhost port 10035.
+#
+smtp      inet  n       -       n       -       -       smtpd
+  -o smtpd_proxy_filter=127.0.0.1:10035
+  -o smtpd_client_connection_count_limit=10
+#
+# After-filter SMTP server. Receive mail from the content filter on
+# localhost port 10036.
+#
+127.0.0.1:10036 inet n  -       n       -        -      smtpd
+  -o smtpd_authorized_xforward_hosts=127.0.0.0/8
+  -o smtpd_client_restrictions=
+  -o smtpd_helo_restrictions=
+  -o smtpd_sender_restrictions=
+  -o smtpd_recipient_restrictions=permit_mynetworks,reject
+  -o smtpd_data_restrictions=
+  -o mynetworks=127.0.0.0/8
+  -o receive_override_options=no_unknown_recipient_checks
 
-dig -t txt default._domainkey.jc001.cn
+/usr/local/dkfilter/bin/dkfilter.in 127.0.0.1:10035 127.0.0.1:10036
+/etc/init.d/postfix restart
 
-cp default.private /etc/postfix/jc001.cn.key.pem
-chmod 600 /etc/postfix/jc001.cn.key.pem
+wget http://www.topdog-software.com/files/dkim-genkey.sh
+chmod +x dkim-genkey.sh
+./dkim-genkey.sh -d jc001.cn
 
-vi /etc/sysconfig/dk-filter
-#!/bin/bash
-SOCKET="inet:8891@localhost"
-CANON="simple"
-DOMAIN="jc001.cn"
-PRIVATE_KEY="/etc/postfix/jc001.cn.key.pem"
-USER=smmsp
-HEADER_IGNORE="subject,date,message-id,to"
-SELECTOR=$(date +%Y)
-FILTER_RULE="bad=r,dns=r,int=r,no=a,miss=r"
+mv default.private /usr/local/dkfilter/private.key
 
-vi /etc/init.d/dk-filter
-#!/bin/bash
+vi /etc/postfix/master.cf
+#
+# modify the default submission service to specify a content filter
+# and restrict it to local clients and SASL authenticated clients only
+#
+submission  inet  n     -       n       -       -       smtpd
+  -o smtpd_etrn_restrictions=reject
+  -o smtpd_sasl_auth_enable=yes
+  -o content_filter=dksign:127.0.0.1:10027
+  -o receive_override_options=no_address_mappings
+  -o smtpd_recipient_restrictions=permit_mynetworks,permit_sasl_authenticated,reject
 
-RETVAL=0
-prog="dk-filter"
+#
+# specify the location of the DomainKeys signing filter
+#
+dksign    unix  -       -       n       -       10      smtp
+  -o smtp_send_xforward_command=yes
 
-if [ -x /usr/bin/$prog ] ; then
-    PROGDIR=/usr/bin
-elif [ -x /usr/local/bin/$prog ] ; then
-    PROGDIR=/usr/local/bin
-else
-    exit 0
-fi
+#
+# service for accepting messages FROM the DomainKeys signing filter
+#
+127.0.0.1:10028 inet  n  -      n       -       10      smtpd
+  -o content_filter=
+  -o receive_override_options=no_unknown_recipient_checks,no_header_body_checks
+  -o smtpd_helo_restrictions=
+  -o smtpd_client_restrictions=
+  -o smtpd_sender_restrictions=
+  -o smtpd_recipient_restrictions=permit_mynetworks,reject
+  -o mynetworks=127.0.0.0/8
+  -o smtpd_authorized_xforward_hosts=127.0.0.0/8
 
+selector1._domainkey IN TXT "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKXQjd8ECzXBmQeecSarY1BqeoP9pJVfxAnaqqbX6fLq2wgeU0lhws2N+7qt+eR+n9XuLXggd1TIBc8UNK7OGOU7Lgwqg5KWp9i0o/Uub4TnDlqSB/2GjqHAKi31r1vTUAaKUmYJmFiVTIJHPGdisnGrkmXkN3mSKXczELRzY/hwIDAQAB; t=y"
 
-SOCKET="inet:8891@localhost"
-# Source configuration
-if [ -f /etc/sysconfig/$prog ] ; then
-    . /etc/sysconfig/$prog
-fi
-
-start() {
-    ulimit -s 2048
-    $PROGDIR/$prog -H -h -l -P /var/run/dk-filter.pid   \
-        $([ -n "$FILTER_RULE" ] && echo "-C $FILTER_RULE") \
-        $([ -n "$DOMAIN" ] && echo "-d $DOMAIN") \
-        $([ -n "$SELECTOR" ] && echo "-S $SELECTOR") \
-        $([ -n "$PRIVATE_KEY" ] && echo "-s $PRIVATE_KEY") \
-        $([ -n "$CANON" ] && echo "-c $CANON") \
-        $([ -n "$USER" ] && echo "-u $USER") \
-        $([ -n "$HEADER_IGNORE" ] && echo "-o $HEADER_IGNORE") \
-        -p $SOCKET
-    echo $cmd
-    echo
-
-    # Start daemon
-    echo  "Starting $prog: [OK]"
-    [ -e $SOCKET ] && rm -f $SOCKET
-    return $RETVAL
-}
-
-stop() {
-    # Stop daemon
-    echo -n "Shutting down $prog: [OK]"
-    killall -9 $prog
-    RETVAL=$?
-    echo
-
-    [ -e $SOCKET ] && rm -f $SOCKET
-
-    # Stop daemon
-    echo -n "Shutting down $prog: "
-    killproc $prog
-    echo
-    [ -e $MX_SOCKET ] && rm -f $MX_SOCKET
-}
-
-# See how we were called.
-case "$1" in
-    start)
-    start
-    ;;
-    stop)
-    stop $2
-    ;;
-    restart)
-    stop
-    start
-    RETVAL=$?
-    ;;
-    *)
-    echo "Usage: $0 {start|stop|restart}"
-    exit 1
-esac
-
-exit $RETVAL
-
-chmod +x /etc/init.d/dk-filter
-
-/etc/init.d/dk-filter start
-
-vi /etc/postfix/main.cf
-smtpd_milters = inet:localhost:8891
-non_smtpd_milters = inet:localhost:8891
-
-/usr/bin/dk-filter -A -l -p inet:8891@localhost -d jc001.cn -s /etc/postfix/jc001.cn.key.pem -S default    // 启动dk-filter签名服务
-
+/usr/local/dkfilter/bin/dkfilter.out --keyfile=/usr/local/dkfilter/private.key --selector=selector1 --domain=jc001.cn --method=nofws 127.0.0.1:10027 127.0.0.1:10028
 /etc/init.d/postfix restart
 
 
