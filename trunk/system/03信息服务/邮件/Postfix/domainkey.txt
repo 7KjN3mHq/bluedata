@@ -124,3 +124,59 @@ non_smtpd_milters = inet:localhost:8891
 /usr/bin/dk-filter -A -l -p inet:8891@localhost -d jc001.cn -s /etc/postfix/jc001.cn.key.pem -S default    // 启动dk-filter签名服务
 
 /etc/init.d/postfix restart
+
+
+wget http://www.c-corp.net/linux/centos/4/i386/generic/SRPMS/dkim-milter-1.2.0-1.src.rpm
+rpm -ivh dkim-milter-1.2.0-1.src.rpmcd /usr/src/redhat/SPECS
+rpmbuild --bb dkim-milter.spec
+cd /usr/src/redhat/RPMS/x86_64
+rpm -ivh dkim-milter-1.2.0-1.x86_64.rpm --nodeps
+
+mkdir /etc/dkim-milter
+chown dkim-milt.dkim-milt /etc/dkim-milter
+chmod 700 /etc/dkim-milter
+chgrp postfix /var/run/dkim-milter
+chmod 770 /var/run/dkim-milter
+
+wget http://www.topdog-software.com/files/dkim-genkey.sh
+chmod +x dkim-genkey.sh
+./dkim-genkey.sh -d jc001.cn
+mv default.private /etc/dkim-milter/jc001.cn_default.key.pem
+chown dkim-milt.dkim-milt /etc/dkim-milter/jc001.cn_default.key.pem
+
+default.txt 的内容加入 dns zone
+
+vi /etc/sysconfig/dkim-milter
+USER="dkim-milt"
+PORT=local:/var/run/dkim-milter/dkim.sock
+SIGNING_DOMAIN="jc001.cn"
+SELECTOR_NAME="default"
+KEYFILE="/etc/dkim-milter/${SIGNING_DOMAIN}_${SELECTOR_NAME}.key.pem"
+SIGNER=yes
+VERIFIER=yes
+CANON=simple
+SIGALG=rsa-sha1
+REJECTION="bad=r,dns=t,int=t,no=a,miss=r"
+EXTRA_ARGS="-h -l -D"
+MILTER_GROUP="postfix"
+
+wget http://www.topdog-software.com/files/dkim-milter -O /etc/init.d/dkim-milter
+chkconfig --level 345 dkim-milter on
+service dkim-milter start
+
+vi /etc/postfix/main.cf
+smtpd_milters = unix:/var/run/dkim-milter/dkim.sock
+non_smtpd_milters = unix:/var/run/dkim-milter/dkim.sock
+
+/etc/init.d/postfix restart
+
+test:
+Send a message to autorespond+dkim@dk.elandsys.com; the system will return a response to let you know if DKIM is working.
+
+
+SpamAssassin DKIM
+yum install perl-Mail-DKIM
+Installing for dependencies: perl-Crypt-OpenSSL-RSA perl-Digest-SHA
+yum install perl-Crypt-OpenSSL-Bignum
+echo "loadplugin Mail::SpamAssassin::Plugin::DKIM" >> /etc/mail/spamassassin/init.pre
+/etc/init.d/amavisd restart

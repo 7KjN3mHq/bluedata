@@ -1,0 +1,15 @@
+wget http://www.maatkit.org/get/mk-table-checksum
+wget http://www.maatkit.org/get/mk-checksum-filter
+wget http://www.maatkit.org/get/mk-table-sync
+chmod +x mk-table-checksum
+chmod +x mk-checksum-filter
+chmod +x mk-table-sync
+./mk-table-checksum --replicate=goods.checksum app1
+./mk-table-checksum h=app1,D=goods,t=goods h=db1
+./mk-table-checksum --databases goods app1 db1 | ./mk-checksum-filter
+./mk-table-sync --execute h=db1,D=goods,t=goods -s -v
+
+./mk-table-sync --execute h=db2,D=goods,t=goods db1 --skipslavecheck -v
+
+./mk-table-sync --execute h=app1,D=goods,t=goods db1 -v
+start slave sql_thread;

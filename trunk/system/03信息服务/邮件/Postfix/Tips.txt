@@ -104,6 +104,45 @@ $decode=base64_decode($argv[1]);
 echo $decode;
 ?>
 
+perl -e 'use MIME::Base64; print encode_base64("bluedata\@jc001.cn")'
+perl -e 'use MIME::Base64; print encode_base64("fanssoft")'
+
+telnet localhost 25
+Trying 127.0.0.1...
+Connected to localhost.localdomain (127.0.0.1).
+Escape character is '^]'.
+220 mail.extmail.org ESMTP Postfix - by extmail.org
+ehlo demo.domain.tld
+250-mail.extmail.org
+250-PIPELINING
+250-SIZE 10240000
+250-VRFY
+250-ETRN
+250-AUTH LOGIN PLAIN
+250-AUTH=LOGIN PLAIN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 DSN
+auth login
+334 VXNlcm5hbWU6
+cG9zdG1hc3RlckBleHRtYWlsLm9yZw==
+334 UGFzc3dvcmQ6
+ZXh0bWFpbA==
+mail from:<test@extmail.org>
+250 2.1.0 Ok
+rcpt to:<test@extmail.org>
+250 2.1.5 Ok
+data
+354 End data with .
+Subject: Hello World
+
+Hello World!
+.
+250 2.0.0 Ok: queued as 3E47685269
+quit
+221 2.0.0 Bye
+Connection closed by foreign host.
+
 
 grep 'blocked by localctrl' /var/log/slockd.log.1 | cut -d '<' -f 2 | cut -d '>' -f 1 | sort | uniq -c | sort -nr > /home/qmailrocks/blocked.txt
 
