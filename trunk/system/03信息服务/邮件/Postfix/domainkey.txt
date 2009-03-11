@@ -6,11 +6,24 @@ http://www.topdog-software.com/oss/dk-milter/
 wget http://www.topdog-software.com/oss/dk-milter/dk-milter-1.0.2-0.x86_64.rpm
 
 
+DKIMProxy
 http://jason.long.name/dkfilter/
-wget http://jason.long.name/dkfilter/dkfilter.tgz
-tar zxvf dkfilter.tgz
-cd dkfilter-0.8
-./configure --prefix=/usr/local/dkfilter
+Crypt::OpenSSL::RSA
+Digest::SHA
+Digest::SHA1
+Error
+Mail::Address
+MIME::Base64
+Net::DNS
+Net::Server
+Mail::DKIM
+
+yum install perl-Error perl-MailTools perl-MIME-Base64
+
+wget http://downloads.sourceforge.net/dkimproxy/dkimproxy-1.1.tar.gz
+tar zxvf dkimproxy-1.1.tar.gz
+cd dkimproxy-1.1
+./configure --prefix=/usr/local/dkimproxy
 make install
 
 vi /etc/postfix/master.cf
@@ -35,14 +48,14 @@ smtp      inet  n       -       n       -       -       smtpd
   -o mynetworks=127.0.0.0/8
   -o receive_override_options=no_unknown_recipient_checks
 
-/usr/local/dkfilter/bin/dkfilter.in 127.0.0.1:10035 127.0.0.1:10036
+/usr/local/dkimproxy/bin/dkimproxy.in 127.0.0.1:10035 127.0.0.1:10036 &
 /etc/init.d/postfix restart
 
 wget http://www.topdog-software.com/files/dkim-genkey.sh
 chmod +x dkim-genkey.sh
 ./dkim-genkey.sh -d jc001.cn
 
-mv default.private /usr/local/dkfilter/private.key
+mv default.private /usr/local/dkimproxy/private.key
 
 vi /etc/postfix/master.cf
 #
@@ -75,10 +88,19 @@ dksign    unix  -       -       n       -       10      smtp
   -o mynetworks=127.0.0.0/8
   -o smtpd_authorized_xforward_hosts=127.0.0.0/8
 
-selector1._domainkey IN TXT "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKXQjd8ECzXBmQeecSarY1BqeoP9pJVfxAnaqqbX6fLq2wgeU0lhws2N+7qt+eR+n9XuLXggd1TIBc8UNK7OGOU7Lgwqg5KWp9i0o/Uub4TnDlqSB/2GjqHAKi31r1vTUAaKUmYJmFiVTIJHPGdisnGrkmXkN3mSKXczELRzY/hwIDAQAB; t=y"
+default._domainkey IN TXT "k=rsa; t=s; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCs63oYOrwcOIE/yMboCeoc3Z0CAANJjK/SbPFt1OINs8ZLkvhi1k1JKLck7eECQ9KOz7EK9+otl7dsDP6WzTgN0fKTjg7eVXbki3ueM655dLxSReI9MTpp5Nprox/7w8ToZO9qGeQywxvFv8/cIp98Mv1OvA4wVjIq+DJ7Q7RHrQIDAQAB"
 
-/usr/local/dkfilter/bin/dkfilter.out --keyfile=/usr/local/dkfilter/private.key --selector=selector1 --domain=jc001.cn --method=nofws 127.0.0.1:10027 127.0.0.1:10028
+/usr/local/dkimproxy/bin/dkimproxy.out --keyfile=/usr/local/dkimproxy/private.key --selector=default --domain=jc001.cn --method=relaxed 127.0.0.1:10027 127.0.0.1:10028 &
 /etc/init.d/postfix restart
+
+mail to check-auth@verifier.port25.com
+
+vi /etc/maildroprc
+# delete-dkim-fail
+if (/^X-DKIM-Authentication-Results: fail/)
+{
+  to "/dev/null"
+}
 
 
 wget http://www.c-corp.net/linux/centos/4/i386/generic/SRPMS/dkim-milter-1.2.0-1.src.rpm

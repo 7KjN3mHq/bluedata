@@ -410,6 +410,21 @@ smtpd_recipient_restrictions ¶ÎÄ©¼ÓÉÏ
 check_policy_service inet:127.0.0.1:10030
 
 
+djbdns
+http://www.howtoforge.com/install-djbdns-nameserver-on-debian-etch
+apt-get install daemontools daemontools-run ucspi-tcp djbdns
+groupadd nofiles -g 800
+useradd dnslog -g nofiles -u 810 -d /nonexistent -s /bin/false
+useradd dnscache -g nofiles -u 811 -d /nonexistent -s /bin/false
+mkdir /var/lib/svscan
+dnscache-conf dnscache dnslog /var/lib/svscan/dnscache
+echo -n 10000000 > /var/lib/svscan/dnscache/env/CACHESIZE
+echo -n 30000000 > /var/lib/svscan/dnscache/env/DATALIMIT
+ln -s /var/lib/svscan/dnscache /etc/service
+echo "nameserver 127.0.0.1" > /etc/resolv.conf
+dnsip www.google.com
+
+
 DSPAM
 apt-get install dspam
 The following NEW packages will be installed:
