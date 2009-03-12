@@ -1,0 +1,42 @@
+http://postfix.wl0.org/en/building-rpms/
+
+wget http://ftp.wl0.org/official/2.5/SRPMS/postfix-2.5.6-1.src.rpm
+rpm -ivh postfix-2.5.6-1.src.rpm
+cd /usr/src/redhat/SPECS
+vi postfix.spec
+½«£º
+%define distribution rhel-5.0
+%define with_mysql_redhat 0
+%define with_sasl         0
+%define rel 1.rhel5
+¸ÄÎª£º
+%define distribution rhel-4.0
+%define with_mysql_redhat 1
+%define with_sasl         2
+%define rel 1.rhel4
+
+rpmbuild -bb postfix.spec
+
+cp -ar /etc/postfix /etc/postfix~
+cp -a /usr/lib64/sasl2/smtpd.conf /usr/lib64/sasl2/smtpd.conf~
+/etc/init.d/postfix stop
+
+rpm -e postfix --nodeps
+
+cd /usr/src/redhat/RPMS/x86_64
+
+rpm -Uvh postfix-2.5.6-1.rhel4.x86_64.rpm
+
+cd /etc/postfix
+mv main.cf main.cf~
+mv master.cf master.cf~
+mv main.cf.rpmsave main.cf
+mv master.cf.rpmsave master.cf
+mv aliases.rpmsave aliases
+newaliases
+
+cd /usr/lib64/sasl2
+mv smtpd.conf smtpd.conf~
+mv smtpd.conf.rpmsave smtpd.conf
+
+/etc/init.d/postfix start

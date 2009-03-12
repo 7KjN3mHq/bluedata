@@ -1,13 +1,6 @@
-http://sourceforge.net/projects/dk-milter/
-wget http://nchc.dl.sourceforge.net/sourceforge/dk-milter/dk-milter-1.0.2.tar.gz
-
-rpm for centos5:
-http://www.topdog-software.com/oss/dk-milter/
-wget http://www.topdog-software.com/oss/dk-milter/dk-milter-1.0.2-0.x86_64.rpm
-
-
 DKIMProxy
 http://dkimproxy.sourceforge.net/
+http://dkimproxy.sourceforge.net/faq.html
 Crypt::OpenSSL::RSA
 Digest::SHA
 Digest::SHA1
@@ -60,6 +53,7 @@ cd /usr/local/dkimproxy
 openssl genrsa -out private.key 1024
 openssl rsa -in private.key -pubout -out public.key
 chown dkim private.key
+chmod 0400 private.key
 
 Put the public-key data in DNS.
 default._domainkey 60 IN TXT "k=rsa; t=s; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1gt4m+XZk/rHu8LTaXz8bcnHm4Ux39CV4L+A4YFMFyZ5bWJaZ4QkzXQFzB2V7lt2cSraOuEBz+Fbc6PALm0V6mnAD71eIKJpjPvt8UGi6ynB87/FEmL2Rq1ym9COB4qsm/26lSd3lIn2Mmmxbl+hAczXfLLOtM940GQOniaOyUQIDAQAB"
@@ -137,8 +131,14 @@ dksign    unix  -       -       n       -       10      smtp
   -o mynetworks=127.0.0.0/8
   -o smtpd_authorized_xforward_hosts=127.0.0.0/8
 
+pickup    fifo  n       -       n       60      1       pickup
+  -o content_filter=dksign:[127.0.0.1]:10027
+
 /etc/init.d/dkimproxy start
 /etc/init.d/postfix restart
+
+vi /var/www/extsuite/extmail/webmail.cf
+SYS_SMTP_PORT = 587
 
 mail to check-auth@verifier.port25.com
 
@@ -149,40 +149,96 @@ if (/^X-DKIM-Authentication-Results: fail/)
   to "/dev/null"
 }
 
+SpamAssassin DKIM
+yum install perl-Mail-DKIM
+Installing for dependencies: perl-Crypt-OpenSSL-RSA perl-Digest-SHA
+yum install perl-Crypt-OpenSSL-Bignum
+echo "loadplugin Mail::SpamAssassin::Plugin::DKIM" >> /etc/mail/spamassassin/init.pre
+/etc/init.d/amavisd restart
 
+
+dk-milter (postfix 2.3 later)
+yum install sendmail-devel
+wget http://www.topdog-software.com/oss/dk-milter/dk-milter-1.0.2-1.src.rpm
+rpm -ivh dk-milter-1.0.2-1.src.rpm
+cd /usr/src/redhat/SPECS
+rpmbuild --bb dk-milter.spec
+rpm -Uvh /usr/src/redhat/RPMS/x86_64/dk-milter-1.0.2-1.x86_64.rpm
+
+chgrp postfix /var/run/dk-milter
+chmod 770 /var/run/dk-milter
+
+openssl genrsa -out private.key 1024
+openssl rsa -in private.key -pubout -out public.key
+chown dk-milt private.key
+chmod 0400 private.key
+cp -a private.key /etc/mail/jc001.cn_dk.pem
+
+公钥加入 DNS
+_domainkey 60 IN TXT "o=-"
+dk._domainkey 60 IN TXT "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1gt4m+XZk/rHu8LTaXz8bcnHm4Ux39CV4L+A4YFMFyZ5bWJaZ4QkzXQFzB2V7lt2cSraOuEBz+Fbc6PALm0V6mnAD71eIKJpjPvt8UGi6ynB87/FEmL2Rq1ym9COB4qsm/26lSd3lIn2Mmmxbl+hAczXfLLOtM940GQOniaOyUQIDAQAB;"
+
+vi /etc/sysconfig/dk-milter
+USER="dk-milt"
+#PORT="local:/var/run/dk-milter/dk.sock"
+PORT="inet:8891@localhost"
+SIGNING_DOMAIN="jc001.cn"
+SELECTOR_NAME="dk"
+KEYFILE="/etc/mail/${SIGNING_DOMAIN}_${SELECTOR_NAME}.pem"
+SIGNER=yes
+VERIFIER=yes
+CANON=simple
+REJECTION="bad=r,dns=t,int=t,no=a,miss=r"
+EXTRA_ARGS="-h -l -D"
+
+vi /etc/postfix/main.cf
+milter_default_action = accept
+milter_protocol = 2
+smtpd_milters = unix:/var/run/dk-milter/dk.sock
+non_smtpd_milters = unix:/var/run/dk-milter/dk.sock
+
+/etc/init.d/dk-milter start
+/etc/init.d/postfix restart
+
+bug:
+ls -la /var/run/dk-milter/dk.sock
+srwxrwx---  1 dk-milt mail 0 Mar 12 17:50 /var/run/dk-milter/dk.sock
+more /var/run/dk-milter/dk.sock
+/var/run/dk-milter/dk.sock: No such device or address
+
+
+dkim-milter (postfix 2.3 later)
 wget http://www.c-corp.net/linux/centos/4/i386/generic/SRPMS/dkim-milter-1.2.0-1.src.rpm
-rpm -ivh dkim-milter-1.2.0-1.src.rpmcd /usr/src/redhat/SPECS
+rpm -ivh dkim-milter-1.2.0-1.src.rpmcd
+cd /usr/src/redhat/SPECS
 rpmbuild --bb dkim-milter.spec
-cd /usr/src/redhat/RPMS/x86_64
-rpm -ivh dkim-milter-1.2.0-1.x86_64.rpm --nodeps
+rpm -ivh /usr/src/redhat/RPMS/x86_64/dkim-milter-1.2.0-1.x86_64.rpm --nodeps
 
-mkdir /etc/dkim-milter
-chown dkim-milt.dkim-milt /etc/dkim-milter
-chmod 700 /etc/dkim-milter
 chgrp postfix /var/run/dkim-milter
 chmod 770 /var/run/dkim-milter
 
-wget http://www.topdog-software.com/files/dkim-genkey.sh
-chmod +x dkim-genkey.sh
-./dkim-genkey.sh -d jc001.cn
-mv default.private /etc/dkim-milter/jc001.cn_default.key.pem
-chown dkim-milt.dkim-milt /etc/dkim-milter/jc001.cn_default.key.pem
+openssl genrsa -out private.key 1024
+openssl rsa -in private.key -pubout -out public.key
+chown dkim-milt private.key
+chmod 0400 private.key
+cp -a private.key /etc/mail/jc001.cn_dkim.pem
 
-default.txt 的内容加入 dns zone
+公钥加入 DNS
+dkim._domainkey 60 IN TXT "v=DKIM1; g=*; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1gt4m+XZk/rHu8LTaXz8bcnHm4Ux39CV4L+A4YFMFyZ5bWJaZ4QkzXQFzB2V7lt2cSraOuEBz+Fbc6PALm0V6mnAD71eIKJpjPvt8UGi6ynB87/FEmL2Rq1ym9COB4qsm/26lSd3lIn2Mmmxbl+hAczXfLLOtM940GQOniaOyUQIDAQAB;"
 
 vi /etc/sysconfig/dkim-milter
 USER="dkim-milt"
-PORT=local:/var/run/dkim-milter/dkim.sock
+#PORT="local:/var/run/dkim-milter/dkim.sock"
+PORT="inet:8892@localhost"
 SIGNING_DOMAIN="jc001.cn"
-SELECTOR_NAME="default"
-KEYFILE="/etc/dkim-milter/${SIGNING_DOMAIN}_${SELECTOR_NAME}.key.pem"
+SELECTOR_NAME="dkim"
+KEYFILE="/etc/mail/${SIGNING_DOMAIN}_${SELECTOR_NAME}.pem"
 SIGNER=yes
 VERIFIER=yes
 CANON=simple
 SIGALG=rsa-sha1
-REJECTION="bad=r,dns=t,int=t,no=a,miss=r"
+REJECTION="bad=r,dns=t,int=t,no=r,miss=r"
 EXTRA_ARGS="-h -l -D"
-MILTER_GROUP="postfix"
 
 wget http://www.topdog-software.com/files/dkim-milter -O /etc/init.d/dkim-milter
 chkconfig --level 345 dkim-milter on
@@ -192,15 +248,9 @@ vi /etc/postfix/main.cf
 smtpd_milters = unix:/var/run/dkim-milter/dkim.sock
 non_smtpd_milters = unix:/var/run/dkim-milter/dkim.sock
 
+#smtpd_milters     = unix:/var/run/dk-filter/dk-filter.sock, unix:/var/run/dkim-filter/dkim-filter.sock
+#non_smtpd_milters = unix:/var/run/dk-filter/dk-filter.sock, unix:/var/run/dkim-filter/dkim-filter.sock
+smtpd_milters     = inet:localhost:8891, inet:localhost:8892
+non_smtpd_milters = inet:localhost:8891, inet:localhost:8892
+
 /etc/init.d/postfix restart
-
-test:
-Send a message to autorespond+dkim@dk.elandsys.com; the system will return a response to let you know if DKIM is working.
-
-
-SpamAssassin DKIM
-yum install perl-Mail-DKIM
-Installing for dependencies: perl-Crypt-OpenSSL-RSA perl-Digest-SHA
-yum install perl-Crypt-OpenSSL-Bignum
-echo "loadplugin Mail::SpamAssassin::Plugin::DKIM" >> /etc/mail/spamassassin/init.pre
-/etc/init.d/amavisd restart

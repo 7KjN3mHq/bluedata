@@ -87,6 +87,9 @@ cd python-spf
 python setup.py build
 python setup.py install
 
+vi /etc/python-policyd-spf/policyd-spf.conf
+PermError_reject = True
+
 vi /etc/postfix/master.cf
 spfpolicy unix  -       n       n       -       -       spawn
     user=nobody argv=/usr/bin/python /usr/bin/policyd-spf
