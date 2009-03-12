@@ -55,7 +55,7 @@ openssl rsa -in private.key -pubout -out public.key
 chown dkim private.key
 chmod 0400 private.key
 
-Put the public-key data in DNS.
+Put the public-key data in DNS:
 default._domainkey 60 IN TXT "k=rsa; t=s; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1gt4m+XZk/rHu8LTaXz8bcnHm4Ux39CV4L+A4YFMFyZ5bWJaZ4QkzXQFzB2V7lt2cSraOuEBz+Fbc6PALm0V6mnAD71eIKJpjPvt8UGi6ynB87/FEmL2Rq1ym9COB4qsm/26lSd3lIn2Mmmxbl+hAczXfLLOtM940GQOniaOyUQIDAQAB"
 
 cd etc
@@ -168,15 +168,14 @@ rpm -Uvh /usr/src/redhat/RPMS/x86_64/dk-milter-1.0.2-1.x86_64.rpm
 chgrp postfix /var/run/dk-milter
 chmod 770 /var/run/dk-milter
 
-openssl genrsa -out private.key 1024
-openssl rsa -in private.key -pubout -out public.key
-chown dk-milt private.key
-chmod 0400 private.key
-cp -a private.key /etc/mail/jc001.cn_dk.pem
+/usr/share/doc/dk-milter-1.0.2/gentxt.sh dk jc001.cn
+mv dk.private /etc/mail/dk_jc001.cn.pem
+chown dk-milt:dk-milt /etc/mail/dk_jc001.cn.pem
+chmod 600 /etc/mail/dk_jc001.cn.pem
 
-公钥加入 DNS
-_domainkey 60 IN TXT "o=-"
-dk._domainkey 60 IN TXT "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1gt4m+XZk/rHu8LTaXz8bcnHm4Ux39CV4L+A4YFMFyZ5bWJaZ4QkzXQFzB2V7lt2cSraOuEBz+Fbc6PALm0V6mnAD71eIKJpjPvt8UGi6ynB87/FEmL2Rq1ym9COB4qsm/26lSd3lIn2Mmmxbl+hAczXfLLOtM940GQOniaOyUQIDAQAB;"
+dk.txt add to zone file:
+_domainkey 60 IN TXT "t=y; o=~"
+dk._domainkey 60 IN TXT "g=; k=rsa; t=y; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANWwy69O+J+260XpepvFPEdYweuO2Jw4gAn+1QBHPgYzSubjmXHSDSxqRhMZQwnD3Pzpe1fxalpFhrtHDzFhSRkCAwEAAQ==" ; ----- DomainKey dk for jc001.cn
 
 vi /etc/sysconfig/dk-milter
 USER="dk-milt"
@@ -184,12 +183,13 @@ USER="dk-milt"
 PORT="inet:8891@localhost"
 SIGNING_DOMAIN="jc001.cn"
 SELECTOR_NAME="dk"
-KEYFILE="/etc/mail/${SIGNING_DOMAIN}_${SELECTOR_NAME}.pem"
+KEYFILE="/etc/mail/${SELECTOR_NAME}_${SIGNING_DOMAIN}.pem"
 SIGNER=yes
 VERIFIER=yes
 CANON=simple
 REJECTION="bad=r,dns=t,int=t,no=a,miss=r"
 EXTRA_ARGS="-h -l -D"
+MILTER_GROUP="mail"
 
 vi /etc/postfix/main.cf
 milter_default_action = accept
@@ -214,16 +214,19 @@ cd /usr/src/redhat/SPECS
 rpmbuild --bb dkim-milter.spec
 rpm -ivh /usr/src/redhat/RPMS/x86_64/dkim-milter-1.2.0-1.x86_64.rpm --nodeps
 
+mkdir /etc/dkim-milter
+chown dkim-milt.dkim-milt /etc/dkim-milter
+chmod 700 /etc/dkim-milter
 chgrp postfix /var/run/dkim-milter
 chmod 770 /var/run/dkim-milter
 
-openssl genrsa -out private.key 1024
-openssl rsa -in private.key -pubout -out public.key
-chown dkim-milt private.key
-chmod 0400 private.key
-cp -a private.key /etc/mail/jc001.cn_dkim.pem
+wget http://www.topdog-software.com/files/dkim-genkey.sh
+chmod +x dkim-genkey.sh
+./dkim-genkey.sh -d jc001.cn
+mv default.private /etc/mail/dkim_jc001.cn.pem
+chown dkim-milt:dkim-milt /etc/mail/dkim_jc001.cn.pem
 
-公钥加入 DNS
+default.txt add to zone file:
 dkim._domainkey 60 IN TXT "v=DKIM1; g=*; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1gt4m+XZk/rHu8LTaXz8bcnHm4Ux39CV4L+A4YFMFyZ5bWJaZ4QkzXQFzB2V7lt2cSraOuEBz+Fbc6PALm0V6mnAD71eIKJpjPvt8UGi6ynB87/FEmL2Rq1ym9COB4qsm/26lSd3lIn2Mmmxbl+hAczXfLLOtM940GQOniaOyUQIDAQAB;"
 
 vi /etc/sysconfig/dkim-milter
@@ -232,7 +235,7 @@ USER="dkim-milt"
 PORT="inet:8892@localhost"
 SIGNING_DOMAIN="jc001.cn"
 SELECTOR_NAME="dkim"
-KEYFILE="/etc/mail/${SIGNING_DOMAIN}_${SELECTOR_NAME}.pem"
+KEYFILE="/etc/mail/${SELECTOR_NAME}_${SIGNING_DOMAIN}.pem"
 SIGNER=yes
 VERIFIER=yes
 CANON=simple
@@ -254,3 +257,6 @@ smtpd_milters     = inet:localhost:8891, inet:localhost:8892
 non_smtpd_milters = inet:localhost:8891, inet:localhost:8892
 
 /etc/init.d/postfix restart
+
+error:
+Mar 13 00:36:54 mail dkim-filter[19544]: (unknown-jobid): syntax error: unknown signing algorithm `rsa-sha256'
