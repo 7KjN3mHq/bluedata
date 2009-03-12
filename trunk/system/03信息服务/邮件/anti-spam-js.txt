@@ -1,0 +1,5 @@
+如果在网页和博客上公布自己的E-mail地址，则可能被电子邮件收集工具搜索到并加入到他们的数据库中，之后就会收到一大堆广告垃圾邮件。E- mail地址搜索软件是通过@来搜索网页HTML源文件的，已有的一些对付方法，无非是用一个显示E-mail地址的图片代替文本E-mail地址，或者不按标准格式书写E-mail地址，把形如yourname@s135.com的E-mail地址写成yourname#s135.com，再备注一句“使用时将#修改为@”，虽然可行 ，但十分不方便。
+　　
+其实只要在网页HTML源文件中不包含连续完整的E-mail地址，而在浏览网页时能够显示完整的E-mail地址，就既可以防止电子邮件地址被搜索到，又可以方便想给自己发电子邮件的人(直接Ctrl+C、Ctrl+V邮件地址就行了，不用作任何修改)。实现方法并不难，简单的JavaScript 就可以搞定，将下面的代码复制到自己的网页或博客中，把rewin1=、rewin2=、rewin3=后面引号中拆散的E-mail地址(yourname@s135.com)换成自己的，就OK了。
+
+<SCRIPT language=JavaScript>rewin1="yourname";rewin2="jc001";rewin3=".cn";document.write(rewin1+'@'+rewin2+rewin3);</SCRIPT>
