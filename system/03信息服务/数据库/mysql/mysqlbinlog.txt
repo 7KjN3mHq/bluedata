@@ -1,0 +1,10 @@
+search position
+/usr/local/mysql/bin/mysqlbinlog --start-datetime="2009-03-13 17:05:00" --stop-datetime="2009-03-13 17:35:00" mysql-bin.000006 > tmp.sql
+
+# at 419369529
+
+/usr/local/mysql/bin/mysqlbinlog -d stat --stop-position=419369529 mysql-bin.000006 > tmp.sql
+
+/usr/local/mysql/bin/mysql stat < tmp.sql
+
+rm -f tmp.sql

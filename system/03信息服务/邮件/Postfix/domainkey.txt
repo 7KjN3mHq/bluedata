@@ -163,7 +163,7 @@ wget http://www.topdog-software.com/oss/dk-milter/dk-milter-1.0.2-1.src.rpm
 rpm -ivh dk-milter-1.0.2-1.src.rpm
 cd /usr/src/redhat/SPECS
 rpmbuild --bb dk-milter.spec
-rpm -Uvh /usr/src/redhat/RPMS/x86_64/dk-milter-1.0.2-1.x86_64.rpm
+rpm -ivh /usr/src/redhat/RPMS/x86_64/dk-milter-1.0.2-1.x86_64.rpm
 
 chgrp postfix /var/run/dk-milter
 chmod 770 /var/run/dk-milter
@@ -199,6 +199,11 @@ non_smtpd_milters = unix:/var/run/dk-milter/dk.sock
 
 /etc/init.d/dk-milter start
 /etc/init.d/postfix restart
+
+note:
+dk_eom(): resource unavailable: d2i_PUBKEY_bio() failed
+SSL error:0D06B08E:asn1 encoding routines:ASN1_D2I_READ_BIO:not enough data
+http://www.ithowto.ro/2009/03/dk_eom-resource-unavailable-d2i_pubkey_bio-failed/
 
 bug:
 ls -la /var/run/dk-milter/dk.sock
