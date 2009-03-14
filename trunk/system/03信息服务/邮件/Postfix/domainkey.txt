@@ -159,14 +159,26 @@ echo "loadplugin Mail::SpamAssassin::Plugin::DKIM" >> /etc/mail/spamassassin/ini
 
 dk-milter (postfix 2.3 later)
 yum install sendmail-devel
+
+wget http://www.openssl.org/source/openssl-0.9.8j.tar.gz
+./config --prefix=/usr/local/openssl
+make
+make install
+
 wget http://www.topdog-software.com/oss/dk-milter/dk-milter-1.0.2-1.src.rpm
 rpm -ivh dk-milter-1.0.2-1.src.rpm
+
+cd /usr/src/redhat/SOURCES
+tar zxvf dk-milter-1.0.2.tar.gz
+vi dk-milter-1.0.2/dk-filter/Makefile.m4
+APPENDDEF(`confINCDIRS', `-I../libdk/ -I/usr/local/openssl/include/openssl')
+APPENDDEF(`confLIBDIRS', `-L/usr/local/openssl/lib ')
+tar zcvf dk-milter-1.0.2.tar.gz dk-milter-1.0.2
+rm -rf dk-milter-1.0.2
+
 cd /usr/src/redhat/SPECS
 rpmbuild --bb dk-milter.spec
 rpm -ivh /usr/src/redhat/RPMS/x86_64/dk-milter-1.0.2-1.x86_64.rpm
-
-chgrp postfix /var/run/dk-milter
-chmod 770 /var/run/dk-milter
 
 /usr/share/doc/dk-milter-1.0.2/gentxt.sh dk jc001.cn
 mv dk.private /etc/mail/dk_jc001.cn.pem
@@ -179,17 +191,16 @@ dk._domainkey 60 IN TXT "g=; k=rsa; t=y; p=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANWwy
 
 vi /etc/sysconfig/dk-milter
 USER="dk-milt"
-#PORT="local:/var/run/dk-milter/dk.sock"
-PORT="inet:8891@localhost"
+PORT="local:/var/run/dk-milter/dk.sock"
+#PORT="inet:8891@localhost"
 SIGNING_DOMAIN="jc001.cn"
 SELECTOR_NAME="dk"
-KEYFILE="/etc/mail/${SELECTOR_NAME}_${SIGNING_DOMAIN}.pem"
+KEYFILE="/etc/mail/domainkeys/${SELECTOR_NAME}_${SIGNING_DOMAIN}.pem"
 SIGNER=yes
 VERIFIER=yes
 CANON=simple
 REJECTION="bad=r,dns=t,int=t,no=a,miss=r"
 EXTRA_ARGS="-h -l -D"
-MILTER_GROUP="mail"
 
 vi /etc/postfix/main.cf
 milter_default_action = accept
@@ -211,25 +222,47 @@ srwxrwx---  1 dk-milt mail 0 Mar 12 17:50 /var/run/dk-milter/dk.sock
 more /var/run/dk-milter/dk.sock
 /var/run/dk-milter/dk.sock: No such device or address
 
+smtpd_milters = inet:localhost:8891
+non_smtpd_milters = inet:localhost:8891
+
 
 dkim-milter (postfix 2.3 later)
-wget http://www.c-corp.net/linux/centos/4/i386/generic/SRPMS/dkim-milter-1.2.0-1.src.rpm
-rpm -ivh dkim-milter-1.2.0-1.src.rpmcd
+yum install pkgconfig
+wget ftp://rpmfind.net/linux/fedora/development/x86_64/os/Packages/openssl-devel-0.9.8j-8.fc11.x86_64.rpm
+rpm -Uvh openssl-devel-0.9.8j-8.fc11.x86_64.rpm
+
+wget http://www.topdog-software.com/oss/dkim-milter/dkim-milter-2.8.2-0.src.rpm
+rpm -ivh dkim-milter-2.8.2-0.src.rpm
+
+cd /usr/src/redhat/SOURCES
+tar zxvf dkim-milter-2.8.2.tar.gz
+vi dkim-milter-2.8.2/dkim-filter/Makefile.m4
+APPENDDEF(`confINCDIRS', `-I../libdk/ -I/usr/local/openssl/include/openssl')', `')
+APPENDDEF(`confLIBDIRS', `-L/usr/local/openssl/lib ')
+tar zcvf dkim-milter-2.8.2.tar.gz dkim-milter-2.8.2
+rm -rf dkim-milter-2.8.2
+
 cd /usr/src/redhat/SPECS
 rpmbuild --bb dkim-milter.spec
-rpm -ivh /usr/src/redhat/RPMS/x86_64/dkim-milter-1.2.0-1.x86_64.rpm --nodeps
+rpm -ivh /usr/src/redhat/RPMS/x86_64/dkim-milter-2.8.2-0.x86_64.rpm
 
-mkdir /etc/dkim-milter
-chown dkim-milt.dkim-milt /etc/dkim-milter
-chmod 700 /etc/dkim-milter
+
+wget http://www.c-corp.net/linux/centos/4/i386/generic/SRPMS/dkim-milter-0.5.1-1.src.rpm
+rpm -ivh dkim-milter-0.5.1-1.src.rpm
+cd /usr/src/redhat/SPECS
+rpmbuild --bb dkim-milter.spec
+rpm -ivh /usr/src/redhat/RPMS/x86_64/dkim-milter-0.5.1-1.x86_64.rpm --nodeps
+
+mkdir /etc/mail/dkim
+chown dkim-milt:dkim-milt /etc/mail/dkim
 chgrp postfix /var/run/dkim-milter
 chmod 770 /var/run/dkim-milter
 
 wget http://www.topdog-software.com/files/dkim-genkey.sh
 chmod +x dkim-genkey.sh
 ./dkim-genkey.sh -d jc001.cn
-mv default.private /etc/mail/dkim_jc001.cn.pem
-chown dkim-milt:dkim-milt /etc/mail/dkim_jc001.cn.pem
+chown dkim-milt:dkim-milt dkim_jc001.cn.pem
+mv default.private /etc/mail/dkim/dkim_jc001.cn.pem
 
 default.txt add to zone file:
 dkim._domainkey 60 IN TXT "v=DKIM1; g=*; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1gt4m+XZk/rHu8LTaXz8bcnHm4Ux39CV4L+A4YFMFyZ5bWJaZ4QkzXQFzB2V7lt2cSraOuEBz+Fbc6PALm0V6mnAD71eIKJpjPvt8UGi6ynB87/FEmL2Rq1ym9COB4qsm/26lSd3lIn2Mmmxbl+hAczXfLLOtM940GQOniaOyUQIDAQAB;"
@@ -240,7 +273,7 @@ USER="dkim-milt"
 PORT="inet:8892@localhost"
 SIGNING_DOMAIN="jc001.cn"
 SELECTOR_NAME="dkim"
-KEYFILE="/etc/mail/${SELECTOR_NAME}_${SIGNING_DOMAIN}.pem"
+KEYFILE="/etc/mail/dkim/${SELECTOR_NAME}_${SIGNING_DOMAIN}.pem"
 SIGNER=yes
 VERIFIER=yes
 CANON=simple
@@ -248,7 +281,6 @@ SIGALG=rsa-sha1
 REJECTION="bad=r,dns=t,int=t,no=r,miss=r"
 EXTRA_ARGS="-h -l -D"
 
-wget http://www.topdog-software.com/files/dkim-milter -O /etc/init.d/dkim-milter
 chkconfig --level 345 dkim-milter on
 service dkim-milter start
 
