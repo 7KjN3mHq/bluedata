@@ -23,9 +23,7 @@ cp -a /usr/lib64/sasl2/smtpd.conf /usr/lib64/sasl2/smtpd.conf~
 
 rpm -e postfix --nodeps
 
-cd /usr/src/redhat/RPMS/x86_64
-
-rpm -Uvh postfix-2.5.6-1.rhel4.x86_64.rpm
+rpm -Uvh /usr/src/redhat/RPMS/x86_64/postfix-2.5.6-1.rhel4.x86_64.rpm
 
 cd /etc/postfix
 mv main.cf main.cf~
