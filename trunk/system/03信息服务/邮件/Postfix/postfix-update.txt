@@ -1,15 +1,17 @@
+yum -y install rpm-build
+
 http://postfix.wl0.org/en/building-rpms/
 
 wget http://ftp.wl0.org/official/2.5/SRPMS/postfix-2.5.6-1.src.rpm
 rpm -ivh postfix-2.5.6-1.src.rpm
 cd /usr/src/redhat/SPECS
 vi postfix.spec
-½«£º
+Change:
 %define distribution rhel-5.0
 %define with_mysql_redhat 0
 %define with_sasl         0
 %define rel 1.rhel5
-¸ÄÎª£º
+To:
 %define distribution rhel-4.0
 %define with_mysql_redhat 1
 %define with_sasl         2
@@ -17,24 +19,60 @@ vi postfix.spec
 
 rpmbuild -bb postfix.spec
 
-cp -ar /etc/postfix /etc/postfix~
-cp -a /usr/lib64/sasl2/smtpd.conf /usr/lib64/sasl2/smtpd.conf~
 /etc/init.d/postfix stop
-
 rpm -e postfix --nodeps
-
-rpm -Uvh /usr/src/redhat/RPMS/x86_64/postfix-2.5.6-1.rhel4.x86_64.rpm
+rpm -ivh /usr/src/redhat/RPMS/x86_64/postfix-2.5.6-1.rhel4.x86_64.rpm
 
 cd /etc/postfix
-mv main.cf main.cf~
-mv master.cf master.cf~
-mv main.cf.rpmsave main.cf
-mv master.cf.rpmsave master.cf
-mv aliases.rpmsave aliases
+cp -f aliases.rpmsave aliases
 newaliases
+mv main.cf.rpmsave main.cf.2.2.12
+mv master.cf.rpmsave master.cf.2.2.12
 
 cd /usr/lib64/sasl2
 mv smtpd.conf smtpd.conf~
 mv smtpd.conf.rpmsave smtpd.conf
 
+vi main.cf
+vi master.cf
+
 /etc/init.d/postfix start
+
+
+http://www.postfix.org/INSTALL.html
+tar zxvf postfix-2.5.6.tar.gz
+cd postfix-2.5.6
+
+make -f Makefile.init makefiles \
+'CCARGS=-DDEF_COMMAND_DIR=\"/usr/local/postfix/sbin\" \
+-DDEF_CONFIG_DIR=\"/usr/local/postfix/etc\" \
+-DDEF_DAEMON_DIR=\"/usr/local/postfix/libexec\" \
+-DDEF_DATA_DIR=\"/usr/local/postfix/lib\" \
+-DDEF_MAILQ_PATH=\"/usr/local/postfix/bin/mailq\" \
+-DDEF_HTML_DIR=\"/usr/local/postfix/html\" \
+-DDEF_MANPAGE_DIR=\"/usr/local/postfix/man\" \
+-DDEF_NEWALIAS_PATH=\"/usr/local/postfix/bin/newaliases\" \
+-DDEF_QUEUE_DIR=\"/usr/local/postfix/spool\" \
+-DDEF_README_DIR=\"/usr/local/postfix/readme\" \
+-DDEF_SENDMAIL_PATH=\"/usr/local/postfix/sbin/sendmail\" \
+-DHAS_MYSQL -I/usr/include/mysql \
+-DUSE_SASL_AUTH -DUSE_CYRUS_SASL -I/usr/include/sasl \
+-I/usr/include/db4 \
+-DUSE_TLS -I-DUSE_TLS -I/usr/include/openssl' \
+'AUXLIBS=-L/usr/lib64/mysql -lmysqlclient -lz -lm \
+-L/usr/lib64/sasl2 -lsasl2 \
+-L/usr/lib64 \
+-lssl -lcrypto'
+
+make
+make install
+
+cd /usr/local/postfix/etc
+mv main.cf main.cf~
+cp master.cf master.cf~
+grep -v ^# main.cf~ | uniq -u > main.cf
+
+vi main.cf
+vi master.cf
+
+/usr/local/postfix/sbin/postfix start
