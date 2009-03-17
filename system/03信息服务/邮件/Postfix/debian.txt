@@ -82,12 +82,17 @@ chown -R vuser:vgroup /home/domains/nvkan.com
 
 extman 默认密码 extmail*123*
 
+vi /etc/rc.local
+mkdir /tmp/extman
+chown -R vuser:vgroup /tmp/extman
+
 图形日志
 apt-get install mailgraph
 cp -r /var/www/extsuite/extman/addon/mailgraph_ext /usr/local/mailgraph_ext
 vi /usr/local/mailgraph_ext/mailgraph-init
 MAIL_LOG=/var/log/mail.log
 /usr/local/mailgraph_ext/mailgraph-init start
+并且加到 /etc/rc.local
 
 
 安装 Postfix
@@ -152,10 +157,10 @@ smtpd_sasl_local_domain = $myhostname
 smtpd_sasl_security_options = noanonymous
 # SMTPD
 smtpd_recipient_restrictions =
-        permit_mynetworks,
-        permit_sasl_authenticated,
-        reject_unauth_destination,
-        reject_unauth_pipelining
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    reject_unauth_destination,
+    reject_unauth_pipelining
 
 smtpd_client_restrictions = permit_sasl_authenticated
 
@@ -324,7 +329,7 @@ smtpd_recipient_restrictions =
     permit_sasl_authenticated,
     reject_invalid_hostname,
     reject_non_fqdn_hostname,
-    reject_unknown_hostname,
+#    reject_unknown_hostname,
     reject_non_fqdn_sender,
     reject_unknown_sender_domain,
     reject_non_fqdn_recipient,
@@ -399,6 +404,7 @@ tar zxvf slockd-0.2.tar.gz -C /usr/local/
 mv slockd-0.2 slockd
 
 /usr/local/slockd/slockd-init start
+并且加到 /etc/rc.local
 
 cd /usr/local/slockd/tools
 perl policy_sig -h localhost -p 10030 --helo FOOBAR --ip 192.168.0.1 --from test@foo.com --to test@bar.com
