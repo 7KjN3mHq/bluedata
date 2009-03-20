@@ -1,0 +1,273 @@
+以前曾用过Pure-FTPd提供的ftp服务，作为ftp的服务器端，其类似linux下useradd/usermod/passwd工具的用户管理方式，令人印象深刻。最近正好需要配置一台ftp服务器，当然首选这款有良好安全性口碑的Pure-FTPd。
+
+基本需求是这样的：
+虚拟用户 - 也就是说提供的ftp用户在系统里并不存在
+权限 - 每个用户对自己目录拥有读写权限，但不允许访问其他目录
+虚拟目录 - 每个用户目录下面需要添加一个只读的公有目录
+
+以下为配置过程：
+1. 安装
+当前最新版本为1.0.21，可从官方网站下载。
+wget http://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.21.tar.gz
+tar zxvf pure-ftpd-1.0.21.tar.gz
+cd pure-ftpd-1.0.21
+./configure --prefix=/usr/local/stow/pure-ftpd-1.0.21 --with-puredb
+make
+sudo make install
+
+其中，--with-puredb 选项代表虚拟用户支持
+
+2. 创建用户
+出于安全以及管理方便，我们让虚拟用户共享同一个系统用户。
+首先，在系统中添加相应的用户和组，这里以ftpuser和ftpgroup为例：
+/usr/sbin/groupadd ftpgroup
+/usr/sbin/useradd -g ftpgroup -d /dev/null -s /etc ftpuser
+
+创建虚拟用户的命令是这样的：
+pure-pw useradd smzz -u ftpuser -d /home/ftpusers/smzz
+其中， -u将虚拟用户 smzz 同系统用户 ftpuser 关联在一起。-d参数使 smzz 只能访问其 home 目录。而如果想让他访问整个文件系统，可以用 -D 选项。
+
+此外，pure-pw useradd 的选项还有：
+
+-t 下载带宽限制
+    -T 上传带宽限制
+-n 最大文件数目
+    -N 磁盘配额(单位M)
+-q 上传速度限制
+    -Q 下载速度限制
+-r 允许某些ip/网段的客户端访问
+    -R 拒绝某些ip/网段的客户端访问
+-i 允许本地某些ip/网段访问(allow local host)
+    -I 拒绝本地某些ip/网段访问(deny local host)
+-y 同时最大连接数目
+-z 允许连接服务器的时间段，格式hhmm-hhmm，如 -z 0412-1618代表用户只能在凌晨4点12分至下午4点18分连接服务器
+-f passwd_file
+-F puredb_file
+-m
+
+2. 更改用户
+同 pure-pw adduser 唯一不同的是，使用 pure-pw usermod 不是创建一个用户，而是更改已经存在用户的某些属性。
+如果想禁用某些属性，可直接添加空值，比如pure-pw usermod -n ''代表不限制文件数目
+
+3. 更改密码
+pure-pw passwd smzz -m
+所有这些参数都有一个共同选项 -m ，它代表修改完毕之后不必重启Pure-FTPd以及重新生成puredb_file文件
+
+此外，还有类似userdel命令的子选项pure-pw userdel。
+
+4. 提交更改
+所有用户操作必须提交更改，方能生效。目前有两种形式
+a) 通过pure-pw mkdb重新生成数据文件(/etc/pureftpd.pdb)
+b) 用户操作时带上-m选项，比如 pure-pw passwd smzz -m
+
+5. 开启服务
+/usr/local/sbin/pure-ftpd -j -lpuredb:/etc/pureftpd.pdb &
+其中，-j代表用户第一次登录将会创建自己的home目录，-l代表验证方式
+此外，匿名、配额、发呆设置、日志文件等选项均可通过相关参数在pure-ftpd启动时设置
+
+6. 虚拟目录
+Pure-FTPd并不支持类似windows下ftp服务器那样的虚拟目录，但可以通过其他方式变相实现，比如
+mount --bind /home/my_apps/lib /home/ftpusers/smzz/lib
+
+todo:
+pure-ftpd的诸多参数
+
+参考：
+man pure-ftpd
+man pure-pw
+
+
+MaxClientsNumber：总并发连接数。
+MaxClientsPerIP：每IP并发连接数。
+MaxIdleTime：最长静默时间。
+PureDB：你的用户db的位置。(建议设置为/usr/local/etc/pureftpd.pdb)
+AllowUserFXP：是否允许验证过的用户作FXP。信任这些用户的话就允许。
+ProhibitDotFilesWrite/ProhibitDotFilesRead：这些名字为点开头的文件通常会包含敏感信息，你可能不希望允许通过FTP读写它们(特别是用户目录与其实际用户目录重合的时候)。
+AnonymousCantUpload：是否不允许匿名用户上传。不做warez的话通常希望禁止。
+NoChmod：不允许chmod。这通常是安全考虑。
+NoTruncate：上传文件时，不立即覆盖。如果你用FTP来维护网站，打开这个选项会改善维护体验(我不通过FTP维护网站)。
+
+其他一些常用选项：
+AntiWarez：不允许匿名上传的文件被匿名下载。(除非管理员做chown)
+Umask：用户掩码。我比较喜欢177:077或者137:037，不过默认的133:022对于多数需求来说也够用。
+NoAnonymous：不许匿名登录。你不一定会用到，但如果需要还是打开的好。
+AnonymousOnly：只允许匿名登录。同样的，需要的话就打开。
+ChrootEveryone：chroot 每一个用户。
+
+========================================
+好了，配置完基本的选项，如何添加用户呢？
+首先，如何配置匿名用户？
+插句题外话：如果你还没有做的话，现在立刻到 /usr/local/etc/ 里面去 touch 一个权限为 600 的 pureftpd.passwd (owner是谁？显然是root，除非不打算开特权端口，即21)。
+书归正传。
+匿名用户说白了就是一个特殊的FTP用户，其密码FTP服务不关心，但其名字必须是ftp。这个用户的home目录将直接show给匿名用户。
+建立匿名用户的命令行类似下面这样：
+pure-pw useradd ftp -u 60021 -g 60021 -d /data/anonftp -m
+其中，-u 60021表示用60021作为用户的uid，-g表示组id。
+注意，最后的-m表示立即更新你的puredb，使其生效。
+接下来，建立对应的系统用户，其home目录是 /data/anonoftp，shell……不用说，肯定是nologin。(如果你用adduser建立用户，要注意它会在用户的home目录下建立一系列文件，一般来说可以删除这些文件)
+一般来说，你会希望在别人登录ftp时显示点什么，这个可以在ftp用户的~/.banner中设置。
+下面说说非匿名用户。方法也很简单：
+pure-pw useradd 用户名 -u [UID] -g [GID] -d [home目录] -m
+注意，-d表示用户将被chroot到这里。
+最后是启动： /usr/local/etc/rc.d/pure-ftpd.sh restart。
+
+
+
+在README中[ADVANCED COMPILATION]的段落中，有对上面的使用的
+      周详说明.在这里对常用的做简略的解释.
+      --without-standalone 不能以standalone的方式执行ftpd.
+      --without-inetd           不能以inetd的方式执行ftpd.
+      --without-iplogging           做log時不将IP 地址给log下來.
+      --without-shadow           不做shadow.除非是用PAM, LDAP or SQL.不然极不建议拿掉.
+      --without-usernames           文档列表只会列出UID & GID,不列出实际user or group name.
+      --without-humor           嘿嘿嘿....
+      --without-ascii           不支持7-bits transfers(ASCII).
+      --with-paranoidmsg           唔....不知该怎么说.算是能够给特定人的信息吧.
+      --with-sysquotas           吃系统的quota设定.
+      --with-minimal           最小化安裝.
+      --with-pam
+      --with-puredb
+      --with-ldap
+      --with-mysql
+      --with-pgsql           以上五种都是存储资料的格式?.看您比较习惯什么.
+      --with-altlog           留log了....
+      --with-cookie           使用者进站看到的东东.类似进站画面.
+      --with-ratios           上下传比.
+      --with-throttling           频宽可设限.
+      --with-ftpwho           可用pure-ftpwho來看线上使用者.像是Serv-u的线上状态.
+      --with-uploadscript   当一个文档被完整上传完后自动呼叫某一script去对这个文档处理.当然.这个script得您自己写.
+      --with-largefile           支持下载超过2G的文档.
+      --with-virtualhosts           跟http的virtualhost有异曲同工之妙.
+      --with-virtualchroot           配合上面的chroot.
+      --with-diraliases           跟Serv-U上面的link功能相同.
+      --with-nonroot           不需root权限.一般user即可启动ftpd.
+      --with-quotas           使用quota.(非系统下的quota)
+      --with-peruserlimits         每个账号最多可登入几次:Anonymous最多可同時登入几次
+      --with-everything          任何功能全上.
+      --with-language=simplified-chinese           显示出来的信息的语言.缺省为英语.
+
+
+下面我们开始配置pure-ftpd.conf文档
+在这里我全使用默认值，修改下面内容以支持MYSQL。（注：Pureftpd能够同时支持ldap,mysql,pgsql,puredb认证）
+# MySQL configuration file (see README.MySQL)
+MySQLConfigFile /usr/local/pureftpd/etc/pureftpd-mysql.conf
+修改不然无法执行 #service pureftpd stop)
+# If your pure-ftpd has been compiled with standalone support, you can change
+# the location of the pid file. The default is /var/run/pure-ftpd.pid
+#PIDFile                     /var/run/pure-ftpd.pid
+#去掉上面的注释
+PIDFile                     /var/run/pure-ftpd.pid
+修改不允许名登陆
+NoAnonymous                 yes
+# Allow FXP transfers for authenticated users.
+AllowUserFXP                yes
+# Allow users to resume and upload files, but *NOT* to delete them.
+KeepAllFiles                yes
+# Automatically create home directories if they are missing
+CreateHomeDir               yes
+3.配置文档详解（摘自网上陈景峰所著《Pure-FTPd + LDAP + MySQL + PGSQL + Virtual-Users + Quota How To》）
+ChrootEveryone yes
+chroot每一个用户,等同于Proftpd 中的DefaultRoot~ , 能够限制用户在某个地方活动，增强服务器的安全性。使用过wu-ftpd的使用都应该知道cd /会发生什么！
+TrustedGID 50
+#以上两者要一起用
+BrokenClientsCompatibility no
+MaxClientsNumber 50
+#最大链接数
+Daemonize yes
+#Fork in background 以守护进程方式在后台运行
+MaxClientsPerIP 5
+#每个ip最多链接数，最好设小点。
+VerboseLog no
+#是否要把任何client端的指令都log下来
+DisplayDotFiles no
+#显示开头的文档
+AnonymousOnly no
+#是否只让匿名登录
+NoAnonymous no
+#不开放匿名登入
+SyslogFacility ftp
+#应该是对日志做一下过滤 (auth, authpriv, daemon, ftp, security, user, local*)能够让日志只记录想要的信息
+DontResolve yes
+#不反向解释客户端的ip
+MaxIdleTime 5
+#最大闲置時間
+#LDAPConfigFile /usr/local/pureftpd/etc/pureftpd-ldap.conf
+#使用LDAP认证，
+MySQLConfigFile /usr/local/pureftpd/etc/pureftpd-mysql.conf
+#使用MySQL认证
+#PGSQLConfigFile /usr/local/pureftpd/etc/pureftpd-pgsql.conf
+#使用PGSQL认证
+#PureDB /ftp/etc/pureftpd.pdb
+#使用者资料的DB存放地点 [由于我是用PureFTPD的內建DB.固有此选项]
+#ExtAuth /var/run/ftpd.sock
+#pure-authd socket 路径 (周详请看 README.Authentication-Modules)
+#PAMAuthentication yes
+#开启PAM认证
+#UnixAuthentication yes
+#假如您想要有简单的Unix(/etc/passwd)的认证的話
+FortunesFile /usr/local/pureftpd/etc/.welcome
+#显示的欢迎信息文档，您能够创建该文档，输入一些文字，然后您重启您的FTP服务，就会有意外的发现。
+LimitRecursion 2000 8
+#ls最多列出3000个文档.最深8层
+AnonymousCanCreateDirs no
+#匿名用户能够创建目录
+MaxLoad 4
+#当system load超过4時.使用者将不能再下载
+PassivePortRange 30000 50000
+#被动连接应答范围
+ForcePassiveIP 192.168.0.1
+#不会译：（
+AnonymousRatio 1 10
+#Anonymous连接上传/下载比率
+UserRatio 1 10
+#用户上传/下载比率（注：假如使用ldap,mysql,pgsql,pam不要启用该功能，否则您在ldap等中配置的Ratio无校）
+AntiWarez no
+#上传的文档不能被下载(owner is ftp).等到local admin确认
+Bind 127.0.0.1,8021
+#要绑定和ip/port，在您的系统中有两个FTP Server这样您其中一个FTP就要使用其他端口。
+#格式-> 127.0.0.1,21 假如只写port表All ip,port
+AnonymousBandwidth 8
+#Anonymous 带宽，单位KB/s
+UserBandwidth 8
+#用户带宽，单位KB/s
+Umask 133:022
+#上传文档的Umask.(: )
+MinUID 1000
+# UID至少多少才能登录
+AllowUserFXP yes
+#支不支持FXP
+AllowAnonymousFXP no
+#Anonymous支不支持FXP
+ProhibitDotFilesWrite no
+ProhibitDotFilesRead no
+#(”.”)开头的文档能不能被读/写,UNIX Like下以点开头的文档是隐藏文档ls –a才能列出
+#Pureftpd Quota模式下做产生” .ftpquota”文档。
+AutoRename no
+#上传文档若有相同文档名自动改名(file.1,file.2...)
+AnonymousCantUpload no
+#匿名用户上传文档
+#TrustedIP 10.1.1.1
+#锁IP.
+LogPID
+#Log文档添加PID
+AltLog stats:/ftp/etc/log/pureftpd.log
+#log存放地点，注日志有几种常用的格式
+#clf 类似apache格式，stats UNIX log格式，w3c 标准W3C格式，可能是HTML格式
+NoChmod yes
+#不给Chmod指令的权限
+KeepAllFiles no
+#使用者可续传.但不可刪除文档
+CreateHomeDir yes
+#假如user的home不存在自动建立(我把这个设为YES)
+Quota 1000:10
+#Quota :，FTP限制10M空间，能够上传1000个文档（注：假如使用ldap,mysql,pgsql,pam不要启用该功能，否则您在ldap等中配置的Quota无校）
+PIDFile /ftp/etc/log/pure-ftpd.pid
+#记录pure-ftpd的PID文档
+CallUploadScript yes     
+#呼叫UploadScript
+MaxDiskUsage 99
+#当硬盘使用率到多少時将停止上传
+NoRename yes
+#用户不能重命名文档名
+CustomerProof yes
+PerUserLimits 3:20
