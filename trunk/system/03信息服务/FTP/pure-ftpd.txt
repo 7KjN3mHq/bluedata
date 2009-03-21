@@ -70,7 +70,7 @@ chkconfig --level 2345 pureftpd on
 vi /usr/local/pureftpd/etc/pure-ftpd.conf
 NoAnonymous                 yes
 MySQLConfigFile             /usr/local/pureftpd/etc/pureftpd-mysql.conf
-PassivePortRange            9981 9986
+PassivePortRange            30000 30099
 MinUID                      14
 AllowUserFXP                yes
 NoTruncate                  no
@@ -82,18 +82,18 @@ MYSQLPassword   password
 MYSQLCrypt      md5
 MYSQLGetPW      SELECT Password FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
 MYSQLGetUID     SELECT Uid FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MYSQLGetGID     SELECT Gid FROM users WHERE User="\L"AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MYSQLGetDir     SELECT Dir FROM users WHERE User="\L"AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetBandwidthUL SELECT ULBandwidth FROM users WHERE User="\L"AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetBandwidthDL SELECT DLBandwidth FROM users WHERE User="\L"AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetQTASZ   SELECT QuotaSize FROM users WHERE User="\L"AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetQTAFS   SELECT QuotaFiles FROM users WHERE User="\L"AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+MYSQLGetGID     SELECT Gid FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+MYSQLGetDir     SELECT Dir FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+MySQLGetBandwidthUL SELECT ULBandwidth FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+MySQLGetBandwidthDL SELECT DLBandwidth FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+MySQLGetQTASZ   SELECT QuotaSize FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+MySQLGetQTAFS   SELECT QuotaFiles FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
 
 vi pureftpd.sql
 CREATE DATABASE pureftpd;
 USE pureftpd;
 CREATE TABLE admin (
-Username varchar(35) NOT NULL default '',
+Username varchar(16) NOT NULL default '',
 Password char(32) binary NOT NULL default '',
 PRIMARY KEY (Username)
 ) TYPE=MyISAM;
@@ -101,20 +101,22 @@ INSERT INTO `admin` VALUES ( 'root', MD5( 'password' ) );
 CREATE TABLE users (
 User char(16) NOT NULL default '',
 Password char(32) binary NOT NULL default '',
-Uid int(4) NOT NULL default '14',
-Gid int(4) NOT NULL default '50',
+Uid tinyint(5) NOT NULL default '48',
+Gid tinyint(5) NOT NULL default '48',
 Dir char(255) NOT NULL default '',
-QuotaFiles int(10) NOT NULL default '500',
-QuotaSize int(10) NOT NULL default '30',
-ULBandwidth int(10) NOT NULL default '80',
-DLBandwidth int(10) NOT NULL default '80',
-status enum('0','1') NOT NULL default '1',
-ipaccess varchar(15) NOT NULL default '*',
-comment tinytext NOT NULL,
+QuotaFiles int(10) NOT NULL default '1000',
+QuotaSize int(10) NOT NULL default '50',
+ULBandwidth int(10) NOT NULL default '128',
+DLBandwidth int(10) NOT NULL default '128',
+ULRatio tinyint(5) NOT NULL default '0',
+DLRatio tinyint(5) NOT NULL default '0',
+Status enum('0','1') NOT NULL default '1',
+Ipaccess varchar(15) NOT NULL default '*',
+Comment tinytext NOT NULL,
 PRIMARY KEY (User),
 UNIQUE KEY User (User)
 ) TYPE=MyISAM;
-INSERT INTO `users` VALUES ( 'test', MD5( 'password' ) , '14', '50', '/home/test', '500', '30', '80', '5', '1', '*', '' );
+INSERT INTO `users` VALUES ( 'test', MD5( 'password' ) , '48', '48', '/home/test', '1000', '50', '128', '16', '0', '0', '1', '*', '' );
 GRANT SELECT, INSERT, UPDATE, DELETE on pureftpd.* to ftp@localhost identified by 'password';
 FLUSH PRIVILEGES;
 

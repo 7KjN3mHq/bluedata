@@ -46,7 +46,7 @@ adduser -u 5500 -s /bin/false -d /bin/null -c "proftpd user" -g ftpgroup ftpuser
 
 mysql -uroot -pPASSWORD
 create database proftpd
-grant select, update on proftpd.* to proftpd@localhost identified by 'password' 
+grant select, update on proftpd.* to proftpd@localhost identified by 'password'
 use ftpdb
 
 CREATE TABLE `ftpgroup` (
