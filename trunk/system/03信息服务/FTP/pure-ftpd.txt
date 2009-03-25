@@ -80,14 +80,14 @@ MYSQLSocket     /var/lib/mysql/mysql.sock
 MYSQLUser       ftp
 MYSQLPassword   password
 MYSQLCrypt      md5
-MYSQLGetPW      SELECT Password FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MYSQLGetUID     SELECT Uid FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MYSQLGetGID     SELECT Gid FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MYSQLGetDir     SELECT Dir FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetBandwidthUL SELECT ULBandwidth FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetBandwidthDL SELECT DLBandwidth FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetQTASZ   SELECT QuotaSize FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetQTAFS   SELECT QuotaFiles FROM users WHERE User="\L" AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+MYSQLGetPW      SELECT Password FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MYSQLGetUID     SELECT Uid FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MYSQLGetGID     SELECT Gid FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MYSQLGetDir     SELECT Dir FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MySQLGetBandwidthUL SELECT ULBandwidth FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MySQLGetBandwidthDL SELECT DLBandwidth FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MySQLGetQTASZ   SELECT QuotaSize FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MySQLGetQTAFS   SELECT QuotaFiles FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
 
 vi pureftpd.sql
 CREATE DATABASE pureftpd;
@@ -111,7 +111,7 @@ DLBandwidth int(10) NOT NULL default '128',
 ULRatio tinyint(5) NOT NULL default '0',
 DLRatio tinyint(5) NOT NULL default '0',
 Status enum('0','1') NOT NULL default '1',
-Ipaccess varchar(15) NOT NULL default '*',
+Ipaddress varchar(15) NOT NULL default '*',
 Comment tinytext NOT NULL,
 PRIMARY KEY (User),
 UNIQUE KEY User (User)
