@@ -561,3 +561,13 @@ lang/zh_CN 在 lang_readmsg 段增加了：
     report_as_nonspam => '如果这不是垃圾邮件，点击放回收件箱',
 
 注意： libs/Ext/App/Message.pm  第 149 行为提交 dspam 训练识别为垃圾邮件，第 151 行为提交 dspam 训练识别为非垃圾邮件，根据实际的 dsapm 安装配置修改程序路径和 user 参数。此处使用的是固定的全局用户来训练和识别，如果 dspam 配置为每个用户有单独的训练识别 user ，需要修改 user 参数。
+
+删除垃圾邮件箱中超过 30 天的邮件
+find `find /home/domains -type d -name "cur" | grep ".Junk"` -type f -mtime +30 -exec rm {} \;
+
+for x in `find /home/domains -type d -name ".Junk"` ; do
+find $x -type f -mtime +30 | grep "cur" | xargs rm
+done
+
+删除垃圾箱中超过 90 天的邮件
+find `find /home/domains -type d -name "cur" | grep ".Trash"` -type f -mtime +90 -exec rm {} \;
