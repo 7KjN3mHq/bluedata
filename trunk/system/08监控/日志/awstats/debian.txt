@@ -26,15 +26,16 @@ vi /etc/awstats/awstats.conf
 LoadPlugin="geoip GEOIP_STANDARD /usr/share/awstats/plugins/GeoIP.dat"
 
 apt-get install libnet-xwhois-perl
-wget http://www.bluedata.org/software/linux/awstats/qqwry/QQWry.Dat -O /usr/share/awstats/plugins/QQWry.Dat
-wget http://www.bluedata.org/software/linux/awstats/qqwry/qqhostinfo.pm -O /usr/share/awstats/plugins/qqhostinfo.pm
-wget http://www.bluedata.org/software/linux/awstats/qqwry/qqwry.pl -O /usr/share/awstats/plugins/qqwry.pl
+cd /usr/share/awstats/plugins
+wget http://www.bluedata.org/software/linux/awstats/qqwry/QQWry.Dat
+wget http://www.bluedata.org/software/linux/awstats/qqwry/qqhostinfo.pm
+wget http://www.bluedata.org/software/linux/awstats/qqwry/qqwry.pl
 
-vi /usr/share/awstats/plugins/qqhostinfo.pm
+vi qqhostinfo.pm
 push @INC, "/usr/share/awstats/plugins/plugins";
 require "/usr/share/awstats/plugins/qqwry.pl";
 
-vi /usr/share/awstats/plugins/qqwry.pl
+vi qqwry.pl
 my $ipfile="/usr/share/awstats/plugins/QQWry.Dat";
 
 vi /etc/awstats/awstats.conf.local
@@ -86,9 +87,9 @@ ExtraSectionAddSumRow4=4
 MaxNbOfExtra4=50
 MinHitExtra4=1
 
-ExtraSectionName5="Soso crawls - Top 50"
+ExtraSectionName5="Sohu crawls - Top 50"
 ExtraSectionCodeFilter5="200 304"
-ExtraSectionCondition5="UA,(.*Sosospider.*)"
+ExtraSectionCondition5="UA,(.*sogou.*)"
 ExtraSectionFirstColumnValues5="URL,(.*)"
 ExtraSectionFirstColumnFormat5="%s"
 ExtraSectionStatTypes5=PHBL

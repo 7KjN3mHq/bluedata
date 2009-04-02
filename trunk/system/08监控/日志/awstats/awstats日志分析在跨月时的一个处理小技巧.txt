@@ -1,7 +1,0 @@
-一直使用awstats来分析apache的日志，在crond里使用这样的命令来处理前一天的日志/usr/local/awstats-6.4/tools/awstats_buildstaticpages.pl -awstatsprog=/usr/local/awstats-6.4/wwwroot/cgi-bin/awstats.pl -config=admin99 -lang=cn -dir=/home/awstatsresult -update -builddate=%YY%MM%DD，结果发现，前一个月的最后一天的分析结果一直看不到。
-   因为处理每月最后一天的日志的时候，已经是下个月1号的凌晨了，awstats虽然建立了当天的分析页面，却不知道该把分析的昨天的结果写在什么地方，因此看不到最后一天的统计结果
-   找来找去，终于找到了办法，就是在处理前一个月最后一天的日志的时候，在原有的命令行的基础上，加上一个-month参数，让awstats生成一个月的日志分析结果。在这个操作中，awstats并没有做比平时多的事情。
-   例如上面的例子中，加入-month参数后(分析11月最后一天)
-   /usr/local/awstats-6.4/tools/awstats_buildstaticpages.pl -awstatsprog=/usr/local/awstats-6.4/wwwroot/cgi-bin/awstats.pl -config=admin99 -lang=cn -dir=/home/awstatsresult -update -month=11 -builddate=061131
-    之所以把 -builddate设置为061131（其实没有这一天的）只是为了延用个人以前的习惯，在awstats存放分析结果的静态页面的目录中做了一个index.htm文件，方便随时跳转到某天。
-   网上有很多人都把month参数设置为-month=$M，究竟该如何设置应该看自己的实际情况，像我这样的情况，awstats每天分析前天的日志，只能将-month设置为上个月
