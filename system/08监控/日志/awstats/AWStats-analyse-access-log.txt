@@ -191,6 +191,7 @@ LoadPlugin="qqhostinfo"
 不能使用  -databasebreak=day 参数。
 需要安装 Perl URI 模块：
 yum -y install perl-URI
+不能生成每月最后一天的静态文件，需要按月统计，加上这样的参数： -month=`date +%m --date='1 days ago'`
 
 定期执行
 vi /etc/crontab
