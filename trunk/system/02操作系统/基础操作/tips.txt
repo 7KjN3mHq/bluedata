@@ -1,3 +1,6 @@
+sed 替换指定文字
+sed -i 's|etch|testing|g' /etc/apt/sources.list
+
 Linux 下 iconv 转换文件编码
 查看文件编码： file -i filename
 命令格式： iconv -f “文件目前编码” -t “文件转换后的编码” -o “转换后生成的新文件名” “源文件名”

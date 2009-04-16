@@ -1,3 +1,6 @@
+使用 killall 命令
+apt-get install psmisc
+
 更改gdm的登录界面为英文 
 编辑/etc/default/gdm 
 LANG=en_US.UTF-8 

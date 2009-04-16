@@ -29,7 +29,7 @@ endif
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 -----
-# vi /etc/network/interfaces
+vi /etc/network/interfaces
 auto lo
 iface lo inet loopback
 
@@ -54,7 +54,7 @@ vi /etc/modprobe.d/blacklist
 blacklist ipv6
 
 -----
-# vi /etc/hosts
+vi /etc/hosts
 #::1     ip6-localhost ip6-loopback
 #fe00::0 ip6-localnet
 #ff00::0 ip6-mcastprefix
