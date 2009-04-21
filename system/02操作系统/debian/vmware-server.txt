@@ -1,0 +1,10 @@
+debian lenny install vmware-server
+http://www.insecure.ws/2008/07/24/vmware-anspecific-specific-557-and-kernel-2626
+export CC=/usr/bin/gcc-4.1
+./runme.pl
+
+gcc-4.1: error trying to exec 'cc1plus': execvp: No such file or directory
+apt-get install g++-4.1
+
+
+http://salomi.blog.51cto.com/389282/142557
