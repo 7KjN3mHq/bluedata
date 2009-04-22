@@ -1,3 +1,8 @@
+遇到 Operation not permitted 的文件
+lsattr
+----i-------------- inetd.conf
+chattr -i inetd.conf
+
 sed 替换指定文字
 sed -i 's|etch|testing|g' /etc/apt/sources.list
 

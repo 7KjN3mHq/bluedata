@@ -15,7 +15,7 @@ deb http://mirrors.163.com/debian lenny-proposed-updates main contrib non-free
 deb http://mirrors.163.com/debian-security lenny/updates main contrib non-free
 
 -----
-apt-get install ssh vim ntp
+apt-get install ssh vim ntp chkconfig
 
 vi /etc/vim/vimrc
 syntax on
