@@ -15,7 +15,7 @@ deb http://mirrors.163.com/debian lenny-proposed-updates main contrib non-free
 deb http://mirrors.163.com/debian-security lenny/updates main contrib non-free
 
 -----
-apt-get install ssh vim ntp chkconfig
+apt-get install ssh vim ntp psmisc chkconfig
 
 vi /etc/vim/vimrc
 syntax on
@@ -50,26 +50,13 @@ iface eth0:0 inet static
         gateway 202.91.231.161
 
 -----
-vi /etc/modprobe.d/blacklist
-blacklist ipv6
-
------
-vi /etc/hosts
-#::1     ip6-localhost ip6-loopback
-#fe00::0 ip6-localnet
-#ff00::0 ip6-mcastprefix
-#ff02::1 ip6-allnodes
-#ff02::2 ip6-allrouters
-#ff02::3 ip6-allhosts
-
------
 vi ~/.bashrc
 export LS_OPTIONS='--color=auto'
 eval "`dircolors`"
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -lh'
 alias l='ls $LS_OPTIONS -lA'
-alias h='history 25'
+alias h='history 24 | head -23'
 
 alias rm='rm -i'
 

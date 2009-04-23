@@ -1,0 +1,67 @@
+
+mfsmaster:
+groupadd mfs
+useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
+
+wget http://www.moosefs.com/files/mfs-1.5.12.tar.gz
+tar zxvf mfs-1.5.12.tar.gz
+cd mfs-1.5.12
+./configure \
+--disable-mfschunkserver \
+--disable-mfsmount \
+--prefix=/usr/local/mfs \
+--with-default-user=mfs \
+--with-default-group=mfs
+
+make
+make install
+
+cd /usr/local/mfs/etc
+
+ln -s mfsmaster.cfg mfsmaster.cfg.var
+
+/usr/local/mfs/sbin/mfsmaster start
+
+ps aux | grep mfsmaster | grep -v grep
+
+/usr/local/mfs/sbin/mfsmaster -s
+
+
+chunkserver:
+groupadd mfs
+useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
+
+wget http://www.moosefs.com/files/mfs-1.5.12.tar.gz
+tar zxvf mfs-1.5.12.tar.gz
+cd mfs-1.5.12
+./configure \
+--disable-mfsmaster \
+--prefix=/usr/local/mfs \
+--with-default-user=mfs \
+--with-default-group=mfs
+
+make
+make install
+
+cd /usr/local/mfs/etc
+ln -s mfschunkserver.cfg mfschunkserver.cfg.var
+
+lvcreate -L 10G -n mfs vg
+apt-get install reiserfsprogs
+mkfs.reiserfs /dev/vg/mfs
+
+mkdir /mfs
+chown -R mfs:mfs /mfs
+
+vi /etc/fstab
+/dev/mapper/vg-mfs /mfs            reiserfs    noatime,nodiratime        0       2
+mount -a
+
+vi /usr/local/mfs/etc/mfshdd.cfg
+/mfs
+
+/usr/local/mfs/sbin/mfschunkserver start
+
+ps aux | grep mfschunkserver | grep -v grep
+
+/usr/local/mfs/sbin/mfschunkserver -s
