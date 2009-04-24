@@ -1,4 +1,3 @@
-
 mfsmaster:
 groupadd mfs
 useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
@@ -36,6 +35,7 @@ tar zxvf mfs-1.5.12.tar.gz
 cd mfs-1.5.12
 ./configure \
 --disable-mfsmaster \
+--disable-mfsmount \
 --prefix=/usr/local/mfs \
 --with-default-user=mfs \
 --with-default-group=mfs
@@ -51,11 +51,12 @@ apt-get install reiserfsprogs
 mkfs.reiserfs /dev/vg/mfs
 
 mkdir /mfs
-chown -R mfs:mfs /mfs
 
 vi /etc/fstab
 /dev/mapper/vg-mfs /mfs            reiserfs    noatime,nodiratime        0       2
 mount -a
+
+chown -R mfs:mfs /mfs
 
 vi /usr/local/mfs/etc/mfshdd.cfg
 /mfs
@@ -65,3 +66,60 @@ vi /usr/local/mfs/etc/mfshdd.cfg
 ps aux | grep mfschunkserver | grep -v grep
 
 /usr/local/mfs/sbin/mfschunkserver -s
+
+
+mfsmount:
+apt-get install pkg-config
+The following NEW packages will be installed:
+  libglib2.0-0 libglib2.0-data libpcre3 pkg-config
+
+apt-get install libfuse-dev
+The following NEW packages will be installed:
+  libfuse-dev libfuse2 libselinux1-dev libsepol1-dev
+
+groupadd mfs
+useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
+
+wget http://www.moosefs.com/files/mfs-1.5.12.tar.gz
+tar zxvf mfs-1.5.12.tar.gz
+cd mfs-1.5.12
+./configure \
+--disable-mfsmaster \
+--enable-mfsmount \
+--prefix=/usr/local/mfs \
+--with-default-user=mfs \
+--with-default-group=mfs
+
+make
+make install
+
+vi .bashrc
+PATH=$PATH:/usr/local/mfs/bin
+export PATH
+
+modprobe fuse
+mfsmount ¨Ch mfsmaster -w /home
+
+mfsgetgoal /home
+mfsrgetgoal /home
+mfssetgoal 3 /home
+mfsrsetgoal 3 /home
+
+mfsgettrashtime /home
+mfsrgettrashtime /home
+mfssettrashtime 600 /home
+mfsrsettrashtime 600 /home
+
+
+Using MFS:
+mkdir /mfsmeta
+mfsmount -h mfsmaster -m -w /mfsmeta
+
+
+/usr/local/mfs/sbin/mfsmetarestore -a
+
+
+lvextend -L +5G /dev/vg/mfs
+resize_reiserfs /dev/vg/mfs
+/usr/local/mfs/sbin/mfschunkserver -s
+/usr/local/mfs/sbin/mfschunkserver start
