@@ -182,3 +182,33 @@ pvcreate /dev/mapper/mpath0 /dev/mapper/mpath1
 vgcreate gfs /dev/mapper/mpath0 /dev/mapper/mpath1
 
 lvcreate -L 512M -n home gfs
+
+
+DRBD Server 1 DRBD Server 2
+| |
+/dev/drbd0 <---P/P---> /dev/drbd0
+| |
+ietd target (same ScsiId) ietd target
+| |
++---------------------------------+
+| Network |
++---------------------------------+
+
+
+GFS
+|
+CLVMD
+|
+PV
+|
+dm-multipath
+| |
+iscsi iscsi
+target target
+1 2
+
+
+Target iqn.2009-02.tld.domain:storage.sys3.testing
+        Lun 0 Path=/dev/drbd12,Type=fileio,ScsiId=DRBD-TESTING0
+        ImmediateData Yes
+        InitialR2T No 
