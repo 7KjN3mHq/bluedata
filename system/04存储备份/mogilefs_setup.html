@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head>
+
+
+	<meta http-equiv="CONTENT-TYPE" content="text/html; charset=windows-1252">
+	<title>How To Setup MogileFS</title>
+	<meta name="GENERATOR" content="OpenOffice.org 2.0  (Win32)">
+	<meta name="CREATED" content="20060620;16033500">
+	<meta name="CHANGED" content="20061007;19530775">
+	<meta name="KEYWORDS" content="MogileFS, network storage, Perl, files, distributed, Danga, Live Journal">
+	<meta name="ÿ%ôÒ¦bÿ%ðÒ¦bÿ%ìÒ¦bÿ%èÒ¦bÿ%äÒ¦bÿ%àÒ¦bÿ%ÜÒ¦bÿ%ØÒ¦bÿ%ÔÒ¦bÿ%ÐÒ¦bÿ%ÌÒ¦bÿ%ÈÒ¦bÿ%ÄÒ¦bÿ%ÀÒ¦bÿ%¼Ò¦bÿ%¸Ò¦bÿ%´Ò¦bÿ%°Ò¦bÿ%¬Ò¦bÿ%¨Ò¦bÿ%¤Ò¦bÿ% Ò¦bÿ%œÒ¦bÿ%˜Ò¦bÿ%”Ò¦bÿ%&#65533;Ò¦bÿ%ŒÒ¦bÿ%ˆÒ¦bÿ%„Ò¦bÿ%€Ò¦bÿ%|Ò¦bÿ%xÒ¦bÿ%tÒ¦bÿ%pÒ¦bÿ%lÒ¦bÿ%hÒ¦bÿ%dÒ¦bÿ%`Ò¦bÿ%\Ò¦bÿ%XÒ¦bÿ%TÒ¦bÿ%PÒ¦bÿ%LÒ¦bÿ%HÒ¦bÿ%DÒ¦bÿ%@Ò¦bÿ%&lt;Ò¦bÿ%8Ò¦bÿ%4Ò¦bÿ%0Ò¦bÿ%,Ò¦bÿ%(Ò¦bÿ%$Ò¦bÿ% Ò¦bÿ%Ò¦bÿ%Ò¦bÿ%Ò¦bÿ%Ò¦bÿ% Ò¦bÿ%Ò¦bÿ%Ò¦bÿ%" content="Well, it's How To Setup MogileFS">
+	<style>
+	<!--
+		@page { size: 8.5in 11in; margin: 0.79in }
+		H1 { margin-bottom: 0.08in }
+		H1.western { font-family: "Arial", sans-serif; font-size: 16pt }
+		H1.cjk { font-family: "Lucida Sans Unicode"; font-size: 16pt }
+		H1.ctl { font-family: "Tahoma"; font-size: 16pt }
+		P { margin-bottom: 0.08in }
+		H2 { margin-bottom: 0.08in }
+		H2.western { font-family: "Arial", sans-serif; font-size: 14pt; font-style: italic }
+		H2.cjk { font-size: 14pt; font-style: italic }
+		H2.ctl { font-size: 14pt; font-style: italic }
+	-->
+	</style>
+</head><body dir="ltr" lang="en-US">
+<p style="margin-bottom: 0in;"><br>
+</p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif"><font style="font-size: 16pt;" size="4"><b>How
+To Setup MogileFS</b></font></font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Version:
+0.04, October 7, 2006</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Author:
+Brett G. Durrett (first name at last name dot net)</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Source:
+</font><a href="http://durrett.net/mogilefs_setup.html"><font face="Arial, sans-serif">http://durrett.net/mogilefs_setup.html</font></a></p>
+<p style="margin-bottom: 0in;"><br>
+</p>
+<p><font color="#ff0000"><font face="Arial, sans-serif"><b>Note:
+These directions were written for MogileFS &lt; 2.0 – I have
+not done a 2.0 install but I have been told by very good sources that
+2.0 is the way to go now as it is backward compatible (making sure
+you don't update the schema if you are already running &lt; 2.0 in a
+mixed environment) and it is in production by LiveJournal (oh, and it
+is better code with better features).</b></font></font></p>
+<h1 class="western"><font face="Arial, sans-serif">Overview</font></h1>
+<p style="margin-bottom: 0in;"><br>
+</p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">This
+document explains how to setup and configure a basic MogileFS
+installation. It is intended for the novice systems administrator and
+should enable anybody with the skills to install a basic Linux distro
+to get MogileFS up and running on it. </font>
+</p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">I am
+going to assume you have three roles for this setup. A machine should
+be able to handle more than one role. I will use hosts
+mogiledb.yourdomain.com, mogiletracker.yourdomain.com and
+mogilestorage.yourdomain.com – rename these to meet your needs.</font></p>
+<h1 class="western"><font face="Arial, sans-serif">Getting MogileFS</font></h1>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">If you
+look around you can find MogileFS directly on the Danga website, in
+an abandoned CVS repository and in the current SVN repository. If you
+pull from the website you will not have admin tools to make setup
+easier. If you pull from CVS you will have a version from October,
+2004. If you pull from SVN you will have a shiny new version that
+works best with this documentation. </font>
+</p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Using
+svn (<a href="http://subversion.tigris.org/">http://subversion.tigris.org/</a>),
+checkout the latest and greatest version (the example below pulls
+from the trunk).</font></p>
+<pre style="margin-left: 0.79in;">$ mkdir mogilefs-src
+$ cd mogilefs-src
+$ svn checkout http://code.sixapart.com/svn/mogilefs/trunk</pre><h1 class="western">
+<font face="Arial, sans-serif">Installation</font></h1>
+<h2 class="western"><font face="Arial, sans-serif">Creating a
+Database</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Setting
+up a MySQL server is beyond the scope of this document – there
+are packages available for most distributions, find one that suits
+your needs. Once you have a MySQL server up and running on host
+mogiledb.yourdomain.com, create a table and user for MogileFS. Some
+libraries don't play well with new MySQL passwords – if you use
+these, set the password using the “OLD_PASSWORD”
+function. Make sure you change the password to something better than
+the example.</font></p>
+<pre style="margin-left: 0.79in;"># mysql
+mysql&gt; CREATE DATABASE mogilefs;
+mysql&gt; GRANT ALL ON mogilefs.* TO 'mogile'@'%';
+mysql&gt; SET PASSWORD FOR 'mogile'@'%' = OLD_PASSWORD( 'sekrit' );
+mysql&gt; FLUSH PRIVILEGES;
+mysql&gt; quit</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">You will also need to create the
+schema – that is covered later in this document.</font></p>
+<p style="margin-bottom: 0in;"><br>
+</p>
+<h2 class="western"><a name="Setting_up_the_Trackers_and_Storage"></a>
+<font face="Arial, sans-serif">Setting up the Trackers and Storage
+Servers</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">You need
+to obtain and install the MogileFS-specific perl modules and their
+dependencies before MogileFS will install successfully. Hopefully you
+pulled the MogileFS source from the SVN repository – if so, the
+server components will be located in the trunk/server directory. You
+probably need to install dependent modules first (see below) but once
+all dependencies have been met, you can install Mogile with the
+following commands (starting in the top of the SVN directory you
+pulled):</font></p>
+<pre style="margin-left: 0.79in;"># cd trunk/server/
+# perl Makefile.PL
+# make
+# make test
+# make install</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">If you get any errors during this
+process it will probably be errors telling you that a dependent
+module is missing. If during the 'make test' step you get the error,
+"t/00-startup....DBI connect('mysql','root',...) failed: Can't
+connect to local MySQL server through socket
+'/var/run/mysqld/mysqld.sock' (2) at t/lib/mogtestlib.pl line 16"
+it can probably be ignored – it should not be necessary for
+MySQL to be running on any host other than mogiledb.yourdomain.com.</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">You
+probably want to install some helpful utilities on each tracker or
+storage server as well (these will be needed for later
+configuration). These are located in the trunk/utils directory and
+can be installed with the following commands (starting in the top of
+the SVN directory you pulled):</font></p>
+<pre style="margin-left: 0.79in;"># cd trunk/utils/
+# perl Makefile.PL
+# make
+# make test
+# make install</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">You also want the API – the
+utilities will require this. These are located in the trunk/api/perl
+directory and can be installed with the following commands (starting
+in the top of the SVN directory you pulled):</font></p>
+<pre style="margin-left: 0.79in;"># cd trunk/api/perl
+# perl Makefile.PL
+# make
+# make test
+# make install</pre><h2 class="western">
+<font face="Arial, sans-serif">Installing Perl Module Dependencies</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">As for
+Perl modules, you need (at least) Perlbal and Danga-Socket and any
+dependencies. If you are not sure how to locate the dependent
+modules, consider using CPAN (</font><a href="http://cpan.org/"><font face="Arial, sans-serif">http://cpan.org/</font></a><font face="Arial, sans-serif">)
+as it can install a module and all of the dependencies. If you
+already have a reasonable Perl installation you probably have most of
+the non-MogileFS modules already.</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">The
+basic process for installing most perl modules is:</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">extract
+the module:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># tar -xvzf Linux-AIO-1.9.tar.gz</pre><p>
+<font face="Arial, sans-serif">Create the makefile:</font> 
+</p>
+<pre style="margin-left: 0.79in;"># cd Linux-AIO-1.9
+# perl Makefile.PL </pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Build the code:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># make </pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Test the code (some modules may not
+have this step but it is okay to run anyway):</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># make test </pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Install it:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># make install</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">If you see any errors stating that a
+module dependency is missing, obtain and install the missing module
+first and try again.</font></p>
+<h1 class="western"><font face="Arial, sans-serif">Setup</font></h1>
+<h2 class="western"><font face="Arial, sans-serif">Database
+Configuration</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">The
+database is empty and will need a schema applied. The ' trunk/server'
+directory has a utility named 'mogdbsetup' to make this process
+simple. By default it assumes the database is located on localhost so
+if you are running it from a different host you will need to provide
+the host name on the command line.</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># ./mogdbsetup --dbhost=mogiledb.yourdomain.com --dbname=mogilefs --dbuser=mogile --dbpassword=sekrit </pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Again, make sure you replace the host
+and password so that they match you database configuration from
+above. </font>
+</p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">The
+mogdbsetup utility does not specify a table type by default so your
+tables will match the defaults for your database. In many cases this
+will mean that you end up with MyISAM tables. If you prefer InnoDB
+tables you will either need to make sure your database defaults to
+InnoDB or you can manually convert the tables (both of these are
+outside of the scope of this document but there are plenty of
+examples out there).</font></p>
+<p style="margin-bottom: 0in;"><br>
+</p>
+<h2 class="western"><font face="Arial, sans-serif">Tracker
+Configuration</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">On each
+tracker server (mogiletracker.yourdomain.com), create a configuration
+file at /etc/mogilefs/mogilefsd.conf with the following:</font></p>
+<pre style="margin-left: 0.79in;">db_dsn DBI:mysql:mogilefs:mogiledb.yourdomain.com
+db_user mogile
+db_pass sekrit
+conf_port 6001
+listener_jobs 5</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">db_dsn points to your database
+instance. If you are running the database on the same machine as the
+storage server you can omit ":mogiledb.yourdomain.com: and it
+will use the local machine. db_user and db_pass should match the user
+and password you configured when setting up your database. </font>
+</p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">The
+program 'mogilefsd' will not run as root so you will need to run this
+as a non-root user. To create a user for this, enter the following
+command and follow the prompts to create the "mogile" user:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># adduser mogile</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">In order to use the tools to setup the
+storage servers you will need to have the trackers running. Refer to
+"Starting Trackers", below.</font></p>
+<p style="margin-bottom: 0in;"><br>
+</p>
+<h2 class="western"><font face="Arial, sans-serif">Storage Server
+Configuration</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">On each
+storage server, create the storage directory (make sure it has access
+permissions for the user you will use to run mogstored):</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mkdir /var/mogdata</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Configure it:</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">On each
+storage server, create a configuration file at
+/etc/mogilefs/mogstored.conf with the following:</font></p>
+<pre style="margin-left: 0.79in;">httplisten=0.0.0.0:7500
+mgmtlisten=0.0.0.0:7501
+docroot=/var/mogdata</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Use 'mogadm' to add each storage
+server to the database. <b>This requires that the trackers are
+already running so if you have not already started them, refer to
+"</b><a href="#Starting_Trackers"><b>Starting Trackers</b></a><b>",
+below.</b> You need to supply the Perl lib path which has the
+'MogileFS.pm' perl module installed – this was installed if you
+installed the API in the "Setting up the Trackers and Storage
+Servers" section above. The following example would add the host
+mogilestorage.yourdomain.com as a storage server, assuming that
+mogilestorage.yourdomain.com had an IP address of 192.168.42.3
+(listening on port 7500) and your tracker had an IP address of
+192.168.42.1 (listening on port 6001):</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogadm --lib=/usr/local/share/perl/5.8.4 --trackers=192.168.42.1:6001 host add mogilestorage --ip=192.168.42.3 --port=7500 --status=alive</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">You can confirm that your host(s) were
+added with the following command;</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogadm --lib=/usr/local/share/perl/5.8.4 --trackers=192.168.42.1:6001 host list</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">You also need to add devices for each
+storage host. If you don't provide a device id mogadm is supposed to
+do it for you... in practice I find it dies with an error, so you
+will need to manually add a unique device id after the host: </font>
+</p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogadm --lib=/usr/local/share/perl/5.8.4 --trackers=192.168.42.1:6001 device add mogilestorage 1</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Finally, add the correctly-name device
+(folder) to each storage host. I have been unable to get the tools to
+handle this well, so I am probably doing something wrong. As a
+workaround, I used the modadm device list command to see what device
+names were assigned and then I added the folders to my storage hosts.
+Run the following command:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogadm --lib=/usr/local/share/perl/5.8.4 --trackers=192.168.42.1:6001 device list</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">It will list each host and the device
+name followed by its status and storage available. Here is example
+output:</font></p>
+<pre style="margin-left: 0.79in;">mogilestorage [1]: alive
+used(G) free(G) total(G)
+dev1: alive 0.892 67.772 68.664</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">This means "mogilestorage"
+has a host id of "1" and it has one device named "dev1"
+on it and that device is in the "alive" state (your other
+statistics will probably be zeros). Using the example output above,
+you would simply create the directory on
+mogilestorage.yourdomain.com: </font>
+</p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mkdir -p /var/mogdata/dev1</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Finally, confirm your devices are
+configured:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogadm --lib=/usr/local/share/perl/5.8.4 --trackers=192.168.42.1:6001 device list</pre><h1 class="western">
+<font face="Arial, sans-serif">Running MogileFS</font></h1>
+<p style="margin-bottom: 0in;"><br>
+</p>
+<h2 class="western"><font face="Arial, sans-serif">Starting Storage
+Servers</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Start
+each storage server (mogilestorage.yourdomain.com) by running the
+following command as root:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogstored --daemon</pre><h2 class="western">
+<a name="Starting_Trackers"></a><font face="Arial, sans-serif">Starting
+Trackers</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Trackers
+will not run as root so you will need to run them as another user. If
+you created the "mogile" user when seetingup the trackers,
+the following commands will work (assumes you start logged in to
+mogiletracker.yourdomain.com as root):</font></p>
+<pre style="margin-left: 0.79in;"># su mogile
+$ mogilefsd -c /etc/mogilefs/mogilefsd.conf --daemon
+$ exit</pre><p>
+<br><br>
+</p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">You can
+confirm that the trackers are running with the following command:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># ps aux | grep mogilefsd</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">If you don't get a list of running
+processes the trackers are not running.</font></p>
+<h1 class="western"><font face="Arial, sans-serif">Try It </font>
+</h1>
+<p style="margin-bottom: 0in;"><br>
+</p>
+<h2 class="western"><font face="Arial, sans-serif">Do a Quick Sanity
+Test</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">The
+'mogadm' tool can be used to make sure your trackers are functioning.
+You need to supply the Perl lib path which has the 'MogileFS.pm' perl
+module installed – this was installed if you installed the API
+in the "<a href="#Setting_up_the_Trackers_and_Storage">Setting
+up the Trackers and Storage Servers</a>" section above. The
+following example would check all mogile components using the
+trackers at IP address 192.168.42.1 and 192.168.42.2, both listening
+on port 6001:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogadm --lib=/usr/local/share/perl/5.8.4 --trackers=192.168.42.1:6001,192.168.42.2:6001 check</pre><p style="margin-bottom: 0in;">
+<br>
+</p>
+<h2 class="western"><font face="Arial, sans-serif">Try it with Real
+Data</font></h2>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Create a
+domain:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogadm --lib=/usr/local/share/perl/5.8.4 --trackers=192.168.42.1:6001,192.168.42.2:6001 domain add testdomain</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif">Add a class to the domain:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mogadm --lib=/usr/local/share/perl/5.8.4 --trackers=192.168.42.1:6001,192.168.42.2:6001 class add testdomain testclass</pre><h1 class="western">
+<font face="Arial, sans-serif">Troubleshooting</font></h1>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">This
+section is still very incomplete.&nbsp; Let me know if you have other
+common problems that need to be added. </font>
+</p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif"><i><b><br>When
+I run mogadm I get "Unable to retrieve host information from
+tracker(s)":</b></i></font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">mogadm
+requires the tarckers to be running before it is run.</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif"><i><b>When
+starting the storage daemon I get "ERROR: Directory not found
+for service mogstored":</b></i></font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">You did
+not create a storage directory or you are starting the mogstored as a
+user that does not have access to the directory.</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif"><i><b>Problems
+Connecting:</b></i></font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Make
+sure your firewall is open. Using the examples in this document, port
+7500 and 7501 needed on storage servers, 6001 on trackers.</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif"><i><b>While
+testing I get “MogileFS::Backend: couldn't connect to mogilefsd
+backend at /usr/local/share/perl/5.8.4/MogileFS.pm line 56”:</b></i></font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Make
+sure your tracker connects to the database:</font></p>
+<pre style="margin-left: 0.79in;"># su mogile
+$ mogilefsd -c /etc/mogilefs/mogilefsd.conf</pre><p style="margin-bottom: 0in;">
+<font face="Arial, sans-serif"><i><b>I get a "REQUEST FAILURE"
+on "Checking devices..." when doing a mogadm check:</b></i></font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">Confirm
+the devices (folders) exist in the /var/mogdata directory and that
+the use running the mogstored process has full permissions to these
+directories. If the device does not exist, add it – it will
+take a few seconds for mogadm check to reflect the fixed directory.
+For example, if mogilestorage.yourdomain.com had the device "dev1"
+on it, you would add the directory:</font></p>
+<pre style="margin-left: 0.79in; margin-bottom: 0.2in;"># mkdir -p /var/mogdata/dev1</pre><p>
+<br><br>
+</p>
+<h1 class="western"><font face="Arial, sans-serif">Document Revision
+History</font></h1>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">2006-10-07
+Version 0.04 Brett G. Durrett: changed two typos of /vag to /var,
+added plug for 2.0</font></p>
+<p style="margin-bottom: 0in;"><font face="Arial, sans-serif">2006-07-03
+Version 0.03 Brett G. Durrett: highlighted need to start trackers
+before using mogadm (and added troubleshooting reference), formatting
+changes.<br>2006-06-26 Version 0.02 Brett G. Durrett: minor typo
+corrections and fixed characters trashed in converting document to
+html</font><br><font face="Arial, sans-serif">2006-06-25 Version 0.01
+Brett G. Durrett: created initial document </font>
+</p>
+<p style="margin-bottom: 0in;"><br>
+</p>
+</body></html>

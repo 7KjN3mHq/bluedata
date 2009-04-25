@@ -1,0 +1,35 @@
+1. 得到VG的元数据信息
+vgdisplay --partial --verbose
+...
+PV Name               unknown device
+PV UUID               9eWicl-1HSB-Fkcz-wrMf-DzMd-Dgx2-Kyc11j
+PV Status             allocatable
+Total PE / Free PE    25 / 0
+...
+
+--partial参数会使得LVM工具读取VG的元数据信息。
+
+
+2. 添加一个新的PV到系统中
+pvcreate --restorefile /etc/lvm/backup/<volume group name> --uuid <uuid> <device>
+
+例如：
+pvcreate --restorefile /etc/lvm/backup/volGroup00 --uuid 9eWicl-1HSB-Fkcz-wrMf-DzMd-Dgx2-Kyc11j /dev/hda15
+Couldn't find device with uuid ?eWicl-1HSB-Fkcz-wrMf-DzMd-Dgx2-Kyc11j'.
+Physical volume "/dev/hda15" successfully created
+
+通过上述命令可以把新的PV的UUID恢复成为以前的。
+
+
+3. 恢复PV的元数据
+vgcfgrestore --file  /etc/lvm/backup/<volume group name > <volume group name>
+
+例如：
+vgcfgrestore --file /etc/lvm/backup/volGroup00 volGroup00
+Restored volume group volGroup00
+
+
+检查新的PV是否正常
+vgdisplay -v
+
+注意：以上步骤只能修复LVM的元数据，不会修复PV上的数据。

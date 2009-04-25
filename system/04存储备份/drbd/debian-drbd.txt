@@ -1,0 +1,184 @@
+apt-get install drbd8-modules-2.6.26-2-686 drbd8-utils
+
+lvcreate -L 512M -n drbd0 vg
+lvcreate -L 512M -n drbd1 vg
+
+mv /etc/drbd.conf /etc/drbd.conf~
+vi /etc/drbd.conf
+resource r0 {
+  protocol C;
+  on master1 {
+    device    /dev/drbd0;
+    disk      /dev/vg/drbd0;
+    address   192.168.0.243:7788;
+    meta-disk internal;
+  }
+  on master2 {
+    device    /dev/drbd0;
+    disk      /dev/vg/drbd0;
+    address   192.168.0.244:7788;
+    meta-disk internal;
+  }
+  net {
+    after-sb-0pri discard-older-primary;
+    after-sb-1pri call-pri-lost-after-sb;
+    after-sb-2pri call-pri-lost-after-sb;
+  }
+}
+resource r1 {
+  protocol C;
+  on master1 {
+    device    /dev/drbd1;
+    disk      /dev/vg/drbd1;
+    address   192.168.0.243:7789;
+    meta-disk internal;
+  }
+  on master2 {
+    device    /dev/drbd1;
+    disk      /dev/vg/drbd1;
+    address   192.168.0.244:7789;
+    meta-disk internal;
+  }
+  net {
+    allow-two-primaries;
+    after-sb-0pri discard-zero-changes;
+    after-sb-1pri discard-secondary;
+    after-sb-2pri disconnect;
+  }
+}
+
+两个节点都执行：
+drbdadm create-md r0
+drbdadm create-md r1
+
+modprobe drbd
+drbdsetup /dev/drbd1 primary -o
+drbdadm state r1
+
+/etc/init.d/drbd start
+
+其中一个节点执行：
+drbdsetup /dev/drbd0 primary -o
+drbdadm state r0
+
+watch "cat /proc/drbd"
+
+
+ISCSI
+apt-get install iscsitarget-modules-2.6.26-2-686 iscsitarget
+
+vi /etc/ietd.conf
+Target iqn.2009-04.com.domain:master1.lun1
+        IncomingUser iscsiuser password
+        OutgoingUser
+        Lun 0 Path=/dev/drbd1,Type=fileio
+        Alias iDISK0
+        #MaxConnections  4
+
+说明：
+IncomingUser 和 OutgoingUser  表示ISCSI 客户端的用户名和密码，用户名和密码都可以为空,默认为allow权限，密码最长可为12个字符。
+
+Target iqn.2000-12.com.digicola:master1.lun1 表示该ISCSI Target 的命名，命名在同一子网内应该是唯一的，标准命名方式为：
+"Target "+ target名字 (格式如下： iqn.yyyy-mm.<reversed domain name>[:identifier] )
+     
+本次配置中 Type 的设定为"fileio",我主要用来对一个磁盘进行存储共享。
+当然也可以针对需要设置为： "file" or "LVM"
+
+vi /etc/default/iscsitarget
+ISCSITARGET_ENABLE=true
+
+/etc/init.d/iscsitarget start
+
+
+apt-get install open-iscsi
+
+iscsiadm -m discovery -t sendtargets -p 192.168.0.243:3260
+192.168.0.243:3260,1 iqn.2009-04.com.domain:master1.lun1
+
+iscsiadm -m discovery -t sendtargets -p 192.168.0.244:3260
+192.168.0.244:3260,1 iqn.2009-04.com.domain:master2.lun1
+
+查看可使用的 iscsitarget
+iscsiadm -m node
+192.168.0.244:3260,1 iqn.2009-04.com.domain:master2.lun1
+192.168.0.243:3260,1 iqn.2009-04.com.domain:master1.lun1
+
+登录到 iscsitarget
+iscsiadm -m node -l
+
+fdisk -l
+
+注销 iscsi 登录
+iscsiadm -m node -u
+
+删除失效的 iscsi 连接
+iscsiadm -m node -o delete -T iqn.2006-01.com.openfiler:tsn.59dc8fc04fa2 -p 192.168.1.51:3260
+
+
+apt-get install mdadm
+The following NEW packages will be installed:
+  ca-certificates citadel-common citadel-mta citadel-server db4.6-util libcitadel1 libcurl3 libexpat1 libglib2.0-0 libglib2.0-data libical0
+  libidn11 libldap-2.4-2 libpcre3 libsieve2-1 libssh2-1 libxml2 mdadm openssl sgml-base shared-mime-info xml-core
+
+mdadm -C /dev/md0 --level multipath -n 2 /dev/sdb1 /dev/sdc1
+
+
+apt-get install multipath-tools
+The following NEW packages will be installed:
+  dmsetup kpartx libaio1 multipath-tools
+
+multipath -v3
+
+vi /etc/multipath.conf
+blacklist {
+  devnode "^sda"
+}
+
+defaults {
+  user_friendly_names yes
+  udev_dir /dev
+  path_grouping_policy multibus
+  failback immediate
+  no_path_retry fail
+}
+
+multipaths {
+  multipath {
+    wwid 149455400000000000000000001000000d71600000d000000
+    alias mpath0
+    path_grouping_policy multibus
+    path_checker tur
+    path_selector "round-robin 0"
+  }
+}
+
+devices {
+device {
+  vendor "IET"
+  product "VIRTUAL-DISK"
+  path_grouping_policy multibus
+  getuid_callout "/usr/local/bin/scsi_id.sh"
+}
+}
+
+vi /usr/local/bin/scsi_id.sh
+#!/bin/sh
+echo 149455400000000000000000001000000d71600000d000000
+
+chmod +x /usr/local/bin/scsi_id.sh
+
+/etc/init.d/multipath-tools restart
+
+multipath -ll
+mpath0 (149455400000000000000000001000000d71600000d000000) dm-4 IET     ,VIRTUAL-DISK
+[size=512M][features=0][hwhandler=0]
+\_ round-robin 0 [prio=1][active]
+ \_ 2:0:0:0 sdc 8:32  [active][ready]
+
+
+必须将多路径设备标记为物理卷
+pvcreate /dev/mapper/mpath0 /dev/mapper/mpath1
+
+vgcreate gfs /dev/mapper/mpath0 /dev/mapper/mpath1
+
+lvcreate -L 512M -n home gfs
