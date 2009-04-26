@@ -1,3 +1,6 @@
+搜索软件包内容
+http://www.debian.org/distrib/packages#search_contents
+
 安装编译工具
 apt-get install gcc g++ make
 
@@ -22,7 +25,7 @@ LANG=en_US.UTF-8
 set ftp:charset "gbk" 
 set file:charset "UTF-8" 
 好了，再登录一下，一切OK 
-设置代理(如果需要) 
+设置代理(如果需要)
 set http:proxy http://ip:port 
 set hftp:proxy hftp://ip:port 
 
