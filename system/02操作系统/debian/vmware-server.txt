@@ -1,12 +1,45 @@
-debian lenny install vmware-server
-http://www.insecure.ws/2008/07/24/vmware-anspecific-specific-557-and-kernel-2626
+Debian Lenny install vmware-server
+
+tar zxvf VMware-server-1.0.9-156507.tar.gz
+cd vmware-server-distrib
+./vmware-install.pl
+Enter ...
+Before running VMware Server for the first time, you need to configure it by
+invoking the following command: "/usr/bin/vmware-config.pl". Do you want this
+program to invoke the command for you now? [yes] no
+
+apt-get install xinetd
+apt-get install linux-headers-2.6.26-2-686 gcc-4.1 g++-4.1 make
+The following NEW packages will be installed:
+  binutils cpp-4.1 g++-4.1 gcc-4.1 gcc-4.1-base libc6-dev libstdc++6-4.1-dev linux-headers-2.6.26-2-686 linux-headers-2.6.26-2-common linux-kbuild-2.6.26 linux-libc-dev make
+
+linux-gate.so.1 -> ?
+libm.so.6 -> libc6
+libdl.so.2 -> libc6
+libpthread.so.0 -> libc6
+libX11.so.6 -> libx11-6
+libXtst.so.6 -> libxtst6
+libXext.so.6 -> libxext6
+libXt.so.6 -> libxt6
+libICE.so.6 -> libice6
+libSM.so.6 -> libsm6
+libXrender.so.1 -> libxrender1
+libz.so.1 -> zlib1g
+libc.so.6 -> libc6
+/lib/ld-linux.so.2 -> libc6
+libxcb-xlib.so.0 -> libxcb-xlib0
+libxcb.so.1 -> libxcb1
+libXau.so.6 -> libxau6
+libXdmcp.so.6 -> libxdmcp6
+
+apt-get install libc6 libx11-6 libxtst6 libxext6 libxt6 libice6 libsm6 libxrender1 zlib1g libxcb-xlib0 libxcb1 libxau6 libxdmcp6
+
+tar zxvf vmware-update-2.6.26-5.5.7.tgz
+cd vmware-update-2.6.26-5.5.7
 export CC=/usr/bin/gcc-4.1
 ./runme.pl
+Enter ...
 
-gcc-4.1: error trying to exec 'cc1plus': execvp: No such file or directory
-apt-get install g++-4.1
-
-/usr/lib/vmware/bin/vmware-vmx: error while loading shared libraries: libX11.so.6: cannot open shared object file: No such file or directory
-apt-get install libx11-6 libxtst6 libxt6 libxrender1
-
+link:
+http://www.insecure.ws/2008/07/24/vmware-anspecific-specific-557-and-kernel-2626
 http://salomi.blog.51cto.com/389282/142557
