@@ -7,6 +7,10 @@ mv /etc/drbd.conf /etc/drbd.conf~
 vi /etc/drbd.conf
 resource r0 {
   protocol C;
+  startup {
+    wfc-timeout 60;
+    degr-wfc-timeout 120;
+  }
   on master1 {
     device    /dev/drbd0;
     disk      /dev/vg/drbd0;
@@ -27,6 +31,10 @@ resource r0 {
 }
 resource r1 {
   protocol C;
+  startup {
+    wfc-timeout 120;
+    degr-wfc-timeout 120;
+  }
   on master1 {
     device    /dev/drbd1;
     disk      /dev/vg/drbd1;
@@ -71,7 +79,7 @@ vi /etc/ietd.conf
 Target iqn.2009-04.com.domain:master1.lun1
         IncomingUser iscsiuser password
         OutgoingUser
-        Lun 0 Path=/dev/drbd1,Type=fileio
+        Lun 0 Path=/dev/drbd1,Type=fileio,ScsiId=DRBD
         Alias iDISK0
         #MaxConnections  4
 
@@ -112,15 +120,7 @@ fdisk -l
 iscsiadm -m node -u
 
 删除失效的 iscsi 连接
-iscsiadm -m node -o delete -T iqn.2006-01.com.openfiler:tsn.59dc8fc04fa2 -p 192.168.1.51:3260
-
-
-apt-get install mdadm
-The following NEW packages will be installed:
-  ca-certificates citadel-common citadel-mta citadel-server db4.6-util libcitadel1 libcurl3 libexpat1 libglib2.0-0 libglib2.0-data libical0
-  libidn11 libldap-2.4-2 libpcre3 libsieve2-1 libssh2-1 libxml2 mdadm openssl sgml-base shared-mime-info xml-core
-
-mdadm -C /dev/md0 --level multipath -n 2 /dev/sdb1 /dev/sdc1
+iscsiadm -m node -o delete -T iqn.2009-04.com.domain:test.lun1 -p 192.168.0.51:3260
 
 
 apt-get install multipath-tools
@@ -144,8 +144,8 @@ defaults {
 
 multipaths {
   multipath {
-    wwid 149455400000000000000000001000000d71600000d000000
-    alias mpath0
+    wwid DRBD
+    alias mpath2
     path_grouping_policy multibus
     path_checker tur
     path_selector "round-robin 0"
@@ -153,35 +153,104 @@ multipaths {
 }
 
 devices {
-device {
-  vendor "IET"
-  product "VIRTUAL-DISK"
-  path_grouping_policy multibus
-  getuid_callout "/usr/local/bin/scsi_id.sh"
+  device {
+    vendor "IET"
+    product "VIRTUAL-DISK"
+    path_grouping_policy multibus
+  }
 }
-}
-
-vi /usr/local/bin/scsi_id.sh
-#!/bin/sh
-echo 149455400000000000000000001000000d71600000d000000
-
-chmod +x /usr/local/bin/scsi_id.sh
 
 /etc/init.d/multipath-tools restart
 
-multipath -ll
-mpath0 (149455400000000000000000001000000d71600000d000000) dm-4 IET     ,VIRTUAL-DISK
+multipath -l
+mpath2 (1494554000000000044524244000000000000000000000000) dm-4 IET     ,VIRTUAL-DISK
 [size=512M][features=0][hwhandler=0]
-\_ round-robin 0 [prio=1][active]
- \_ 2:0:0:0 sdc 8:32  [active][ready]
+\_ round-robin 0 [prio=0][active]
+ \_ 4:0:0:0 sdb 8:16  [active][undef]
+ \_ 3:0:0:0 sdc 8:32  [active][undef]
 
 
-必须将多路径设备标记为物理卷
-pvcreate /dev/mapper/mpath0 /dev/mapper/mpath1
+apt-get install redhat-cluster-modules-2.6.26-2-686 cman gfs-tools clvm
+(rhcs rpm: ccs cman-kernel-smp dlm dlm-kernel-smp fence iddev magma magma-plugins gulm perl-Net-Telnet)
+(gfs rpm: GFS GFS-kernel-smp lvm2-cluster)
 
-vgcreate gfs /dev/mapper/mpath0 /dev/mapper/mpath1
+The following NEW packages will be installed:
+  clvm cman file gfs-tools gfs2-tools libcman2 libdb4.5 libdlm2 libmagic1 libnet-snmp-perl libnet-telnet-perl libnspr4-0d libnss3-1d libopenais2
+  libsgutils1 libsqlite3-0 libvirt0 libxenstore3.0 mime-support openais python python-central python-minimal python-pexpect python2.5
+  python2.5-minimal redhat-cluster-modules-2.6.26-2-686 sg3-utils
 
-lvcreate -L 512M -n home gfs
+The following NEW packages will be installed:
+  clvm cman file gfs-tools gfs2-tools libcman2 libdb4.5 libdlm2 libmagic1 libnet-snmp-perl libnet-telnet-perl libnspr4-0d libnss3-1d
+  libopenais2 libsgutils1 libsqlite3-0 libvirt0 libxenstore3.0 libxml2 mime-support openais python python-central python-minimal
+  python-pexpect python2.5 python2.5-minimal redhat-cluster-modules-2.6.26-2-686 sg3-utils sgml-base xml-core
+
+
+mkdir /etc/cluster
+vi /etc/cluster/cluster.conf
+<?xml version="1.0"?>
+<cluster name="alpha_cluster" config_version="1">
+
+<cman two_node="1" expected_votes="1">
+</cman>
+
+<clusternodes>
+<clusternode name="master1" votes="1">
+<fence>
+<method name="human">
+<device name="human" nodename="master1"/>
+</method>
+</fence>
+</clusternode>
+
+<clusternode name="master2" votes="1">
+<fence>
+<method name="human">
+<device name="human" nodename="master2"/>
+</method>
+</fence>
+</clusternode>
+</clusternodes>
+
+<fencedevices>
+<fencedevice name="human" agent="fence_manual"/>
+</fencedevices>
+
+</cluster>
+
+vi /usr/sbin/fence_manual
+#!/bin/sh
+exit 0
+
+chmod +x /usr/sbin/fence_manual
+
+/etc/init.d/cman start
+
+cman_tool status
+ccs_tool lsnode
+ccs_tool lsfence
+cman_tool services
+
+vi /etc/lvm/lvm.conf
+locking_type = 3
+
+/etc/init.d/clvm restart
+
+只在一个节点上执行如下操作：
+################################
+pvcreate /dev/mapper/mpath2
+vgcreate gfs /dev/mapper/mpath2
+lvcreate -l 127 -n home gfs
+mkfs.gfs -j 2 -p lock_dlm -t alpha_cluster:gfs /dev/gfs/home
+################################
+
+pvcreate /dev/drbd1
+vgcreate gfs /dev/drbd1
+lvcreate -l 127 -n home gfs
+mkfs.gfs -j 2 -p lock_dlm -t alpha_cluster:gfs /dev/gfs/home
+
+mount -t gfs -o noatime,nodiratime /dev/gfs/home /home
+
+dd if=/dev/zero of=/home/test bs=1024k count=100
 
 
 DRBD Server 1 DRBD Server 2
@@ -208,7 +277,18 @@ target target
 1 2
 
 
-Target iqn.2009-02.tld.domain:storage.sys3.testing
-        Lun 0 Path=/dev/drbd12,Type=fileio,ScsiId=DRBD-TESTING0
-        ImmediateData Yes
-        InitialR2T No 
+
+
+apt-get install mdadm
+The following NEW packages will be installed:
+  ca-certificates citadel-common citadel-mta citadel-server db4.6-util libcitadel1 libcurl3 libexpat1 libglib2.0-0 libglib2.0-data libical0
+  libidn11 libldap-2.4-2 libpcre3 libsieve2-1 libssh2-1 libxml2 mdadm openssl sgml-base shared-mime-info xml-core
+
+mdadm -C /dev/md0 --level multipath -n 2 /dev/sdb1 /dev/sdc1
+
+
+
+<fencedevices>
+<fencedevice agent="fence_vmware" ipaddr="192.168.0.1" login="root" name="app1" passwd="domain.com" vmlogin="root" vmpasswd="9zhen.com" port="/home/VMware/app1/Other Linux 2.6.x kernel.vmx"/>
+<fencedevice agent="fence_vmware" ipaddr="192.168.0.181" login="root" name="app2" passwd="domain.com" vmlogin="Administrator" vmpasswd="epaper123" port="D:\VMware\app2\Other Linux 2.6.x kernel.vmx"/>
+</fencedevices>
