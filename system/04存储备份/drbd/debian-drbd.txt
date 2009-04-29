@@ -173,11 +173,6 @@ apt-get install redhat-cluster-modules-2.6.26-2-686 cman gfs-tools clvm
 (gfs rpm: GFS GFS-kernel-smp lvm2-cluster)
 
 The following NEW packages will be installed:
-  clvm cman file gfs-tools gfs2-tools libcman2 libdb4.5 libdlm2 libmagic1 libnet-snmp-perl libnet-telnet-perl libnspr4-0d libnss3-1d libopenais2
-  libsgutils1 libsqlite3-0 libvirt0 libxenstore3.0 mime-support openais python python-central python-minimal python-pexpect python2.5
-  python2.5-minimal redhat-cluster-modules-2.6.26-2-686 sg3-utils
-
-The following NEW packages will be installed:
   clvm cman file gfs-tools gfs2-tools libcman2 libdb4.5 libdlm2 libmagic1 libnet-snmp-perl libnet-telnet-perl libnspr4-0d libnss3-1d
   libopenais2 libsgutils1 libsqlite3-0 libvirt0 libxenstore3.0 libxml2 mime-support openais python python-central python-minimal
   python-pexpect python2.5 python2.5-minimal redhat-cluster-modules-2.6.26-2-686 sg3-utils sgml-base xml-core
@@ -210,7 +205,8 @@ vi /etc/cluster/cluster.conf
 </clusternodes>
 
 <fencedevices>
-<fencedevice name="human" agent="fence_manual"/>
+<fencedevice agent="fence_vmware_ng" ipaddr="192.168.0.243:8333" login="Administrator" name="master1" passwd="xijiannet" port="master1"/>
+<fencedevice agent="fence_vmware_ng" ipaddr="192.168.0.181:8333" login="Administrator" name="master2" passwd="epaper123" port="master2"/>
 </fencedevices>
 
 </cluster>
@@ -286,27 +282,16 @@ The following NEW packages will be installed:
 mdadm -C /dev/md0 --level multipath -n 2 /dev/sdb1 /dev/sdc1
 
 
-
-<fencedevices>
-<fencedevice agent="fence_vmware" ipaddr="192.168.0.1" login="root" name="app1" passwd="domain.com" vmlogin="root" vmpasswd="9zhen.com" port="/home/VMware/app1/Other Linux 2.6.x kernel.vmx"/>
-<fencedevice agent="fence_vmware" ipaddr="192.168.0.181" login="root" name="app2" passwd="domain.com" vmlogin="Administrator" vmpasswd="epaper123" port="D:\VMware\app2\Other Linux 2.6.x kernel.vmx"/>
-</fencedevices>
-
-
 mkfs.gfs2 -j 2 -p lock_dlm -t alpha_cluster:gfs2 /dev/gfs/home
 
 mount -t gfs2 -o noatime,nodiratime /dev/gfs/home /home
 
 
-apt-get install libcrypt-ssleay-perl
-The following NEW packages will be installed:
-  libcrypt-ssleay-perl liburi-perl
-
-apt-get install libxml-libxml-perl libclass-methodmaker-perl
-The following NEW packages will be installed:
-  libclass-methodmaker-perl libcompress-raw-zlib-perl libcompress-zlib-perl libexpat1 libfont-afm-perl libhtml-format-perl libhtml-parser-perl
-  libhtml-tagset-perl libhtml-tree-perl libio-compress-base-perl libio-compress-zlib-perl libmailtools-perl libtimedate-perl libwww-perl
-  libxml-libxml-common-perl libxml-libxml-perl libxml-namespacesupport-perl libxml-parser-perl libxml-sax-expat-perl libxml-sax-perl ucf
-
-
 apt-get install libxml-libxml-perl libcrypt-ssleay-perl libclass-methodmaker-perl
+The following NEW packages will be installed:
+  libclass-methodmaker-perl libcompress-raw-zlib-perl libcompress-zlib-perl libcrypt-ssleay-perl libexpat1 libfont-afm-perl
+  libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libio-compress-base-perl libio-compress-zlib-perl
+  libmailtools-perl libtimedate-perl liburi-perl libwww-perl libxml-libxml-common-perl libxml-libxml-perl libxml-namespacesupport-perl
+  libxml-parser-perl libxml-sax-expat-perl libxml-sax-perl ucf
+
+fence_vmware_ng -a 192.168.0.254:8333 -l Administrator -p pass -n 'master1' -o status -v
