@@ -1,0 +1,14 @@
+mp3 乱码
+sudo apt-get install easytag
+
+视频播放
+https://help.ubuntu.com/community/Medibuntu
+sudo wget http://www.medibuntu.org/sources.list.d/intrepid.list --output-document=/etc/apt/sources.list.d/medibuntu.list
+sudo apt-get update && sudo apt-get install medibuntu-keyring && sudo apt-get update
+sudo apt-get install smplayer w64codecs
+
+svn client
+http://code.google.com/p/nautilussvn/
+
+挂载 mdf 文件
+sudo mount -o loop -t iso9660 filename.mdf /media/cdrom
