@@ -1,0 +1,102 @@
+http://www.thinkwiki.org/wiki/Installing_Ubuntu_8.04_&_8.10_on_an_X200
+
+-----
+更改 apt 源
+cd /etc/apt
+sudo mv sources.list sources.list~
+sudo vi sources.list
+deb http://mirrors.163.com/ubuntu/ intrepid main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ intrepid-security main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ intrepid-updates main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ intrepid-proposed main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ intrepid-backports main restricted universe multiverse
+-----
+
+-----
+语言
+“语言支持”选择“汉语”，安装所需包后，去掉 SCIM 多余的输入法。
+-----
+
+-----
+设置时区， Chengdu
+-----
+
+-----
+无线网卡：在“硬件驱动”中禁用不正确的无线网卡驱动。安装 linux-backports-modules-2.6.27-??-generic ，
+-----
+
+-----
+设置分辨率
+cd /etc/X11
+sudo mv xorg.conf xorg.conf~
+sudo vi xorg.conf
+Section "Monitor"
+    Identifier    "Configured Monitor"
+EndSection
+
+Section "Monitor"
+    Identifier    "HDMI-1"
+    Option        "Ignore" "True"
+EndSection
+
+Section "Monitor"
+    Identifier    "HDMI-2"
+    Option        "Ignore" "True"
+EndSection
+
+Section "Screen"
+    Identifier    "Default Screen"
+    Monitor        "Configured Monitor"
+    Device        "Configured Video Device"
+    DefaultDepth     24
+    SubSection "Display"
+        Modes "1280x1024" "1280x800" "1024x768"
+        Virtual 2640 1024
+    EndSubSection
+EndSection
+
+Section "Device"
+    Identifier    "Configured Video Device"
+    Driver        "intel"
+    Option        "monitor-HDMI-1" "HDMI-1"
+    Option        "monitor-HDMI-2" "HDMI-2"
+EndSection
+-----
+
+-----
+更新系统后重启。
+-----
+
+-----
+删除老内核：
+sudo apt-get remove --purge linux-headers-2.6.27-7 linux-headers-2.6.27-7-generic linux-image-2.6.27-7-generic linux-restricted-modules-2.6.27-7-generic
+-----
+
+-----
+安装 32 位程序
+sudo apt-get install ia32-libs*
+sudo apt-get install getlibs
+http://www.boundlesssupremacy.com/Cappy/getlibs/
+dpkg -i --force-architecture package
+-----
+
+-----
+APS: http://markgoo.javaeye.com/blog/369071
+sudo apt-get install tp-smapi-source hdapsd hdaps-utils
+cd /usr/src
+sudo tar jxvf tp-smapi.tar.bz2
+cd modules/tp-smapi
+sudo vi Makefile
+KSRC        ?= /usr/src/linux-headers-2.6.27-14-generic
+
+sudo make HDAPS=1
+sudo make install
+
+sudo vi /etc/modules
+tp_smapi
+hdaps
+
+sudo update-initramfs -u
+
+modprobe -a tp_smapi hdaps
+hdaps-gl

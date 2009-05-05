@@ -1,3 +1,12 @@
 A Journey On DRBD For MySQL: http://blog.irwan.name/?p=118
 通过QDisk增强Red Hat Cluster Suite的仲裁机制： http://www.redhat-club.com/product/p10.htm
 Serial ATA (SATA) on Linux: http://linuxmafia.com/faq/Hardware/sata.html
+
+ISCSI:
+Linux tgtadm: Setup iSCSI Target ( SAN ): http://www.cyberciti.biz/tips/howto-setup-linux-iscsi-target-sanwith-tgt.html
+
+linux device mapper multipath 驱动的路径聚合： http://blog.chinaunix.net/u/15278/showart_1895873.html
+
+实战drbd+clvm+gfs+multipath(类SAN的实现): http://linux.chinaunix.net/bbs/viewthread.php?tid=902787
+
+REDHAT AS5.2 MULTIPATH 调试： http://yorkchencn.spaces.live.com/blog/cns!5C0CE65ADCA1579B!546.entry
