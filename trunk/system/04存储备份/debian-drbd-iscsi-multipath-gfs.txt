@@ -38,6 +38,8 @@ drbdadm state r0
 
 watch "cat /proc/drbd"
 
+开机自动设置为 primary 可以把 drbdsetup /dev/drbd0 primary -o 写入 /etc/init.d/drbd 的 start 段末。
+
 
 ISCSI
 apt-get install iscsitarget-modules-2.6.26-2-686 iscsitarget
@@ -47,17 +49,16 @@ Target iqn.2009-05.com.domain:master1.lun1
         IncomingUser iscsiuser password
         OutgoingUser
         Lun 0 Path=/dev/drbd0,Type=fileio,ScsiId=DRBD
-        Alias iDISK0
-        #MaxConnections  4
+        Alias lun0
 
 说明：
-IncomingUser 和 OutgoingUser  表示ISCSI 客户端的用户名和密码，用户名和密码都可以为空,默认为allow权限，密码最长可为12个字符。
-
+IncomingUser 和 OutgoingUser 表示 ISCSI 客户端的用户名和密码，用户名和密码都可以为空，默认为 allow 权限，密码最长可为 12 个字符。
 Target iqn.2000-12.com.digicola:master1.lun1 表示该ISCSI Target 的命名，命名在同一子网内应该是唯一的，标准命名方式为：
-"Target "+ target名字 (格式如下： iqn.yyyy-mm.<reversed domain name>[:identifier] )
+"Target" + target 名字（格式如下： iqn.yyyy-mm.<reversed domain name>[:identifier] ）
      
-本次配置中 Type 的设定为"fileio",我主要用来对一个磁盘进行存储共享。
-当然也可以针对需要设置为： "file" or "LVM"
+"fileio" 用来对一个磁盘进行存储共享。当然也可以设置为： "file" 或者 "LVM"
+
+参考： http://wiki.debian.org/iSCSI/iscsitarget
 
 vi /etc/default/iscsitarget
 ISCSITARGET_ENABLE=true
