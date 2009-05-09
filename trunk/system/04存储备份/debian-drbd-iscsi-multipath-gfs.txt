@@ -1,4 +1,30 @@
-DRBD
+DRBD ISCSI multipath GFS 存储试验（后附简化分解操作）
+
+架构图：
+DRBD Server1           DRBD Server2
+     |                      |
+/dev/drbd0  <---P/P--->  /dev/drbd0
+     |                      |
+ISCSI Target (same ScsiId) ISCSI Target
+     |                      |
++-------------------------------------+
+     |       Network        |
++-------------------------------------+
+     |                      |
+Cluster node1  (RHCS)  Cluster node2
+     |                      |
+ISCSI Initiator      ISCSI Initiator
+     |                      |
+multipath   (same UUID)   multipath
+     |                      |
+CLVMD - PV               CLVMD - PV
+     |                      |
+    GFS                    GFS
+
+试验环境： VMware Server 2.0.1 & Debian Lenny
+
+
+DRBD:
 apt-get install drbd8-modules-2.6.26-2-686 drbd8-utils
 
 mv /etc/drbd.conf /etc/drbd.conf~
@@ -38,27 +64,26 @@ drbdadm state r0
 
 watch "cat /proc/drbd"
 
-开机自动设置为 primary 可以把 drbdsetup /dev/drbd0 primary -o 写入 /etc/init.d/drbd 的 start 段末。
+开机自动设置为 primary 需要把 drbdsetup /dev/drbd0 primary -o 写入 /etc/init.d/drbd 的 start 段末。
 
 
-ISCSI
+ISCSI Target:
 apt-get install iscsitarget-modules-2.6.26-2-686 iscsitarget
 
 vi /etc/ietd.conf
 Target iqn.2009-05.com.domain:master1.lun1
-        IncomingUser iscsiuser password
+        IncomingUser username password
         OutgoingUser
         Lun 0 Path=/dev/drbd0,Type=fileio,ScsiId=DRBD
-        Alias lun0
+        Alias LUN1
 
 说明：
 IncomingUser 和 OutgoingUser 表示 ISCSI 客户端的用户名和密码，用户名和密码都可以为空，默认为 allow 权限，密码最长可为 12 个字符。
 Target iqn.2000-12.com.digicola:master1.lun1 表示该ISCSI Target 的命名，命名在同一子网内应该是唯一的，标准命名方式为：
-"Target" + target 名字（格式如下： iqn.yyyy-mm.<reversed domain name>[:identifier] ）
-     
-"fileio" 用来对一个磁盘进行存储共享。当然也可以设置为： "file" 或者 "LVM"
+"Target" + target 名字（格式如下： iqn.yyyy-mm.<reversed domain name>[:identifier] ）。
+ScsiId 设置为一样，设备的 UUID 才一样，multipath-tools 才会当作是同一设备的多路径输出。
 
-参考： http://wiki.debian.org/iSCSI/iscsitarget
+参考： http://www.howtoforge.com/using-iscsi-on-debian-lenny-initiator-and-target
 
 vi /etc/default/iscsitarget
 ISCSITARGET_ENABLE=true
@@ -66,39 +91,36 @@ ISCSITARGET_ENABLE=true
 /etc/init.d/iscsitarget start
 
 
-ISCSI Client:
+ISCSI Initiator:
 apt-get install open-iscsi
 
-iscsiadm -m discovery -t sendtargets -p 192.168.6.201:3260
-192.168.6.201:3260,1 iqn.2009-05.com.domain:master1.lun1
-
-iscsiadm -m discovery -t sendtargets -p 192.168.6.202:3260
-192.168.6.202:3260,1 iqn.2009-05.com.domain:master2.lun1
-
-查看可使用的 iscsitarget
-iscsiadm -m node
-192.168.6.201:3260,1 iqn.2009-05.com.domain:master1.lun1
-192.168.6.202:3260,1 iqn.2009-05.com.domain:master2.lun1
-
-登录到 iscsitarget
-iscsiadm -m node -l
-
-开机自动挂载
 vi /etc/iscsi/iscsid.conf
 node.startup = automatic
+...
+node.session.auth.authmethod = CHAP
+node.session.auth.username = username
+node.session.auth.password = password
 
 vi /etc/iscsi/initiatorname.iscsi
 InitiatorName=iqn.2009-05.com.domain:master1.lun1
-InitiatorName=iqn.2009-05.com.domain:master2.lun1
 
-iscsiadm -m discovery -t sendtargets -p 192.168.6.201:3260
-iscsiadm -m discovery -t sendtargets -p 192.168.6.202:3260
+iscsiadm -m discovery -t sendtargets -p 192.168.6.201
+
+查看设备是否被发现： fdisk -l
+
+一些常用操作：
+查看可使用的 iscsitarget
+iscsiadm -m node
+192.168.6.201:3260,1 iqn.2009-05.com.domain:master1.lun1
+
+登录到 iscsitarget
+iscsiadm -m node -l
 
 注销 iscsi 登录
 iscsiadm -m node -u
 
 删除失效的 iscsi 连接
-iscsiadm -m node -o delete -T iqn.2009-04.com.domain:test.lun1 -p 192.168.0.51:3260
+iscsiadm -m node -o delete -T iqn.2009-05.com.domain:master2.lun1 -p 192.168.6.202
 
 
 multipath:
@@ -106,9 +128,7 @@ apt-get install multipath-tools
 The following NEW packages will be installed:
   dmsetup kpartx libaio1 multipath-tools
 
-multipath -v3
-
-vi /etc/multipath.conf
+multipath -v3 得到设备信息后修改 /etc/multipath.conf ，如下：
 blacklist {
   devnode "^sda"
 }
@@ -150,7 +170,7 @@ mpath0 (1494554000000000044524244000000000000000000000000) dm-4 IET     ,VIRTUAL
  \_ 2:0:0:0 sdc 8:32  [active][undef]
 
 
-GFS
+RHCS & GFS:
 apt-get install redhat-cluster-modules-2.6.26-2-686 cman gfs-tools clvm
 (rhcs rpm: ccs cman-kernel-smp dlm dlm-kernel-smp fence iddev magma magma-plugins gulm perl-Net-Telnet)
 (gfs rpm: GFS GFS-kernel-smp lvm2-cluster)
@@ -197,8 +217,7 @@ vi /etc/hosts
 192.168.6.11    ld1.domain.com  ld1
 192.168.6.12    ld2.domain.com  ld2
 
-fence_vmware_ng:
-http://sources.redhat.com/cluster/wiki/VMware_FencingConfig
+fence_vmware_ng: http://sources.redhat.com/cluster/wiki/VMware_FencingConfig
 
 apt-get install libxml-libxml-perl libcrypt-ssleay-perl libclass-methodmaker-perl
 The following NEW packages will be installed:
@@ -220,17 +239,23 @@ cp -r ../../library-forRHEL52/usr/lib/fence /usr/lib/
 
 fence_vmware_ng -a 192.168.0.254:8333 -l Administrator -p password -n 'master1' -o status -v
 
-------------------------------
+################################
+如果 VMware 版本过低不能使用 fence_vmware_ng ，可以自行创建 fence_manual:
 vi /usr/sbin/fence_manual
 #!/bin/sh
 exit 0
 
 chmod +x /usr/sbin/fence_manual
-------------------------------
 
-/etc/init.d/cman start
+再把 /etc/cluster/cluster.conf 的 fence 段改为：
+<fencedevices>
+<fencedevice name="human" agent="fence_manual"/>
+</fencedevices>
+################################
 
-------------------------------
+启动 CMAN: /etc/init.d/cman start
+################################
+也许会出现如下错误：
 Starting cluster manager:
  Loading kernel modules: done
  Mounting config filesystem: done
@@ -242,76 +267,118 @@ cman_tool: aisexec daemon didn't start
  Joining fence domain:fence_tool: can't communicate with fenced -1
  done
  Starting Quorum Disk daemon: done
-# ccs_tool addnodeids
+
+按照提示进行操作后有详细错误信息（是关于多播的）：
+ccs_tool addnodeids
 
 WARNING: The cluster does not have a multicast address.
 A default will be assigned a run-time which might not suit your installation
 
-# /etc/init.d/networking restart
-# /etc/init.d/cman restart
-------------------------------
+可进行如下操作：
+/etc/init.d/networking restart
+/etc/init.d/cman restart
+################################
 
+检查集群状态：
 cman_tool status
 ccs_tool lsnode
 ccs_tool lsfence
 cman_tool services
 
+配置 CLVMD:
 vi /etc/lvm/lvm.conf
-locking_type = 3
 filter = [ "r|/dev/cdrom|", "r|/dev/sdb|", "r|/dev/sdc|", "a|/dev/sda|", "a|/dev/mapper/mpath0|", "r|.*|" ]
+locking_type = 3
 
 /etc/init.d/clvm restart
 
 只在一个节点上执行如下操作：
-################################
-pvcreate /dev/mapper/mpath0
-vgcreate gfs /dev/mapper/mpath0
-lvcreate -l 127 -n home gfs
-mkfs.gfs2 -j 2 -p lock_dlm -t alpha_cluster:gfs2 /dev/gfs/home
-mount -t gfs2 -o noatime,nodiratime /dev/gfs/home /home
-################################
-
 pvcreate /dev/mapper/mpath0
 vgcreate gfs /dev/mapper/mpath0
 lvcreate -l 127 -n home gfs
 mkfs.gfs -j 2 -p lock_dlm -t alpha_cluster:gfs /dev/gfs/home
 
+在两个节点上同时挂载并做读写测试：
 mount -t gfs -o noatime,nodiratime /dev/gfs/home /home
-
 dd if=/dev/zero of=/home/test bs=1024k count=100
 
+GFS2 的操作：
+mkfs.gfs2 -j 2 -p lock_dlm -t alpha_cluster:gfs2 /dev/gfs/home
+mount -t gfs2 -o noatime,nodiratime /dev/gfs/home /home
+
+注： GFS2 在测试中相当慢。
+
+--EOF--
 
 
+简化分解操作：
+1. ISCSI + GFS:
+           ISCSI Target
+     |                      |
+Cluster node1  (RHCS)  Cluster node2
+     |                      |
+ISCSI Initiator      ISCSI Initiator
+     |                      |
+CLVMD - PV               CLVMD - PV
+     |                      |
+    GFS                    GFS
 
-DRBD Server 1 DRBD Server 2
-| |
-/dev/drbd0 <---P/P---> /dev/drbd0
-| |
-ietd target (same ScsiId) ietd target
-| |
-+---------------------------------+
-| Network |
-+---------------------------------+
+需要修改的地方：
+ISCSI Target:
+vi /etc/ietd.conf
+Target iqn.2009-05.com.domain:master1.lun1
+        IncomingUser username password
+        OutgoingUser
+        Lun 0 Path=/dev/sdb,Type=fileio
+        Alias LUN1
+
+CLVMD:
+vi /etc/lvm/lvm.conf
+filter = [ "r|/dev/cdrom|", "a|/dev/sda|", "a|/dev/sdb|", "r|.*|" ]
+
+pvcreate /dev/sdb
+vgcreate gfs /dev/sdb
 
 
-GFS
-|
-CLVMD
-|
-PV
-|
-dm-multipath
-| |
-iscsi iscsi
-target target
-1 2
+2. DRBD + GFS:
+DRBD Server1           DRBD Server2
+     |                      |
+/dev/drbd0  <---P/P--->  /dev/drbd0
+     |                      |
+DRBD Server1   (RHCS)  DRBD Server2
+     |                      |
+CLVMD - PV               CLVMD - PV
+     |                      |
+    GFS                    GFS
+
+vi /etc/lvm/lvm.conf
+filter = [ "r|/dev/cdrom|", "r|/dev/sdb|", "a|/dev/sda|", "a|/dev/drbd0|", "r|.*|" ]
+
+pvcreate /dev/drbd0
+vgcreate gfs /dev/drbd0
 
 
+3. DRBD + ISCSI + GFS:
+DRBD Server1           DRBD Server2
+     |                      |
+/dev/drbd0  <---P/P--->  /dev/drbd0
+     |                      |
+ISCSI Target (same ScsiId) ISCSI Target
+     |                      |
++-----------------------------------------+
+     |       Network        |
++-----------------------------------------+
+     |                      |
+node1,node3 (same RHCS) node2,node4
+     |                      |
+ISCSI Initiator (same UUID) ISCSI Initiator
+     |                      |
+CLVMD - PV               CLVMD - PV
+     |                      |
+    GFS                    GFS
 
+vi /etc/lvm/lvm.conf
+filter = [ "r|/dev/cdrom|", "a|/dev/sda|", "a|/dev/sdb|", "r|.*|" ]
 
-apt-get install mdadm
-The following NEW packages will be installed:
-  ca-certificates citadel-common citadel-mta citadel-server db4.6-util libcitadel1 libcurl3 libexpat1 libglib2.0-0 libglib2.0-data libical0
-  libidn11 libldap-2.4-2 libpcre3 libsieve2-1 libssh2-1 libxml2 mdadm openssl sgml-base shared-mime-info xml-core
-
-mdadm -C /dev/md0 --level multipath -n 2 /dev/sdb1 /dev/sdc1
+pvcreate /dev/sdb
+vgcreate gfs /dev/sdb
