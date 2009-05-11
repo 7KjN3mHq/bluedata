@@ -20,7 +20,7 @@ WPS Office 2009 个人版  http://www.wps.cn/
 
 PDF:
 Adobe Reader (http://get.adobe.com/cn/reader/)
-
+Document Viewer
 
 
 QQ:
@@ -49,7 +49,7 @@ gFTP
 
 
 SVN:
-
+TortoiseSVN (http://tortoisesvn.tigris.org/)
 nautilussvn (http://code.google.com/p/nautilussvn/)
 
 
@@ -70,7 +70,7 @@ Picasa  http://picasa.google.com/intl/zh-CN/
 
 音频：
 千千静听  http://ttplayer.qianqian.com/
-easytag
+Rhythmbox + EasyTAG
 
 
 视频：
@@ -80,7 +80,7 @@ SMPlayer + win32codecs (https://help.ubuntu.com/community/Medibuntu)
 
 文件打包：
 WinRAR V3.80 简体中文正式版
-tar + gz + bz2 + unrar
+tar + gzip + bzip2 + unrar
 
 
 虚拟光驱：
@@ -105,3 +105,9 @@ Symantec Endpoint Protection 11.0.4000 MR4 简体中文版
 
 安全：
 360 安全卫士  http://www.360.cn/
+
+
+
+邮件：
+Foxmail  (http://fox.foxmail.com.cn/)
+Evolution
