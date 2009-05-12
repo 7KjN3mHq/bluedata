@@ -3,9 +3,22 @@ Windows
 Linux
 
 
+杀毒软件：
+Symantec Endpoint Protection 11.0.4000 MR4 简体中文版
+
+
+安全：
+360 安全卫士  http://www.360.cn/
+
+
 浏览器：
-Firefox + IEtab(IE8)
-Firefox + IEs4Linux (http://www.tatanka.com.br/ies4linux/page/Installation)
+Firefox + IEtab(IE8)  (http://www.mozilla.com/en-US/firefox/all.html)
+Firefox + IEs4Linux  (http://www.tatanka.com.br/ies4linux/page/Installation)
+
+
+浏览器插件：
+Adobe Flash Player: http://get.adobe.com/flashplayer/
+Google 工具条： http://toolbar.google.com/intl/zh-CN
 
 
 输入法：
@@ -13,14 +26,14 @@ Firefox + IEs4Linux (http://www.tatanka.com.br/ies4linux/page/Installation)
 SCIM
 
 
-Office:
-WPS Office 2009 个人版  http://www.wps.cn/
-永中集成 Office 2009 个人版  http://www.evermoresw.com.cn/webch/download/downEIOPersonal.jsp
-
-
 PDF:
 Adobe Reader (http://get.adobe.com/cn/reader/)
 Document Viewer
+
+
+Office:
+WPS Office 2009 个人版  http://www.wps.cn/
+永中集成 Office 2009 个人版  http://www.evermoresw.com.cn/webch/download/downEIOPersonal.jsp
 
 
 QQ:
@@ -29,18 +42,28 @@ QQ for Linux (http://im.qq.com/qq/linux/)
 
 
 XMPP:
-Pandion  http://www.pandion.be/download/
-Pidgin  http://www.pidgin.im/
+Pandion  (http://www.pandion.be/download/)
+Pidgin  (http://www.pidgin.im/)
 
 
-SSH:
-PuTTY  http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html
-OpenSSH
+MSN:
+Messenger  http://messenger.live.cn/
+Pidgin
 
 
 下载软件：
 迅雷  http://dl.xunlei.com/
 D4X
+
+
+文件打包：
+WinRAR V3.80 简体中文正式版
+tar + gzip + bzip2 + unrar
+
+
+SSH:
+PuTTY (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html ) + WinSCP (http://winscp.net/eng/download.php)
+OpenSSH + gFTP
 
 
 FTP:
@@ -51,6 +74,11 @@ gFTP
 SVN:
 TortoiseSVN (http://tortoisesvn.tigris.org/)
 nautilussvn (http://code.google.com/p/nautilussvn/)
+
+
+文件同步：
+cwRsync  (http://www.itefix.no/i2/node/10650)
+Rsync
 
 
 翻译软件：
@@ -78,11 +106,6 @@ QQ 影音  http://player.qq.com/
 SMPlayer + win32codecs (https://help.ubuntu.com/community/Medibuntu)
 
 
-文件打包：
-WinRAR V3.80 简体中文正式版
-tar + gzip + bzip2 + unrar
-
-
 虚拟光驱：
 Daemon Tools
 mount
@@ -95,17 +118,6 @@ Nero
 
 网银：
 招行专业版
-
-
-
-杀毒软件：
-Symantec Endpoint Protection 11.0.4000 MR4 简体中文版
-
-
-
-安全：
-360 安全卫士  http://www.360.cn/
-
 
 
 邮件：
