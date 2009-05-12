@@ -1,4 +1,4 @@
-DRBD ISCSI multipath GFS 存储试验（后附简化分解操作）
+DRBD ISCSI multipath GFS 存储试验（后附分解操作）
 
 架构图：
 DRBD Server1           DRBD Server2
@@ -96,7 +96,6 @@ apt-get install open-iscsi
 
 vi /etc/iscsi/iscsid.conf
 node.startup = automatic
-...
 node.session.auth.authmethod = CHAP
 node.session.auth.username = username
 node.session.auth.password = password
@@ -311,7 +310,7 @@ mount -t gfs2 -o noatime,nodiratime /dev/gfs/home /home
 --EOF--
 
 
-简化分解操作：
+分解操作：
 1. ISCSI + GFS:
            ISCSI Target
      |                      |
