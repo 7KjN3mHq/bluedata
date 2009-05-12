@@ -18,7 +18,12 @@ Firefox + IEs4Linux  (http://www.tatanka.com.br/ies4linux/page/Installation)
 
 浏览器插件：
 Adobe Flash Player: http://get.adobe.com/flashplayer/
-Google 工具条： http://toolbar.google.com/intl/zh-CN
+Google Toobar: http://toolbar.google.com/intl/zh-CN
+IE Tab: https://addons.mozilla.org/zh-CN/firefox/addon/1419
+gladder: https://addons.mozilla.org/zh-CN/firefox/addon/2864
+Alexa Toolbar: https://addons.mozilla.org/zh-CN/firefox/addon/5362
+FlashGot: https://addons.mozilla.org/zh-CN/firefox/addon/220
+Tab Mix Plus: https://addons.mozilla.org/zh-CN/firefox/addon/1122
 
 
 输入法：
