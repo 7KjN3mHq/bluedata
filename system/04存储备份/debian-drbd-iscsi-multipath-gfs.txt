@@ -105,6 +105,8 @@ InitiatorName=iqn.2009-05.com.domain:master1.lun1
 
 iscsiadm -m discovery -t sendtargets -p 192.168.6.201
 
+/etc/init.d/open-iscsi restart
+
 查看设备是否被发现： fdisk -l
 
 一些常用操作：
@@ -236,7 +238,7 @@ chmod 755 fence_vmware_ng*
 cp -a fence_vmware_ng* /usr/sbin/
 cp -r ../../library-forRHEL52/usr/lib/fence /usr/lib/
 
-fence_vmware_ng -a 192.168.0.254:8333 -l Administrator -p password -n 'master1' -o status -v
+fence_vmware_ng -a 192.168.0.254:8333 -l Administrator -p password -n 'ld1' -o status -v
 
 ################################
 如果 VMware 版本过低不能使用 fence_vmware_ng ，可以自行创建 fence_manual:
@@ -280,9 +282,9 @@ A default will be assigned a run-time which might not suit your installation
 
 检查集群状态：
 cman_tool status
+cman_tool services
 ccs_tool lsnode
 ccs_tool lsfence
-cman_tool services
 
 配置 CLVMD:
 vi /etc/lvm/lvm.conf
