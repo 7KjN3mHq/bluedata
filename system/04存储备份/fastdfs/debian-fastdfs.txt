@@ -1,0 +1,47 @@
+apt-get install gcc g++ make
+The following NEW packages will be installed:
+  binutils cpp cpp-4.3 g++ g++-4.3 gcc gcc-4.3 libc6-dev libgmp3c2 libgomp1 libmpfr1ldbl libstdc++6-4.3-dev linux-libc-dev make
+
+tar zxvf FastDFS_v1.17.tar.gz
+cd FastDFS
+./make.sh
+./make.sh install
+
+####################
+cp -f fdfs_trackerd  /usr/local/bin
+cp -f fdfs_storaged  /usr/local/bin
+cp -f fdfs_monitor fdfs_test fdfs_test1 /usr/local/bin
+cp -f libfdfsclient.so.1 /usr/local/lib/
+cp -f ../common/common_define.h ../common/fdfs_define.h ../common/fdfs_global.h ../common/logger.h ../common/fdfs_base64.h ../common/shared_func.h ../common/ini_file_reader.h ../common/_os_bits.h ../common/sockopt.h ../common/sched_thread.h ../tracker/tracker_types.h ../tracker/tracker_proto.h tracker_client.h storage_client.h storage_client1.h client_func.h client_global.h fdfs_client.h /usr/local/include/
+ln -fs /usr/local/lib/libfdfsclient.so.1 /usr/local/lib/libfdfsclient.so
+ln -fs /usr/local/lib/libfdfsclient.so.1 /usr/lib/libfdfsclient.so
+####################
+
+Tracker:
+cp conf/tracker.conf /usr/local/etc/
+vi /usr/local/etc/tracker.conf
+bind_addr=192.168.6.201
+base_path=/var/fdfs
+
+/usr/local/bin/fdfs_trackerd /usr/local/etc/tracker.conf
+
+Storage:
+lvcreate -L 10G -n fdfs vg
+apt-get install reiserfsprogs
+mkfs.reiserfs /dev/vg/fdfs
+mkdir /fdfs
+vi /etc/fstab
+/dev/mapper/vg-fdfs /fdfs            reiserfs    noatime,nodiratime        0       2
+mount -a
+
+cp conf/storage.conf /usr/local/etc/
+vi /usr/local/etc/storage.conf
+bind_addr=192.168.6.101
+base_path=/fdfs
+store_path0=/fdfs
+tracker_server=192.168.6.201:22122
+
+/usr/local/bin/fdfs_storaged /usr/local/etc/storage.conf
+
+test:
+/usr/local/bin/fdfs_test /usr/local/etc/storage.conf upload /usr/include/stdlib.h
