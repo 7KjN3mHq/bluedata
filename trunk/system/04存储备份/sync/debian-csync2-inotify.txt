@@ -1,0 +1,73 @@
+csync2
+apt-get install libgcrypt11 libtasn1-3 libgpg-error0 libsqlite0 libgnutls26 librsync1 openssl openbsd-inetd csync2
+
+vi /etc/csync2.cfg
+#nossl * *;
+group cluster1
+{
+host ld1 ld2;
+
+key /etc/csync2_ssl_cert.key;
+
+include /home;
+exclude /home/vmware-ng/agent-itself/usr;
+exclude *~ .*;
+
+auto younger;
+}
+
+openssl genrsa -out /etc/csync2_ssl_key.pem 1024
+openssl req -new -key /etc/csync2_ssl_key.pem -out /etc/csync2_ssl_cert.csr
+openssl x509 -req -days 600 -in /etc/csync2_ssl_cert.csr -signkey /etc/csync2_ssl_key.pem -out /etc/csync2_ssl_cert.pem
+csync2 -k /etc/csync2_ssl_cert.key
+## key 要足够长，不然会有错误： Config error: Key in file /etc/csync2_ssl_cert.key is too short.
+
+scp /etc/csync2* ld2:/etc/
+
+/etc/init.d/openbsd-inetd restart
+
+测试：
+csync2 -vvv -T
+执行同步：
+csync2 -xv
+同步并显示详细信息：
+csync2 -xvvv
+
+
+inotify
+apt-get install inotify-tools
+The following NEW packages will be installed:
+  inotify-tools libinotifytools0
+
+vi /usr/local/sbin/csync2.sh
+#!/bin/sh
+src=/home
+inotifywait -mrq --timefmt '%d/%m/%y %H:%M' --format '%T %w%f' \
+--exclude "\.swp$" \
+-e close_write,modify,delete,create,attrib \
+${src} \
+| while read file
+do
+#csync2 -x > /dev/null 2>&1
+csync2 -xv
+echo "${file} was csynced ..."
+done
+
+－m 是保持一直监听
+－r 是递归查看目录
+－q 是打印出事件～
+－e create,move,delete,modify
+监听 创建 移动 删除 写入 事件
+
+chmod +x /usr/local/sbin/csync2.sh
+csync2.sh &
+## 单向同步只在 master 执行，多向同步需要在每个节点执行。
+
+####################
+Failed to watch /home; upper limit on inotify watches reached!
+Please increase the amount of inotify watches allowed per user via `/proc/sys/fs/inotify/max_user_watches'.
+####################
+cat /proc/sys/fs/inotify/max_user_watches
+8192
+当同步目录下目录数过多时，出现以上错误，可执行以下操作：
+echo 65536 > /proc/sys/fs/inotify/max_user_watches
