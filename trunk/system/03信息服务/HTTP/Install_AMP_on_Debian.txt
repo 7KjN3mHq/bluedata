@@ -1,8 +1,6 @@
-Debian GNU/Linux 5.0
+Debian GNU/Linux Lenny(5.0)
 
 apt-get install php5
-会安装所依赖的 apache2
-
 The following NEW packages will be installed:
   apache2-mpm-prefork apache2-utils apache2.2-common file libapache2-mod-php5
   libapr1 libaprutil1 libdb4.5 libexpat1 libmagic1 libmysqlclient15off
@@ -38,7 +36,6 @@ zend_extension=/usr/local/Zend/lib/ZendExtensionManager.so
 
 # Installing eAccelerator
 apt-get install build-essential php5-dev
-
 The following NEW packages will be installed:
   autoconf automake automake1.4 autotools-dev binutils build-essential bzip2
   cpp cpp-4.3 dpkg-dev g++ g++-4.3 gcc gcc-4.3 libc6-dev libgmp3c2 libgomp1
@@ -47,7 +44,7 @@ The following NEW packages will be installed:
   zlib1g-dev
 
 wget http://bart.eaccelerator.net/source/0.9.5.3/eaccelerator-0.9.5.3.tar.bz2
-tar xvfj eaccelerator-0.9.5.3.tar.bz2
+tar jxvf eaccelerator-0.9.5.3.tar.bz2
 cd eaccelerator-0.9.5.3
 phpize
 ./configure
@@ -176,7 +173,6 @@ vi /etc/apache2/sites-enabled/000-default
 
 # MySQL
 apt-get install mysql-server
-
 The following NEW packages will be installed:
   bsd-mailx exim4 exim4-base exim4-config exim4-daemon-light libdbd-mysql-perl
   libdbi-perl libhtml-template-perl liblockfile1 libnet-daemon-perl
@@ -209,7 +205,6 @@ skip-innodb
 
 # phpMyAdmin
 apt-get install phpmyadmin
-
 The following NEW packages will be installed:
   dbconfig-common defoma fontconfig-config libfontconfig1 libfreetype6
   libgd2-xpm libjpeg62 libmcrypt4 libpng12-0 libt1-5 libxpm4 php5-gd
