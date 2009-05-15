@@ -1,5 +1,8 @@
 csync2
-apt-get install libgcrypt11 libtasn1-3 libgpg-error0 libsqlite0 libgnutls26 librsync1 openssl openbsd-inetd csync2
+apt-get install openssl openbsd-inetd csync2
+
+csync2 依赖的库： librsync1 libsqlite0
+使用 ssl 连接依赖的库： libgcrypt11 libtasn1-3 libgpg-error0 libgnutls26
 
 vi /etc/csync2.cfg
 #nossl * *;
@@ -10,7 +13,7 @@ host ld1 ld2;
 key /etc/csync2_ssl_cert.key;
 
 include /home;
-exclude /home/vmware-ng/agent-itself/usr;
+exclude /home/tmp;
 exclude *~ .*;
 
 auto younger;
@@ -62,6 +65,14 @@ done
 chmod +x /usr/local/sbin/csync2.sh
 csync2.sh &
 ## 单向同步只在 master 执行，多向同步需要在每个节点执行。
+
+开机自启动：
+vi /etc/rc.local
+/usr/local/sbin/csync2.sh
+
+加入新节点时需要先拷贝已有文件到新的节点。
+
+touch 创建的文件不会被同步， mkdir 创建的目录同步后的权限为 700 ， mv 移动文件也不会被同步。
 
 ####################
 Failed to watch /home; upper limit on inotify watches reached!

@@ -1,3 +1,74 @@
 apt-get install heartbeat ipvsadm ldirectord
+The following NEW packages will be installed:
+  ca-certificates file gawk heartbeat ipvsadm ldirectord libauthen-radius-perl libcompress-raw-zlib-perl libcompress-zlib-perl
+  libconvert-asn1-perl libcrypt-ssleay-perl libcurl3 libdb4.5 libdbi-perl libdigest-hmac-perl libdigest-sha1-perl libfont-afm-perl
+  libglib2.0-0 libglib2.0-data libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libidn11 libio-compress-base-perl
+  libio-compress-zlib-perl libio-socket-ssl-perl libltdl3 libmagic1 libmail-pop3client-perl libmailtools-perl libnet-daemon-perl
+  libnet-dns-perl libnet-imap-simple-perl libnet-imap-simple-ssl-perl libnet-ip-perl libnet-ldap-perl libnet-libidn-perl libnet-ssleay-perl
+  libnet1 libopenhpi2 libpcre3 libperl5.10 libplrpc-perl libsensors3 libsnmp-base libsnmp15 libsqlite3-0 libssh2-1 libsysfs2 libtimedate-perl
+  liburi-perl libwww-perl libxml2 libxml2-utils mime-support openhpid python python-central python-minimal python2.5 python2.5-minimal
+  sgml-base xml-core
+
+
+cd /etc/ha.d
+vi authkeys
+auth 1
+1 crc
+
+chmod 600 authkeys
+
+
+vi ha.cf
+ucast eth0 192.168.0.241  ## master node
+#ucast eth0 192.168.0.242  ## backup node
+auto_failback off
+node ld1
+node ld2
+
+
+vi haresources
+master:
+ld1 \
+IPaddr2::192.168.0.240/24/eth0/192.168.0.255 \
+ldirectord
+
+backup:
+ld2 \
+IPaddr2::192.168.0.240/24/eth0/192.168.0.255 \
+ldirectord
+
+
+vi ldirectord.cf
+quiescent=no
+
+virtual=192.168.0.240:80
+#        fallback=127.0.0.1:80
+        real=192.168.0.241:80 gate 1
+        real=192.168.0.242:80 gate 2
+        service=http
+        request="checknode.lvs"
+        receive="ok"
+        scheduler=wrr
+#        persistent=3600
+        protocol=tcp
+
+
+vi /etc/network/interfaces
+auto lo:0
+iface lo:0 inet static
+  address 192.168.0.240
+  netmask 255.255.255.255
+  pre-up sysctl -p > /dev/null
+
+ifup lo:0
+ip addr sh lo
+
+
+vi /etc/sysctl.conf
+net.ipv4.conf.all.arp_ignore = 1
+net.ipv4.conf.eth0.arp_ignore = 1
+net.ipv4.conf.all.arp_announce = 2
+net.ipv4.conf.eth0.arp_announce = 2
+net.ipv4.ip_forward = 1
 
 

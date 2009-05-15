@@ -1,0 +1,15 @@
+apt-get install php5-cgi php5-mysql php5-gd
+The following NEW packages will be installed:
+  defoma file fontconfig-config libexpat1 libfontconfig1 libfreetype6 libgd2-xpm libjpeg62 libmagic1 libmysqlclient15off libpcre3 libpng12-0
+  libt1-5 libxml2 libxpm4 mime-support mysql-common php5-cgi php5-common php5-gd php5-mysql sgml-base ttf-dejavu ttf-dejavu-core
+  ttf-dejavu-extra ucf xml-core
+
+http://redmine.lighttpd.net/news/2
+wget http://www.lighttpd.net/download/spawn-fcgi-1.6.0.tar.gz
+tar zxvf spawn-fcgi-1.6.0.tar.gz
+cd spawn-fcgi-1.6.0
+./configure
+make
+make install
+
+/usr/local/bin/spawn-fcgi -a 192.168.6.101 -p 9000 -C 16 -u www-data -g www-data -f /usr/bin/php-cgi
