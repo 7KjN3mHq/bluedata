@@ -1,0 +1,90 @@
+标题
+网站集群架构
+利用开源软件构建 高可用、高性能、可扩展 的集群系统
+
+
+摘要
+1. GSLB: 全局负载均衡
+2. SLB:  服务器负载均衡
+   四层交换 LVS
+   七层交换 Nginx
+3. Heartbeat 实现 HA
+4. MySQL 数据库集群
+5. 集群环境下的存储备份
+6. 集群的监控及管理
+
+
+GSLB - Gobal Server Load Balance
+GSLB 是英文 Gobal Server Load Balance 的缩写，意思是全局负载均衡。
+实现在广域网（包括互联网）上不同地域的服务器间的流量调配。
+使用最佳的服务器（组）服务离自己最近的客户，从而确保访问质量。
+
+
+GSLB 架构图
+
+
+多 IDC 与单 IDC 对比的好处
+更高的可用性：不会因某一 IDC 机房因“不可抗力”造成的网络中断影响访问
+容灾：避免灾难性事件（比如地震）造成的数据丢失。
+
+
+多 IDC 与单 IDC 对比的坏处
+实现复杂：流量分配问题，数据同步问题
+管理复杂：跨地区、距离远，维护麻烦
+成本较高：要在多个 IDC 租用机柜或机位
+
+
+利用 Bind9 的视图功能实现 GSLB 1
+cat named.conf
+...
+include "acl_chinanet.conf";
+view "chinanet" {
+match-clients { "chinanet"; };
+...
+include "acl_cnc.conf";
+view "cnc" {
+match-clients { "cnc"; };
+...
+view "other" {
+match-clients { "any"; };
+...
+
+
+利用 Bind9 的视图功能实现 GSLB 2
+cat acl_chinanet.conf
+acl "chinanet" {
+58.32.0.0/13;
+58.40.0.0/15;
+...
+222.222.0.0/15;
+222.240.0.0/13;
+};
+
+分别定义 zone 文件
+
+可参考 GSLB using xBayDNS: http://you.video.sina.com.cn/b/9144571-1435882772.html
+
+
+SLB - Server Load Balancing
+SLB 是英文 Server Load Balancing 的缩写，意思是服务器负载均衡。可实现多个服务器之间的负载均衡。
+当客户端向虚拟服务器（虚拟服务器代表的是多个真实服务器的群集）发起连接时，通过某种均衡算法，转发到真实服务器。
+
+
+LVS - Linux Virtual Server
+LVS 是在 Linux 内核中做四层交换，只花 128 个字节记录一个连接信息，不涉及到文件句柄操作，
+故没有 65535 最大文件句柄数的限制。 LVS 性能很高，可以支持 100 - 400 万个并发连接。
+LVS 的有关中文文档： http://www.linuxvirtualserver.org/zh/index.html
+
+
+LVS 架构图
+
+
+Nginx
+Nginx ("engine x") 是一个高性能的 HTTP 和 反向代理 服务器，也是一个 IMAP/POP3/SMTP 代理服务器。
+七层交换，大约能支持五万个并发连接。
+Nginx 的中文维基： http://wiki.nginx.org/NginxChs
+
+
+Heartbeat
+
+
