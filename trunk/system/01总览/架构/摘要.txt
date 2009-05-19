@@ -14,8 +14,8 @@
 6. ¼¯ÈºµÄ¼à¿Ø¼°¹ÜÀí
 
 
-GSLB - Gobal Server Load Balance
-GSLB ÊÇ Gobal Server Load Balance µÄËõÐ´£¬ÒâË¼ÊÇÈ«¾Ö¸ºÔØ¾ùºâ¡£
+GSLB - Global Server Load Balance
+GSLB ÊÇ Global Server Load Balance µÄËõÐ´£¬ÒâË¼ÊÇÈ«¾Ö¸ºÔØ¾ùºâ¡£
 ÊµÏÖÔÚ¹ãÓòÍø£¨°üÀ¨»¥ÁªÍø£©ÉÏ²»Í¬µØÓòµÄ·þÎñÆ÷¼äµÄÁ÷Á¿µ÷Åä¡£
 Ê¹ÓÃ×î¼ÑµÄ·þÎñÆ÷£¨×é£©Îª×î½üµÄ¿Í»§Ìá¹©·þÎñ£¬´Ó¶øÈ·±£·ÃÎÊÖÊÁ¿¡£
 
@@ -74,9 +74,9 @@ SLB ÊÇ Server Load Balancing µÄËõÐ´£¬ÒâË¼ÊÇ·þÎñÆ÷¸ºÔØ¾ùºâ¡£¿ÉÊµÏÖ¶à¸ö·þÎñÆ÷Ö®¼äµ
 
 LVS - Linux Virtual Server
 LVS ÊÇÔÚ Linux ÄÚºËÖÐ×öËÄ²ã½»»»¡£
-LVS Ö»ÓÃ 128 ¸ö×Ö½Ú¼ÇÂ¼Ò»¸öÁ¬½ÓÐÅÏ¢£¬²»Éæ¼°µ½ÎÄ¼þ¾ä±ú²Ù×÷£¬ÐÔÄÜºÜ¸ß£¬¿ÉÒÔÖ§³ÖÉÏ°ÙÍòµÄ²¢·¢Á¬½Ó¡£
+LVS Ö»ÓÃ 128 ¸ö×Ö½Ú¼ÇÂ¼Ò»¸öÁ¬½ÓÐÅÏ¢£¬512M ¿ÉÓÃÄÚ´æ¼´¿ÉÖ§³ÖËÄ°ÙÍòÌõÁ¬½ÓÊý£¬ÐÔÄÜºÜ¸ß¡£
 
-ÀÏµÄ Redhat9 ÉõÖÁ Redhat7.2 ÏÂµÄ°²×°ÎÄµµÒÑ¾­¹ýÊ±£¬ Linux 2.6 ÄÚºËÒÑ¾­°üº¬ÁË ipvs Ä£¿é¡£
+Linux 2.6 ÄÚºËÒÑ¾­°üº¬ÁË ipvs Ä£¿é£¬Ö»Ðè°²×° ipvsadm ¡£
 
 ÕæÊµ·þÎñÆ÷ÐèÒª½â¾ö ARP ÎÊÌâ£¨ ARP »º´æÔì³ÉµÄ ARP ¡°ÆÛÆ­¡±£©
 arp_ignore = 1        ## Ö»ÒªÕâÌ¨»úÆ÷ÉÏÃæÈÎºÎÒ»¸öÉè±¸ÓÐÕâ¸ö IP £¬¾ÍÏìÓ¦ ARP ÇëÇó£¬²¢·¢ËÍ MAC µØÖ·Ó¦´ð¡£
@@ -123,17 +123,19 @@ Nginx µÄÖÐÎÄÎ¬»ù£º http://wiki.nginx.org/NginxChs
 
 
 Heartbeat
-Heartbeat ×îºËÐÄÁ½¸ö²¿·Ö£ºÐÄÌø¼à²â²¿·ÖºÍ×ÊÔ´½Ó¹Ü²¿·Ö¡£
+Heartbeat ×îºËÐÄµÄÁ½¸ö²¿·Ö£ºÐÄÌø¼à²â²¿·ÖºÍ×ÊÔ´½Ó¹Ü²¿·Ö¡£
 ÐÄÌø¼à²â¿ÉÒÔÍ¨¹ýÍøÂç»ò´®¿Ú½øÐÐ£¬¶øÇÒÖ§³ÖÈßÓàÁ´Â·£¬½ÚµãÖ®¼äÏà»¥·¢ËÍ±¨ÎÄÀ´¸æËß¶Ô·½×Ô¼ºµ±Ç°µÄ×´Ì¬¡£Èç¹ûÒ»¸ö½ÚµãÔÚÖ¸¶¨µÄÊ±¼äÄÚÎ´ÊÕµ½¶Ô·½·¢ËÍµÄ±¨ÎÄ£¬ÄÇÃ´¾ÍÈÏÎª¶Ô·½Ê§Ð§¡£
 ÕâÊ±ÐèÒªÆô¶¯×ÊÔ´½Ó¹ÜÄ£¿éÀ´½Ó¹ÜÔËÐÐÔÚ¶Ô·½Ö÷»úÉÏµÄ×ÊÔ´»ò·þÎñ¡£
 
-Ê¹ÓÃÍøÂç¼à²âÒª×¢ÒâÍ¬Ò»ÍøÂçÖÐ´æÔÚ¶à¸ö HA Ó¦ÓÃÊ±µÄ¹ã²¥ (bcast) Ôì³ÉµÄ¸ÉÈÅ£¬Ó¦¸ÃÊ¹ÓÃµ¥²¥ (ucast) ¡£
+Ö±½Ó°²×° heartbeat °ü¼´¿É£¬ CentOS ÏÂ»¹¿É°²×° heartbeat-ldirectord ¼à²âºÍ¹ÜÀí LVS ¼¯ÈºÖÐµÄÕæÊµ·þÎñÆ÷£¨ Debian ÏÂÊÇ ldirectord £©¡£
+
+Ê¹ÓÃÍøÂç¼à²âÒª×¢ÒâÍ¬Ò»ÍøÂçÖÐ´æÔÚ¶à¸ö HA Ó¦ÓÃÊ±µÄ¹ã²¥ (bcast) Ôì³ÉµÄ¸ÉÈÅ£¬ÕâÖÖÇé¿öÏÂÓ¦¸ÃÊ¹ÓÃµ¥²¥ (ucast) ¡£
 
 Î£ÏÕµÄÄÔÁÑ (split-brain) ¡£
 Heartbeat Ó¦ÓÃÔÚ²Ù×÷´æ´¢Éè±¸µÄÇé¿öÏÂÊÇÓÐÒ»¶¨µÄ·çÏÕµÄ¡£
 
 
-LVS + Nginx + Squid + PHP ¼Ü¹¹Í¼
+Heartbeat + LVS + Nginx + Squid + PHP ¼Ü¹¹Í¼
 
 
 MySQL Êý¾Ý¿â¼¯Èº
