@@ -17,18 +17,19 @@
 GSLB - Global Server Load Balance
 GSLB 是 Global Server Load Balance 的缩写，意思是全局负载均衡。
 实现在广域网（包括互联网）上不同地域的服务器间的流量调配。
-使用最佳的服务器（组）为最近的客户提供服务，从而确保访问质量。
+使用最佳的服务器（组）为最近的访问者提供服务，从而确保访问质量。
 
 
 GSLB 架构图
 
 
-多 IDC 与单 IDC 对比的好处
-更高的可用性：不会因某一 IDC 机房由于“不可抗力”造成的网络中断而影响访问。
-容灾：避免灾难性事件（比如地震）造成无可挽回的数据丢失。
+多 IDC 与单 IDC 的对比
+好处
+可用：不会因某一 IDC 机房由于“不可抗力”造成的网络中断而影响访问，可用性高。
+容灾：可避免灾难性事件（比如地震）造成无可挽回的数据丢失。
+速度：机房离访问者更近，访问质量更高。
 
-
-多 IDC 与单 IDC 对比的坏处
+坏处
 实现复杂：流量分配问题，数据同步问题。
 管理复杂：跨地区、距离远，维护麻烦。
 成本较高：要在多个 IDC 租用机柜或机位。
@@ -139,3 +140,145 @@ Heartbeat + LVS + Nginx + Squid + PHP 架构图
 
 
 MySQL 数据库集群
+1. MySQL Cluster
+2. MySQL Replication 之 一主多从 模式
+3. MySQL Replication 之 多主模式
+
+
+MySQL Cluster 架构图
+不用考虑读写分离问题。
+
+SQL 节点需要使用 LVS 做流量的分配。
+
+NDB 的性能较低（新发布的 MySQL Cluster 7.0 有所改善）。
+
+稳定性尚有待提高。
+
+生产环境下的应用实例太少。
+
+
+MySQL 一主多从模式架构图
+
+
+MySQL 一主多从模式的要点
+读写分离会使应用层变的更复杂。
+可以用 MySQL-Proxy 实现读写分离，而多个 slave 可以由 LVS 调度。
+
+MySQL-Proxy 同样存在稳定性问题，多了一层结构当然也就多了一个故障点。
+修改 数据库连接类 实现读写分离是较为常见的做法。
+
+不能在 slave 上做实时查询，需要实时查询的应用只能走 master ，这需要在应用层做区分。
+
+
+MySQL 一主多从模式的集群方案
+Heartbeat + DRBD + LVS
+
+
+MySQL + Heartbeat + DRBD + LVS
+MySQL + DRBD 是 MySQL 官方网站上推荐的一个方案。解决了 master 的单点问题。
+
+用 ldirectord 管理 slave 可以有效的将失效节点移出集群。
+
+由于 MySQL 、文件系统和磁盘均有缓存功能，在 master 掉电的情况下， binlog 文件最后的 pos 要落后 slave 已经复制的 pos 很多。
+这样就算备份节点接管了资源，仍然会造成复制的中断。需要手动恢复复制进程。
+
+因 split-brain 造成资源争抢进而因错误写入造成存储的失效。恢复时间较长。
+
+
+MySQL 多主模式 架构图
+
+
+MySQL 多主模式的要点
+不存在读写分离问题。
+
+可扩展性较差，扩展较为麻烦。
+
+自增 ID 的重复问题。
+可以通过设定 auto_increment_increment 和 auto_increment_offset 来解决。
+例如把 auto_increment_increment 设置为 3 ，而把 master1, master2, master3 的 auto_increment_offset 分别设置为 1, 2, 3 ，自增 ID 就分别为：
+1  4  7  10  13 ...
+2  5  8  11  14 ...
+3  6  9  12  15 ...
+
+
+MySQL 一主多从和多主模式的混合使用
+多个 IDC 间由 master-master 模式同步数据。
+
+同一 IDC 的 slave 从本 IDC 的 master 同步数据。
+
+确保 master 之间的 binlog 一致，需要用到 google-mysql-tools 中的 MirroredBinlogs 。
+MirroredBinlogs 可以在 slave 保存一份和 master 完全相同的 binlog 。
+
+
+集群环境下的存储备份
+NAS - Network Attached Storage （网络附属存储）
+基本上可以直接叫做 Storage Server ， NFS 就是最常见的应用。
+特点是简单易用，但性能有限。集群规模较小的时候可以使用。
+
+SAN - Storage Area Network （存储区域网络）
+价格昂贵，在中小型网站中很少应用。
+ISCSI 价格相对较低，配合 RHCS + GFS 应用也比较常见。
+
+
+网站应用存储文件的分类及特点
+程序文件：更新少，数量少，频繁读。
+
+用户文件：数量巨大，读写较多，读取分散。
+
+数据库文件：文件大，读写操作极为频繁，连续写。
+
+
+程序文件存储的解决方案
+NFS 是一个还算不错的选择，但有如下弱点：
+很严重的单点故障隐患。
+扩展性较差，支持的节点数量有限。
+大量不必要的网络传输。
+
+根据程序文件读写的特点，可以考虑把文件放在本机。在文件更改时同步到各个节点。
+Rsync: 多节点的同步不方便；扫描目录树的改变比较慢。
+可用以下两个工具解决上述两个问题：
+csync2(http://oss.linbit.com/csync2/): 集群同步工具。
+inotify-tools(http://inotify-tools.sourceforge.net/): 是为 Linux 下 inotify 文件监控工具提供的一套 C 的开发接口库函数，同时还提供了一系列的命令行工具，这些工具可以用来监控文件系统的事件。
+
+
+csync2 + inotify 实现集群文件即时同步 1
+Debian 下 csync2 的安装：
+apt-get install openbsd-inetd csync2
+
+cat /etc/csync2.cfg
+nossl * *;
+group cluster1
+{
+host web1 web2 web3 web4;
+
+key /etc/csync2_ssl_cert.key;
+
+include /home;
+exclude /home/tmp;
+exclude *~ .*;
+
+auto younger;
+}
+
+如果进行远程同步，为了安全，应该使用 ssl 连接，这需要安装 openssl 。
+
+
+csync2 + inotify 实现集群文件即时同步 2
+Debian 下 inotify-tools 的安装：
+apt-get install inotify-tools
+可以在需要同步的节点上运行下面这个脚本进行同步了：
+cat /usr/local/sbin/csync2.sh
+#!/bin/sh
+src=/home
+inotifywait -mrq --timefmt '%d/%m/%y %H:%M' --format '%T %w%f' \
+--exclude "\.swp$" \
+-e close_write,modify,delete,create,attrib \
+${src} \
+| while read file
+do
+csync2 -x > /dev/null 2>&1
+done
+
+用作即时备份也是个不错的选择。
+
+
