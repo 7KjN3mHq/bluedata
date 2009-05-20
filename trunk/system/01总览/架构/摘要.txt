@@ -212,12 +212,12 @@ MirroredBinlogs 可以在 slave 保存一份和 master 完全相同的 binlog 。
 
 集群环境下的存储备份
 NAS - Network Attached Storage （网络附属存储）
-基本上可以直接叫做 Storage Server ， NFS 就是最常见的应用。
-特点是简单易用，但性能有限。集群规模较小的时候可以使用。
+NAS 通过 NFS/Samba/WebDAV/FTP 等方式实现共享存储，基本上可以直接叫做 Storage Server 。
+NFS 是 Linux 集群中最常见的共享存储方式，特点是简单易用，但性能有限。
 
 SAN - Storage Area Network （存储区域网络）
-价格昂贵，在中小型网站中很少应用。
-ISCSI 价格相对较低，配合 RHCS + GFS 应用也比较常见。
+价格昂贵，在中小型网站中应用较少。
+ISCSI 价格相对较低，配合 RHCS + GFS 的应用较为常见。
 
 
 网站应用存储文件的分类及特点
@@ -230,12 +230,13 @@ ISCSI 价格相对较低，配合 RHCS + GFS 应用也比较常见。
 
 程序文件存储的解决方案
 NFS 是一个还算不错的选择，但有如下弱点：
-很严重的单点故障隐患。
+严重的单点故障隐患。
 扩展性较差，支持的节点数量有限。
 大量不必要的网络传输。
 
 根据程序文件读写的特点，可以考虑把文件放在本机。在文件更改时同步到各个节点。
-Rsync: 多节点的同步不方便；扫描目录树的改变比较慢。
+rsync: 多节点的同步不方便；扫描目录树的改变比较慢。
+
 可用以下两个工具解决上述两个问题：
 csync2(http://oss.linbit.com/csync2/): 集群同步工具。
 inotify-tools(http://inotify-tools.sourceforge.net/): 是为 Linux 下 inotify 文件监控工具提供的一套 C 的开发接口库函数，同时还提供了一系列的命令行工具，这些工具可以用来监控文件系统的事件。
