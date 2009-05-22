@@ -53,7 +53,7 @@ virtual=192.168.1.246:80
         request="checknode.lvs"
         receive="ok"
         scheduler=wlc
-#        persistent=1
+#        persistent=3600
         protocol=tcp
 
 # vi /etc/sysconfig/network-scripts/ifcfg-lo:0

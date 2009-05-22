@@ -19,38 +19,43 @@ chmod 600 authkeys
 
 
 vi ha.cf
-ucast eth0 192.168.0.241  ## master node
-#ucast eth0 192.168.0.242  ## backup node
+ucast eth0 192.168.0.242  ## master node
+#ucast eth0 192.168.0.241  ## backup node
 auto_failback off
 node ld1
 node ld2
+ping 192.168.0.242  ## master node
+#ping 192.168.0.241  ## backup node
 
 
 vi haresources
 master:
 ld1 \
-IPaddr2::192.168.0.240/24/eth0/192.168.0.255 \
-ldirectord
+ldirectord \
+IPaddr2::192.168.0.240/24/eth0/192.168.0.255
+
 
 backup:
 ld2 \
-IPaddr2::192.168.0.240/24/eth0/192.168.0.255 \
-ldirectord
+ldirectord \
+IPaddr2::192.168.0.240/24/eth0/192.168.0.255
+
 
 
 vi ldirectord.cf
 quiescent=no
 
 virtual=192.168.0.240:80
-#        fallback=127.0.0.1:80
         real=192.168.0.241:80 gate 1
         real=192.168.0.242:80 gate 2
         service=http
         request="checknode.lvs"
         receive="ok"
         scheduler=wrr
-#        persistent=3600
         protocol=tcp
+
+cd /home/www/wwwroot
+echo "ok" > checknode.lvs
 
 
 vi /etc/network/interfaces
@@ -71,4 +76,8 @@ net.ipv4.conf.all.arp_announce = 2
 net.ipv4.conf.eth0.arp_announce = 2
 net.ipv4.ip_forward = 1
 
+sysctl -p
 
+
+sysv-rc-conf
+disable: ipvsadm ldirectord
