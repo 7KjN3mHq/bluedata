@@ -8,13 +8,16 @@ vi /etc/csync2.cfg
 #nossl * *;
 group cluster1
 {
-host ld1 ld2;
+host ld1 ld2 app1 app2;
 
 key /etc/csync2_ssl_cert.key;
 
 include /home;
-exclude /home/tmp;
+exclude /home/backup;
 exclude *~ .*;
+
+backup-directory /home/backup;
+backup-generations 3;
 
 auto younger;
 }
@@ -47,7 +50,7 @@ vi /usr/local/sbin/csync2.sh
 src=/home
 inotifywait -mrq --timefmt '%d/%m/%y %H:%M' --format '%T %w%f' \
 --exclude "\.swp$" \
--e close_write,modify,delete,create,attrib \
+-e modify,attrib,create,delete,move \
 ${src} \
 | while read file
 do
@@ -55,6 +58,20 @@ do
 csync2 -xv
 echo "${file} was csynced ..."
 done
+
+
+#!/bin/sh
+src=/home
+des=/home
+ip=192.168.7.192
+/usr/local/bin/inotifywait -mrq --timefmt '%d/%m/%y %H:%M' --format  '%T %w%f' \
+ -e modify,delete,create,attrib \
+${src} \
+| while read  file
+do
+rsync -ae ssh --delete --progress ${src} root@${ip}:${des}
+done
+
 
 －m 是保持一直监听
 －r 是递归查看目录

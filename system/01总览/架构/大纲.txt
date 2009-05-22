@@ -179,8 +179,7 @@ MySQL + DRBD 是 MySQL 官方网站上推荐的一个方案。解决了 master 的单点问题。
 
 用 ldirectord 管理 slave 可以有效的将失效节点移出集群。
 
-由于 MySQL 、文件系统和磁盘均有缓存功能，在 master 掉电的情况下， binlog 文件最后的 pos 要落后 slave 已经复制的 pos 很多。
-这样就算备份节点接管了资源，仍然会造成复制的中断。需要手动恢复复制进程。
+由于 MySQL 、文件系统和磁盘均有缓存功能，在 master 掉电的情况下， binlog 文件最后的 Position 要落后 slave 已经复制的 Position 很多。这样就算备份节点接管了资源，仍然会造成复制的中断。需要手动恢复复制进程。
 
 因 split-brain 造成资源争抢进而因错误写入造成存储的失效。恢复时间较长。
 

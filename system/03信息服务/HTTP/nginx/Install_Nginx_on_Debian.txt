@@ -55,7 +55,7 @@ http {
 
     server {
         listen       80;
-        server_name  192.168.0.241;
+        server_name  _;
         root  /home/www/wwwroot;
         location ~ .*\.php?$ {
             fastcgi_pass   192.168.6.101:9000;
