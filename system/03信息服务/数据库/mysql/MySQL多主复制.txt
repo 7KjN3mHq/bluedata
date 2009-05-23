@@ -1,0 +1,30 @@
+http://downloads.mysql.com/archives/mysql-5.0/mysql-5.0.37.tar.gz
+http://google-mysql-tools.googlecode.com/svn/trunk/mysql-patches/all.v3-mysql-5.0.37.patch.gz
+http://code.google.com/p/google-perftools/downloads/list
+
+
+apt-get install libncurses5-dev
+
+dpkg -i libgoogle-perftools*
+
+groupadd mysql
+useradd -g mysql -d /usr/local/mysql -s /bin/false mysql
+
+gzip -d all.v3-mysql-5.0.37.patch.gz
+tar zxvf mysql-5.0.37.tar.gz
+cd mysql-5.0.37
+patch --strip=1 --fuzz=1 < ../all.v3-mysql-5.0.37.patch
+./configure \
+--prefix=/usr/local/mysql \
+--sysconfdir=/usr/local/mysql/etc \
+--with-mysqld-user=mysql \
+--with-charset=gbk \
+--with-extra-charsets=gb2312,gbk,latin1,utf8 \
+--with-mysqld-ldflags="-all-static -ltcmalloc"
+
+make
+make install
+cd ..
+mkdir /usr/local/mysql/etc
+cp -f /usr/local/mysql/share/mysql/my-huge.cnf /usr/local/mysql/etc/my.cnf
+chown -R mysql:mysql /usr/local/mysql
