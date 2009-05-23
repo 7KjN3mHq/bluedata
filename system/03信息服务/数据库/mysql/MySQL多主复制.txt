@@ -20,7 +20,8 @@ patch --strip=1 --fuzz=1 < ../all.v3-mysql-5.0.37.patch
 --with-mysqld-user=mysql \
 --with-charset=gbk \
 --with-extra-charsets=gb2312,gbk,latin1,utf8 \
---with-mysqld-ldflags="-all-static -ltcmalloc"
+--with-mysqld-ldflags="-all-static -ltcmalloc" \
+--enable-thread-safe-client
 
 make
 make install
