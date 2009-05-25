@@ -59,13 +59,13 @@ csync2 -xv
 echo "${file} was csynced ..."
 done
 
-
+vi /usr/local/sbin/rsync.sh
 #!/bin/sh
 src=/home
 des=/home
-ip=192.168.7.192
-/usr/local/bin/inotifywait -mrq --timefmt '%d/%m/%y %H:%M' --format  '%T %w%f' \
- -e modify,delete,create,attrib \
+ip=192.168.6.102
+/usr/local/bin/inotifywait -mrq --timefmt '%d/%m/%y %H:%M' --format '%T %w%f' \
+ -e modify,attrib,create,delete,move \
 ${src} \
 | while read  file
 do
@@ -82,14 +82,13 @@ done
 chmod +x /usr/local/sbin/csync2.sh
 csync2.sh &
 ## 单向同步只在 master 执行，多向同步需要在每个节点执行。
+## 多向同步大文件会造成冲突，损坏文件。
 
 开机自启动：
 vi /etc/rc.local
 /usr/local/sbin/csync2.sh
 
 加入新节点时需要先拷贝已有文件到新的节点。
-
-touch 创建的文件不会被同步， mkdir 创建的目录同步后的权限为 700 ， mv 移动文件也不会被同步。
 
 inotify 可以监视的文件系统事件包括：
 IN_ACCESS，即文件被访问
