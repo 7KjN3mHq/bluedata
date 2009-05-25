@@ -194,3 +194,40 @@ Slave_SQL_Running: No
 
 start slave io_thread;
 start slave sql_thread;
+
+
+google-mysql-tools 解决方案
+master
+使用google patchs
+
+log-bin=mysql-bin
+server-id=1
+rpl_semi_sync_enabled=1
+rpl_semi_sync_timeout=500
+
+slave1
+使用google patchs
+
+做slave时
+server-id=10
+log-bin-index=mysql-bin.index
+
+#become master
+#log-bin=mysql-bin
+
+#become slave
+read-only=1
+rpl_semi_sync_slave_enabled=1
+rpl_mirror_binlog_enabled=1
+
+升级到master
+server-id=10
+log-bin-index=mysql-bin.index
+
+#become master
+log-bin=mysql-bin
+
+#become slave
+#read-only=1
+#rpl_semi_sync_slave_enabled=1
+#rpl_mirror_binlog_enabled=1

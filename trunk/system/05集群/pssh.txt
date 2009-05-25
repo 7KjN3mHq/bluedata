@@ -1,0 +1,26 @@
+apt-get install pssh
+
+vi servers.txt
+192.168.6.12
+192.168.6.101
+192.168.6.102
+192.168.6.201
+192.168.6.202
+
+vi ~/.bashrc
+alias pssh='parallel-ssh'
+alias pscp='parallel-scp'
+alias prsync='parallel-rsync'
+
+export PSSH_HOSTS="/root/servers.txt"
+export PSSH_USER="root"
+export PSSH_PAR="32"
+export PSSH_OUTDIR="/tmp"
+export PSSH_VERBOSE="0"
+export PSSH_OPTIONS="UserKnownHostsFile /root/.ssh/known_hosts"
+
+source ~/.profile
+
+pssh hostname
+pssh /etc/init.d/ssh restart
+pscp /etc/hosts /etc/hosts

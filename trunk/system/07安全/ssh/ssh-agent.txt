@@ -1,0 +1,6 @@
+ssh-agent bash
+ssh-add
+source ~/.profile
+
+vi /etc/ssh/ssh_config
+ForwardAgent yes

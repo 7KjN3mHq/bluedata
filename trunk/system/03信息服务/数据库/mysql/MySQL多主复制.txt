@@ -1,31 +1,104 @@
 http://downloads.mysql.com/archives/mysql-5.0/mysql-5.0.37.tar.gz
-http://google-mysql-tools.googlecode.com/svn/trunk/mysql-patches/all.v3-mysql-5.0.37.patch.gz
+http://google-mysql-tools.googlecode.com/svn/trunk/mysql-patches/all.v2-mysql-5.0.37.patch.gz
 http://code.google.com/p/google-perftools/downloads/list
 
-
-apt-get install libncurses5-dev
-
+apt-get install gcc g++ make patch autoconf automake libtool m4 bison libncurses5-dev
 dpkg -i libgoogle-perftools*
 
 groupadd mysql
 useradd -g mysql -d /usr/local/mysql -s /bin/false mysql
 
-gzip -d all.v3-mysql-5.0.37.patch.gz
+gzip -d all.v2-mysql-5.0.37.patch.gz
 tar zxvf mysql-5.0.37.tar.gz
 cd mysql-5.0.37
-patch --strip=1 --fuzz=1 < ../all.v3-mysql-5.0.37.patch
+patch --strip=1 --fuzz=1 < ../all.v2-mysql-5.0.37.patch
 ./configure \
 --prefix=/usr/local/mysql \
 --sysconfdir=/usr/local/mysql/etc \
+--enable-thread-safe-client \
 --with-mysqld-user=mysql \
 --with-charset=gbk \
 --with-extra-charsets=gb2312,gbk,latin1,utf8 \
+--without-debug \
 --with-mysqld-ldflags="-all-static -ltcmalloc" \
---enable-thread-safe-client
+--with-client-ldflags=-all-static \
+--with-big-tables
 
 make
 make install
+
 cd ..
 mkdir /usr/local/mysql/etc
 cp -f /usr/local/mysql/share/mysql/my-huge.cnf /usr/local/mysql/etc/my.cnf
-chown -R mysql:mysql /usr/local/mysql
+
+vi /usr/local/mysql/etc/my.cnf
+[client]
+port            = 3306
+socket          = /var/run/mysqld/mysql.sock
+[mysqld]
+port            = 3306
+datadir         = /data
+pid-file        = /var/run/mysqld/mysqld.pid
+socket          = /var/run/mysqld/mysql.sock
+log-error       = /var/log/mysql/err.log
+skip-innodb
+skip-bdb
+skip-locking
+key_buffer = 768M
+max_allowed_packet = 1M
+table_cache = 512
+sort_buffer_size = 2M
+read_buffer_size = 2M
+read_rnd_buffer_size = 8M
+myisam_sort_buffer_size = 512M
+thread_cache_size = 8
+query_cache_size = 512M
+max_connections = 1024
+wait_timeout = 3600
+interactive_timeout = 3600
+long_query_time = 1
+log_slow_queries = /var/log/mysql/slow_queries.log
+ft_min_word_len = 2
+skip-name-resolve
+thread_concurrency = 8
+
+log-bin=mysql-bin
+server-id       = 1
+master-host     = 192.168.6.202
+master-port     = 3306
+master-user     = slave
+master-password = slave
+master-connect-retry = 1
+log-slave-updates
+slave-skip-errors = all
+
+auto_increment_increment = 2
+auto_increment_offset = 1
+
+
+mkdir /var/run/mysqld
+chown mysql /var/run/mysqld
+mkdir /var/log/mysql
+chown mysql:adm /var/log/mysql
+
+/usr/local/mysql/bin/mysql_install_db
+chown -R mysql:mysql /usr/local/mysql/var
+
+/usr/local/mysql/share/mysql/mysql.server start
+
+##########
+MySQL 5.0.37 mysql.server error:
+Starting MySQL/usr/local/mysql/share/mysql/mysql.server: line 151: kill: (14560) - No such process
+
+use MySQL 5.0.33 mysql.server is fine.
+##########
+
+/usr/local/mysql/bin/mysql
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root';
+mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave'@'%' IDENTIFIED BY 'slave';
+
+SHOW MASTER STATUS;
+SHOW SLAVE STATUS\G;
+
+
+echo "export PATH=$PATH:/usr/local/mysql/bin" >> ~/.bashrc

@@ -1,0 +1,12 @@
+http://www.phpmyadmin.net/home_page/index.php
+
+tar jxvf phpMyAdmin-3.1.5-all-languages.tar.bz2
+mv phpMyAdmin-3.1.5-all-languages /home/www/wwwroot/phpmyadmin
+
+cd /home/www/wwwroot/phpmyadmin
+cp libraries/config.default.php config.inc.php
+vi config.inc.php
+$cfg['blowfish_secret'] = 'ba17c1ec07d65003';
+$cfg['Servers'][$i]['host'] = '192.168.6.200';
+
+open url: http://192.168.0.240/phpmyadmin/index.php
