@@ -14,5 +14,4 @@ cp sphinx.conf.dist sphinx.conf
 
 /usr/local/sphinx/bin/search test
 
-/usr/local/sphinx/bin/searchd  --config /usr/local/sphinx/etc/sphinx.conf
-
+/usr/local/sphinx/bin/searchd --config /usr/local/sphinx/etc/sphinx.conf
