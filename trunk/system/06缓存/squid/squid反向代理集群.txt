@@ -58,10 +58,11 @@ cache_peer 192.168.0.153 sibling 80 3130 name=cache3
 
 acl Manager proto cache_object
 acl Purge method PURGE
-acl Localhost src 127.0.0.1
+acl Internal src 192.168.0.0/24
 http_access allow Manager Localhost
 http_access deny Manager
-http_access allow Localhost Purge
+http_access allow Purge Localhost
+http_access allow Purge Internal
 http_access deny Purge
 
 acl Safe_ports port 80 3130
@@ -159,12 +160,19 @@ make
 mv purge /usr/local/squid/bin/
 
 清除缓存示例：
-清除 URL 以 ".mp3" 结尾的缓存文件（例如 http://www.s135.com/abc.mp3、http://www.s135.com/01/a.mp3）
+清除 URL 以 ".mp3" 结尾的缓存文件（例如 http://www.jc001.cn/abc.mp3、http://www.jc001.cn/01/a.mp3）
 引用
 purge -p localhost:3128 -P 1 -se '\.mp3$'
 
-清除URL中包含s135.com的所有缓存：
+清除URL中包含的所有缓存：
 purge -p localhost:3128 -P 1 -se 'http://shop.jc001.cn/1167000/'
 
 将程序推到后台去执行，同时将输出内容记录到 purge.log 文件：
-purge -p localhost:3128 -P 1 -se 's135.com' > purge.log 2>&1 &
+purge -p localhost:3128 -P 1 -se 'jc001.cn' > purge.log 2>&1 &
+
+
+调试工具：
+http://getfirebug.com/
+
+X-Cache: 本机的 HIT 和 MISS
+X-Cache-Lookup: 是向父，还有 sibling 模式的查询，比如 ICP
