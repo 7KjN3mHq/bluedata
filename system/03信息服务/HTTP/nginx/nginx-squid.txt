@@ -214,7 +214,7 @@ http {
     gzip  on;
     gzip_min_length  1000;
     gzip_buffers  4 8k;
-    gzip_types  text/* application/javascript application/x-javascript;
+    gzip_types  text/css text/xml application/x-javascript text/plain;
     gzip_comp_level  9;
     gzip_proxied  any;
     gzip_vary  on;
