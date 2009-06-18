@@ -84,6 +84,9 @@ drbdsetup /dev/drbd0 primary -o
 mkfs -t ext3 /dev/drbd0
 
 
+mount -t ext3 -o noatime,nodiratime /dev/drbd0 /home
+
+
 LVM
 vi /etc/drbd.conf
 resource r0 {

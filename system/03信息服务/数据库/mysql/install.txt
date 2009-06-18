@@ -1,14 +1,18 @@
 groupadd mysql
 useradd -g mysql -d /usr/local/mysql -s /sbin/nologin mysql
 
-tar zxvf mysql-5.0.33.tar.gz
-cd mysql-5.0.33
+tar zxvf mysql-5.0.37.tar.gz
+cd mysql-5.0.37
 ./configure \
 --prefix=/usr/local/mysql \
 --sysconfdir=/usr/local/mysql/etc \
+--enable-thread-safe-client \
 --with-mysqld-user=mysql \
---with-extra-charsets=all \
---with-charset=gbk
+--with-charset=gbk \
+--with-extra-charsets=gb2312,gbk,latin1,utf8 \
+--without-debug \
+--with-big-tables
+
 make
 make install
 cd ..
