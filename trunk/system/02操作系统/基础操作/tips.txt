@@ -1,3 +1,6 @@
+fdisk 调整分区表重启问题
+执行 partprobe 可以不重启
+
 遇到 Operation not permitted 的文件
 lsattr
 ----i-------------- inetd.conf
