@@ -159,9 +159,9 @@ Nginx 部分
 下载： http://nginx.net/
 下载 ngx_http_upstream_hash_module ： http://wiki.codemongers.com/NginxHttpUpstreamRequestHashModule
 yum -y install pcre-devel zlib-devel
-tar zxvf nginx-0.7.17.tar.gz
+tar zxvf nginx-0.7.19.tar.gz
 tar zxvf nginx_upstream_hash-0.3.tar.gz
-cd nginx-0.7.17
+cd nginx-0.7.19
 patch -p0 < ../nginx_upstream_hash-0.3/nginx.patch
 ./configure \
 --user=nobody \
