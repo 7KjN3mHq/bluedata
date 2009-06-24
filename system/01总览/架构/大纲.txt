@@ -150,7 +150,7 @@ Heartbeat 最核心的两个部分：心跳监测部分和资源接管部分。
 心跳监测可以通过网络或串口进行，而且支持冗余链路，节点之间相互发送报文来告诉对方自己当前的状态。如果一个节点在指定的时间内未收到对方发送的报文，那么就认为对方失效。
 这时需要启动资源接管模块来接管运行在对方主机上的资源或服务。
 
-直接安装 heartbeat 包即可， 还可安装 ldirectord (for Debian) 监测和管理 LVS 集群中的真实服务器（ CentOS 下是 heartbeat-ldirectord ）。
+直接安装 heartbeat 包即可，还可安装 ldirectord (for Debian) 监测和管理 LVS 集群中的真实服务器（ CentOS 下是 heartbeat-ldirectord ）。
 
 使用网络监测要注意同一网络中存在多个 HA 应用时的广播 (bcast) 造成的干扰，这种情况下应该使用单播 (ucast) 。
 
@@ -191,7 +191,7 @@ MySQL 一主多从模式的要点
 可以用 MySQL-Proxy 实现读写分离，而多个 slave 可以由 LVS 调度。
 
 MySQL-Proxy 同样存在稳定性问题，多了一层结构当然也就多了一个故障点。
-修改 数据库连接类 实现读写分离是较为常见的做法。
+修改应用程序的 数据库连接类 实现读写分离是较为常见的做法。
 
 不能在 slave 上做实时查询，需要实时查询的应用只能走 master ，这需要在应用层做区分。
 
@@ -232,9 +232,9 @@ MySQL 级联复制
 多个 IDC 之间由 master-slave 模式同步数据。
 可以用多线机房的 MySQL Server 做 master ，而用电信/网通机房的 MySQL Server 做 slave 。
 
-在同一 IDC ，从最顶端的 master 同步的 slave 就成为了其它 MySQL Server 的 master 。
+在同一 IDC ，直接从顶级 master 同步的 slave 就成为了其它 MySQL Server 的 master 。
 
-确保 master 之间的 binlog 一致，需要用到 google-mysql-tools 中的 MirroredBinlogs 。
+确保次级 master 的 binlog 一致，需要用到 google-mysql-tools 中的 MirroredBinlogs 。
 MirroredBinlogs 可以在 slave 保存一份和 master 完全相同的 binlog 。
 
 当一个 master 对应的 slave 过多，出现性能问题时，也可以用级联的方式进一步扩展。
@@ -261,7 +261,7 @@ Linux 下 SAN 的共享存储，较为常见的方案是 RHCS + GFS + CLVM 。
 
 3. 用户文件：数量巨大，读写较多，读取分散。
 
-4. session 文件：共享操作，小文件，数量多，不需要永久存储。
+4. 零时文件：小文件，数量多，不需要永久存储。如 session 文件。
 
 
 程序文件存储的解决方案
@@ -347,7 +347,7 @@ FastDFS 架构图
 
 
 FastDFS 的要点
-1. 每个组中存储节点的数据都是相同的，这可以实现备份和负载均衡 (LVS) 。
+1. 每个组中存储节点的数据都是相同的，这可以实现备份和负载均衡。
 
 2. 通过增加新的存储组，可以方便的实现在线扩容。
 
@@ -362,8 +362,8 @@ Moose File System (MFS)
 MFS 的特点：
 1. 通过 FUSE 实现的通用文件系统，简化了对文件的操作，应用层基本不用改动。
 2. 添加新的服务器或者硬盘就可以动态的扩展容量。
-3. 可以在不同的服务器上保存多份拷贝，并且可以指定副本的数量。
-4. 可以实现“回收站”的功能，指定被删除文件的保留时间。
+3. 可以在不同的服务器上保存多份拷贝提高可用性。
+4. 可以指定被删除文件的保留时间实现“回收站”的功能。
 
 MFS 的结构：
 Managing server (master)
@@ -390,4 +390,8 @@ Cacti 记录集群运作中的各种数据，并绘制出图形，为管理者提供有效的数据支持。
 管理：
 如果节点较少，可以基于 ssh + key 编写脚本进行管理。
 csync2 也可实现配置文件更改时触发指定脚本的执行。
-FUNC (Fedora Unified Network Controller) 实现对大量节点的管理。
+较多的节点可以考虑使用 pssh (parallel ssh) 进行管理。
+FUNC (Fedora Unified Network Controller) 实现对大量节点的复杂管理。
+
+
+完
