@@ -1,0 +1,5 @@
+backup:
+# dd if=/dev/sda1 | gzip > backup-sda1.gz
+
+restore:
+# gzip -dc backup-sda1.gz | dd of=/dev/sda1
