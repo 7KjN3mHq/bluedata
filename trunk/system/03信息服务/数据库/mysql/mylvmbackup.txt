@@ -1,0 +1,61 @@
+Requires the following perl modules:
+ 
+Module              Available At
+----------------    --------------------------------------------------------
+DBI                 http://search.cpan.org/~timb/DBI/
+DBD::mysql          http://search.cpan.org/dist/DBD-mysql/
+Config::IniFiles    http://search.cpan.org/~gcarls/Config-IniFiles/
+Sys::Syslog         http://search.cpan.org/~saper/Sys-Syslog/
+TimeDate            http://search.cpan.org/~gbarr/TimeDate/
+
+perl -e 'use DBI'
+perl -e 'use DBD::mysql'
+perl -e 'Config::IniFiles'
+perl -e 'Sys::Syslog'
+perl -e 'Date::Format'
+
+没有输出就是模块已经安装了，有错误就是相应的模块没有安装。
+可以在上面给出的地址下载相应模块的最新版本。
+
+安装所需的 Perl 模块：
+yum 仓库里有 perl-DBI ，所以直接 yum 安装，
+yum -y install perl-DBI
+
+因为是编译安装的 MySQL ，所以需要把 lib 的路径加入 ld.so.conf ，
+vi /etc/ld.so.conf
+/usr/local/mysql/lib/mysql
+ldconfig
+
+虽然 yum 仓库里有 perl-DBD-MySQL ，但其依赖 mysql ，所以还是编译安装，
+tar zxvf DBD-mysql-x.xxxx.tar.gz
+cd DBD-mysql*
+perl Makefile.PL --mysql_config=/usr/local/mysql/bin/mysql_config
+make
+make install
+
+安装 mylvmbackup :
+wget http://www.lenzg.net/mylvmbackup/mylvmbackup-current.tar.gz
+tar zxvf mylvmbackup-current.tar.gz
+cd mylvmbackup-0.12
+make install
+
+vi /etc/mylvmbackup.conf
+[lvm]
+vgname=vg_data    volumn group的名字
+lvname=lv_data    逻辑卷的名字
+lvsize=20G        备份时创建的snapshot的大小
+ 
+[fs]
+mountdir=/opt/snap_mnt   snapshot的mount位置
+backupdir=/backup        备份打包后的存放位置
+relpath=mysqldata        如果只是想备份逻辑卷下的某个目录的话，则要指出来
+ 
+[tools]    相关执行程序的位置，如果不正确会报错
+lvcreate=/usr/sbin/lvcreate
+lvremove=/usr/sbin/lvremove
+mount=/bin/mount
+tar=/bin/tar
+umount=/bin/umount
+ 
+[misc]
+prefix=backup    备份打包文件的命名前缀
