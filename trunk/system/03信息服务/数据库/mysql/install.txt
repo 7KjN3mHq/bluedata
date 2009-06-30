@@ -96,6 +96,7 @@ service mysqld start
 /usr/local/mysql/bin/mysqladmin -u root password 'root'
 
 
+ldconfig
 vi /usr/local/mysql/bin/mysqld_safe
 # executing mysqld_safe
 export LD_PRELOAD=/usr/lib/libtcmalloc.so
