@@ -1,0 +1,70 @@
+#!/bin/sh
+
+unset LANG
+LC_ALL=C
+export LC_ALL
+PATH=$PATH:/usr/local/mysql/bin
+export PATH
+
+user=root
+password=PASSWORD
+master_host="192.168.0.250"
+port=3306
+master_port=3306
+datadir="/data"
+backup_lv_name="/dev/vg/data"
+backup_path="/backup"
+backup_dir="mysql"
+backup_binlog_dir="binlog"
+backup_binlog_name="binlog_`date +%Y%m%d --date='1 days ago'`"
+backup_binlog_expire="binlog_`date +%Y%m%d --date='7 days ago'`"
+remote_backup_host="192.168.0.200"
+remote_backup_path="/data/databases"
+remote_backup_name="`date +%w --date='1 days ago'`.tar.bz2"
+remote_backup_binlog_name="binlog_`date +%w --date='1 days ago'`.tar.bz2"
+
+## 对数据库进行读锁定
+mysql -u$user -p$password -P$port -e 'flush tables with read lock'
+
+## 创建 MySQL 数据 逻辑卷 的快照
+modprobe dm-snapshot
+lvcreate -l 742 -s -n backup_mysql $backup_lv_name
+
+## 解锁
+mysql -u$user -p$password -P$port -e 'unlock tables'
+
+
+## 获得需要备份的 binlog 名
+backup_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
+
+## 刷新 master 的 binlog
+mysql -u$user -p$password -h$master_host -P$master_port -e 'flush logs'
+
+## 备份 binlog
+scp $master_host:$datadir/$backup_binlog $backup_path/$backup_binlog_dir/$backup_binlog_name
+
+
+## 备份数据库文件
+mount /dev/vg/backup_mysql /mnt
+rsync -a --delete /mnt/ $backup_path/$backup_dir/
+
+## 删除快照
+umount /mnt
+lvremove -f /dev/vg/backup_mysql
+
+
+## 打包备份 binlog 并传送到远程备份主机
+cd $backup_path/$backup_binlog_dir
+tar -cjpf - $backup_binlog_name | ssh $remote_backup_host "cat > $remote_backup_path/$remote_backup_binlog_name"
+
+## 清除已备份的 binlog
+curr_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
+mysql -u$user -p$password -h$master_host -P$master_port -e 'purge master logs to "'$curr_binlog'"'
+
+## 删除过期的 binlog
+rm -f $backup_binlog_expire
+
+
+## 打包备份目录并传送到远程备份主机
+cd $backup_path
+tar -cjpf - $backup_dir | ssh $remote_backup_host "cat > $remote_backup_path/$remote_backup_name"

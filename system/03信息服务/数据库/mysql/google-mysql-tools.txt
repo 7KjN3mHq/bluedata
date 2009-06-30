@@ -19,8 +19,6 @@ cd google-perftools-1.3
 ./configure --prefix=/usr
 make
 make install
-
-patch --strip=1 --fuzz=1 < ../mysql-5.0.37-patches
 ##########
 
 apt-get install gcc g++ make patch autoconf automake libtool m4 bison libncurses5-dev
