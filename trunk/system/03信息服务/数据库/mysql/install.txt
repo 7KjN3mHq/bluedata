@@ -1,8 +1,32 @@
+http://downloads.mysql.com/archives/mysql-5.0/mysql-5.0.37.tar.gz
+http://google-mysql-tools.googlecode.com/svn/trunk/mysql-patches/all.v2-mysql-5.0.37.patch.gz
+http://code.google.com/p/google-perftools/downloads/list
+
+##########
+64bit:
+http://ftp.twaren.net/Unix/NonGNU/libunwind/
+wget http://ftp.twaren.net/Unix/NonGNU/libunwind/libunwind-0.99.tar.gz
+wget http://google-perftools.googlecode.com/files/google-perftools-1.3.tar.gz
+
+tar zxvf libunwind-0.99.tar.gz
+cd libunwind-0.99
+CFLAGS=-fPIC ./configure --prefix=/usr
+CFLAGS=-fPIC make
+CFLAGS=-fPIC make install
+
+tar zxvf google-perftools-1.3.tar.gz
+cd google-perftools-1.3
+./configure --prefix=/usr
+make
+make install
+##########
+
 groupadd mysql
 useradd -g mysql -d /usr/local/mysql -s /sbin/nologin mysql
 
 tar zxvf mysql-5.0.37.tar.gz
 cd mysql-5.0.37
+patch --strip=1 --fuzz=1 < ../mysql-5.0.37-patches
 ./configure \
 --prefix=/usr/local/mysql \
 --sysconfdir=/usr/local/mysql/etc \
@@ -19,7 +43,6 @@ cd ..
 mkdir /usr/local/mysql/etc
 cp -f /usr/local/mysql/share/mysql/my-huge.cnf /usr/local/mysql/etc/my.cnf
 chown -R mysql:mysql /usr/local/mysql
-
 
 ## configuration
 mkdir /var/run/mysqld
@@ -71,3 +94,11 @@ chmod -R 1770 /data
 service mysqld start
 
 /usr/local/mysql/bin/mysqladmin -u root password 'root'
+
+
+vi /usr/local/mysql/bin/mysqld_safe
+# executing mysqld_safe
+export LD_PRELOAD=/usr/lib/libtcmalloc.so
+
+lsof -n | grep tcmalloc
+mysqld    18834  mysql  mem       REG              253,0   2023049     183185 /usr/lib/libtcmalloc.so.0.0.0
