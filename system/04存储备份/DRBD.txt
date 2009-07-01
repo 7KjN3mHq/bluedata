@@ -175,8 +175,8 @@ app1 \
 IPaddr::192.168.0.250/24/eth1 \
 drbddisk::r0 \
 LVM::vg \
-Filesystem::/dev/vg/data::/data::ext3 \
-Filesystem::/dev/vg/home::/home::ext3
+Filesystem::/dev/vg/data::/data::ext3::rw,noatime \
+Filesystem::/dev/vg/home::/home::ext3::rw,noatime
 
 
        wfc-timeout time

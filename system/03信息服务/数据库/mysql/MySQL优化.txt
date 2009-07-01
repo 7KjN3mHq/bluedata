@@ -1,0 +1,27 @@
+设置文件句柄
+文件句柄的设置表示 Linux 系统上可以打开的文件数。使用以下命令来确定整个系统中文件句柄的最大数量：
+cat /proc/sys/fs/file-max
+203475
+
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
+
+可以使用以下命令查看文件句柄当前的使用情况：
+cat /proc/sys/fs/file-nr
+256    0       65536
+
+增大 file-max 的值，还需要设置 ulimit
+ulimit -a | grep "open files"
+open files                      (-n) 1024
+
+这是 Shell 对一个进程打开的文件句柄数量的限制。
+要增大这个值，可以修改 /etc/security/limits.conf
+echo -ne "
+mysql soft nofile 65536
+mysql hard nofile 65536
+" >> /etc/security/limits.conf
+
+
+table_cache = 1024
