@@ -1,53 +1,72 @@
+vi /etc/lvm/lvm.conf
+# filter = [ "a/.*/" ]
+filter = [ "r|/dev/cdrom|", "a|/dev/cciss/c0d0p7|" ]
+
+创建 pv/vg/lv
+pvcreate /dev/cciss/c0d0p7
+vgcreate vg /dev/cciss/c0d0p7
+lvcreate -L 72G -n data vg
+lvcreate -L 72G -n home vg
+
 yum -y install kmod-drbd82-smp drbd82
 
 /usr/share/doc/drbd82-8.2.6/drbd.conf
 
 vi /etc/drbd.conf
 resource data {
-    protocol C;
-    net {
-        after-sb-0pri discard-older-primary;
-        after-sb-1pri call-pri-lost-after-sb;
-        after-sb-2pri call-pri-lost-after-sb;
-    }
-    on centos4-1 {
-        device    /dev/drbd0;
-        disk      /dev/hda7;
-        address   192.168.0.171:8000;
-        meta-disk internal;
-    }
-    on centos4-2 {
-        device    /dev/drbd0;
-        disk      /dev/hda7;
-        address   192.168.0.172:8000;
-        meta-disk internal;
-    }
+  protocol C;
+  startup {
+    wfc-timeout 120;
+    degr-wfc-timeout 120;
+  }
+  on app1 {
+      device    /dev/drbd0;
+      disk      /dev/vg/data;
+      address   192.168.0.201:7788;
+      meta-disk internal;
+  }
+  on app2 {
+      device    /dev/drbd0;
+      disk      /dev/vg/data;
+      address   192.168.0.202:7788;
+      meta-disk internal;
+  }
+  net {
+      after-sb-0pri discard-older-primary;
+      after-sb-1pri call-pri-lost-after-sb;
+      after-sb-2pri call-pri-lost-after-sb;
+  }
 }
 resource home {
-    protocol C;
-    net {
-        after-sb-0pri discard-older-primary;
-        after-sb-1pri call-pri-lost-after-sb;
-        after-sb-2pri call-pri-lost-after-sb;
-    }
-    on centos4-1 {
-        device    /dev/drbd1;
-        disk      /dev/hda8;
-        address   192.168.0.171:8001;
-        meta-disk internal;
-   }
-   on centos4-2 {
-        device    /dev/drbd1;
-        disk      /dev/hda8;
-        address   192.168.0.172:8001;
-        meta-disk internal;
-   }
+  protocol C;
+  startup {
+    wfc-timeout 120;
+    degr-wfc-timeout 120;
+  }
+  on app1 {
+      device    /dev/drbd1;
+      disk      /dev/vg/home;
+      address   192.168.0.201:7789;
+      meta-disk internal;
+  }
+  on app2 {
+      device    /dev/drbd1;
+      disk      /dev/vg/home;
+      address   192.168.0.202:7789;
+      meta-disk internal;
+  }
+  net {
+      after-sb-0pri discard-older-primary;
+      after-sb-1pri call-pri-lost-after-sb;
+      after-sb-2pri call-pri-lost-after-sb;
+  }
 }
 
 两台机器都执行：
 drbdadm create-md data
 drbdadm create-md home
 
+####################
 可能会出现这样的错误：
 v08 Magic number not found
 md_offset 3010412544
@@ -72,19 +91,18 @@ drbdadm aborting
 解决办法：
 dd if=/dev/zero bs=1M count=1 of=/dev/hda7; sync
 drbdadm create-md data
+####################
+
+两台机器都启动：
+/etc/init.d/drbd start
 
 在其中一个节点上：
 drbdadm adjust data
 drbdsetup /dev/drbd0 primary -o
 
-然后都开启服务：
-/etc/init.d/drbd start
-
-创建文件系统后就可以挂载使用了
+创建文件系统后就可以挂载使用了：
 mkfs -t ext3 /dev/drbd0
-
-
-mount -t ext3 -o noatime,nodiratime /dev/drbd0 /home
+mount -t ext3 -o rw,noatime,nodiratime /dev/drbd0 /data
 
 
 LVM

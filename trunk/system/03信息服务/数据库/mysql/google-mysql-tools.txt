@@ -89,22 +89,11 @@ master-host     = 192.168.6.202
 master-port     = 3306
 master-user     = slave
 master-password = slave
-master-connect-retry = 1
+relay-log       = /var/log/mysqld/relay-bin
 log-slave-updates
-slave-skip-errors = all
 
 auto_increment_increment = 2
 auto_increment_offset = 1
-
-
-master:
-rpl_semi_sync_enabled=1
-rpl_semi_sync_timeout=300
-
-slave:
-read-only=1
-rpl_semi_sync_slave_enabled=1
-rpl_mirror_binlog_enabled=1
 
 
 mkdir /var/run/mysqld
@@ -133,6 +122,25 @@ SHOW SLAVE STATUS\G;
 
 
 echo "export PATH=$PATH:/usr/local/mysql/bin" >> ~/.bashrc
+
+
+SemiSyncReplication 可以确保一个 slave 收到了 master 的 replication events
+MirroredBinlogs 可以在 slave 保存一份和 master 相同的 binlog
+
+master:
+rpl_semi_sync_enabled = 1
+rpl_semi_sync_timeout = 300
+
+slave-master:
+做 slave 时
+rpl_semi_sync_slave_enabled = 1
+log-bin-index = mysql-bin.index
+rpl_mirror_binlog_enabled = 1
+
+做 master 时
+log-bin = mysql-bin
+
+其它 slave 可以使用标准版本的 MySQL
 
 
 Tips:
