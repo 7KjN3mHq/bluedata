@@ -15,7 +15,7 @@ mysql> show master status;
 mysql-bin.000018 | 235667001
 
 ####################
-## 记录 master binlog 名称及 POS
+## 记录当前 master binlog 名称及 POS
 mysql -e 'show slave status\G'
 ####################
 
@@ -37,5 +37,6 @@ lvremove -f /dev/vg/mysql_snap
 
 ## 在 slave 上启动数据库及复制进程
 /etc/init.d/mysqld start
-mysql -e 'change master to master_host="app1", master_user="slave", master_password="slave", master_log_file="mysql-bin.000335", master_log_pos=401934686'
+mysql -e 'slave stop'
+mysql -e 'change master to master_host="192.168.0.201", master_user="slave", master_password="slave", master_log_file="mysql-bin.000018", master_log_pos=235667001'
 mysql -e 'slave start'

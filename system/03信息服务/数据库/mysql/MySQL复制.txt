@@ -10,12 +10,12 @@ server-id      = 250
 
 ## slave
 server-id        = 12
+read-only        = 1
 master-host      = 192.168.0.250
 master-port      = 3306
 master-user      = slave
 master-password  = slave
 relay-log        = /var/log/mysqld/relay-bin
-read-only        = 1
 #replicate-do-db  = test
 #binlog-ignore-db = mysql information_schema
 

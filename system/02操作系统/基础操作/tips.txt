@@ -1,3 +1,6 @@
+查看占用文件系统的进程
+lsof -P | grep home
+
 fdisk 调整分区表重启问题
 执行 partprobe 可以不重启
 

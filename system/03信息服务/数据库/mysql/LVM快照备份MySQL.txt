@@ -7,7 +7,7 @@ PATH=$PATH:/usr/local/mysql/bin
 export PATH
 
 user=root
-password=xnjcwmysql
+password=PASSWORD
 master_host="192.168.0.250"
 port=3306
 master_port=3306
@@ -43,6 +43,10 @@ mysql -u$user -p$password -h$master_host -P$master_port -e 'flush logs'
 ## 备份 binlog
 scp $master_host:$datadir/$backup_binlog $backup_path/$backup_binlog_dir/$backup_binlog_name
 
+## 清除已备份的 binlog
+curr_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
+mysql -u$user -p$password -h$master_host -P$master_port -e 'purge master logs to "'$curr_binlog'"'
+
 
 ## 备份数据库文件
 mount /dev/vg/mysql_snap /mnt/mysql_snap
@@ -56,10 +60,6 @@ lvremove -f /dev/vg/mysql_snap
 ## 打包备份 binlog 并传送到远程备份主机
 cd $backup_path/$backup_binlog_dir
 tar -cjpf - $backup_binlog_name | ssh $remote_backup_host "cat > $remote_backup_path/$remote_backup_binlog_name"
-
-## 清除已备份的 binlog
-curr_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
-mysql -u$user -p$password -h$master_host -P$master_port -e 'purge master logs to "'$curr_binlog'"'
 
 ## 删除过期的 binlog
 rm -f $backup_binlog_expire
