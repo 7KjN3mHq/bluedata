@@ -1,0 +1,41 @@
+## 对 master 进行读锁定
+mysql> flush tables with read lock;
+
+####################
+## 停止 slave 复制进程
+mysql -e 'slave stop'
+####################
+
+## 在新终端中创建 MySQL 数据 逻辑卷 的快照
+modprobe dm-snapshot
+lvcreate -l 486 -s -n mysql_snap /dev/vg/data
+
+## 记录当前 binlog 名称及 POS
+mysql> show master status;
+mysql-bin.000018 | 235667001
+
+####################
+## 记录 master binlog 名称及 POS
+mysql -e 'show slave status\G'
+####################
+
+## 解锁
+mysql> unlock tables;
+
+####################
+## 启动 slave 复制进程
+mysql -e 'slave start'
+####################
+
+## 同步数据库文件
+mount /dev/vg/mysql_snap /mnt
+rsync -ae ssh --delete --exclude "mysql-bin.*" /mnt/ app2:/data/ &
+
+## 删除快照
+umount /mnt
+lvremove -f /dev/vg/mysql_snap
+
+## 在 slave 上启动数据库及复制进程
+/etc/init.d/mysqld start
+mysql -e 'change master to master_host="app1", master_user="slave", master_password="slave", master_log_file="mysql-bin.000335", master_log_pos=401934686'
+mysql -e 'slave start'
