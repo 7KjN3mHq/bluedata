@@ -1,3 +1,6 @@
+增删 IP 地址
+ip addr del 192.168.0.240/24 dev eth0
+
 共享上网
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -s 192.168.0.0/24 -o ppp0 -j MASQUERADE
