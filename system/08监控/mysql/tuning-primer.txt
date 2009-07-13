@@ -1,0 +1,23 @@
+tuning-primer.sh 支持 my.cnf
+
+wget http://www.day32.com/MySQL/tuning-primer.sh
+chmod +x tuning-primer.sh
+./tuning-primer.sh
+
+
+根据建议，做了如下调整：
+thread_cache_size = 64
+
+max_connections = 128
+
+key_buffer_size = 2048M
+
+query_cache_limit = 2M
+
+log-queries-not-using-indexes
+join_buffer_size = 2M
+
+table_cache = 8192
+
+low_priority_updates = 1
+concurrent_insert = 2
