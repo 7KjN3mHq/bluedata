@@ -10,9 +10,9 @@ thread_cache_size = 64
 
 max_connections = 128
 
-key_buffer_size = 2048M
+key_buffer_size = 1024M
 
-query_cache_limit = 2M
+query_cache_limit = 3M
 
 log-queries-not-using-indexes
 join_buffer_size = 2M
@@ -21,3 +21,6 @@ table_cache = 8192
 
 low_priority_updates = 1
 concurrent_insert = 2
+
+
+key_buffer_size + (read_buffer_size + sort_buffer_size + read_rnd_buffer_size + join_buffer_size)*max_connections
