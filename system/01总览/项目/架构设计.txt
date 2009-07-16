@@ -1,0 +1,22 @@
+架构设计
+
+                              (192.168.1.241)ld1(192.168.6.11)    app1(192.168.6.101)                       master1(192.168.6.201)
+client -> VIP(192.168.1.240)-|            heartbeat           |--|                   |--|VIP(192.168.1.240)-| heartbeat
+                              (192.168.1.242)ld2(192.168.6.12)    app2(192.168.6.102)                       master2(192.168.6.202)
+
+说明：
+1. 调度器 ld1 ld2 运行 lvs 调度真实的 web 服务器。
+调度器只能有一个是 active 的，因为是一个虚拟 IP(192.168.1.240) ，同时 active 会造成冲突。
+ld1 down 掉后，ld2 检测到 ld1 的心跳停止后会启用虚拟 IP 并接管调度任务。
+
+2. 真实 web 服务器其实也是 ld1 ld2 ，运行了 nginx 直接响应静态请求。
+动态的 php 请求转给了 app1 和 app2 这两部应用服务器。
+真实 web 服务器和应用服务器都是同时 active 的，一台 down 掉不会影响正常访问。
+
+3. 数据库是 master1 和 master2 服务器，接受来自 app1 和 app2 的数据库查询请求。
+之间做了 master-master （主主复制）互相同步数据。
+
+4. 存储放在了 ld1 ld2 app1 app2 这四个节点上。
+通过 csync2 + inotify 来同步数据，主节点为 ld1 ，即时同步到 ld2 app1 app2 。
+web 服务的根目录在 /home/www/wwwroot ，php 的 session 存放在了默认的 /var/lib/php5 ，
+这会造成 session 的不同步，需要使用 memcached 或者数据库来存放。

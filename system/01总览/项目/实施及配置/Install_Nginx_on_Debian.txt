@@ -1,0 +1,163 @@
+apt-get install libpcre3-dev libpcrecpp0 zlib1g-dev
+wget http://sysoev.ru/nginx/nginx-0.6.36.tar.gz
+tar zxvf nginx-0.6.36.tar.gz
+cd nginx-0.6.36
+./configure \
+--user=www-data \
+--group=www-data \
+--with-http_stub_status_module
+
+make
+make install
+
+mkdir /var/log/nginx
+vi /usr/local/nginx/conf/nginx.conf
+user  www-data www-data;
+
+worker_processes  1;
+
+worker_rlimit_nofile  65536;
+
+pid  /var/run/nginx.pid;
+
+error_log  /var/log/nginx/error.log;
+
+events {
+    use  epoll;
+    worker_connections  65536;
+}
+
+http {
+    include  mime.types;
+    default_type  text/html;
+    charset gbk;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] $request '
+                      '"$status" $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$gzip_ratio"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    keepalive_timeout  30;
+
+    output_buffers  4 32k;
+    postpone_output  1460;
+
+    client_header_buffer_size  128k;
+    large_client_header_buffers  4 256k;
+
+    client_header_timeout  1m;
+    client_body_timeout    1m;
+    send_timeout           1m;
+    sendfile  on;
+    tcp_nopush  on;
+    tcp_nodelay  on;
+
+    server {
+        listen       80;
+        server_name  _;
+        root  /home/www/wwwroot;
+        location ~ .*\.php?$ {
+            fastcgi_pass   192.168.6.101:9000;
+            include  fastcgi_params;
+        }
+        location ~* ^.+.(jpg|gif|png)$ {
+            expires  30d;
+        }
+        location /server-status {
+            stub_status  on;
+        }
+    }
+}
+
+vi /usr/local/nginx/conf/fastcgi_params
+fastcgi_param  QUERY_STRING       $query_string;
+fastcgi_param  REQUEST_METHOD     $request_method;
+fastcgi_param  CONTENT_TYPE       $content_type;
+fastcgi_param  CONTENT_LENGTH     $content_length;
+
+fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+fastcgi_param  SCRIPT_NAME        $fastcgi_script_name;
+fastcgi_param  REQUEST_URI        $request_uri;
+fastcgi_param  DOCUMENT_URI       $document_uri;
+fastcgi_param  DOCUMENT_ROOT      $document_root;
+fastcgi_param  SERVER_PROTOCOL    $server_protocol;
+
+fastcgi_param  GATEWAY_INTERFACE  CGI/1.1;
+fastcgi_param  SERVER_SOFTWARE    nginx/$nginx_version;
+
+fastcgi_param  REMOTE_ADDR        $remote_addr;
+fastcgi_param  REMOTE_PORT        $remote_port;
+fastcgi_param  SERVER_ADDR        $server_addr;
+fastcgi_param  SERVER_PORT        $server_port;
+fastcgi_param  SERVER_NAME        $server_name;
+
+fastcgi_param  REDIRECT_STATUS    200;
+
+
+vi /etc/init.d/nginx
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          nginx
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the nginx web server
+# Description:       starts nginx using start-stop-daemon
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/local/nginx/sbin/nginx
+NAME=nginx
+DESC=nginx
+
+test -x $DAEMON || exit 0
+
+# Include nginx defaults if available
+if [ -f /etc/default/nginx ] ; then
+        . /etc/default/nginx
+fi
+
+set -e
+
+case "$1" in
+  start)
+        echo -n "Starting $DESC: "
+        start-stop-daemon --start --quiet --pidfile /var/run/$NAME.pid \
+                --exec $DAEMON -- $DAEMON_OPTS || true
+        echo "$NAME."
+        ;;
+  stop)
+        echo -n "Stopping $DESC: "
+        start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid \
+                --exec $DAEMON || true
+        echo "$NAME."
+        ;;
+  restart|force-reload)
+        echo -n "Restarting $DESC: "
+        start-stop-daemon --stop --quiet --pidfile \
+                /var/run/$NAME.pid --exec $DAEMON || true
+        sleep 1
+        start-stop-daemon --start --quiet --pidfile \
+                /var/run/$NAME.pid --exec $DAEMON -- $DAEMON_OPTS || true
+        echo "$NAME."
+        ;;
+  reload)
+      echo -n "Reloading $DESC configuration: "
+      start-stop-daemon --stop --signal HUP --quiet --pidfile /var/run/$NAME.pid \
+          --exec $DAEMON || true
+      echo "$NAME."
+      ;;
+  *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
+
+
+/etc/init.d/nginx start

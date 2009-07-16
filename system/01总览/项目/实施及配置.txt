@@ -1,0 +1,17 @@
+1. 物理机安装 Debian 操作系统  （操作系统安装.txt）
+
+2. Debian Lenny 安装 VMware-server-1.0.9  （vmware-server的安装.txt）
+
+3. 虚拟机安装 Debian 操作系统  （操作系统安装.txt）
+
+4. Nginx 的安装配置  (Install_Nginx_on_Debian.txt)
+
+5. PHP 的安装配置  (Install_PHP_CGI_on_Debian.txt)
+
+6. MySQL 的安装及复制的配置  (Install_MySQL.txt)
+
+7. Memcached 的安装配置  (Install_Memcached.txt)
+
+8. LVS + Heartbeat 的安装配置  (debian-heartbeat-ipvsadm-ldirectord .txt)
+
+9. csync2 + inotify 的安装配置  (debian-csync2-inotify.txt)
