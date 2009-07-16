@@ -1,0 +1,124 @@
+apt-get install heartbeat ipvsadm ldirectord
+The following NEW packages will be installed:
+  ca-certificates file gawk heartbeat ipvsadm ldirectord libauthen-radius-perl libcompress-raw-zlib-perl libcompress-zlib-perl
+  libconvert-asn1-perl libcrypt-ssleay-perl libcurl3 libdb4.5 libdbi-perl libdigest-hmac-perl libdigest-sha1-perl libfont-afm-perl
+  libglib2.0-0 libglib2.0-data libhtml-format-perl libhtml-parser-perl libhtml-tagset-perl libhtml-tree-perl libidn11 libio-compress-base-perl
+  libio-compress-zlib-perl libio-socket-ssl-perl libltdl3 libmagic1 libmail-pop3client-perl libmailtools-perl libnet-daemon-perl
+  libnet-dns-perl libnet-imap-simple-perl libnet-imap-simple-ssl-perl libnet-ip-perl libnet-ldap-perl libnet-libidn-perl libnet-ssleay-perl
+  libnet1 libopenhpi2 libpcre3 libperl5.10 libplrpc-perl libsensors3 libsnmp-base libsnmp15 libsqlite3-0 libssh2-1 libsysfs2 libtimedate-perl
+  liburi-perl libwww-perl libxml2 libxml2-utils mime-support openhpid python python-central python-minimal python2.5 python2.5-minimal
+  sgml-base xml-core
+
+
+cd /etc/ha.d
+vi authkeys
+auth 1
+1 crc
+
+chmod 600 authkeys
+
+
+vi ha.cf
+ucast eth0 192.168.0.242  ## master node
+#ucast eth0 192.168.0.241  ## backup node
+auto_failback off
+node ld1
+node ld2
+ping 192.168.0.242  ## master node
+#ping 192.168.0.241  ## backup node
+
+
+vi haresources
+master:
+ld1 \
+ldirectord \
+IPaddr2::192.168.0.240/24/eth0/192.168.0.255
+
+
+backup:
+ld2 \
+ldirectord \
+IPaddr2::192.168.0.240/24/eth0/192.168.0.255
+
+
+
+vi ldirectord.cf
+quiescent=no
+
+virtual=192.168.0.240:80
+        real=192.168.0.241:80 gate 1
+        real=192.168.0.242:80 gate 2
+        service=http
+        request="checknode.lvs"
+        receive="ok"
+        scheduler=wrr
+        protocol=tcp
+
+cd /home/www/wwwroot
+echo "ok" > checknode.lvs
+
+
+vi /etc/network/interfaces
+auto lo:0
+iface lo:0 inet static
+  address 192.168.0.240
+  netmask 255.255.255.255
+  pre-up sysctl -p > /dev/null
+
+vi /etc/sysctl.conf
+net.ipv4.conf.all.arp_ignore = 1
+net.ipv4.conf.eth0.arp_ignore = 1
+net.ipv4.conf.all.arp_announce = 2
+net.ipv4.conf.eth0.arp_announce = 2
+net.ipv4.ip_forward = 1
+
+ifup lo:0
+ip addr sh lo
+
+
+sysv-rc-conf
+disable: ipvsadm ldirectord
+
+
+MySQL:
+apt-get install libdbi-perl libdbi0 libfcgi-perl mysql-common libdbd-mysql libdbd-mysql-perl
+The following NEW packages will be installed:
+  libdbd-mysql libdbd-mysql-perl libdbi0 libfcgi-perl libmysqlclient15off mysql-common
+
+vi /etc/ha.d/haresources
+IPaddr2::192.168.6.200/24/eth1/192.168.6.255 \
+
+vi /etc/ha.d/ldirectord.cf
+virtual=192.168.6.200:3306
+        real=192.168.6.201:3306 gate 2
+        real=192.168.6.202:3306 gate 3
+        service=mysql
+        checktype=negotiate
+        login="root"
+        passwd="root"
+        database="lvs"
+        request="SELECT * FROM checknode"
+        scheduler=wrr
+        protocol=tcp
+
+vi /etc/network/interfaces
+auto lo:0
+iface lo:0 inet static
+  address 192.168.6.200
+  netmask 255.255.255.255
+  pre-up sysctl -p > /dev/null
+
+vi /etc/sysctl.conf
+net.ipv4.conf.all.arp_ignore = 1
+net.ipv4.conf.eth1.arp_ignore = 1
+net.ipv4.conf.all.arp_announce = 2
+net.ipv4.conf.eth1.arp_announce = 2
+
+ifup lo:0
+ip addr sh lo
+
+
+ipvsadm -l --timeout
+Timeout (tcp tcpfin udp): 900 120 300
+
+ipvsadm --set 300 30 300
