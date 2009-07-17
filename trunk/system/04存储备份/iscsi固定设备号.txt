@@ -1,0 +1,32 @@
+vi /etc/udev/rules.d/10-local.rules
+KERNEL=="sd*", BUS=="scsi", PROGRAM="/usr/local/sbin/iscsidev.sh %b", SYMLINK+="iscsi/%c{1}/lun%c{2}/part%n"
+
+vi /usr/local/sbin/iscsidev.sh
+#!/bin/sh
+
+BUS=${1}
+HOST=${BUS%%:*}
+
+LUN=`echo ${BUS} | cut -d":" -f4`
+
+[ -e /sys/class/iscsi_host ] || exit 1
+
+file="/sys/class/iscsi_host/host${HOST}/device/session*/iscsi_session*/targetname"
+
+target_name=$(cat ${file})
+
+# this is not an open-iscsi drive
+if [ -z "${target_name}" ]; then
+  exit 1
+fi
+
+echo "${target_name} ${LUN}"
+
+chmod u+x /usr/local/sbin/iscsidev.sh
+
+
+udevinfo -a -p $(udevinfo -q path -n /dev/sdb)
+
+SUBSYSTEM=="block", ATTR{size}=="4194304", NAME="sdb", SYMLINK+="sdb%n"
+SUBSYSTEM=="block", ATTR{size}=="8388608", NAME="sdc", SYMLINK+="sdc%n"
+SUBSYSTEM=="block", ATTR{size}=="16777216", NAME="sdd", SYMLINK+="sdd%n"
