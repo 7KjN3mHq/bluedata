@@ -27,6 +27,35 @@ chmod u+x /usr/local/sbin/iscsidev.sh
 
 udevinfo -a -p $(udevinfo -q path -n /dev/sdb)
 
-SUBSYSTEM=="block", ATTR{size}=="4194304", NAME="sdb", SYMLINK+="sdb%n"
-SUBSYSTEM=="block", ATTR{size}=="8388608", NAME="sdc", SYMLINK+="sdc%n"
-SUBSYSTEM=="block", ATTR{size}=="16777216", NAME="sdd", SYMLINK+="sdd%n"
+KERNEL=="sd*", ATTR{size}=="4194304", NAME="sdb", SYMLINK+="iscsi/iqn.2009-07.com.domain:master1.lun1/lun1/part%n"
+KERNEL=="sd*", ATTR{size}=="8388608", NAME="sdc", SYMLINK+="iscsi/iqn.2009-07.com.domain:master1.lun2/lun2/part%n"
+KERNEL=="sd*", ATTR{size}=="16777216", NAME="sdd", SYMLINK+="iscsi/iqn.2009-07.com.domain:master1.lun3/lun3/part%n"
+
+
+vi 10-persistant-scsi.rules
+KERNEL=="sd*", BUS=="scsi", ATTRS{vendor}=="IET", ATTRS{model}=="VIRTUAL-DISK", NAME="%k", PROGRAM="/lib/udev/getlun.sh $id", SYMLINK+="iscsi_%c%n"
+
+vi /lib/udev/getlun.sh
+#!/bin/bash
+echo $1 | awk -F":" '{print }'
+
+
+vi /etc/scsi_id.config
+option=-g
+
+lun2:
+/lib/udev/scsi_id -g -s /block/sdb
+149455400000000000000000002000000ca0600000d000000
+
+lun1:
+/lib/udev/scsi_id -g -s /block/sdc
+149455400000000000000000001000000b20600000d000000
+
+lun3:
+/lib/udev/scsi_id -g -s /block/sdd
+149455400000000000000000003000000070700000d000000
+
+
+KERNEL="sd*", BUS="scsi", PROGRAM="/lib/udev/scsi_id -g -s %p", RESULT="149455400000000000000000001000000b20600000d000000", NAME="sdb%n"
+KERNEL="sd*", BUS="scsi", PROGRAM="/lib/udev/scsi_id -g -s %p", RESULT="149455400000000000000000002000000ca0600000d000000", NAME="sdc%n"
+KERNEL="sd*", BUS="scsi", PROGRAM="/lib/udev/scsi_id -g -s %p", RESULT="149455400000000000000000003000000070700000d000000", NAME="sdd%n"
