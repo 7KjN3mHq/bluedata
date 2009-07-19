@@ -1,3 +1,12 @@
+如何解开 deb 文件
+ar vx test.deb
+解开之后会得到三个文件
+debian-binary
+control.tar.gz
+data.tar.gz
+使用 tar 解开 data.tar.gz 即可得到 deb 文件中的数据文件
+tar -zxvf data.tar.gz 
+
 搜索软件包内容
 http://www.debian.org/distrib/packages#search_contents
 
