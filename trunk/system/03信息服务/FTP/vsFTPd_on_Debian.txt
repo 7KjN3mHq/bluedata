@@ -1,0 +1,12 @@
+apt-get install vsftpd
+
+vi /etc/vsftpd.conf
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+
+530 Login incorrect 的一个原因：
+vi /etc/passwd
+www-data:x:33:33:www-data:/home:/bin/false
+把 shell 改为 /bin/sh

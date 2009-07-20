@@ -17,3 +17,10 @@ rename .cpp .c *.cpp
 rename 's/1/11/g' `find ./ -type d -name 1`
 把当前目录下文件名为*.cpp的文件重命名为*.c
 rename 's/.cpp/.c/g' `find ./ -type f -name "*.cpp"`
+
+
+把 binlog_ 开头的文件重命名为 mysql-bin. 开头
+for i in binlog_* ; do t=`echo $i|sed s/binlog_/mysql-bin./`; mv $i $t; done
+
+用 awk 实现
+ls | awk -F '_' '{print "mv "$0" mysql-bin."$2}' | /bin/bash

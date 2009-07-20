@@ -1,61 +1,188 @@
-vi /etc/udev/rules.d/10-local.rules
-KERNEL=="sd*", BUS=="scsi", PROGRAM="/usr/local/sbin/iscsidev.sh %b", SYMLINK+="iscsi/%c{1}/lun%c{2}/part%n"
+ISCSI Initiator 重启后，设备号会发生变化，这会造成许多异常状况。需要把设备号固定下来。
 
-vi /usr/local/sbin/iscsidev.sh
-#!/bin/sh
+作为试验，先在 Iscsi Target 创建 3 个 LUN ，大小分别为 2G/4G/8G
 
-BUS=${1}
-HOST=${BUS%%:*}
+使用 udev 规则固定设备号
+使用 udevinfo 得到设备信息：
+udevinfo -ap /sys/block/sdb
+  looking at device '/block/sdb':
+    KERNEL=="sdb"
+    SUBSYSTEM=="block"
+    DRIVER==""
+    ATTR{range}=="16"
+    ATTR{removable}=="0"
+    ATTR{size}=="8388608"
+    ATTR{capability}=="12"
+    ATTR{stat}=="      45      175     1760      144        0        0        0        0        0      104      144"
+...
 
-LUN=`echo ${BUS} | cut -d":" -f4`
+根据容量大小固定设备号：
+vi /etc/udev/rules.d/10-persistant-iscsi.rules
+KERNEL=="sd*", ATTR{size}=="4194304", NAME="sdb"
+KERNEL=="sd*", ATTR{size}=="8388608", NAME="sdc"
+KERNEL=="sd*", ATTR{size}=="16777216", NAME="sdd"
 
-[ -e /sys/class/iscsi_host ] || exit 1
+在 /dev/sdc 创建两个分区： sdc1 sdc2
 
-file="/sys/class/iscsi_host/host${HOST}/device/session*/iscsi_session*/targetname"
+fdisk -l 查看正常：
+Disk /dev/sdb: 2147 MB, 2147483648 bytes
+67 heads, 62 sectors/track, 1009 cylinders
+Units = cylinders of 4154 * 512 = 2126848 bytes
+Disk identifier: 0x00000000
 
-target_name=$(cat ${file})
+Disk /dev/sdb doesn't contain a valid partition table
 
-# this is not an open-iscsi drive
-if [ -z "${target_name}" ]; then
-  exit 1
-fi
+Disk /dev/sdc: 4294 MB, 4294967296 bytes
+133 heads, 62 sectors/track, 1017 cylinders
+Units = cylinders of 8246 * 512 = 4221952 bytes
+Disk identifier: 0xefe87fb7
 
-echo "${target_name} ${LUN}"
+   Device Boot      Start         End      Blocks   Id  System
+/dev/sdc1               1          25      103044   83  Linux
+/dev/sdc2              26         121      395808   83  Linux
 
-chmod u+x /usr/local/sbin/iscsidev.sh
+Disk /dev/sdd: 8589 MB, 8589934592 bytes
+64 heads, 32 sectors/track, 8192 cylinders
+Units = cylinders of 2048 * 512 = 1048576 bytes
+Disk identifier: 0x00000000
 
-
-udevinfo -a -p $(udevinfo -q path -n /dev/sdb)
-
-KERNEL=="sd*", ATTR{size}=="4194304", NAME="sdb", SYMLINK+="disk/by-id/$env{ID_BUS}-$env{ID_SERIAL}", SYMLINK+="disk/by-id/$env{ID_BUS}-$env{ID_SERIAL}-part%n", SYMLINK+="disk/by-path/$env{ID_PATH}", SYMLINK+="disk/by-path/$env{ID_PATH}-part%n"
-KERNEL=="sd*", ATTR{size}=="8388608", NAME="sdc", SYMLINK+="iscsi/iqn.2009-07.com.domain:master1.lun2/lun2/part%n"
-KERNEL=="sd*", ATTR{size}=="16777216", NAME="sdd", SYMLINK+="iscsi/iqn.2009-07.com.domain:master1.lun3/lun3/part%n"
-
-
-vi 10-persistant-scsi.rules
-KERNEL=="sd*", BUS=="scsi", ATTRS{vendor}=="IET", ATTRS{model}=="VIRTUAL-DISK", NAME="%k", PROGRAM="/lib/udev/getlun.sh $id", SYMLINK+="iscsi_%c%n"
-
-vi /lib/udev/getlun.sh
-#!/bin/bash
-echo $1 | awk -F":" '{print }'
-
-
-vi /etc/scsi_id.config
-option=-g
-
-lun2:
-/lib/udev/scsi_id -g -s /block/sdb
-149455400000000000000000002000000ca0600000d000000
-
-lun1:
-/lib/udev/scsi_id -g -s /block/sdc
-149455400000000000000000001000000b20600000d000000
-
-lun3:
-/lib/udev/scsi_id -g -s /block/sdd
-149455400000000000000000003000000070700000d000000
+Disk /dev/sdd doesn't contain a valid partition table
 
 
-KERNEL="sd*", BUS="scsi", PROGRAM="/lib/udev/scsi_id -g -s %p", RESULT="149455400000000000000000001000000b20600000d000000", NAME="sdb%n"
-KERNEL="sd*", BUS="scsi", PROGRAM="/lib/udev/scsi_id -g -s %p", RESULT="149455400000000000000000002000000ca0600000d000000", NAME="sdc%n"
-KERNEL="sd*", BUS="scsi", PROGRAM="/lib/udev/scsi_id -g -s %p", RESULT="149455400000000000000000003000000070700000d000000", NAME="sdd%n"
+但分区的块设备还是混乱的：
+ll /dev/sd*
+brw-rw---- 1 root disk 8, 32 Jul 20 14:11 /dev/sdb
+brw-rw---- 1 root disk 8, 17 Jul 20 14:11 /dev/sdb1
+brw-rw---- 1 root disk 8, 18 Jul 20 14:11 /dev/sdb2
+brw-rw---- 1 root disk 8, 16 Jul 20 14:11 /dev/sdc
+brw-rw---- 1 root disk 8, 48 Jul 20 14:11 /dev/sdd
+
+/dev/disk 下相应的链接也就是混乱的。
+
+创建文件系统也会出错：
+mkfs -t ext3 /dev/sdc1
+mke2fs 1.41.3 (12-Oct-2008)
+Could not stat /dev/sdc1 --- No such file or directory
+
+The device apparently does not exist; did you specify it correctly?
+
+使用 LVM 测试：
+ll /dev/sd*
+brw-rw---- 1 root disk 8, 16 Jul 20 14:26 /dev/sdb
+brw-rw---- 1 root disk 8, 48 Jul 20 14:26 /dev/sdc
+brw-rw---- 1 root disk 8, 32 Jul 20 14:26 /dev/sdd
+
+pvcreate /dev/sdb /dev/sdc /dev/sdd
+vgcreate test /dev/sdb /dev/sdc /dev/sdd
+lvcreate -L 2G -n /dev/test/test
+mkfs -t ext3 /dev/test/test
+
+/etc/init.d/open-iscsi restart
+ll /dev/sd*
+brw-rw---- 1 root disk 8, 48 Jul 20 14:27 /dev/sdb
+brw-rw---- 1 root disk 8, 16 Jul 20 14:27 /dev/sdc
+brw-rw---- 1 root disk 8, 64 Jul 20 14:27 /dev/sdd
+
+mount -t ext3 /dev/test/test /mnt
+mount: wrong fs type, bad option, bad superblock on /dev/mapper/test-test,
+       missing codepage or helper program, or other error
+       In some cases useful info is found in syslog - try
+       dmesg | tail  or so
+
+结论：使用 udev 规则固定 iscsi 设备号是不可行的。
+
+
+使用 DMIO(multipath I/O) 固定设备号
+apt-get install multipath-tools
+The following NEW packages will be installed:
+  dmsetup kpartx libaio1 multipath-tools
+
+multipath -v3 得到设备信息后修改 /etc/multipath.conf ，如下：
+blacklist {
+  devnode "^sda"
+}
+
+defaults {
+  user_friendly_names yes
+  udev_dir /dev
+  path_grouping_policy multibus
+  failback immediate
+  no_path_retry fail
+}
+
+multipaths {
+  multipath {
+    wwid 149455400000000000000000001000000c10600000d000000
+    alias mpath0
+    path_grouping_policy multibus
+    path_checker tur
+    path_selector "round-robin 0"
+  }
+}
+
+multipaths {
+  multipath {
+    wwid 149455400000000000000000002000000f20600000d000000
+    alias mpath1
+    path_grouping_policy multibus
+    path_checker tur
+    path_selector "round-robin 0"
+  }
+}
+
+multipaths {
+  multipath {
+    wwid 149455400000000000000000003000000060700000d000000
+    alias mpath2
+    path_grouping_policy multibus
+    path_checker tur
+    path_selector "round-robin 0"
+  }
+}
+
+devices {
+  device {
+    vendor "IET"
+    product "VIRTUAL-DISK"
+    path_grouping_policy multibus
+  }
+}
+
+/etc/init.d/multipath-tools restart
+
+multipath -l
+mpath2 (149455400000000000000000003000000060700000d000000) dm-4 IET     ,VIRTUAL-DISK
+[size=8.0G][features=0][hwhandler=0]
+\_ round-robin 0 [prio=0][active]
+ \_ 3:0:0:3 sdc 8:32  [active][undef]
+mpath1 (149455400000000000000000002000000f20600000d000000) dm-5 IET     ,VIRTUAL-DISK
+[size=4.0G][features=0][hwhandler=0]
+\_ round-robin 0 [prio=0][active]
+ \_ 1:0:0:2 sdd 8:48  [active][undef]
+mpath0 (149455400000000000000000001000000c10600000d000000) dm-3 IET     ,VIRTUAL-DISK
+[size=2.0G][features=0][hwhandler=0]
+\_ round-robin 0 [prio=0][active]
+ \_ 2:0:0:1 sdb 8:16  [active][undef]
+
+/etc/init.d/open-iscsi restart
+
+multipath -l
+mpath2 (149455400000000000000000003000000060700000d000000) dm-5 IET     ,VIRTUAL-DISK
+[size=8.0G][features=0][hwhandler=0]
+\_ round-robin 0 [prio=0][active]
+ \_ 6:0:0:3 sdd 8:48  [active][undef]
+mpath1 (149455400000000000000000002000000f20600000d000000) dm-3 IET     ,VIRTUAL-DISK
+[size=4.0G][features=0][hwhandler=0]
+\_ round-robin 0 [prio=0][active]
+ \_ 4:0:0:2 sdb 8:16  [active][undef]
+mpath0 (149455400000000000000000001000000c10600000d000000) dm-4 IET     ,VIRTUAL-DISK
+[size=2.0G][features=0][hwhandler=0]
+\_ round-robin 0 [prio=0][active]
+ \_ 5:0:0:1 sdc 8:32  [active][undef]
+
+ll /dev/mapper/mpath*
+brw-rw---- 1 root disk 254, 4 Jul 20 14:55 /dev/mapper/mpath0
+brw-rw---- 1 root disk 254, 3 Jul 20 14:55 /dev/mapper/mpath1
+brw-rw---- 1 root disk 254, 5 Jul 20 14:55 /dev/mapper/mpath2
+
+对 mpath 块设备操作即可。
