@@ -1,15 +1,20 @@
-wget http://www.maatkit.org/get/mk-table-checksum
-wget http://www.maatkit.org/get/mk-checksum-filter
-wget http://www.maatkit.org/get/mk-table-sync
-chmod +x mk-table-checksum
-chmod +x mk-checksum-filter
-chmod +x mk-table-sync
-./mk-table-checksum --replicate=goods.checksum app1
-./mk-table-checksum h=app1,D=goods,t=goods h=db1
-./mk-table-checksum --databases goods app1 db1 | ./mk-checksum-filter
-./mk-table-sync --execute h=db1,D=goods,t=goods -s -v
+http://www.maatkit.org/
 
-./mk-table-sync --execute h=db2,D=goods,t=goods db1 --skipslavecheck -v
+在 master 上：
+mk-table-checksum --createreplicate --replicate=test.checksum localhost
 
-./mk-table-sync --execute h=app1,D=goods,t=goods db1 -v
-start slave sql_thread;
+test.checksum 表示的是 test 数据库的 checksum 数据表（也可以使用别的数据库或数据表，只要保证它在主从服务器间没被忽略复制即可）。
+有了 createreplicate 参数，系统会自动创建这个表，里面会保存一些核对数据。
+
+执行完之后，就可以用下面的命令来查询是否存在不一致：
+mk-table-checksum --replicate=test.checksum --replcheck 1 localhost
+
+replcheck 参数指明了核对的级联深度，比如1表示此服务器和它的从服务器。
+
+同步不一致的数据：
+mk-table-sync --execute --replicate test.checksum localhost
+
+如果用的 MySQL 不支持触发器语法的话，记得在上面的命令里加上 --ignore-triggers 参数。
+
+
+mk-table-checksum --createreplicate --replicate=test.checksum localhost -d visitor -t shop_117,shop_99
