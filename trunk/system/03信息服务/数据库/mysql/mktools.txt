@@ -18,3 +18,6 @@ mk-table-sync --execute --replicate test.checksum localhost
 
 
 mk-table-checksum --createreplicate --replicate=test.checksum localhost -d visitor -t shop_117,shop_99
+
+
+mk-find --engine MyISAM --print --exec "optimize table %D.%N"
