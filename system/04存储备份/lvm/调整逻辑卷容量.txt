@@ -1,24 +1,22 @@
-lvdisplay /dev/vg0/lv2
-LV Size                90.89 GB
-Current LE             23269
+lvdisplay /dev/vg/home
+LV Size                54.76 GB
+Current LE             14019
 
 vgdisplay
 PE Size               4.00 MB
 
-tune2fs -l /dev/vg0/lv2
-Block count:              23827456
+tune2fs -l /dev/vg/home
+Block count:              14355456
 Block size:               4096
 
-umount /backup
-resize2fs -f /dev/vg0/lv2 86G
-The filesystem on /dev/vg0/lv2 is now 22544384 blocks long.
+umount /home
+resize2fs -f /dev/vg/home 53G
+The filesystem on /dev/vg/home is now 13893632 blocks long.
 
-23827456 - 22544384 = 1283072 blocks
-1283072 * 4096 / (1024 * 1024 * 4) = 1253 LE
+14355456 - 13893632 = 461824 blocks
+461824 * 4096 / (1024 * 1024 * 4) = 451 LE
 
-lvreduce -l -1253 /dev/vg0/lv2
+lvreduce -l -451 /dev/vg/home
 
-
-lvextend -l +1253 /dev/vg0/lv1
-e2fsck -f /dev/vg0/lv1
-resize2fs /dev/vg0/lv1
+lvextend -l +451 /dev/vg/data
+resize2fs -f /dev/vg/data

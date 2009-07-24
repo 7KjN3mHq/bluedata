@@ -7,46 +7,62 @@ PATH=$PATH:/usr/local/mysql/bin
 export PATH
 
 user=root
-password=PASSWORD
+password=xnjcwmysql
 master_host="192.168.0.250"
-port=3307
+port=3306
 master_port=3306
-datadir="/data"
-backup_path="/backup"
-backup_dir=`date +%Y%m%d`
-backup_dir_pre=`date +%Y%m%d --date='1 days ago'`
-backup_dir_expire=`date +%Y%m%d --date='5 days ago'`
-remote_backup_host="192.168.0.104"
+backup_lv_name="/dev/vg/data"
+backup_path="/home/backup"
+backup_dir="mysql"
+backup_binlog_dir="binlog"
+backup_binlog_name="binlog_`date +%Y%m%d --date='1 days ago'`.tar.bz2"
+backup_binlog_expire="binlog_`date +%Y%m%d --date='8 days ago'`.tar.bz2"
+remote_backup_host="192.168.0.200"
 remote_backup_path="/data/databases"
 remote_backup_name="`date +%w --date='1 days ago'`.tar.bz2"
-
-## 获得当前备份需要的 binlog
-backup_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
+remote_backup_binlog_name="binlog_`date +%w --date='1 days ago'`.tar.bz2"
 
 ## 刷新 master 的 binlog
 mysql -u$user -p$password -h$master_host -P$master_port -e 'flush logs'
 
 ## 停止 slave
-mysql -u$user -p$password -P$port -e 'stop slave'
+sleep 5
+mysql -u$user -p$password -P$port -e 'slave stop'
+sleep 5
 
-## 做完整备份
-rsync -a $datadir/ $backup_path/$backup_dir/
+## 创建 MySQL 数据 逻辑卷 的快照
+modprobe dm-snapshot
+lvcreate -l 486 -s -n mysql_snap $backup_lv_name
 
 ## 开始 slave
-mysql -u$user -p$password -P$port -e 'start slave'
+mysql -u$user -p$password -P$port -e 'slave start'
 
-## 复制 master 的 $backup_binlog 到前一个备份目录
-scp $master_host:$datadir/$backup_binlog $backup_path/$backup_dir_pre/binlog_$backup_dir_pre
+## 备份 binlog
+mkdir -p /mnt/mysql_snap
+mount /dev/vg/mysql_snap /mnt/mysql_snap
+cd /mnt/mysql_snap
+tar cjpf $backup_path/$backup_binlog_dir/$backup_binlog_name `ls | grep mysql-bin.[0-9]`
 
-## 获得当前 binlog
-curr_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
+## 备份数据库文件
+rsync -a --delete --exclude "mysql-bin.*" --exclude "*.MYI" /mnt/mysql_snap/ $backup_path/$backup_dir/
+
+## 把备份的 binlog 压缩包传送到远程备份主机
+scp $backup_path/$backup_binlog_dir/$backup_binlog_name $remote_backup_host:$remote_backup_path/$remote_backup_binlog_name
+
+## 打包备份目录并传送到远程备份主机
+cd $backup_path
+tar -cjpf - $backup_dir | ssh $remote_backup_host "cat > $remote_backup_path/$remote_backup_name"
+
+## 删除快照
+umount /mnt/mysql_snap
+lvremove -f /dev/vg/mysql_snap
+rm -rf /mnt/mysql_snap
+rmmod dm-snapshot
+
+## 删除过期的 binlog
+rm -f $backup_path/$backup_binlog_dir/$backup_binlog_expire
 
 ## 清除已备份的 binlog
+curr_binlog=`mysql -u$user -p$password -P$port -e 'show slave status\G' | grep Master_Log_File | awk '{print $2}' | uniq`
 mysql -u$user -p$password -h$master_host -P$master_port -e 'purge master logs to "'$curr_binlog'"'
-
-## 打包前一个备份目录并传送到远程备份主机
-cd $backup_path
-tar -cjpf - $backup_dir_pre | ssh $remote_backup_host "cat > $remote_backup_path/$remote_backup_name"
-
-## 删除过期备份
-rm -rf $backup_dir_expire
+mysql -u$user -p$password -P$port -e 'purge master logs to "'$curr_binlog'"'

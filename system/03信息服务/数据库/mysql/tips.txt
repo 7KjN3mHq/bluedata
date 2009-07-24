@@ -1,3 +1,6 @@
+恢复索引文件
+mysql> repair table ftpuser use_frm;
+
 创建初始账号
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root';
 
