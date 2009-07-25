@@ -34,6 +34,7 @@ rsync -ae ssh --delete --exclude "mysql-bin.*" /mnt/ app2:/data/ &
 ## 删除快照
 umount /mnt
 lvremove -f /dev/vg/mysql_snap
+rmmod dm-snapshot
 
 ## 在 slave 上启动数据库及复制进程
 /etc/init.d/mysqld start
