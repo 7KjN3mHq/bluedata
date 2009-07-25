@@ -1,3 +1,6 @@
+直接覆盖表文件恢复表后需：
+mysql> flush tables;
+
 恢复索引文件
 mysql> repair table ftpuser use_frm;
 

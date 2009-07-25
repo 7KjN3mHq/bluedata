@@ -21,3 +21,5 @@ mk-table-checksum --createreplicate --replicate=test.checksum localhost -d visit
 
 
 mk-find --engine MyISAM --print --exec "optimize table %D.%N"
+
+mk-find --exec "repair table %D.%N use_frm"

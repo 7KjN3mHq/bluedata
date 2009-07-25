@@ -1,0 +1,184 @@
+apt-get install ext3grep
+
+dd if=/dev/zero of=/tmp/tmp bs=1024k count=50
+mkfs.ext3 /tmp/tmp
+mount -o loop /tmp/tmp /mnt
+
+cp -r /boot /mnt/
+cp vmware-update-2.6.26-5.5.7.tgz /mnt/
+rm -rf /mnt/boot
+rm -f /mnt/vmware-update-2.6.26-5.5.7.tgz
+umount /mnt
+
+
+ext3grep /tmp/tmp --ls --inode 2
+Running ext3grep version 0.8.0
+WARNING: I don't know what EXT3_FEATURE_COMPAT_EXT_ATTR is.
+Number of groups: 7
+Loading group metadata... done
+Minimum / maximum journal block: 16616 / 20729
+Loading journal descriptors... sorting... done
+The oldest inode block that is still in the journal, appears to be from 1248513746 = Sat Jul 25 17:22:26 2009
+Number of descriptors in journal: 108; min / max sequence numbers: 2 / 5
+Inode is Allocated
+Finding all blocks that might be directories.
+D: block containing directory start, d: block containing more directory entries.
+Each plus represents a directory start that references the same inode as a directory start that we found previously.
+
+Searching group 0: DD
+Searching group 1:
+Searching group 2: +D+D+
+Searching group 3:
+Searching group 4:
+Searching group 5:
+Searching group 6:
+Writing analysis so far to 'tmp.ext3grep.stage1'. Delete that file if you want to do this stage again.
+Result of stage one:
+  4 inodes are referenced by one or more directory blocks, 2 of those inodes are still allocated.
+  1 inodes are referenced by more than one directory block, 1 of those inodes is still allocated.
+  0 blocks contain an extended directory.
+Result of stage two:
+  2 of those inodes could be resolved because they are still allocated.
+All directory inodes are accounted for!
+
+
+Writing analysis so far to 'tmp.ext3grep.stage2'. Delete that file if you want to do this stage again.
+The first block of the directory is 433.
+Inode 2 is directory "".
+Directory block 433:
+          .-- File type in dir_entry (r=regular file, d=directory, l=symlink)
+          |          .-- D: Deleted ; R: Reallocated
+Indx Next |  Inode   | Deletion time                        Mode        File name
+==========+==========+----------------data-from-inode------+-----------+=========
+   0    1 d       2                                         drwxr-xr-x  .
+   1    2 d       2                                         drwxr-xr-x  ..
+   2  end d      11                                         drwx------  lost+found
+   3  end r      12  D 1248513776 Sat Jul 25 17:22:56 2009  rrw-r--r--  vmware-update-2.6.26-5.5.7.tgz
+   4  end d    7329  D 1248513770 Sat Jul 25 17:22:50 2009  drwxr-xr-x  boot
+
+
+ext3grep /tmp/tmp --ls --inode 7329
+Running ext3grep version 0.8.0
+WARNING: I don't know what EXT3_FEATURE_COMPAT_EXT_ATTR is.
+Number of groups: 7
+Minimum / maximum journal block: 16616 / 20729
+Loading journal descriptors... sorting... done
+The oldest inode block that is still in the journal, appears to be from 1248513746 = Sat Jul 25 17:22:26 2009
+Number of descriptors in journal: 108; min / max sequence numbers: 2 / 5
+Inode is Unallocated
+Finding all blocks that might be directories.
+D: block containing directory start, d: block containing more directory entries.
+Each plus represents a directory start that references the same inode as a directory start that we found previously.
+
+Searching group 0: DD
+Searching group 1:
+Searching group 2: +D+D+
+Searching group 3:
+Searching group 4:
+Searching group 5:
+Searching group 6:
+Writing analysis so far to 'tmp.ext3grep.stage1'. Delete that file if you want to do this stage again.
+Result of stage one:
+  4 inodes are referenced by one or more directory blocks, 2 of those inodes are still allocated.
+  1 inodes are referenced by more than one directory block, 1 of those inodes is still allocated.
+  0 blocks contain an extended directory.
+Result of stage two:
+  2 of those inodes could be resolved because they are still allocated.
+All directory inodes are accounted for!
+
+
+Writing analysis so far to 'tmp.ext3grep.stage2'. Delete that file if you want to do this stage again.
+The first block of the directory is 16634.
+Inode 7329 is directory "boot".
+Directory block 16634:
+          .-- File type in dir_entry (r=regular file, d=directory, l=symlink)
+          |          .-- D: Deleted ; R: Reallocated
+Indx Next |  Inode   | Deletion time                        Mode        File name
+==========+==========+----------------data-from-inode------+-----------+=========
+   0    1 d    7329  D 1248513770 Sat Jul 25 17:22:50 2009  drwxr-xr-x  .
+   1    2 d       2                                         drwxr-xr-x  ..
+   2    3 r    7330  D 1248513770 Sat Jul 25 17:22:50 2009  rrw-r--r--  System.map-2.6.26-2-686
+   3    4 r    7331  D 1248513770 Sat Jul 25 17:22:50 2009  rrw-r--r--  config-2.6.26-2-686
+   4    5 d    7332  D 1248513770 Sat Jul 25 17:22:50 2009  drwxr-xr-x  grub
+   5    6 r    7345  D 1248513770 Sat Jul 25 17:22:50 2009  rrw-r--r--  vmlinuz-2.6.26-2-686
+   6    7 r    7346  D 1248513770 Sat Jul 25 17:22:50 2009  rrw-r--r--  initrd.img-2.6.26-2-686.bak
+   7  end r    7347  D 1248513770 Sat Jul 25 17:22:50 2009  rrw-r--r--  initrd.img-2.6.26-2-686
+
+
+ext3grep /tmp/tmp --restore-file boot/grub/menu.lst
+Running ext3grep version 0.8.0
+WARNING: I don't know what EXT3_FEATURE_COMPAT_EXT_ATTR is.
+Number of groups: 7
+Minimum / maximum journal block: 16616 / 20729
+Loading journal descriptors... sorting... done
+The oldest inode block that is still in the journal, appears to be from 1248513746 = Sat Jul 25 17:22:26 2009
+Number of descriptors in journal: 108; min / max sequence numbers: 2 / 5
+Writing output to directory RESTORED_FILES/
+Loading tmp.ext3grep.stage2... done
+Restoring boot/grub/menu.lst
+
+ll RESTORED_FILES/boot/grub/
+-rw-r--r-- 1 root root 3.8K Jul 25 17:22 menu.lst
+
+
+date -d '2009-07-25 17:22:56' +%s
+1248513776
+ext3grep /tmp/tmp --restore-all --after=1248513776
+Running ext3grep version 0.8.0
+Only show/process deleted entries if they are deleted on or after Sat Jul 25 17:22:56 2009.
+
+WARNING: I don't know what EXT3_FEATURE_COMPAT_EXT_ATTR is.
+Number of groups: 7
+Minimum / maximum journal block: 16616 / 20729
+Loading journal descriptors... sorting... done
+The oldest inode block that is still in the journal, appears to be from 1248513746 = Sat Jul 25 17:22:26 2009
+Number of descriptors in journal: 108; min / max sequence numbers: 2 / 5
+Writing output to directory RESTORED_FILES/
+Loading tmp.ext3grep.stage2... done
+Not undeleting "boot/System.map-2.6.26-2-686" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/config-2.6.26-2-686" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/default" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/device.map" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/e2fs_stage1_5" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/fat_stage1_5" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/jfs_stage1_5" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/menu.lst" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/menu.lst~" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/minix_stage1_5" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/reiserfs_stage1_5" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/stage1" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/stage2" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/grub/xfs_stage1_5" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/initrd.img-2.6.26-2-686" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/initrd.img-2.6.26-2-686.bak" because it was deleted before 1248513776 (140857916)
+Not undeleting "boot/vmlinuz-2.6.26-2-686" because it was deleted before 1248513776 (140857916)
+Restoring vmware-update-2.6.26-5.5.7.tgz
+
+
+ext3grep /tmp/tmp --restore-all
+Running ext3grep version 0.8.0
+WARNING: I don't know what EXT3_FEATURE_COMPAT_EXT_ATTR is.
+Number of groups: 7
+Minimum / maximum journal block: 16616 / 20729
+Loading journal descriptors... sorting... done
+The oldest inode block that is still in the journal, appears to be from 1248513746 = Sat Jul 25 17:22:26 2009
+Number of descriptors in journal: 108; min / max sequence numbers: 2 / 5
+Loading tmp.ext3grep.stage2... done
+Restoring boot/System.map-2.6.26-2-686
+Restoring boot/config-2.6.26-2-686
+Restoring boot/grub/default
+Restoring boot/grub/device.map
+Restoring boot/grub/e2fs_stage1_5
+Restoring boot/grub/fat_stage1_5
+Restoring boot/grub/jfs_stage1_5
+Restoring boot/grub/menu.lst
+Restoring boot/grub/menu.lst~
+Restoring boot/grub/minix_stage1_5
+Restoring boot/grub/reiserfs_stage1_5
+Restoring boot/grub/stage1
+Restoring boot/grub/stage2
+Restoring boot/grub/xfs_stage1_5
+Restoring boot/initrd.img-2.6.26-2-686
+Restoring boot/initrd.img-2.6.26-2-686.bak
+Restoring boot/vmlinuz-2.6.26-2-686
+Restoring vmware-update-2.6.26-5.5.7.tgz
