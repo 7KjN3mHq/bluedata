@@ -23,3 +23,22 @@ mk-table-checksum --createreplicate --replicate=test.checksum localhost -d visit
 mk-find --engine MyISAM --print --exec "optimize table %D.%N"
 
 mk-find --exec "repair table %D.%N use_frm"
+
+
+mk-table-sync 不能同步无 unique key 的表时（加上 -no-unique-checks 也无效），可以做如下操作：
+
+mysql> RENAME TABLE rep TO rep_maint;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> SELECT * FROM rep_maint INTO OUTFILE '/tmp/rep.txt';
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> CREATE TABLE rep_new LIKE rep_maint;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> LOAD DATA INFILE '/tmp/rep.txt' INTO TABLE rep_new;
+Query OK, 0 rows affected (0.01 sec)
+Records: 0  Deleted: 0  Skipped: 0  Warnings: 0
+
+mysql> RENAME TABLE rep_maint TO rep_old, rep_new TO rep;
+Query OK, 0 rows affected (0.00 sec)
