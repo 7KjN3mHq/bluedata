@@ -24,6 +24,8 @@ mk-find --engine MyISAM --print --exec "optimize table %D.%N"
 
 mk-find --exec "repair table %D.%N use_frm"
 
+for i in `mk-find --dblike mysql --engine MyISAM --print` ; do mysql -e 'optimize table '$i''; mysql -e 'repair table '$i''; done > /dev/null 2>&1
+
 
 mk-table-sync 不能同步无 unique key 的表时（加上 -no-unique-checks 也无效），可以做如下操作：
 

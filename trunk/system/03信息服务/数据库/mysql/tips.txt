@@ -1,3 +1,8 @@
+查看表信息：
+mysql> desc DATABASE.TABLE;
+详细信息：
+mysql> show full fields from DATABASE.TABLE;
+
 直接覆盖表文件恢复表后需：
 mysql> flush tables;
 
