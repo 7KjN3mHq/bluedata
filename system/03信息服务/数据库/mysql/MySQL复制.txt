@@ -18,6 +18,7 @@ master-password  = slave
 relay-log        = /var/log/mysqld/relay-bin
 #replicate-do-db  = test
 #binlog-ignore-db = mysql information_schema
+#slave-skip-errors = all
 
 查看信息：
 SHOW MASTER STATUS;

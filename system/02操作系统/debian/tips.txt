@@ -1,3 +1,8 @@
+搜索文件所在的包及查看未安装的包所包含的文件
+apt-get install apt-file
+apt-file search gtk/gtk.h
+apt-file list PackageName
+
 如何解开 deb 文件
 ar vx test.deb
 解开之后会得到三个文件
