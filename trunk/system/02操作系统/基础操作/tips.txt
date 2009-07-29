@@ -1,3 +1,7 @@
+SWAP 颠簸
+echo 0 > /proc/sys/vm/swappiness
+缺省 swappiness 一般是 60 ，通过把它设定为 0 ，可以让系统尽可能别去用 swap 。
+
 格式化配置文件
 perl -ne 'm/^([^#][^\s=]+)\s*(=.*|)/ && printf("%-35s%s\n", $1, $2)' /etc/my.cnf
 
