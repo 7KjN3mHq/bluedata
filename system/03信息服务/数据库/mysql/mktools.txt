@@ -1,5 +1,7 @@
 http://www.maatkit.org/
 
+wget http://www.maatkit.org/get/toolname
+
 在 master 上：
 mk-table-checksum --createreplicate --replicate=test.checksum localhost
 
@@ -20,6 +22,11 @@ mk-table-sync --execute --replicate test.checksum localhost
 mk-table-checksum --createreplicate --replicate=test.checksum localhost -d visitor -t shop_117,shop_99
 
 
+重复索引检查：
+mk-duplicate-key-checker
+
+
+mk-find (MySQL's find):
 mk-find --engine MyISAM --print --exec "optimize table %D.%N"
 
 mk-find --exec "repair table %D.%N use_frm"
@@ -28,7 +35,6 @@ for i in `mk-find --dblike mysql --engine MyISAM --print` ; do mysql -e 'optimiz
 
 
 mk-table-sync 不能同步无 unique key 的表时（加上 -no-unique-checks 也无效），可以做如下操作：
-
 mysql> RENAME TABLE rep TO rep_maint;
 Query OK, 0 rows affected (0.01 sec)
 
