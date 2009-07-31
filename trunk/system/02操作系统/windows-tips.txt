@@ -1,2 +1,8 @@
-Vista 开启 Administrator 帐号
+XP 无权限访问共享资源：
+管理工具 -> 本地安全设置 -> 本地策略 -> 安全选项 -> 网络访问：本地帐户的共享和安全模式 -> 经典 - 本地用户以自己的身份验证
+
+XP 删除服务项：
+sc delete "windows 核心组件服务项"
+
+Vista 开启 Administrator 帐号：
 net user administrator /active:yes
