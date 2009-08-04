@@ -1,0 +1,72 @@
+apt-get install lftp
+
+cd /backup/202.75.216.163/20090801/home/xnjcw_branch/upload/upload/1
+lftp -u "user,passwd" -e "cd upload/upload/1 && mirror -R 200907 --ignore-time -v && quit" IP
+
+
+lftp –help
+
+语法介绍
+lftp [OPTS] <site>
+`lftp’ 是在 rc 文件执行后 lftp 执行的第一个命令
+ -f <file>           执行文件中的命令后退出
+ -c <cmd>            执行命令后退出
+ –help              显示帮助信息后退出
+ –version           显示 lftp 版本后退出
+ 其他的选项同 `open’ 命令
+ -e <cmd>            在选择后执行命令
+ -u <user>[,<pass>]  使用指定的用户名/口令进行验证
+ -p <port>           连接指定的端口
+ <site>              主机名, URL 或书签的名字
+
+例子
+1.下载(镜象)
+包括目录下的目录下的目录下的目录下的目录下的目录全拷过来。。。
+
+mirror .
+
+–delete:  如果远程目录下已经没有某个文件，而本地有，则删除这个文件。
+–only-newer:  只下载新的文件。
+–exculde:  不包含某个目录。
+–verbose:  详细输出。
+
+2.多线程下载
+
+mirror -c -x b/ –parallel=3 .
+
+上面的”-c“参数是说明支持断点续传；
+“-x“参数是表明b目录不需要备份
+“–parallel=3“是指同时下载3个文件,换成"-P 3"同效果
+
+3下载某种文件
+下传多个普通文件
+
+   1. mget * 
+   2. mget  -c *.pdf
+
+4.上传
+
+mirror -R 本地目录名
+
+将本地目录以迭代（包括子目录）的方式反向上传到ftp site。 
+
+5.编码设置
+远程ftp site用gbk编码，对应的要设置为utf8,只要替换gbk为utf8即可。有时会要用到.
+代码:
+
+set file:charset utf8
+
+6.改变模式
+
+被动模式的问题需要在执行lftp命令以后，
+set ftp:passive-mode off
+
+FAQ:
+
+关于镜像文件是否修改的判断
+
+有时我们发现,文件没有改变,但还是直接覆盖目标文件呢？其中很重要的一个原因是源文件(或者不同服务器上）时间发生了发改变，在lftp中主要是使用文件的修改时间和文件大小来来判断.所以这时候，加个 –ignore-time 参数即可，即 mirror  –ignore-time 这样我们就只根据文件大小来看文件是否修改
+
+文件更新后,但mirror不能更新
+
+根据测试–only-newer这个只有当文件数量上不同时,才会更新.文件本身更新会不理.所以去年这个参数就行了
