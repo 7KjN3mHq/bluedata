@@ -6,6 +6,16 @@ The following NEW packages will be installed:
 
 
 ## Configure
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
+
+echo -ne "
+mysql soft nofile 65536
+mysql hard nofile 65536
+" >> /etc/security/limits.conf
+
 vi /etc/mysql/my.cnf
 datadir         = /mysql
 skip-name-resolve

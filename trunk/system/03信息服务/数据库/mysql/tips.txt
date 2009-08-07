@@ -79,24 +79,20 @@ until [ $current_line -eq $total_line ]; do
 done
 
 
-忘记MySQL密码的更改方法
-1、在linux中
-如果 MySQL 正在运行，首先杀之： killall -TERM mysqld
-启动 MySQL ：/usr/bin/safe_mysqld --skip-grant-tables
-就可以不需要密码就进入 MySQL 了。 
-然后就是 
->use mysql
->update user set password=password("new_pass") where user="root";
->flush privileges;
-重新杀 MySQL ，用正常方法启动 MySQL 。
-2、在windows中
-如果mysql正在运行，不要关闭
-执行：
-mysqld --skip-grant-tables
-命令
-这时如果看到屏幕没反应，表示服务已启动
-在一个新窗口中运行
-mysql
-可以不用密码登录
-update user set password=password("new_pass") where user="root";
-杀掉mysqld 的进程
+MySQL 忘记密码的处理方法
+vi /etc/my.cnf
+skip-grant-tables
+
+/etc/init.d/mysqld restart
+
+mysql> use mysql;
+mysql> UPDATE user SET password = password ('new-password') WHERE user = 'root';
+mysql> flush privileges;
+
+vi /etc/my.cnf
+#skip-grant-tables
+
+/etc/init.d/mysqld restart
+
+
+MySQL 用户 root@localhost 和 root@127.0.0.1 是不一样的。
