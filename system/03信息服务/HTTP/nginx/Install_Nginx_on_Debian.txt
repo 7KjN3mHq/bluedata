@@ -17,8 +17,8 @@ fs.file-max = 65536
 sysctl -p
 
 echo -ne "
-* soft nofile 65536
-* hard nofile 65536
+www-data soft nofile 65536
+www-data hard nofile 65536
 " >> /etc/security/limits.conf
 
 mkdir /var/log/nginx
