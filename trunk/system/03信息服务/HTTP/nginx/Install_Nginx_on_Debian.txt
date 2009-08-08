@@ -1,8 +1,11 @@
 apt-get install libpcre3-dev libpcrecpp0 zlib1g-dev
 wget http://sysoev.ru/nginx/nginx-0.7.61.tar.gz
+wget http://wiki.nginx.org/images/5/51/Nginx-accesskey-2.0.3.tar.gz
 tar zxvf nginx-0.7.61.tar.gz
+tar zxvf Nginx-accesskey-2.0.3.tar.gz
 cd nginx-0.7.61
 ./configure \
+--add-module=../nginx-accesskey-2.0.3 \
 --user=www-data \
 --group=www-data \
 --prefix=/usr/local/nginx \
