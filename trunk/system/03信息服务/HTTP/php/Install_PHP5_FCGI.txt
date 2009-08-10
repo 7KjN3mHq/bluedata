@@ -1,4 +1,4 @@
-PHP5 以 FastCGI 模式安装
+以 FastCGI 模式安装 PHP5
 
 
 软件下载：
@@ -134,6 +134,10 @@ mkdir /tmpfs
 tmpfs                   /tmpfs              tmpfs   size=256m,mode=1777        0 0
 
 mount -a
+
+定时清除
+vi /etc/crontab
+0 * * * * root find /tmpfs -type f -amin +60 -exec rm {} \;
 
 
 配置 php-fpm ，如：
