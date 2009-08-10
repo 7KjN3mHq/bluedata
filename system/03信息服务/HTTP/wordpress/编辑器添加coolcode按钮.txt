@@ -1,0 +1,27 @@
+打开 wp-includes/js/quicktags.dev.js ，找到
+edButtons[edButtons.length] =
+new edButton('ed_code'
+,'code'
+,'<code>'
+,'</code>'
+,'c'
+);
+
+在后面添加：
+edButtons[edButtons.length] =
+new edButton('ed_coolcode'
+,'coolcode'
+,'<coolcode linenum=\"off\">'
+,'</coolcode>'
+,'x'
+); 
+
+
+找到
+t.Buttons[t.Buttons.length] = new edButton(name+'_code','code','<code>','</code>','c');
+
+在下面添加一行：
+t.Buttons[t.Buttons.length] = new edButton(name+'_coolcode','coolcode','<coolcode linenum=\"off\">','</coolcode>','x');
+
+
+再同样修改 quicktags.js
