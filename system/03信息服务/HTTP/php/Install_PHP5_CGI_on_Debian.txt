@@ -10,7 +10,6 @@ The following NEW packages will be installed:
 tar zxvf ZendOptimizer-3.3.3-linux-glibc23-i386.tar.gz
 cd ZendOptimizer-3.3.3-linux-glibc23-i386
 ./install
-cd ..
 
 cd /etc/php5/cgi
 mv php.ini-zend_optimizer.bak php.ini
@@ -22,7 +21,7 @@ zend_optimizer.version=3.3.3
 zend_extension=/usr/local/Zend/lib/ZendExtensionManager.so
 
 
-## Installing eAccelerator
+## Install eAccelerator
 apt-get install build-essential php5-dev
 The following NEW packages will be installed:
   automake1.4 build-essential bzip2 dpkg-dev libssl-dev libtimedate-perl php5-dev shtool zlib1g-dev
@@ -31,14 +30,14 @@ wget http://bart.eaccelerator.net/source/0.9.5.3/eaccelerator-0.9.5.3.tar.bz2
 tar jxvf eaccelerator-0.9.5.3.tar.bz2
 cd eaccelerator-0.9.5.3
 phpize
-./configure
+./configure --enable-eaccelerator=shared
 make
 make install
 
 vi /etc/php5/conf.d/eaccelerator.ini
 extension="eaccelerator.so"
 eaccelerator.shm_size="16"
-eaccelerator.cache_dir="/var/cache/eaccelerator"
+eaccelerator.cache_dir="/tmpfs"
 eaccelerator.enable="1"
 eaccelerator.optimizer="1"
 eaccelerator.check_mtime="1"
@@ -51,8 +50,13 @@ eaccelerator.shm_only="0"
 eaccelerator.compress="1"
 eaccelerator.compress_level="9"
 
-mkdir -p /var/cache/eaccelerator
-chown -R www-data:www-data /var/cache/eaccelerator
+
+用 tmpfs 提升性能
+mkdir /tmpfs
+在 /etc/fstab 中加入
+tmpfs                   /tmpfs              tmpfs   size=32m,mode=1777        0 0
+
+mount -a
 
 
 ## Configure
@@ -62,6 +66,7 @@ memory_limit = 8M
 default_socket_timeout = 10
 mysql.allow_persistent = Off
 mysql.connect_timeout = 10
+session.save_path = /tmpfs
 session.gc_maxlifetime = 3600
 session.bug_compat_42 = 0
 session.bug_compat_warn = 0

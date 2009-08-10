@@ -1,0 +1,39 @@
+官方网页：
+http://jimsun.linxnet.com/postfix_contrib.html
+
+
+下载：
+wget http://jimsun.linxnet.com/downloads/pflogsumm-1.1.1.tar.gz
+
+
+安装 Date::Calc
+yum -y install perl-Date-Calc
+
+
+安装 pflogsumm （安装说明都在 README 里）
+tar zxvf pflogsumm-1.1.1.tar.gz
+cd pflogsumm-1.1.1
+cp pflogsumm.pl /usr/local/bin/pflogsumm
+chown bin:bin /usr/local/bin/pflogsumm
+chmod 755 /usr/local/bin/pflogsumm
+cp pflogsumm.1 /usr/local/man/man1/pflogsumm.1
+chown bin:bin /usr/local/man/man1/pflogsumm.1
+chmod 644 /usr/local/man/man1/pflogsumm.1
+
+
+配置系统 LANG
+vi /etc/sysconfig/i18n
+LANG=”en_US”
+
+
+运行命令，查看日志，如：
+pflogsumm /var/log/maillog
+pflogsumm `ls -rt /var/log/maillog*`
+pflogsumm -d today /var/log/maillog
+pflogsumm -d yesterday /var/log/maillog
+
+更详细的用法可参照 man pflogsumm
+
+
+定时把报告发送到邮箱
+0 1 * * * /usr/local/bin/pflogsumm -d yesterday /var/log/maillog.1 | mail -s “Mail Report From mail.domain.com” postmaster@domain.com

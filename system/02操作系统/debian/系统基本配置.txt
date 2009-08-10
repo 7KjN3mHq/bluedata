@@ -47,7 +47,6 @@ iface eth0:0 inet static
         netmask 255.255.255.240
         network 202.91.231.160
         broadcast 202.91.231.175
-        gateway 202.91.231.161
 
 -----
 vi ~/.bashrc
