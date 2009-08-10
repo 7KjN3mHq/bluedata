@@ -42,11 +42,11 @@ LoadPlugin="decodeutfkeys"
 mkdir /usr/local/awstats/data
 
 创建配置文件：
-vi awstats.xbjcw.cn.conf
+vi awstats.domain.com.conf
 Include "common.conf"
 LogFile="/var/log/httpd/access_log.%YYYY-24%MM-24%DD-24"
-SiteDomain="www.xbjcw.cn"
-HostAliases="xbjcw.cn"
+SiteDomain="www.domain.com"
+HostAliases="domain.com"
 DirData="/usr/local/awstats/data/"
 
 # 统计多个日志文件
@@ -83,7 +83,7 @@ ExtraSectionName1="Baidu crawls - Top 50"
 ExtraSectionCodeFilter1="200 304"
 ExtraSectionCondition1="UA,(.*Baiduspider.*)"
 ExtraSectionFirstColumnValues1="URL,(.*)"
-ExtraSectionFirstColumnFormat1="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat1="<a href='http://www.domain.com%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes1=PHBL
 ExtraSectionAddAverageRow1=0
 ExtraSectionAddSumRow1=1
@@ -94,7 +94,7 @@ ExtraSectionName2="Google crawls - Top 50"
 ExtraSectionCodeFilter2="200 304"
 ExtraSectionCondition2="UA,(.*Googlebot.*)"
 ExtraSectionFirstColumnValues2="URL,(.*)"
-ExtraSectionFirstColumnFormat2="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat2="<a href='http://www.domain.com%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes2=PHBL
 ExtraSectionAddAverageRow2=0
 ExtraSectionAddSumRow2=2
@@ -105,7 +105,7 @@ ExtraSectionName3="Yahoo Slurp crawls - Top 50"
 ExtraSectionCodeFilter3="200 304"
 ExtraSectionCondition3="UA,(.*Slurp.*)"
 ExtraSectionFirstColumnValues3="URL,(.*)"
-ExtraSectionFirstColumnFormat3="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat3="<a href='http://www.domain.com%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes3=PHBL
 ExtraSectionAddAverageRow3=0
 ExtraSectionAddSumRow3=3
@@ -116,7 +116,7 @@ ExtraSectionName4="MSN crawls - Top 50"
 ExtraSectionCodeFilter4="200 304"
 ExtraSectionCondition4="UA,(.*msnbot.*)"
 ExtraSectionFirstColumnValues4="URL,(.*)"
-ExtraSectionFirstColumnFormat4="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat4="<a href='http://www.domain.com%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes4=PHBL
 ExtraSectionAddAverageRow4=0
 ExtraSectionAddSumRow4=4
@@ -127,7 +127,7 @@ ExtraSectionName5="Sohu crawls - Top 50"
 ExtraSectionCodeFilter5="200 304"
 ExtraSectionCondition5="UA,(.*sogou.*)"
 ExtraSectionFirstColumnValues5="URL,(.*)"
-ExtraSectionFirstColumnFormat5="<a href='http://www.xbjcw.cn%s' title='Item Crawled' target='_blank'>%s</a>"
+ExtraSectionFirstColumnFormat5="<a href='http://www.domain.com%s' title='Item Crawled' target='_blank'>%s</a>"
 ExtraSectionStatTypes5=PHBL
 ExtraSectionAddAverageRow5=0
 ExtraSectionAddSumRow5=5
@@ -183,11 +183,11 @@ LoadPlugin="qqhostinfo"
 
 
 分析日志
-/usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
+/usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=domain.com
 注释： -databasebreak=day 即按天进行统计。报表输出时还需增加 &databasebreak=day&day=DD 。可解决按月统计归档数据过大导致统计过慢或失败的问题。
 
 生成静态文件
-/usr/bin/perl /usr/local/awstats/tools/awstats_buildstaticpages.pl -update -config=xbjcw.cn -lang=cn -dir=/var/www/awstats/html/ -awstatsprog=/usr/local/awstats/wwwroot/cgi-bin/awstats.pl
+/usr/bin/perl /usr/local/awstats/tools/awstats_buildstaticpages.pl -update -config=domain.com -lang=cn -dir=/var/www/awstats/html/ -awstatsprog=/usr/local/awstats/wwwroot/cgi-bin/awstats.pl
 不能使用  -databasebreak=day 参数。
 需要安装 Perl URI 模块：
 yum -y install perl-URI
@@ -195,7 +195,7 @@ yum -y install perl-URI
 
 定期执行
 vi /etc/crontab
-0 1 * * * root /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=xbjcw.cn
+0 1 * * * root /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=domain.com
 
 
 查看报表
@@ -204,7 +204,7 @@ mkdir /var/www/awstats
 vi /etc/httpd/conf.d/vhosts_awstats.conf
 <VirtualHost *:80>
 DocumentRoot "/var/www/awstats"
-ServerName awstats.xbjcw.cn
+ServerName awstats.domain.com
 
 Alias /classes "/usr/local/awstats/wwwroot/classes/"
 Alias /css "/usr/local/awstats/wwwroot/css/"
@@ -227,4 +227,4 @@ mv Calendar.txt calendar.php
 然后创建 awstats.php, index.php 程序文件并放到虚拟主机目录下：
 cp -a *.php /var/www/awstats/
 
-查看： http://awstats.xbjcw.cn/
+查看： http://awstats.domain.com/

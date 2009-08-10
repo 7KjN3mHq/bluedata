@@ -1,0 +1,53 @@
+1. 先复制出分析 maillog 用的配置文件，如 awstats.mail.conf 。
+
+2. 修改配置文件如下：
+1) 对于 mail 原始日志用 maillogconvert.pl 进行转换，脚本位于 awstats/tools 目录下，如：
+LogFile="cat /var/log/maillog.1 | /usr/bin/perl /usr/local/awstats/tools/maillogconvert.pl standard | "
+
+2) 日志类型设置为邮件： M 格式
+LogType=M
+
+3) SiteDomain 指定为邮件服务器域名，如：
+SiteDomain="domain.com"
+
+4) 指定数据存放目录，如：
+DirData="/usr/local/awstats/data/"
+
+5） 指定日志格式等字段：
+LogFormat="%time2 %email %email_r %host %host_r %method %url %code %bytesd"
+LevelForBrowsersDetection=0
+LevelForOSDetection=0
+LevelForRefererAnalyze=0
+LevelForRobotsDetection=0
+LevelForWormsDetection=0
+LevelForSearchEnginesDetection=0
+LevelForFileTypesDetection=0
+ShowMenu=1
+ShowMonthStats=HB
+ShowDaysOfMonthStats=HB
+ShowDaysOfWeekStats=HB
+ShowHoursStats=HB
+ShowDomainsStats=0
+ShowHostsStats=HBL
+ShowAuthenticatedUsers=0
+ShowRobotsStats=0
+ShowEMailSenders=HBL
+ShowEMailReceivers=HBL
+ShowSessionsStats=0
+ShowPagesStats=0
+ShowFileTypesStats=0
+ShowFileSizesStats=0
+ShowBrowsersStats=0
+ShowOSStats=0
+ShowOriginStats=0
+ShowKeyphrasesStats=0
+ShowKeywordsStats=0
+ShowMiscStats=0
+ShowHTTPErrorsStats=0
+ShowSMTPErrorsStats=1
+
+3. 产生统计数据，如:
+/usr/local/awstats/wwwroot/cgi-bin/awstats.pl -config=mail -update
+
+查看结果，如:
+http://domain.com/cgi-bin/awstats/awstats.pl?config=mail

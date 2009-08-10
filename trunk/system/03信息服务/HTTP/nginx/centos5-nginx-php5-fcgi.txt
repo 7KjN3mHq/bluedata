@@ -22,7 +22,7 @@ cd php-5.2.6
 --with-mysqli
 make
 make install
-cp -f php.ini-dist /usr/local/php-fcgi/etc/php.ini
+cp -f php.ini-recommended /usr/local/php-fcgi/etc/php.ini
 cd ..
 
 
@@ -194,7 +194,7 @@ vi /usr/local/php-fcgi/etc/php-fpm.conf
 
                         Address to accept fastcgi requests on.
                         Valid syntax is 'ip.ad.re.ss:port' or just 'port' or '/path/to/unix/socket'
-                        <value name="listen_address">192.168.0.241:10080</value>
+                        <value name="listen_address">127.0.0.1:9000</value>
 
                         <value name="listen_options">
 
@@ -216,10 +216,10 @@ vi /usr/local/php-fcgi/etc/php-fpm.conf
                         </value>
 
                         Unix user of processes
-                        <value name="user">nobody</value>
+                        <value name="user">www-data</value>
 
                         Unix group of processes
-                        <value name="group">nobody</value>
+                        <value name="group">www-data</value>
 
                         Process manager settings
                         <value name="pm">
@@ -258,7 +258,7 @@ vi /usr/local/php-fcgi/etc/php-fpm.conf
                         <value name="request_execution_timeout">31s</value>
 
                         Set open file desc rlimit
-                        <value name="rlimit_files">51200</value>
+                        <value name="rlimit_files">65536</value>
 
                         Set max core size rlimit
                         <value name="rlimit_core">0</value>
@@ -277,12 +277,12 @@ vi /usr/local/php-fcgi/etc/php-fpm.conf
                         Useful to work around memory leaks in 3rd party libraries.
                         For endless request processing please specify 0
                         Equivalent to PHP_FCGI_MAX_REQUESTS
-                        <value name="max_requests">51200</value>
+                        <value name="max_requests">65536</value>
 
                         Comma separated list of ipv4 addresses of FastCGI clients that allowed to connect.
                         Equivalent to FCGI_WEB_SERVER_ADDRS environment in original php.fcgi (5.2.2+)
                         Makes sense only with AF_INET listening socket.
-                        <value name="allowed_clients">192.168.0.0/24</value>
+                        <value name="allowed_clients">127.0.0.1</value>
 
                         Pass environment variables like LD_LIBRARY_PATH
                         All $VARIABLEs are taken from current environment
@@ -305,7 +305,6 @@ vi /usr/local/php-fcgi/etc/php-fpm.conf
 
 
 Æô¶¯ PHP
-ulimit -SHn 51200
 /usr/local/php-fcgi/sbin/php-fpm start
 
 

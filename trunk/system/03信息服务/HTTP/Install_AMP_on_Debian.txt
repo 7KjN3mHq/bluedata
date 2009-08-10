@@ -8,16 +8,6 @@ The following NEW packages will be installed:
   openssl-blacklist php5 php5-common python python-minimal python2.5
   python2.5-minimal sgml-base ssl-cert ucf xml-core
 
-vi /etc/php5/apache2/php.ini
-max_execution_time = 5
-memory_limit = 8M
-default_socket_timeout = 10
-mysql.allow_persistent = Off
-mysql.connect_timeout = 10
-session.gc_maxlifetime = 3600
-session.bug_compat_42 = 0
-session.bug_compat_warn = 0
-
 # Install ZendOptimizer
 tar zxvf ZendOptimizer-3.3.3-linux-glibc23-x86_64.tar.gz
 cd ZendOptimizer-3.3.3-linux-glibc23-x86_64
@@ -69,6 +59,17 @@ eaccelerator.compress_level="9"
 
 mkdir -p /var/cache/eaccelerator
 chown -R www-data:www-data /var/cache/eaccelerator
+
+# Configure PHP5
+vi /etc/php5/apache2/php.ini
+max_execution_time = 5
+memory_limit = 8M
+default_socket_timeout = 10
+mysql.allow_persistent = Off
+mysql.connect_timeout = 10
+session.gc_maxlifetime = 3600
+session.bug_compat_42 = 0
+session.bug_compat_warn = 0
 
 
 # Configure Apache
