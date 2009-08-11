@@ -32,7 +32,8 @@ description:
 安装模块方法
 下载源文件: nginx-accesskey-2.0.3.tar.gz 
 解压，然后在编译nginx的时候加上:
-    ./configure --addon-module=path/to/nginx-accesskey 
+    ./configure --addon-module=path/to/nginx-accesskey
+一定要紧跟在 configure 后，否则不能识别 --addon-module 参数。
 开发者:  OWOX project   http://www.owoxengine.com/
 
 
