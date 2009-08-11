@@ -1,11 +1,14 @@
+在 Debian 上安装 Nginx
+
+
+安装依赖的包：
 apt-get install libpcre3-dev libpcrecpp0 zlib1g-dev
+
+下载最新稳定版安装：
 wget http://sysoev.ru/nginx/nginx-0.7.61.tar.gz
-wget http://wiki.nginx.org/images/5/51/Nginx-accesskey-2.0.3.tar.gz
 tar zxvf nginx-0.7.61.tar.gz
-tar zxvf Nginx-accesskey-2.0.3.tar.gz
 cd nginx-0.7.61
 ./configure \
---add-module=../nginx-accesskey-2.0.3 \
 --user=www-data \
 --group=www-data \
 --prefix=/usr/local/nginx \
@@ -14,16 +17,8 @@ cd nginx-0.7.61
 make
 make install
 
-echo -ne "
-fs.file-max = 65536
-" >> /etc/sysctl.conf
-sysctl -p
 
-echo -ne "
-www-data soft nofile 65536
-www-data hard nofile 65536
-" >> /etc/security/limits.conf
-
+Nginx 的设置：
 mkdir /var/log/nginx
 vi /usr/local/nginx/conf/nginx.conf
 user  www-data www-data;
@@ -98,9 +93,12 @@ http {
     }
 }
 
-vi /usr/local/nginx/conf/fastcgi_params
+
+并在 /usr/local/nginx/conf/fastcgi_params 中增加如下一行：
 fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
 
+
+创建启动脚本：
 vi /etc/init.d/nginx
 #! /bin/sh
 
@@ -165,5 +163,23 @@ esac
 
 exit 0
 
+
 chmod +x /etc/init.d/nginx
+
+
+系统的相关设置：
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
+
+echo -ne "
+www-data soft nofile 65536
+www-data hard nofile 65536
+" >> /etc/security/limits.conf
+
+
+启动：
 /etc/init.d/nginx start
+
+最后，运行 sysv-rc-conf ，设置 nginx 开机自启动。
