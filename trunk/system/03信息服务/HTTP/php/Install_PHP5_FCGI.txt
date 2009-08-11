@@ -103,7 +103,7 @@ session.bug_compat_warn = 0
 extension="eaccelerator.so"
 # 可使用内存设为了 16M ，太大会启动不了 PHP ，以 CGI 模式运行的 PHP ，各进程间也不能共享内存， eAccelerator 的共享模式也就无效了。
 eaccelerator.shm_size="16"
-eaccelerator.cache_dir="/tmpfs/eaccelerator"
+eaccelerator.cache_dir="/tmpfs"
 eaccelerator.enable="1"
 eaccelerator.optimizer="1"
 eaccelerator.check_mtime="1"
