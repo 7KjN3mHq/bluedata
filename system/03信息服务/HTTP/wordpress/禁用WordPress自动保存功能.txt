@@ -1,0 +1,10 @@
+禁用 WordPress 自动保存功能
+
+
+在 wordpress 的 wp-admin 目录中找到以下四个文件： post-new.php page-new.php post.php page.php
+把下面这行注释掉：
+wp_enqueue_script('autosave');
+
+
+清理文章的版本记录（自己修改的版本记录也会被删除）：
+DELETE FROM wordpress.wp_posts WHERE post_type = 'revision';

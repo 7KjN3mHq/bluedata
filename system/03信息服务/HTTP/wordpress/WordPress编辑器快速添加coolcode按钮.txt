@@ -1,3 +1,5 @@
+WordPress 2.8 编辑器快速添加 CoolCode 按钮
+
 打开 wp-includes/js/quicktags.dev.js ，找到
 edButtons[edButtons.length] =
 new edButton('ed_code'
@@ -7,7 +9,7 @@ new edButton('ed_code'
 ,'c'
 );
 
-在后面添加：
+在下面添加：
 edButtons[edButtons.length] =
 new edButton('ed_coolcode'
 ,'coolcode'
@@ -16,12 +18,14 @@ new edButton('ed_coolcode'
 ,'x'
 ); 
 
-
-找到
+再找到
 t.Buttons[t.Buttons.length] = new edButton(name+'_code','code','<code>','</code>','c');
 
 在下面添加一行：
 t.Buttons[t.Buttons.length] = new edButton(name+'_coolcode','coolcode','<coolcode linenum=\"off\">','</coolcode>','x');
 
 
-再同样修改 quicktags.js
+然后对 quicktags.js 做同样的修改。
+
+
+CoolCode 的介绍：http://www.coolcode.cn/?action=show&id=26
