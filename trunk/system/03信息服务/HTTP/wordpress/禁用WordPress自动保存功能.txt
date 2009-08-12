@@ -8,3 +8,5 @@ wp_enqueue_script('autosave');
 
 清理文章的版本记录（自己修改的版本记录也会被删除）：
 DELETE FROM wordpress.wp_posts WHERE post_type = 'revision';
+
+如果文章修改较为频繁，也可定期对版本记录进行清理。

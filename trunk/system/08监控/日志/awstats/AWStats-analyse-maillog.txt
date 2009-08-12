@@ -1,3 +1,6 @@
+用 AWStats 分析 maillog
+
+
 1. 先复制出分析 maillog 用的配置文件，如 awstats.mail.conf 。
 
 2. 修改配置文件如下：
