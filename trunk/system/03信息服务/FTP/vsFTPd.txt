@@ -1,0 +1,38 @@
+vsFTPD 快速安装配置
+
+
+安装：
+CentOS:
+yum install vsftpd
+
+Debian:
+apt-get install vsftpd
+
+
+配置：
+vi /etc/vsftpd.conf
+
+禁止匿名用户登录：
+anonymous_enable=NO
+
+允许系统用户登录：
+local_enable=YES
+
+开启写权限：
+write_enable=YES
+
+设置掩码：
+local_umask=022
+
+如果觉得默认的空闲时间太短，可以设置的久一点：
+idle_session_timeout=3600
+data_connection_timeout=3600
+
+把 ftp 用户限制在自己的主目录：
+chroot_local_user=YES
+
+
+未指定用户 shell 会导致 "530 Login incorrect" 错误：
+vi /etc/passwd
+www-data:x:33:33:www-data:/home:/bin/false
+把 shell 改为 /bin/sh
