@@ -1,42 +1,53 @@
+MySQL 数据文件需要存放在 LVM 逻辑卷上才能进行如下操作。
+
+创建快照：
+master 作为源：
 ## 对 master 进行读锁定
 mysql> flush tables with read lock;
 
-####################
-## 停止 slave 复制进程
-mysql -e 'slave stop'
-####################
-
-## 在新终端中创建 MySQL 数据 逻辑卷 的快照
+## 在新终端中（退出锁会失效）创建 MySQL 数据 逻辑卷 的快照
 modprobe dm-snapshot
-lvcreate -l 486 -s -n mysql_snap /dev/vg/data
+lvcreate -l 486 -s -n mysql_snap /dev/vg/mysql
 
 ## 记录当前 binlog 名称及 POS
 mysql> show master status;
-mysql-bin.000018 | 235667001
-
-####################
-## 记录当前 master binlog 名称及 POS
-mysql -e 'show slave status\G'
-####################
++------------------+-----------+
+| File             | Position  |
++------------------+-----------+
+| mysql-bin.000018 | 235667001 |
++------------------+-----------+
 
 ## 解锁
 mysql> unlock tables;
 
-####################
+
+slave 作为源：
+## 停止 slave 复制进程
+mysql -e 'slave stop'
+
+## 创建 MySQL 数据 逻辑卷 的快照
+modprobe dm-snapshot
+lvcreate -l 486 -s -n mysql_snap /dev/vg/mysql
+
+## 记录当前 master binlog 名称及 POS
+mysql -e 'show slave status\G'
+Master_Log_File: mysql-bin.000018
+Read_Master_Log_Pos: 235667001
+
 ## 启动 slave 复制进程
 mysql -e 'slave start'
-####################
+
 
 ## 同步数据库文件
 mount /dev/vg/mysql_snap /mnt
-rsync -ae ssh --delete --exclude "mysql-bin.*" /mnt/ app2:/data/ &
+rsync -ae ssh --delete --exclude "mysql-bin.*" /mnt/ mysql2:/mysql/ &
 
-## 删除快照
+## 在源上删除快照
 umount /mnt
 lvremove -f /dev/vg/mysql_snap
 rmmod dm-snapshot
 
-## 在 slave 上启动数据库及复制进程
+## 在新的 slave 上启动数据库及复制进程
 /etc/init.d/mysqld start
 mysql -e 'slave stop'
 mysql -e 'change master to master_host="192.168.0.201", master_user="slave", master_password="slave", master_log_file="mysql-bin.000018", master_log_pos=235667001'
