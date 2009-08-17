@@ -1,13 +1,10 @@
-第一步，导出旧库
-
+1. 导出旧库：
 mysqldump --default-character-set gbk wordpress > old.sql
 
-第二步，转换编码
-
+2. 转换编码：
 iconv -f gbk -t utf-8 -o new.sql old.sql
 
-第三步，导入新库
+3. 导入新库：
+修改 new.sql ，增加一条 sql 语句： "SET NAMES utf8;" ，保存。
 
-修改new.sql，增加一条sql语句： "SET NAMES utf8;"，保存。
-
-mysql -hlocalhost -uroot db < new.sql
+mysql db < new.sql
