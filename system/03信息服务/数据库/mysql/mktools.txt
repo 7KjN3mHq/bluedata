@@ -2,6 +2,21 @@ http://www.maatkit.org/
 
 wget http://www.maatkit.org/get/toolname
 
+查看是否安装了 perl-DBD-MySQL:
+perl -e 'use DBD::mysql'
+有错误输出就安装：
+http://www.cpan.org/modules/by-module/DBD
+wget http://www.cpan.org/modules/by-module/DBD/DBD-mysql-4.012.tar.gz
+tar zxvf DBD-mysql-4.012.tar.gz
+cd DBD-mysql-4.012
+perl Makefile.PL --mysql_config=/usr/local/mysql/bin/mysql_config
+make
+make install
+
+echo "/usr/local/mysql/lib/mysql" > /etc/ld.so.conf.d/mysql-x86_64.conf
+ldconfig
+
+
 在 master 上：
 mk-table-checksum --createreplicate --replicate=test.checksum localhost
 
