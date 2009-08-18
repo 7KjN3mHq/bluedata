@@ -1,0 +1,5 @@
+如何在一个配置文件中跟踪网站的所有子域？
+http://www.google.com/support/googleanalytics/bin/answer.py?hl=cn&answer=55524
+
+为什么网站覆盖图不起作用？
+http://www.google.com/support/analytics/bin/answer.py?hl=cn&answer=66982
