@@ -1,3 +1,6 @@
+不同主机上 top 命令的列排序不一致
+在一台主机上 W 保存为 ~/.toprc 文件，复制到另外的主机。
+
 SWAP 颠簸
 echo 0 > /proc/sys/vm/swappiness
 缺省 swappiness 一般是 60 ，通过把它设定为 0 ，可以让系统尽可能别去用 swap 。
