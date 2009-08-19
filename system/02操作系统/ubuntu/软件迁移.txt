@@ -26,6 +26,7 @@ Alexa Toolbar: https://addons.mozilla.org/zh-CN/firefox/addon/5362
 FoxyProxy: https://addons.mozilla.org/zh-CN/firefox/addon/2464
 RefControl: https://addons.mozilla.org/zh-CN/firefox/addon/953
 Chromifox Basic: https://addons.mozilla.org/zh-CN/firefox/addon/8782
+FlashBlock: http://flashblock.mozdev.org/
 
 
  ‰»Î∑®£∫
