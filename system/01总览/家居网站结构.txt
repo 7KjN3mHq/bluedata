@@ -1,6 +1,20 @@
 家居建材分类：
-家具 | 厨房 | 家电 | 地板 | 卫浴 | 瓷砖 | 五金
-涂料 | 照明 | 门窗 | 壁纸 | 家纺 | 采暖 | 电工
+门窗
+吊顶
+照明 灯具
+涂料 油漆 壁纸 墙纸
+瓷砖 陶瓷
+地板 地砖
+厨房 橱柜
+卫浴 洁具
+采暖
+
+五金
+电工
+
+家具
+家电
+家纺 布艺 饰品
 
 
 新闻：
@@ -45,11 +59,15 @@
 附：
 家居网站收集：
 http://home.soufun.com/  --  搜房装修家居网
-
 http://jiaju.sina.com.cn/  --  新浪装修家居网
-
 http://www.ju51.com/  --  居无忧
-
 http://www.homee.com.cn/  --  家居易站
-
 http://home.house365.com/  --  365地产家居网
+
+
+家具： http://www.jiaju.cc/  国际站： http://www.furnitureec.com/
+厨房： 中华橱柜网： http://www.chinachugui.com/  中国橱柜网： http://www.chuguiwang.cn/
+家电： 家电网： http://www.hea.cn/  中国家电网： http://www.cheaa.com/  慧聪家电网： http://www.homea.hc360.com/
+地板： 中华地板网： http://www.chinafloor.cn/
+照明： 中国照明网： http://www.lightingchina.com/
+壁纸： 中国壁纸网： http://www.cnwallpaper.cn/
