@@ -1,0 +1,21 @@
+用 dnsmasq 做 dns 代理缓存服务器
+
+在 Debian 下安装：
+apt-get install dnsmasq
+
+配置：
+vi /etc/dnsmasq.conf
+默认配置下，dnsmasq使用系统的/etc/resolv.conf并读取/etc/hosts，在配置里可以更改或者关闭，现在是修改了这两个，
+其它的按默认：
+resolv-file=/etc/dnsmasq.resolv.conf
+addn-hosts=/etc/dnsmasq.hosts
+
+dnsmasq 还支持 dhcp 服务。
+
+dnsmasq 可以用 hosts 文件来设置域名：
+例： test.domain.com 是不存在的域名，在 dnsmasq 中指向到一个 ip:
+echo "64.233.189.99 test.domain.com" > /etc/dnsmasq.hosts
+改完要重启：
+/etc/init.d/dnsmasq restart
+
+做完之后，只要把本机 dns 指到 dnsmasq 的机器，就可以解析出 test.domain.com 这个域名。

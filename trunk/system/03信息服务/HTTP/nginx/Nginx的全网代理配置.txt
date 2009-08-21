@@ -1,0 +1,18 @@
+location /get/
+{
+set $hostx "";
+set $addrs "";
+if ( $uri ~ "^/get/http./+([^/]+)/(.+)$") {
+  set $hostx $1;
+  set $addrs $2;
+}
+resolver 127.0.0.1;
+proxy_pass http://$hostx/$addrs;
+proxy_set_header referer "http://$hostx";
+}
+
+这个配置可以代理互联网上的所有 http 页面和图片，并且可越过一般的防盗链限制。
+
+访问方法：http://www.domain.com/get/http://www.google.com/tools/dlpage/res/chrome/images/chrome-205_noshadow.png
+
+因为 nginx 不会自动读取系统的 dns 去解析域名，所以需要定义一个 resolver 作为 dns 服务器。
