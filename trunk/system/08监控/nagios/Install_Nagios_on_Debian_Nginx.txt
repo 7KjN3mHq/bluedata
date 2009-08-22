@@ -1,0 +1,83 @@
+下载所需软件：
+http://www.nagios.org/download/
+wget http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-3.2.0.tar.gz
+
+创建 nagios 用户和组：
+groupadd nagios
+useradd -g nagios -d /usr/local/nagios -s /bin/bash nagios
+
+创建一个 nagcmd 组用于从 Web 接口执行外部命令，并将 nagios 用户和 Web 用户都加到这个组中：
+groupadd nagcmd
+usermod -G nagcmd nagios
+usermod -G nagcmd www-data
+
+安装 Nagios:
+apt-get install libgd2-noxpm-dev
+tar zxvf nagios-3.2.0.tar.gz
+cd nagios-3.2.0
+./configure \
+--prefix=/usr/local/nagios \
+--with-command-group=nagcmd
+
+make all
+
+make install
+make install-init
+make install-config
+make install-commandmode
+
+创建 Nagios Web 接口登录的用户：
+apt-get install apache2-utils
+htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+配置 Nginx 支持 CGI ，然后在 Nginx 添加 Nagios 的配置如下：
+server {
+    listen  80;
+    server_name  nagios.domain.com;
+    root  /usr/local/nagios/share;
+    index  index.php;
+    location ~ .*\.php?$ {
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include  fastcgi_params;
+    }
+    location ~ .*\.cgi$ {
+        rewrite  ^/nagios/cgi-bin/(.*)\.cgi /$1.cgi break;
+        fastcgi_pass  127.0.0.1:8999;
+        fastcgi_param  SCRIPT_FILENAME  /usr/local/nagios/sbin$fastcgi_script_name;
+        include  fastcgi_params;
+    }
+    location / {
+        auth_basic  "Nagios Access";
+        auth_basic_user_file  /usr/local/nagios/etc/htpasswd.users;
+    }
+    location /nagios {
+        alias  /usr/local/nagios/share;
+    }
+}
+
+重启 Nginx:
+/etc/init.d/nginx restart
+
+
+安装 Nagios 插件：
+wget http://prdownloads.sourceforge.net/sourceforge/nagiosplug/nagios-plugins-1.4.13.tar.gz
+tar zxvf nagios-plugins-1.4.13.tar.gz
+cd nagios-plugins-1.4.13
+./configure \
+--prefix=/usr/local/nagios \
+--with-nagios-group=nagcmd
+
+make
+make install
+
+添加 nagios 服务：
+sysv-rc-conf
+
+检查配置文件是否有错误：
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+
+启动：
+/etc/init.d/nagios start
+
+通过 http://nagios.domain.com 输入用户名密码就可以打开 nagios 的页面了。不过此时的 Nagios 还什么也不能做。
