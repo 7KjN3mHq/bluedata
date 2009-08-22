@@ -1,5 +1,10 @@
 在被监控端，需要安装 net-snmp:
+CentOS:
 yum -y install net-snmp
+
+Debian:
+apt-get install snmpd
+
 并对 /etc/snmp/snmpd.conf 做如下设置：
 1、查找以下字段：
 #       sec.name  source          community
@@ -22,7 +27,12 @@ chkconfig snmpd on
 
 
 在监控端，需要先安装 net-snmp-utils:
+CentOS:
 yum -y install net-snmp-utils
+
+Debian:
+apt-get install snmp
+
 检查 SNMP 是否正常工作：
 snmpwalk -v 2c 192.168.0.200 -c public .1.3.6.1.4.1.2021.10.1.3
 UCD-SNMP-MIB::laLoad.1 = STRING: 0.22
@@ -42,7 +52,7 @@ mv cacti-0.8.6i /var/www/html/cacti
 
 建立 Cacti 的数据库 cacti 后倒入表结构及基础数据：
 cd /var/www/html/cacti
-mysql -uroot -proot cacti < cacti.sql
+mysql cacti < cacti.sql
 
 设置数据库相关信息：
 vi include/config.php
