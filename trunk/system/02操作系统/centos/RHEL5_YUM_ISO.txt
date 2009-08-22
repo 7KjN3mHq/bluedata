@@ -1,4 +1,7 @@
-1.
+RHEL5 使用 ISO 文件作为 YUM 源
+
+
+1. 设置 iso 文件的自动挂载并安装 createrepo
 mkdir /media/rhel
 mount -o loop rhel-5-server-i386-dvd.iso /media/rhel
 vi /etc/fstab
@@ -6,7 +9,7 @@ vi /etc/fstab
 mount -a
 rpm -ivh /media/rhel/Server/createrepo-0.4.11-3.el5.noarch.rpm
 
-2.
+2. 配置 repo
 cd /etc/yum.repos.d
 mv rhel-debuginfo.repo rhel-debuginfo.repo~
 vi rhel-media.repo
@@ -38,20 +41,20 @@ enabled=1
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
-3.
+3. 创建所需目录
 mkdir -p /var/rhel/{Cluster,ClusterStorage,Server,VT}
 
-4.
+4. createrepo:
 createrepo -o /var/rhel/Cluster -g /media/rhel/Cluster/repodata/comps-rhel5-cluster.xml /media/rhel/Cluster
 createrepo -o /var/rhel/ClusterStorage -g /media/rhel/ClusterStorage/repodata/comps-rhel5-cluster-st.xml /media/rhel/ClusterStorage
 createrepo -o /var/rhel/Server -g /media/rhel/Server/repodata/comps-rhel5-server-core.xml /media/rhel/Server
 createrepo -o /var/rhel/VT -g /media/rhel/VT/repodata/comps-rhel5-vt.xml /media/rhel/VT
 
-5.
+5. 避免无谓的“下载”
 mount --bind /var/rhel/Cluster/repodata /media/rhel/Cluster/repodata
 mount --bind /var/rhel/ClusterStorage/repodata /media/rhel/ClusterStorage/repodata
 mount --bind /var/rhel/Server/repodata /media/rhel/Server/repodata
 mount --bind /var/rhel/VT/repodata /media/rhel/VT/repodata
 
-6.
+6. 清除缓存
 yum clean all
