@@ -1,3 +1,13 @@
+CentOS:
+yum -y install perl-DBI
+
+Debian:
+apt-get install libdbi-perl
+The following NEW packages will be installed:
+  libdbi-perl libnet-daemon-perl libplrpc-perl
+
+apt-get install libdbd-mysql-perl
+
 http://www.nagiosexchange.org/cgi-bin/page.cgi?g=Detailed%2F2492.html;d=1
 wget http://www.nagiosexchange.org/cgi-bin/jump.cgi?ID=2492&view=File2;d=1
 chmod +x check_mysqld.pl

@@ -1,9 +1,17 @@
 监控平台上的安装：
 先安装 openssl-devel
+CentOS:
 yum install openssl-devel
 Installing for dependencies: e2fsprogs-devel krb5-devel
 
+Debian:
+apt-get install libssl-dev
+The following NEW packages will be installed:
+  libssl-dev zlib1g-dev
+
 再安装 NRPE:
+http://www.nagios.org/download/addons
+wget http://prdownloads.sourceforge.net/sourceforge/nagios/nrpe-2.12.tar.gz
 tar zxvf nrpe-2.12.tar.gz
 cd nrpe-2.12
 ./configure
@@ -18,7 +26,7 @@ define command{
         }
 
 被监控主机的安装：
-同样需要安装 openssl-devel
+同样需要安装 openssl-devel (Debian: libssl-dev)
 创建 nagios 用户和组
 groupadd nagios
 useradd -g nagios -d /usr/local/nagios -s /sbin/nologin nagios
@@ -60,7 +68,15 @@ allowed_hosts=127.0.0.1,$Nagios监控平台的地址或域名
 command[check_load]=/usr/local/nagios/libexec/check_load -w 15,10,5 -c 30,25,20
 这是用来检查 CPU 负载的。
 
-这样，就可以在监控平台上定义如下服务来监控被监控端的 CPU 负载了：
+在监控主机上定义 check_nrpe 的命令：
+vi /usr/local/nagios/etc/objects/commands.cfg
+# 'check_nrpe' command definition
+define command{
+        command_name    check_nrpe
+        command_line    $USER1$/check_nrpe -H $HOSTADDRESS$ -c $ARG1$
+        }
+
+然后就可以在监控平台上定义如下服务来监控被监控端的 CPU 负载了：
 define service{
 host_name remotehost
 service_description check_load

@@ -13,6 +13,9 @@ usermod -G nagcmd www-data
 
 安装 Nagios:
 apt-get install libgd2-noxpm-dev
+The following NEW packages will be installed:
+  libfreetype6-dev libgd2-noxpm libgd2-noxpm-dev libjpeg62-dev libpng12-dev
+
 tar zxvf nagios-3.2.0.tar.gz
 cd nagios-3.2.0
 ./configure \
@@ -54,6 +57,9 @@ server {
 
 创建 Nagios Web 接口登录的用户：
 apt-get install apache2-utils
+The following NEW packages will be installed:
+  apache2-utils libapr1 libaprutil1 libldap-2.4-2 libpq5 libsqlite3-0
+
 htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
 
 重启 Nginx:

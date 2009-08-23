@@ -125,3 +125,76 @@ sed -e 's|etch|testing|g' /etc/apt/sources.list > /etc/apt/sources.list~
 mv /etc/apt/sources.list~ /etc/apt/sources.list
 apt-get update
 apt-get dist-upgrade
+
+
+
+
+MSN:
+http://code.google.com/p/phpmsnclass/downloads/list
+wget http://phpmsnclass.googlecode.com/files/phpmsnclass_1.9.7z
+
+apt-get install p7zip-full
+7z e phpmsnclass_1.9.7z
+
+mv msn.class.php /usr/local/nagios/libexec/
+
+
+vi /usr/local/nagios/libexec/sendmsnmsg.php
+#!php -q
+<?php
+include_once('msn.class.php');
+$msn_username ='YOUR_MSN_ID'; //消息发送人的msn帐号
+$msn_password = "yourpassword"; //消息发送人msn密码
+$msn_list = array('somebody1@hotmail.com','somebody2@hotmail.com'); //消息接收人msn地址，这里可选，因为会使用nagios传递过来的地址
+$fp=fopen('/tmp/tmp/1′,'r');  //1这个文件是消息发送的内容，这个文件由nagios自动生成，路径根据自己实际自行修改
+$file="";
+while (! feof($fp)){
+$cont=fgets($fp);
+$file=$file.$cont;   //拼接报警消息内容
+}
+$msn =new MSN('MSNP15');  //采用MSNP15协议，支持离线消息
+if (!$msn->connect($msn_username,$msn_password)) {
+    echo "Error for connect to MSN networkn";
+    echo "$msn->errorn";
+    exit;
+}
+else {
+        $msn->sendMessage("$file",$argv[1]);  //将$file内容发送给$argv[1]传递进来的msn消息接收者。
+}
+fclose($fp);
+?>
+
+chmod +x /usr/local/nagios/libexec/sendmsnmsg.php
+
+
+
+
+
+Fetion:
+http://code.google.com/p/phpfetionapi/downloads/list
+wget http://phpfetionapi.googlecode.com/files/class_fetion.zip
+
+7z e class_fetion.zip
+mv class_fetion.php /usr/local/nagios/libexec/
+
+vi /usr/local/nagios/libexec/sendsms.php
+#!php -q
+<?php
+include_once('class_fetion.php');
+$sms_username = "1381126xxxx"; //飞信帐号
+$sms_password = "your password"; //飞信密码
+$fp=fopen('/tmp/tmp/1','r'); //同msn内容
+$file="";
+while (! feof($fp)){
+$cont=fgets($fp);
+$file=$file.$cont;
+}
+$fetion = new fetion($sms_username,$sms_password);
+$fetion->init() or die("fetion init failure!n");
+$fetion->sent_sms('tel:'.$argv[1],$file);  //根据传送进来的电话发送报警内容
+fclose($fp);
+?>
+
+chmod +x /usr/local/nagios/libexec/sendsms.php
+
+
