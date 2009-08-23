@@ -1,3 +1,6 @@
+在 Debian Nginx 上安装 Nagios 3.2
+
+
 下载所需软件：
 http://www.nagios.org/download/
 wget http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-3.2.0.tar.gz
