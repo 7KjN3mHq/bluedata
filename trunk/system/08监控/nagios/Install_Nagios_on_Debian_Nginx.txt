@@ -26,10 +26,6 @@ make install-init
 make install-config
 make install-commandmode
 
-创建 Nagios Web 接口登录的用户：
-apt-get install apache2-utils
-htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
-
 配置 Nginx 支持 CGI ，然后在 Nginx 添加 Nagios 的配置如下：
 server {
     listen  80;
@@ -56,6 +52,10 @@ server {
     }
 }
 
+创建 Nagios Web 接口登录的用户：
+apt-get install apache2-utils
+htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
 重启 Nginx:
 /etc/init.d/nginx restart
 
@@ -77,7 +77,11 @@ sysv-rc-conf
 检查配置文件是否有错误：
 /usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
 
+cgi 的权限验证问题：
+vi /usr/local/nagios/etc/cgi.cfg
+use_authentication=0
+
 启动：
 /etc/init.d/nagios start
 
-通过 http://nagios.domain.com 输入用户名密码就可以打开 nagios 的页面了。不过此时的 Nagios 还什么也不能做。
+打开 http://nagios.domain.com 输入之前设置的用户名和密码就可以查看 nagios 的页面了。不过此时还只能看到 localhost 的状态。
