@@ -1,6 +1,13 @@
-http://www.pnp4nagios.org/pnp/start
-
 安装
+apt-get install rrdtool
+The following NEW packages will be installed:
+  fontconfig libcairo2 libdatrie0 libdirectfb-1.0-0 libfontenc1 libglib2.0-0 libglib2.0-data libpango1.0-0 libpango1.0-common libpixman-1-0 librrd4 libsysfs2 libthai-data
+  libthai0 libts-0.0-0 libxcb-render-util0 libxcb-render0 libxfont1 libxft2 libxrender1 rrdtool x-ttcidfont-conf xfonts-encodings xfonts-utils
+
+http://www.pnp4nagios.org/pnp/start
+wget http://sourceforge.net/projects/pnp4nagios/files/PNP/pnp-0.4.14/pnp-0.4.14.tar.gz/download
+tar zxvf pnp-0.4.14.tar.gz
+cd pnp-0.4.14
 ./configure
 make all
 make install
@@ -10,13 +17,11 @@ make install
 process_performance_data=1
 service_perfdata_command=process-service-perfdata
 
-再把 commands.cfg 文件的 command_line 行替换为
+再把 commands.cfg 文件里 process-service-perfdata 命令的 command_line 行替换为
 command_line /usr/local/nagios/libexec/process_perfdata.pl
 
-###
-host 或者 service 定义中加入
+如果想要对某个监控对象做数据图表，则需在所对应的 host 或者 service 定义中加入如下的定义：
 process_perf_data 1
-###
 
-浏览
-http://IP/nagios/pnp/
+查看
+http://nagios.domain.com/pnp/

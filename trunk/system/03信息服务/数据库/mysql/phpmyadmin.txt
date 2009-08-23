@@ -1,3 +1,7 @@
+apt-get install php5-mcrypt
+The following NEW packages will be installed:
+  ca-certificates libcurl3 libidn11 libssh2-1 php5-curl
+
 http://www.phpmyadmin.net/home_page/index.php
 
 tar jxvf phpMyAdmin-3.1.5-all-languages.tar.bz2

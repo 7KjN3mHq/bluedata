@@ -2,7 +2,7 @@
 
 
 安装依赖的包：
-apt-get install libpcre3-dev libpcrecpp0 zlib1g-dev
+apt-get install libpcre3-dev libpcrecpp0 libssl-dev zlib1g-dev
 
 下载最新稳定版安装：
 wget http://sysoev.ru/nginx/nginx-0.7.61.tar.gz
