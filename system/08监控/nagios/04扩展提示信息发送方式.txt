@@ -121,8 +121,8 @@ chmod +x /usr/local/bin/sms.sh
 和添加 MSN 提醒命令一样添加短信提醒的命令就可以了。
 
 Debian Etch 可以升级到 testing ， glibc 也就更新到 2.4 了。
-sed -e 's|etch|testing|g' /etc/apt/sources.list > /etc/apt/sources.list~
-mv /etc/apt/sources.list~ /etc/apt/sources.list
+cp /etc/apt/sources.list /etc/apt/sources.list~
+sed -i 's/etch/testing/g' /etc/apt/sources.list
 apt-get update
 apt-get dist-upgrade
 
@@ -164,6 +164,19 @@ else {
 fclose($fp);
 ?>
 
+
+<?php
+include_once('msn.class.php');
+$msn_username = "bluedata@live.cn";
+$msn_password = "xxxxxxxx";
+$msn = new MSN('MSNP9');
+if ($msn->connect($msn_username, $msn_password)) {
+    $msn->sendMessage(iconv("GBK", "UTF-8", $argv[2]), $argv[1]);
+}
+?>
+
+MSNP15 可发离线信息，但需要 php5-mhash 模块。
+
 chmod +x /usr/local/nagios/libexec/sendmsnmsg.php
 
 
@@ -197,4 +210,30 @@ fclose($fp);
 
 chmod +x /usr/local/nagios/libexec/sendsms.php
 
+#!php -q
+<?php
+include_once('class_fetion.php');
+$sms_username = "159xxxxxxxx";
+$sms_password = "xxxxxxxx";
+$fetion = new fetion($sms_username,$sms_password);
+$fetion->init() or die("fetion init failure!n");
+$fetion->sent_sms('tel:'.$argv[1],$argv[2]);
+?>
 
+<?php
+include_once('class_fetion.php');
+$sms_username = "159xxxxxxxx";
+$sms_password = "xxxxxxxx";
+$sms = new Fetion;
+$sms->phone_num = trim($sms_username);
+$sms->password = trim($sms_password);
+$sms->sip_login();
+$sms->sendSMS_toPhone($argv[1],iconv("GBK", "UTF-8", $argv[2]));
+$sms->sip_logout();
+?>
+
+
+飞信PHP 源码需要用到 socket curl 扩展模块~
+apt-get install php5-curl
+The following NEW packages will be installed:
+  ca-certificates libcurl3 libidn11 libssh2-1 php5-curl

@@ -1,0 +1,51 @@
+nmon for Linux:
+http://nmon.sourceforge.net/pmwiki.php
+
+nmon 性能：分析 AIX 和 Linux 性能的免费工具：
+http://www.ibm.com/developerworks/cn/aix/library/analyze_aix/index.html
+
+wget http://sourceforge.net/projects/nmon/files/download/nmon_x86_12a.zip/download
+unzip nmon_x86_12a.zip
+Archive:  nmon_x86_12a.zip
+  inflating: nmon_x86_rhel45
+  inflating: nmon_x86_rhel52
+  inflating: nmon_x86_sles9
+  inflating: nmon_x86_sles10
+  inflating: nmon_x86_ubuntu810
+  inflating: nmon_x86_fedora10
+  inflating: nmon_x86_opensuse10
+
+chmod +x nmon_x86_ubuntu810
+mv nmon_x86_ubuntu810 /usr/local/bin/nmon
+
+apt-get install lsb-release
+lsb_release -d | sed 's/Description:\t//' > /etc/debian_release
+
+nmon
+
+
+nmon analyser——生成 AIX 性能报告的免费工具：
+http://www.ibm.com/developerworks/cn/aix/library/nmon_analyser/index.html
+
+下载：
+http://www.ibm.com/developerworks/wikis/display/Wikiptype/nmonanalyser
+
+test:
+nmon -s5 -c12 -f -m /home/
+
+定期采集：
+nmon -s300 -c288 -f -m /home/
+-s300 表示每 300 秒采集一次数据。
+-c288 表示采集 288 次， 300*288=86400 秒，刚好是一天的数据，这样运行一次这个程序就会生成一个一天的数据文件。
+-m 表示生成的数据文件的路径。
+-f 表示生成的数据文件名中有时间。
+然后在 crontab 中增加一条记录：
+0 0 * * * /usr/local/bin/nmon -s300 -c288 -f -m /home/ > /dev/null 2>&1
+
+这样每天凌晨都会运行 nmon 并生成一个 nmon 文件。
+生成的文件名为： myhost _090507_0000.nmon ，"myhost" 是这台主机的 hostname 。
+把生成的数据文件传到 Windows 机器上，用 Excel 打开分析工具 nmon analyser v33C.xls 。
+（如果宏不能运行：工具 -> 宏 -> 安全性 -> 中，然后再打开文件并允许运行宏。）
+
+点击 Excel 文件中的 "Analyze nmon data" 按钮，选择 nmon 数据文件，这样就会生成一个分析后的结果文件：
+myhost_090824_0000.nmon.xls ，用 Excel 打开生成的文件就可以看到结果了。
