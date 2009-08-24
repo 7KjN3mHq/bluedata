@@ -20,7 +20,7 @@ lsattr
 chattr -i inetd.conf
 
 sed 替换指定文字
-sed -i 's|etch|testing|g' /etc/apt/sources.list
+sed -i 's/etch/testing/g' /etc/apt/sources.list
 
 Linux 下 iconv 转换文件编码
 查看文件编码： file -i filename
