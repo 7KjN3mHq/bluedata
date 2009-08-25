@@ -15,9 +15,9 @@ usermod -G nagcmd nagios
 usermod -G nagcmd www-data
 
 °²×° Nagios:
-apt-get install libgd2-noxpm-dev
+apt-get install libgd2-xpm-dev
 The following NEW packages will be installed:
-  libfreetype6-dev libgd2-noxpm libgd2-noxpm-dev libjpeg62-dev libpng12-dev
+  defoma fontconfig-config libfontconfig1 libfreetype6 libgd2-xpm libjpeg62 libxpm4 ttf-dejavu ttf-dejavu-core ttf-dejavu-extra
 
 tar zxvf nagios-3.2.0.tar.gz
 cd nagios-3.2.0

@@ -6,23 +6,52 @@ date_format=iso8601  ; 日期格式
 
 objects/contacts.cfg 用来定义联系人：
 define contact {
-contact_name sa
-alias System Administrator
-service_notification_period 24x7
-host_notification_period 24x7
-service_notification_options w,u,c,r
-host_notification_options d,u,r
-service_notification_commands notify-service-by-email
-host_notification_commands notify-host-by-email
-email admin@test.com
-}
+        contact_name                   sa
+        alias                          System Administrator
+        email                          admin@domain.com
+        pager                          admin@live.cn
+        service_notification_period    24x7
+        host_notification_period       24x7
+        service_notification_options   w,u,c,r
+        host_notification_options      d,u,r
+        service_notification_commands  notify-service-by-email,notify-service-by-msn
+        host_notification_commands     notify-host-by-email,notify-host-by-msn
+        }
 
-再定义联系人组
-define contactgroup {
-contactgroup_name admins
-alias Administrator Group
-members sa    ; 添加其它联系人用 "," 分隔
-}
+define contact {
+        contact_name                   sa-sms
+        alias                          SA's Mobile
+        pager                          159xxxxxxxx
+        service_notification_period    nonworkhours
+        host_notification_period       nonworkhours
+        service_notification_options   u,c,r
+        host_notification_options      d,u,r
+        service_notification_commands  notify-service-sms
+        host_notification_commands     notify-host-sms
+        }
+
+以及联系人组：
+define contactgroup{
+        contactgroup_name       admins
+        alias                   Administrators
+        members                 sa,sa-sms
+        }
+
+
+时间段的定义：
+# 'nonworkhours' timeperiod definition
+define timeperiod{
+        timeperiod_name nonworkhours
+        alias           Non-Work Hours
+        use             workhours
+        monday          00:00-24:00
+        tuesday         00:00-24:00
+        wednesday       00:00-24:00
+        thursday        00:00-24:00
+        friday          00:00-24:00
+        saturday        00:00-24:00
+        sunday          00:00-24:00
+        }
 
 
 主机监控的配置

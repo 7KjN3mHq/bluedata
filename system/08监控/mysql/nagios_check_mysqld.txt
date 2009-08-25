@@ -8,8 +8,8 @@ The following NEW packages will be installed:
 
 apt-get install libdbd-mysql-perl
 
-http://www.nagiosexchange.org/cgi-bin/page.cgi?g=Detailed%2F2492.html;d=1
-wget http://www.nagiosexchange.org/cgi-bin/jump.cgi?ID=2492&view=File2;d=1
+http://www.monitoringexchange.org/cgi-bin/page.cgi?g=Detailed%2F2492.html;d=1
+wget http://www.monitoringexchange.org/cgi-bin/jump.cgi?ID=2492&view=File2;d=1
 chmod +x check_mysqld.pl
 
 ./check_mysqld.pl -H 192.168.0.250 -P 3306 -u USER -p PASSWORD
@@ -63,6 +63,10 @@ notification_period 24x7
 notification_options w,u,c,r
 check_command check_mysqld!3306!USER!PASSWORD
 }
+
+
+mysql -e "GRANT RELOAD,PROCESS,SUPER ON *.* TO 'nagios'@'nagios.domain.com' IDENTIFIED BY 'nagios';"
+mysql -e 'FLUSH PRIVILEGES;'
 
 
 check_mysql_replication.pl

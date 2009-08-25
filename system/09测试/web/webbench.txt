@@ -1,0 +1,21 @@
+安装：
+yum -y install ctags
+tar zxvf webbench-1.5.tar.gz
+cd webbench-1.5
+make && make install
+
+使用：
+webbench -c 500 -t 30 http://www.domain.com
+参数说明：
+-c 并发数
+-t 时间（秒）
+
+测试结果示例：
+Webbench - Simple Web Benchmark 1.5
+Copyright (c) Radim Kolar 1997-2004, GPL Open Source Software.
+
+Benchmarking: GET http://www.domain.com/
+500 clients, running 30 sec.
+
+Speed=6838 pages/min, 7984590 bytes/sec.
+Requests: 3419 susceed, 0 failed.
