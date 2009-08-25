@@ -129,30 +129,32 @@ apt-get dist-upgrade
 
 
 
+Update:
 MSN:
 http://code.google.com/p/phpmsnclass/downloads/list
 wget http://phpmsnclass.googlecode.com/files/phpmsnclass_1.9.7z
 
 7z e phpmsnclass_1.9.7z
-mv msn.class.php /usr/local/nagios/libexec/
+mv msn.class.php /usr/local/bin/
 
-vi /usr/local/nagios/libexec/sendmsnmsg.php
-<?/usr/bin/php -q
+vi /usr/local/bin/sendmsnmsg.php
+#!/usr/local/php/bin/php -q
+<?php
 include_once('msn.class.php');
-$message = file_get_contents('/usr/local/nagios/var/msnservice.out');
-$msn_username = "bluedata@live.cn";
-$msn_password = "xxxxxxxx";
+$message = file_get_contents($argv[2]);
+$username = "nagios@live.cn";
+$password = "xxxxxxxx";
 $msn = new MSN('MSNP9');
-if ($msn->connect($msn_username, $msn_password)) {
+if ($msn->connect($username, $password)) {
 $msn->sendMessage(iconv("GBK", "UTF-8", $message), $argv[1]);
 }
 ?>
 
-chmod +x /usr/local/nagios/libexec/sendmsnmsg.php
+chmod +x /usr/local/bin/sendmsnmsg.php
 
-MSNP15 可发离线信息，但需要 php5-mhash 模块。
+MSNP15 还可发离线信息，但需要 php 有 mhash 扩展模块。
 
-测试后发现，多数时候内容是空的。
+测试后发现有时候发出的信息是空的。
 
 使用老的 PHP 类：
 http://www.fanatic.net.nz/2005/02/15/send-a-message-using-php/
@@ -160,51 +162,107 @@ wget http://downloads.fanatic.net.nz/dev/php/sendMsg.zip
 unzip sendMsg.zip
 cd sendMsg
 
-默认的验证提交方式需要 ssl 支持，用 curl 的：
+默认的验证提交方式需要 ssl 支持，用 curl 的需要修改为：
 vi sendMsg.php
 require_once('msnpauth-1.1.3.php');
 
-mv msnpauth-1.1.3.php sendMsg.php /usr/local/nagios/libexec/
+mv msnpauth.php sendMsg.php /usr/local/bin/
 
-vi /usr/local/nagios/libexec/sendmsnmsg.php
-#!/usr/bin/php -q
+vi /usr/local/bin/sendmsnmsg.php
+#!/usr/local/php/bin/php -q
 <?php
 require_once('sendMsg.php');
-$message = file_get_contents('/usr/local/nagios/var/msnservice.out');
-$msn_username = "bluedata@live.cn";
-$msn_password = "xxxxxxxx";
+$message = file_get_contents($argv[2]);
+$username = "nagios@live.cn";
+$password = "xxxxxxxx";
 $sendMsg = new sendMsg();
-$sendMsg->login($msn_username, $msn_password);
+$sendMsg->login($username, $password);
 $sendMsg->createSession($argv[1]);
 $sendMsg->sendMessage(iconv("GBK", "UTF-8", $message), 'Times New Roman', '008000');
 ?>
 
-chmod +x /usr/local/nagios/libexec/sendmsnmsg.php
+chmod +x /usr/local/bin/sendmsnmsg.php
+
+测试： /usr/local/bin/sendmsnmsg.php admin@live.cn /usr/local/nagios/var/message.dat
 
 
 Fetion:
-http://code.google.com/p/phpfetionapi/downloads/list
-wget http://phpfetionapi.googlecode.com/files/class_fetion.zip
-
-unzip class_fetion.zip
-mv class_fetion.php /usr/local/nagios/libexec/
-
-vi /usr/local/nagios/libexec/sendsms.php
-#!/usr/bin/php-cgi -q
-<?php
-include_once('class_fetion.php');
-$message = file_get_contents('/usr/local/nagios/var/smsservice.out');
-$sms_username = "159xxxxxxxx";
-$sms_password = "xxxxxxxx";
-$fetion = new fetion($sms_username,$sms_password);
-$fetion->init() or die("fetion init failure!");
-$fetion->sent_sms('tel:'.$argv[1], iconv("GBK", "UTF-8", $message));
-?>
-
-chmod +x /usr/local/nagios/libexec/sendsms.php
-
 飞信 PHP 类（ PHP5 以上）需要用到 curl 扩展模块：
 apt-get install php5-curl
 The following NEW packages will be installed:
   ca-certificates libcurl3 libidn11 libssh2-1 php5-curl
 
+http://code.google.com/p/phpfetionapi/downloads/list
+wget http://phpfetionapi.googlecode.com/files/class_fetion.zip
+
+unzip class_fetion.zip
+mv class_fetion.php /usr/local/bin/
+
+vi /usr/local/bin/sendsms.php
+#!/usr/local/php/bin/php -q
+<?php
+include_once('class_fetion.php');
+$message = file_get_contents($argv[2]);
+$username = "159xxxxxxxx";
+$password = "xxxxxxxx";
+$fetion = new fetion($username, $password);
+$fetion->init() or die("fetion init failure!\n");
+$fetion->sent_sms('tel:'.$argv[1], iconv("GBK", "UTF-8", $message));
+?>
+
+chmod +x /usr/local/bin/sendsms.php
+
+测试： /usr/local/bin/sendsms.php 159xxxxxxxx /usr/local/nagios/var/message.dat
+
+
+vi /usr/local/nagios/etc/objects/commands.cfg
+# 'notify-host-by-msn' command definition
+define command{
+        command_name    notify-host-by-msn
+        command_line    /usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\nHost: $HOSTNAME$\nState: $HOSTSTATE$\nAddress: $HOSTADDRESS$\nInfo: $HOSTOUTPUT$\n\nDate/Time: $LONGDATETIME$\n" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendmsnmsg.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
+        }
+
+# 'notify-service-by-msn' command definition
+define command{
+        command_name    notify-service-by-msn
+        command_line    /usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendmsnmsg.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
+        }
+
+# notify-host-sms
+define command {
+        command_name    notify-host-sms
+        command_line    /usr/bin/printf "%s" "Host $HOSTSTATE$ alert for $HOSTNAME$ on $DATETIME$" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendsms.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
+        }
+
+# notify-service-sms
+define command {
+        command_name    notify-service-sms
+        command_line    /usr/bin/printf "%s" "$HOSTNAME$/$SERVICEDESC$ $SERVICEOUTPUT$" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendsms.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
+        }
+
+
+vi /usr/local/nagios/etc/objects/contacts.cfg
+define contact {
+        contact_name                   sa
+        alias                          System Administrator
+        email                          admin@domain.com
+        pager                          admin@live.cn
+        service_notification_period    24x7
+        host_notification_period       24x7
+        service_notification_options   w,u,c,r
+        host_notification_options      d,u,r
+        service_notification_commands  notify-service-by-email,notify-service-by-msn
+        host_notification_commands     notify-host-by-email,notify-host-by-msn
+        }
+
+define contact {
+        contact_name                   sa-sms
+        alias                          SA's Mobile
+        pager                          159xxxxxxxx
+        service_notification_period    nonworkhours
+        host_notification_period       nonworkhours
+        service_notification_options   u,c,r
+        host_notification_options      d,u,r
+        service_notification_commands  notify-service-sms
+        host_notification_commands     notify-host-sms
+        }
