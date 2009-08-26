@@ -26,8 +26,8 @@ define contact {
         host_notification_period       nonworkhours
         service_notification_options   u,c,r
         host_notification_options      d,u,r
-        service_notification_commands  notify-service-sms
-        host_notification_commands     notify-host-sms
+        service_notification_commands  notify-service-by-sms
+        host_notification_commands     notify-host-by-sms
         }
 
 以及联系人组：

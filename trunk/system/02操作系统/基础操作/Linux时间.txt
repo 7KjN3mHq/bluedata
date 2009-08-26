@@ -1,17 +1,60 @@
 date 命令设置时间：
-# date -s 20080710
-# date -s 21:19:50
+date -s 20080710
+date -s 21:19:50
 
-# ntpdate 210.72.145.44 ; hwclock -w
 
-ntpd:
+时间格式转换：
+UNIX 时间转换为标准格式时间：
+date -d '1970-01-01 UTC 946684800 seconds' +"%F %T"
+
+标准格式时间转换为 UNIX 时间：
+date -d '2009-07-25 17:22:56' +%s
+
+
+ntpdate 同步时间：
+ntpdate 210.72.145.44 ; hwclock -w
+
+
+ntp 做时间同步服务器：
+CentOS:
+yum -y install ntp
 vi /etc/ntp.conf
-server 210.72.145.44
+server 210.72.145.44 prefer
+server 0.pool.ntp.org
+server 1.pool.ntp.org
+server 2.pool.ntp.org
+
+restrict 210.72.145.44
+restrict 0.pool.ntp.org
+restrict 1.pool.ntp.org
+restrict 2.pool.ntp.org
 
 vi /etc/sysconfig/ntpd
 SYNC_HWCLOCK=yes
 
-ntpstat
+/etc/init.d/ntpd restart
+
+ntpstat 查看状态。
+
+
+Debian:
+apt-get install ntp
+vi /etc/ntp.conf
+server 210.72.145.44 prefer
+server 0.debian.pool.ntp.org iburst dynamic
+server 1.debian.pool.ntp.org iburst dynamic
+server 2.debian.pool.ntp.org iburst dynamic
+server 3.debian.pool.ntp.org iburst dynamic
+
+restrict 210.72.145.44
+restrict 0.debian.pool.ntp.org
+restrict 1.debian.pool.ntp.org
+restrict 2.debian.pool.ntp.org
+restrict 3.debian.pool.ntp.org
+
+/etc/init.d/hwclock.sh 默认就随系统启动了。
+
+/etc/init.d/ntp restart
 
 ntpq -p
 remote：亦即是 NTP 主機的 IP 或主機名稱囉～注意最左邊的符號， 如果有『+』代表目前正在作用當中的上層 NTP ，如果是『*』代表也有連上線，不過是作為次要連線的 NTP 主機。 
@@ -25,8 +68,23 @@ offset：時間補償的結果，單位與 10^(-6) 秒
 jitter：Linux 系統時間與 BIOS 硬體時間的差異時間， 單位為 10^(-6) 秒。
 
 
-UNIX 时间转换为标准格式时间
-date -d '1970-01-01 UTC 946684800 seconds' +"%F %T"
+内网主机应优先使用内网的 ntp server
 
-标准格式时间转换为 UNIX 时间
-date -d '2009-07-25 17:22:56' +%s
+
+附： ntp 相关配置参数说明
+#　　restrict权限控制语法为：
+#　　restrict IP mask netmask_IP parameter
+#　　其中 IP 可以是软件地址，也可以是 default ，default 就类似 0.0.0.0 咯！
+#　　至于 paramter 则有：
+#　　　ignore　：关闭所有的 NTP 联机服务
+#　　　nomodify：表示 Client 端不能更改 Server 端的时间参数，不过，
+#　　　　　　　　Client 端仍然可以透过 Server 端来进行网络校时。
+#　　　notrust ：该 Client 除非通过认证，否则该 Client 来源将被视为不信任网域
+#　　　noquery ：不提供 Client 端的时间查询
+#　　如果 paramter 完全没有设定，那就表示该 IP (或网域) 『没有任何限制！』
+
+#  　设定上层主机主要以 server这个参数来设定，语法为：
+#　　server [IP|FQDN] [prefer]
+#　　Server 后面接的就是我们上层 Time Server 啰！而如果 Server 参数
+#　　后面加上 perfer 的话，那表示我们的 NTP 主机主要以该部主机来作为
+#　　时间校正的对应。另外，为了解决更新时间封包的传送延迟动作。

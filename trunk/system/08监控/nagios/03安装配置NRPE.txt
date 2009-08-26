@@ -32,8 +32,8 @@ groupadd nagios
 useradd -g nagios -d /usr/local/nagios -s /sbin/nologin nagios
 
 先安装 nagios-plugin:
-tar zxvf nagios-plugins-1.4.12.tar.gz
-cd nagios-plugins-1.4.12
+tar zxvf nagios-plugins-1.4.13.tar.gz
+cd nagios-plugins-1.4.13
 ./configure --prefix=/usr/local/nagios
 make
 make install
@@ -63,6 +63,8 @@ allowed_hosts=127.0.0.1,$Nagios监控平台的地址或域名
 在监控平台上
 /usr/local/nagios/libexec/check_nrpe -H $目标主机地址
 都应该可以输出 NRPE 的版本： NRPE v2.12
+
+NRPE 监听在 5666 端口，需要在防火墙规则中开放这个端口。
 
 在被监控端的 nrpe.cfg 文件中，可以看到这样的配置：
 command[check_load]=/usr/local/nagios/libexec/check_load -w 15,10,5 -c 30,25,20

@@ -22,7 +22,7 @@ tar jxvf php-5.2.10.tar.bz2
 gzip -cd php-5.2.10-fpm-0.5.13.diff.gz | patch -d php-5.2.10 -p1
 
 
-安装 PHP5
+安装 PHP5:
 cd php-5.2.10
 ./configure \
 --prefix=/usr/local/php-fcgi \
@@ -48,7 +48,7 @@ cp -f php.ini-recommended /usr/local/php-fcgi/etc/php.ini
 
 
 一些必备模块的安装：
-安装 ZendOptimizer
+安装 ZendOptimizer:
 Zend 的优化器，免费使用，如果加密了 PHP 程序文件，这是必须的。
 如果没有使用 Zend 优化器，PHP 进程的内存会难以释放。
 下载： http://www.zend.com/en/products/guard/downloads
@@ -57,7 +57,7 @@ cd ZendOptimizer-3.3.3-linux-glibc23-i386
 ./install
 
 
-安装 eAccelerator
+安装 eAccelerator:
 PHP scripts 的缓存，对于提高 PHP 程序执行速度很有帮助。
 下载： http://eaccelerator.net/
 tar jxvf eaccelerator-0.9.5.3.tar.bz2
@@ -68,7 +68,7 @@ make
 make install
 
 
-安装 memcache
+安装 memcache:
 用于操作 Memcached ，应用非常广泛。
 下载： http://pecl.php.net/package/memcache
 tar zxvf memcache-2.2.5.tgz
@@ -79,8 +79,10 @@ make
 make install
 
 
-PHP5 的配置
+PHP5 的配置：
 vi /usr/local/php-fcgi/etc/php.ini
+# 开启短标记支持
+short_open_tag = On
 # 最大执行时间
 max_execution_time = 5
 # 最大使用内存
@@ -128,14 +130,14 @@ zend_extension=/usr/local/Zend/lib/ZendExtensionManager.so
 extension=memcache.so
 
 
-用 tmpfs 提升性能
+用 tmpfs 提升性能：
 mkdir /tmpfs
 在 /etc/fstab 中加入
 tmpfs                   /tmpfs              tmpfs   size=256m,mode=1777        0 0
 
 mount -a
 
-定时清除
+定时清除：
 vi /etc/crontab
 0 * * * * root find /tmpfs -type f -amin +60 -exec rm {} \;
 
@@ -291,5 +293,20 @@ vi /usr/local/php-fcgi/etc/php-fpm.conf
 
 </configuration>
 
-启动 PHP-FCGI
+
+系统的相关设置：
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
+
+echo -ne "
+www-data soft nofile 65536
+www-data hard nofile 65536
+" >> /etc/security/limits.conf
+
+
+启动 PHP-FCGI:
 /usr/local/php-fcgi/sbin/php-fpm start
+
+可写入 /etc/rc.local 文件开机自启动。

@@ -24,6 +24,12 @@ chown bin:bin /usr/local/man/man1/pflogsumm.1
 chmod 644 /usr/local/man/man1/pflogsumm.1
 
 
+Debian:
+apt-get install pflogsumm
+The following NEW packages will be installed:
+  libbit-vector-perl libcarp-clan-perl libdate-calc-perl pflogsumm
+
+
 ≈‰÷√œµÕ≥ LANG
 vi /etc/sysconfig/i18n
 LANG=°±en_US°±

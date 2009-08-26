@@ -228,16 +228,16 @@ define command{
         command_line    /usr/bin/printf "%b" "***** Monitor *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendmsnmsg.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
         }
 
-# notify-host-sms
+# notify-host-by-sms
 define command {
-        command_name    notify-host-sms
-        command_line    /usr/bin/printf "%s" "Host $HOSTSTATE$ alert for $HOSTNAME$ on $DATETIME$" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendsms.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
+        command_name    notify-host-by-sms
+        command_line    /usr/bin/printf "%s" "$HOSTALIAS$($HOSTADDRESS$) is $HOSTSTATE$ on $LONGDATETIME$" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendsms.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
         }
 
-# notify-service-sms
+# notify-service-by-sms
 define command {
-        command_name    notify-service-sms
-        command_line    /usr/bin/printf "%s" "$HOSTNAME$/$SERVICEDESC$ $SERVICEOUTPUT$" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendsms.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
+        command_name    notify-service-by-sms
+        command_line    /usr/bin/printf "%s" "$HOSTALIAS$/$SERVICEDESC$ $SERVICEOUTPUT$" > /usr/local/nagios/var/message.dat | /usr/local/bin/sendsms.php $CONTACTPAGER$ /usr/local/nagios/var/message.dat
         }
 
 
@@ -263,6 +263,6 @@ define contact {
         host_notification_period       nonworkhours
         service_notification_options   u,c,r
         host_notification_options      d,u,r
-        service_notification_commands  notify-service-sms
-        host_notification_commands     notify-host-sms
+        service_notification_commands  notify-service-by-sms
+        host_notification_commands     notify-host-by-sms
         }

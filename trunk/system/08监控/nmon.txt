@@ -30,8 +30,9 @@ http://www.ibm.com/developerworks/cn/aix/library/nmon_analyser/index.html
 下载：
 http://www.ibm.com/developerworks/wikis/display/Wikiptype/nmonanalyser
 
-test:
-nmon -s5 -c12 -f -m /home/
+测试:
+nmon -s30 -c60 -f -m /root/
+
 
 定期采集：
 nmon -s300 -c288 -f -m /home/
