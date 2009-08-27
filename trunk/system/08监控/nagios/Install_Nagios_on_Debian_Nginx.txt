@@ -37,22 +37,26 @@ server {
     listen  80;
     server_name  nagios.domain.com;
     root  /usr/local/nagios/share;
-    index  index.php;
+    index  index.php index.html;
     location ~ .*\.php?$ {
         fastcgi_pass  127.0.0.1:9000;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
         include  fastcgi_params;
-        auth_basic  "Nagios Access";
-        auth_basic_user_file  /usr/local/nagios/etc/htpasswd.users;
     }
     location ~ .*\.cgi$ {
         rewrite  ^/nagios/cgi-bin/(.*)\.cgi /$1.cgi break;
         fastcgi_pass  127.0.0.1:8999;
         fastcgi_param  SCRIPT_FILENAME  /usr/local/nagios/sbin$fastcgi_script_name;
         include  fastcgi_params;
+        auth_basic  "Nagios Access";
+        auth_basic_user_file  /usr/local/nagios/etc/htpasswd.users;
     }
     location /nagios {
         alias  /usr/local/nagios/share;
+    }
+    location / {
+        auth_basic  "Nagios Access";
+        auth_basic_user_file  /usr/local/nagios/etc/htpasswd.users;
     }
 }
 

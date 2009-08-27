@@ -1,4 +1,4 @@
-使用 AWStats 分析网站访问日志
+用 AWStats 分析网站访问日志
 
 日志文件的处理
 对于 Apache
@@ -235,6 +235,33 @@ server {
         auth_basic_user_file  /usr/local/awstats/htpasswd.users;
     }
 }
+
+
+    location /awstats {
+        alias  /home/awstats/www/index.php;
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include  fastcgi_params;
+        auth_basic  "AWStats Access";
+        auth_basic_user_file  /usr/local/awstats/htpasswd.users;
+    }
+    location /cgi-bin/awstats.pl {
+        fastcgi_pass  127.0.0.1:8999;
+        fastcgi_param  SCRIPT_FILENAME  /usr/local/awstats/wwwroot$fastcgi_script_name;
+        include  fastcgi_params;
+        auth_basic  "AWStats Access";
+        auth_basic_user_file  /usr/local/awstats/htpasswd.users;
+    }
+    location /classes {
+        alias  /usr/local/awstats/wwwroot/classes;
+    }
+    location /css {
+        alias  /usr/local/awstats/wwwroot/css;
+    }
+    location /icon {
+        alias  /usr/local/awstats/wwwroot/icon;
+    }
+
 
 htpasswd -c /usr/local/awstats/htpasswd.users awstats
 
