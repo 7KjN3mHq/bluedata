@@ -1,0 +1,107 @@
+http://www.nginx.eu/nginx-fcgi.html
+
+
+wget http://www.nginx.eu/nginx-fcgi/nginx-fcgi.txt
+chmod +x nginx-fcgi.txt
+mv nginx-fcgi.txt /usr/local/sbin/nginx-fcgi
+
+
+perl-FCGI: 
+perl-Getopt: 
+perl-IO: libio-all-perl
+perl-Socket: 
+
+
+su - www-data -c "/usr/local/sbin/nginx-fcgi -l /var/log/nginx/nginx-fcgi.log -pid /var/run/nginx-fcgi.pid -S /var/run/nginx-fcgi.sock"
+
+
+vi /etc/default/nginx-fcgi
+#
+# User and Group to use for spawned FCGI app.
+SPAWN_UID="www-data"
+SPAWN_GID="www-data"
+
+# Bind to unix-domain socket, running as above
+SPAWN_SOCKET="/var/run/nginx-fcgi.sock"
+
+# Bind to tcp port 1026 on localhost.
+# Address myst be IPv4 not name.
+#SPAWN_PORT="1026"
+#SPAWN_ADDR="127.0.0.1"
+
+# log file
+SPAWN_LOG="/var/log/nginx/nginx-fcgi.log"
+
+# pid file
+SPAWN_PID="/var/run/nginx-fcgi.pid"
+
+# extra options
+SPAWN_OPT=""
+#SPAWN_OPT="verbose"
+
+
+vi /etc/init.d/nginx-fcgi
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          nginx-fcgi
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the nginx-fcgi
+# Description:       nginx-fcgi is a perl script to provide simple cgi support for nginx http daemon
+### END INIT INFO
+
+DAEMON=/usr/local/sbin/nginx-fcgi
+NAME=nginx-fcgi
+DESC=nginx-fcgi
+
+test -x $DAEMON || exit 0
+
+# Include nginx defaults if available
+if [ -f /etc/default/nginx-fcgi ] ; then
+        . /etc/default/nginx-fcgi
+fi
+
+set -e
+
+case "$1" in
+  start)
+        echo -n "Starting $DESC: "
+        start-stop-daemon --start --quiet --pidfile /var/run/$NAME.pid \
+                --exec $DAEMON -- $DAEMON_OPTS || true
+        echo "$NAME."
+        ;;
+  stop)
+        echo -n "Stopping $DESC: "
+        start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid \
+                --exec $DAEMON || true
+        echo "$NAME."
+        ;;
+  restart|force-reload)
+        echo -n "Restarting $DESC: "
+        start-stop-daemon --stop --quiet --pidfile \
+                /var/run/$NAME.pid --exec $DAEMON || true
+        sleep 1
+        start-stop-daemon --start --quiet --pidfile \
+                /var/run/$NAME.pid --exec $DAEMON -- $DAEMON_OPTS || true
+        echo "$NAME."
+        ;;
+  reload)
+      echo -n "Reloading $DESC configuration: "
+      start-stop-daemon --stop --signal HUP --quiet --pidfile /var/run/$NAME.pid \
+          --exec $DAEMON || true
+      echo "$NAME."
+      ;;
+  *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|reload|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
+
+
+chmod +x /etc/init.d/nginx-fcgi

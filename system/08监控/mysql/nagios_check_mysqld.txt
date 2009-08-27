@@ -65,7 +65,7 @@ check_command check_mysqld!3306!USER!PASSWORD
 }
 
 
-mysql -e "GRANT RELOAD,PROCESS,SUPER ON *.* TO 'nagios'@'nagios.domain.com' IDENTIFIED BY 'nagios';"
+mysql -e "GRANT USAGE ON *.* TO 'nagios'@'nagios.domain.com' IDENTIFIED BY 'nagios';"
 mysql -e 'FLUSH PRIVILEGES;'
 
 

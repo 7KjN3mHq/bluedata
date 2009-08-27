@@ -42,16 +42,14 @@ server {
         fastcgi_pass  127.0.0.1:9000;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
         include  fastcgi_params;
+        auth_basic  "Nagios Access";
+        auth_basic_user_file  /usr/local/nagios/etc/htpasswd.users;
     }
     location ~ .*\.cgi$ {
         rewrite  ^/nagios/cgi-bin/(.*)\.cgi /$1.cgi break;
         fastcgi_pass  127.0.0.1:8999;
         fastcgi_param  SCRIPT_FILENAME  /usr/local/nagios/sbin$fastcgi_script_name;
         include  fastcgi_params;
-    }
-    location / {
-        auth_basic  "Nagios Access";
-        auth_basic_user_file  /usr/local/nagios/etc/htpasswd.users;
     }
     location /nagios {
         alias  /usr/local/nagios/share;
