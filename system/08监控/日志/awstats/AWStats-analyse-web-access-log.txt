@@ -1,7 +1,7 @@
 用 AWStats 分析网站访问日志
 
 日志文件的处理
-对于 Apache
+对于 Apache:
 CentOS:
 yum -y install cronolog
 
@@ -11,19 +11,19 @@ yum -y install cronolog
 vi /etc/httpd/conf/httpd.conf
 CustomLog "|/usr/sbin/cronolog /var/log/httpd/access_log.%Y%m%d" combined
 
-清除历史日志
+清除历史日志：
 vi /etc/crontab
 0 0 * * * root find /var/log/httpd -type f -mtime +1 -exec rm {} \;
 
-对于 Nginx
+对于 Nginx:
 vi /usr/local/nginx/conf/nginx.conf
 access_log  /var/log/nginx/access_log  combined;
 
-按天截断日志
+按天截断日志：
 vi /etc/crontab
 59 23 * * * root cd /var/log/nginx ; mv -f access_log access_log.1 ; kill -USR1 `cat /var/run/nginx.pid`
 
-多台服务器日志合并问题
+多台服务器日志合并问题：
 把多个日志中的记录按时间排序后合并成一个文件：
 sort -m -t " " -k 4 -o access_log.`date +%Y%m%d --date='1 days ago'` access_log.web1 access_log.web2 access_log.web3
 注释： -m 即使用 merge 优化算法。
@@ -48,13 +48,18 @@ vi /usr/local/awstats/wwwroot/cgi-bin/awstats.pl
 . " <a target=\"_blank\" href=\"http://www.baidu.com/s?wd=site:" .$SiteDomain. " ". $mot ."\">[Baidu]</a>"
 . " <a target=\"_blank\" href=\"http://www.google.cn/search?ie=gbk&q=site:" .$SiteDomain. " " . $mot ."\">[Google]</a>"
 
+如果 URL 数量非常大，而内存又足够的话，可以增大 $LIMITFLUSH ( 默认为 5000) 提升性能：
+vi /usr/local/awstats/wwwroot/cgi-bin/awstats.pl
+$LIMITFLUSH=50000;
+
 
 基本配置
 cd /usr/local/awstats/wwwroot/cgi-bin
 mv awstats.model.conf common.conf
 chmod 644 common.conf
+
+解决中文搜索引擎统计问题：
 vi common.conf
-# 解决中文搜索引擎统计问题
 LoadPlugin="decodeutfkeys"
 
 需要安装 Perl URI 模块：
@@ -80,7 +85,7 @@ apt-get -y install libgeo-ip-perl
 只使用 Perl 则只需安装 perl-Geo-IPfree ，但不能同时使用。
 
 下载 GeoIP 数据库：
-wget http://www.maxmind.com/download/geoip/database/GeoIP.dat.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
 gzip -d GeoIP.dat.gz
 cp GeoIP.dat /usr/local/awstats/wwwroot/cgi-bin/plugins/
 
@@ -191,17 +196,54 @@ LogFile="/usr/local/awstats/tools/logresolvemerge.pl /var/log/httpd/access_log* 
 
 
 分析日志
-/usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=domain.com
-注释： -databasebreak=day 即按天进行统计。报表输出时还需增加 &databasebreak=day&day=DD 。可解决按月统计归档数据过大导致统计过慢或失败的问题。
+/usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=domain.com
+默认是按月生成归档数据，如果日志文件过大会导致统计过慢或失败，
+可以加上 -databasebreak=day 参数按天进行统计，报表输出时还需增加 &databasebreak=day&day=DD 。
 
-生成静态文件
+按天统计出的归档日志还是过大的话，可生成静态文件：
 /usr/bin/perl /usr/local/awstats/tools/awstats_buildstaticpages.pl -update -config=domain.com -lang=cn -month=`date +%m --date='1 days ago'` -dir=/var/www/awstats/html/ -awstatsprog=/usr/local/awstats/wwwroot/cgi-bin/awstats.pl
 不能使用 -databasebreak=day 参数。
 -month 指定按月统计，否则不能生成每月最后一天的静态文件。
 
+如果日志文件实在太大，可考虑不记录图片 css js 的访问日志：
+location ~* ^.+.(jpg|jpeg|gif|png|bmp|css|js)$ {
+access_log  off;
+}
+
+批量分析脚本：
+vi /usr/local/bin/awstats.sh
+#!/bin/sh
+for sitedomain in `ls /var/log/nginx/ | grep ^access | cut -d "_" -f 2 | sed 's/\.log//'`; do
+    /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain
+done
+
+chmod +x /usr/local/bin/awstats.sh
+
 定期执行
 vi /etc/crontab
-0 1 * * * root /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -databasebreak=day -config=domain.com
+0 1 * * * root /usr/local/bin/awstats.sh
+
+使用 logrotate 回滚日志：
+vi /etc/logrotate.d/nginx
+/var/log/nginx/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress notifempty
+    create 640 root adm
+    sharedscripts
+    prerotate
+        for sitedomain in `ls /var/log/nginx/ | grep ^access | cut -d "_" -f 2 | sed 's/\.log//'`; do
+            /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain
+        done
+    endscript
+    postrotate
+        if [ -f /var/run/nginx.pid ]; then
+            kill -USR1 `cat /var/run/nginx.pid`
+        fi
+    endscript
+}
 
 
 查看报表
@@ -227,7 +269,15 @@ server {
     include  port.conf;
     server_name  awstats.domain.com;
     root  /usr/local/awstats/wwwroot;
-    location ~ .*\.pl$ {
+    index  index.php;
+    location ~ .*\.php?$ {
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include  fastcgi_params;
+        auth_basic  "AWStats Access";
+        auth_basic_user_file  /usr/local/awstats/htpasswd.users;
+    }
+    location /cgi-bin/awstats.pl {
         fastcgi_pass  127.0.0.1:8999;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
         include  fastcgi_params;
@@ -237,41 +287,14 @@ server {
 }
 
 
-    location /awstats {
-        alias  /home/awstats/www/index.php;
-        fastcgi_pass  127.0.0.1:9000;
-        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-        include  fastcgi_params;
-        auth_basic  "AWStats Access";
-        auth_basic_user_file  /usr/local/awstats/htpasswd.users;
-    }
-    location /cgi-bin/awstats.pl {
-        fastcgi_pass  127.0.0.1:8999;
-        fastcgi_param  SCRIPT_FILENAME  /usr/local/awstats/wwwroot$fastcgi_script_name;
-        include  fastcgi_params;
-        auth_basic  "AWStats Access";
-        auth_basic_user_file  /usr/local/awstats/htpasswd.users;
-    }
-    location /classes {
-        alias  /usr/local/awstats/wwwroot/classes;
-    }
-    location /css {
-        alias  /usr/local/awstats/wwwroot/css;
-    }
-    location /icon {
-        alias  /usr/local/awstats/wwwroot/icon;
-    }
-
-
 htpasswd -c /usr/local/awstats/htpasswd.users awstats
 
-查看： http://awstats.domain.com/cgi-bin/awstats.pl?config=bluedata.org&year=2009&month=08&databasebreak=day&day=26
+查看： http://awstats.domain.com/cgi-bin/awstats.pl?framename=mainright&config=domain.com&year=2009&month=08
 
 
 用 PHP Calendar 做日历浏览界面：
 http://www.cascade.org.uk/software/php/calendar/
 wget http://www.cascade.org.uk/software/php/calendar/Calendar.txt
 mv Calendar.txt calendar.php
-然后创建 awstats.php index.php 程序文件并放到虚拟目录的源目录下：
-mkdir -p /home/awstats/www
-cp *.php /home/awstats/www/
+然后创建 index.php 程序文件并放到 wwwroot 目录下：
+cp calendar.php index.php /usr/local/awstats/wwwroot/

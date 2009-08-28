@@ -27,6 +27,7 @@ if has("autocmd")
 endif
 
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+chmod -w /etc/localtime
 
 -----
 vi /etc/network/interfaces
