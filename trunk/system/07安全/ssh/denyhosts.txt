@@ -1,45 +1,54 @@
+使用 DenyHosts 阻止 SSH 暴力破解
+
+
+项目主页：
 http://denyhosts.sourceforge.net/
 
+
+安装：
+CentOS:
 yum install denyhosts
-
-vi /etc/denyhosts.conf
-SECURE_LOG = /var/log/secure
-#ssh 日志文件，它是根据这个文件来判断的。
-
-HOSTS_DENY = /etc/hosts.deny
-#控制用户登陆的文件
-
-PURGE_DENY = 5m
-#过多久后清除已经禁止的
-
-BLOCK_SERVICE = sshd
-#禁止的服务名
-
-DENY_THRESHOLD_INVALID = 1
-#允许无效用户失败的次数
-
-DENY_THRESHOLD_VALID = 3
-#允许普通用户登陆失败的次数
-
-DENY_THRESHOLD_ROOT = 3
-#允许root登陆失败的次数
-
-HOSTNAME_LOOKUP=NO
-#是否做域名反解
-
-ADMIN_EMAIL = admin@test.com
-#管理员邮件地址,它会给管理员发邮件
-
-DAEMON_LOG = /var/log/denyhosts
-#自己的日志文件
-
-
-func 'web*' call command run "yum -y install denyhosts"
-
-/etc/init.d/denyhosts start
-
 
 Debian:
 apt-get install denyhosts
-The following NEW packages will be installed:
-  denyhosts file libdb4.5 libmagic1 libsqlite3-0 mime-support python python-central python-minimal python2.5 python2.5-minimal
+
+
+配置：
+vi /etc/denyhosts.conf
+# 用户登录的日志文件
+SECURE_LOG = /var/log/auth.log
+
+# 禁止登陆的主机文件
+HOSTS_DENY = /etc/hosts.deny
+
+# 清除已禁止主机的时间
+PURGE_DENY = 5d
+
+# 禁止的服务名
+BLOCK_SERVICE = sshd
+
+# 允许无效用户登录失败的次数
+DENY_THRESHOLD_INVALID = 1
+
+# 允许普通用户登陆失败的次数
+DENY_THRESHOLD_VALID = 3
+
+# 允许 root 用户登陆失败的次数
+DENY_THRESHOLD_ROOT = 3
+
+# 是否做域名反解
+HOSTNAME_LOOKUP=NO
+
+# 管理员邮件地址
+ADMIN_EMAIL = admin@domain.com
+
+# SMTP 的相关设置
+SMTP_HOST = mail.domain.com
+SMTP_PORT = 25
+SMTP_USERNAME=denyhosts@domain.com
+SMTP_PASSWORD=password
+SMTP_FROM = DenyHosts <denyhosts@domain.com>
+SMTP_SUBJECT = DenyHosts Report from domain.com
+
+# DenyHosts 的日志文件
+DAEMON_LOG = /var/log/denyhosts
