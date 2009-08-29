@@ -1,6 +1,7 @@
 用 AWStats 分析网站访问日志
 
-日志文件的处理
+
+日志文件的处理：
 对于 Apache:
 CentOS:
 yum -y install cronolog
@@ -29,7 +30,7 @@ sort -m -t " " -k 4 -o access_log.`date +%Y%m%d --date='1 days ago'` access_log.
 注释： -m 即使用 merge 优化算法。
 
 
-安装 AWStats
+安装 AWStats:
 http://awstats.sourceforge.net/
 wget http://prdownloads.sourceforge.net/awstats/awstats-6.9.tar.gz
 tar zxvf awstats-6.9.tar.gz
@@ -40,7 +41,7 @@ mv awstats-6.9 /usr/local/awstats
 wget http://www.chedong.com/tech/lib.tgz
 tar zxvf lib.tgz
 mv lib/*.pm /usr/local/awstats/wwwroot/cgi-bin/lib/
-注：蜘蛛定义部分增加了区分 Yahoo!中国， Soso ，豆瓣，鲜果等，其他的是几个国外的 RSS 阅读器；搜索引擎部分区分了百度图片，有道搜索，Soso 。
+注：蜘蛛定义部分增加了区分 Yahoo! 中国， Soso ，豆瓣，鲜果等，其他的是几个国外的 RSS 阅读器；搜索引擎部分区分了百度图片，有道搜索，Soso 。
 
 增加百度和谷歌的查询链接：
 vi /usr/local/awstats/wwwroot/cgi-bin/awstats.pl
@@ -53,7 +54,7 @@ vi /usr/local/awstats/wwwroot/cgi-bin/awstats.pl
 $LIMITFLUSH=50000;
 
 
-基本配置
+基本配置：
 cd /usr/local/awstats/wwwroot/cgi-bin
 mv awstats.model.conf common.conf
 chmod 644 common.conf
@@ -74,7 +75,7 @@ apt-get -y install liburi-perl
 mkdir -p /home/awstats/data
 
 
-安装插件
+安装插件：
 GeoIP
 CentOS:
 yum -y install GeoIP perl-Geo-IP
@@ -195,7 +196,7 @@ LogFile="/var/log/nginx/access_domain.com.log"
 LogFile="/usr/local/awstats/tools/logresolvemerge.pl /var/log/httpd/access_log* |"
 
 
-分析日志
+分析日志：
 /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=domain.com
 默认是按月生成归档数据，如果日志文件过大会导致统计过慢或失败，
 可以加上 -databasebreak=day 参数按天进行统计，报表输出时还需增加 &databasebreak=day&day=DD 。
@@ -213,40 +214,45 @@ access_log  off;
 批量分析脚本：
 vi /usr/local/bin/awstats.sh
 #!/bin/sh
-for sitedomain in `ls /var/log/nginx/ | grep ^access | cut -d "_" -f 2 | sed 's/\.log//'`; do
+for sitedomain in `ls /var/log/nginx/ | grep log$ | grep ^access | cut -d "_" -f 2 | sed 's/\.log//'`; do
     /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain
 done
 
 chmod +x /usr/local/bin/awstats.sh
 
-定期执行
-vi /etc/crontab
-0 1 * * * root /usr/local/bin/awstats.sh
-
 使用 logrotate 回滚日志：
-vi /etc/logrotate.d/nginx
+vi /usr/local/nginx/conf/logrotate.conf
 /var/log/nginx/*.log {
     daily
     missingok
     rotate 7
     compress
-    delaycompress notifempty
-    create 640 root adm
+    delaycompress
+    notifempty
+    create 640 www-data adm
     sharedscripts
-    prerotate
-        for sitedomain in `ls /var/log/nginx/ | grep ^access | cut -d "_" -f 2 | sed 's/\.log//'`; do
-            /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain
-        done
-    endscript
     postrotate
         if [ -f /var/run/nginx.pid ]; then
-            kill -USR1 `cat /var/run/nginx.pid`
+          kill -USR1 `cat /var/run/nginx.pid`
         fi
+        for sitedomain in `ls /var/log/nginx/ | grep log$ | grep ^access | cut -d "_" -f 2 | sed 's/\.log//'`; do
+          /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain -LogFile=access_$sitedomain.log.1
+        done
     endscript
 }
 
+调试：
+logrotate -d /usr/local/nginx/conf/logrotate.conf
 
-查看报表
+执行：
+logrotate -f /usr/local/nginx/conf/logrotate.conf
+
+定期执行：
+vi /etc/crontab
+0 0 * * * root logrotate -f /usr/local/nginx/conf/logrotate.conf
+
+
+查看报表：
 Apache 下创建 AWStats 的虚拟主机：
 vi /etc/httpd/conf.d/vhosts_awstats.conf
 <VirtualHost *:80>
@@ -289,7 +295,8 @@ server {
 
 htpasswd -c /usr/local/awstats/htpasswd.users awstats
 
-查看： http://awstats.domain.com/cgi-bin/awstats.pl?framename=mainright&config=domain.com&year=2009&month=08
+查看：
+http://awstats.domain.com/cgi-bin/awstats.pl?framename=mainright&config=domain.com&year=2009&month=08
 
 
 用 PHP Calendar 做日历浏览界面：
