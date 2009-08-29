@@ -190,7 +190,7 @@ HostAliases="domain.com"
 DirData="/home/awstats/data/domain.com/"
 
 # Nginx 日志
-LogFile="/var/log/nginx/access_domain.com.log"
+LogFile="/var/log/nginx/access_domain.com.log.1"
 
 # 统计多个日志文件
 LogFile="/usr/local/awstats/tools/logresolvemerge.pl /var/log/httpd/access_log* |"
@@ -215,7 +215,7 @@ access_log  off;
 vi /usr/local/bin/awstats.sh
 #!/bin/sh
 for sitedomain in `ls /var/log/nginx/ | grep log$ | grep ^access | cut -d "_" -f 2 | sed 's/\.log//'`; do
-    /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain
+  /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain -LogFile=access_$sitedomain.log
 done
 
 chmod +x /usr/local/bin/awstats.sh
@@ -236,7 +236,7 @@ vi /usr/local/nginx/conf/logrotate.conf
           kill -USR1 `cat /var/run/nginx.pid`
         fi
         for sitedomain in `ls /var/log/nginx/ | grep log$ | grep ^access | cut -d "_" -f 2 | sed 's/\.log//'`; do
-          /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain -LogFile=access_$sitedomain.log.1
+          /usr/local/awstats/wwwroot/cgi-bin/awstats.pl -update -config=$sitedomain > /dev/null 2>&1
         done
     endscript
 }
@@ -250,6 +250,9 @@ logrotate -f /usr/local/nginx/conf/logrotate.conf
 定期执行：
 vi /etc/crontab
 0 0 * * * root logrotate -f /usr/local/nginx/conf/logrotate.conf
+
+Bug:
+加上 -LogFile=access_domain.com.log.1 参数在 crontab 中不能执行。
 
 
 查看报表：
