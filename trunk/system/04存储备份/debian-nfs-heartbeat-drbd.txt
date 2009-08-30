@@ -1,0 +1,112 @@
+Debian 下 NFS 基于 Heartbeat 和 DRBD 的高可用配置
+
+
+DRBD 安装：
+apt-get install drbd8-modules-2.6.26-2-686 drbd8-utils
+vi /etc/drbd.conf
+resource r0 {
+  protocol C;
+  startup {
+    wfc-timeout 60;
+    degr-wfc-timeout 60;
+  }
+  on nfs1 {
+    device    /dev/drbd0;
+    disk      /dev/sdb;
+    address   192.168.6.211:7788;
+    meta-disk internal;
+  }
+  on nfs2 {
+    device    /dev/drbd0;
+    disk      /dev/sdb;
+    address   192.168.6.212:7788;
+    meta-disk internal;
+  }
+  net {
+      after-sb-0pri discard-older-primary;
+      after-sb-1pri call-pri-lost-after-sb;
+      after-sb-2pri call-pri-lost-after-sb;
+  }
+}
+
+两个节点都执行：
+dd if=/dev/zero bs=1M count=1 of=/dev/sdb; sync
+drbdadm create-md r0
+/etc/init.d/drbd start
+
+##########
+主节点执行：
+drbdsetup /dev/drbd0 primary -o
+##########
+
+查看状态：
+drbdadm state r0
+watch "cat /proc/drbd"
+
+
+创建文件系统后就可以挂载使用了：
+mkfs -t ext3 /dev/drbd0
+mount -t ext3 -o rw,noatime,nodiratime /dev/drbd0 /export
+
+
+NFS 安装：
+apt-get install nfs-kernel-server
+The following NEW packages will be installed:
+  libevent1 libgssglue1 libldap-2.4-2 libnfsidmap2 librpcsecgss3 nfs-common nfs-kernel-server portmap
+
+
+vi /etc/exports
+/export 192.168.6.0/24(rw,no_root_squash,async,subtree_check)
+
+exportfs -a
+
+重启：
+/etc/init.d/nfs-kernel-server restart
+or
+exportfs -r
+
+
+client:
+apt-get install nfs-common
+The following NEW packages will be installed:
+  libevent1 libgssglue1 libldap-2.4-2 libnfsidmap2 librpcsecgss3 nfs-common portmap ucf
+
+vi /etc/fstab
+192.168.6.210:/export  /home/www/wwwroot/upload  nfs  noatime,nodiratime,intr,rsize=8192,wsize=8192  0 0
+
+mount -a
+
+
+Heartbeat 安装：
+apt-get install heartbeat
+The following NEW packages will be installed:
+  ca-certificates gawk heartbeat libcurl3 libglib2.0-0 libglib2.0-data libidn11 libnet1 libopenhpi2 libperl5.10 libsensors3 libsnmp-base libsnmp15 libssh2-1 libsysfs2
+  libxml2-utils openhpid openssl
+
+
+cd /etc/ha.d
+vi authkeys
+auth 1
+1 crc
+
+chmod 600 authkeys
+
+
+vi ha.cf
+ucast eth1 192.168.6.212  ## master node
+#ucast eth1 192.168.6.211  ## backup node
+auto_failback off
+node nfs1
+node nfs2
+ping 192.168.6.212  ## master node
+#ping 192.168.6.211  ## backup node
+
+
+vi haresources
+nfs1 \  ## master node
+#nfs2 \ ## backup node
+drbddisk::r0 \
+Filesystem::/dev/drbd0::/export::ext3 \
+portmap \
+nfs-kernel-server \
+IPaddr2::192.168.6.210/24/eth1/192.168.6.255

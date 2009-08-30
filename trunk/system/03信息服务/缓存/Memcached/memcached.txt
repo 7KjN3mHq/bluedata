@@ -1,15 +1,22 @@
 http://www.danga.com/memcached/download.bml
 http://pecl.php.net/package/memcache
 
+
+CentOS:
 ## 先设置好 DAG 的 YUM 源。
 yum -y install libevent-devel
 ## Installing for dependencies: libevent
 
-tar zxvf memcached-1.2.5.tar.gz
-cd memcached-1.2.5
+wget http://memcached.googlecode.com/files/memcached-1.4.1.tar.gz
+tar zxvf memcached-1.4.1.tar.gz
+cd memcached-1.4.1
 ./configure --prefix=/usr/local/memcached
 make
 make install
+
+
+Debian:
+apt-get install memcached
 
 
 /usr/local/memcached/bin/memcached -l 192.168.0.11 -u nobody -d -m 4096 -vv >> /var/log/memcached.log
