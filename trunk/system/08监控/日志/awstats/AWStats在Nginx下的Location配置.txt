@@ -1,0 +1,19 @@
+set  $htpasswd_file $document_root/htpasswd.users;
+location /awstats {
+    alias  /usr/local/awstats/wwwroot;
+    index  index.php;
+    auth_basic  "AWStats Access";
+    auth_basic_user_file  $htpasswd_file;
+}
+location /cgi-bin/awstats.pl {
+    alias  /usr/local/awstats/wwwroot;
+    fastcgi_pass  127.0.0.1:8999;
+    fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+    include  fastcgi_params;
+    auth_basic  "AWStats Access";
+    auth_basic_user_file  $htpasswd_file;
+}
+rewrite  ^/classes/(.*) /awstats/classes/$1 break;
+rewrite  ^/css/(.*) /awstats/css/$1 break;
+rewrite  ^/icon/(.*) /awstats/icon/$1 break;
+rewrite  ^/js/(.*) /awstats/js/$1 break;
