@@ -1,0 +1,32 @@
+location / {
+    if (-f $request_filename) {
+      break;
+    }
+
+    set $supercache_file '';
+    set $supercache_uri $request_uri;
+
+    if ($request_method = POST) {
+      set $supercache_uri '';
+    }
+
+    if ($query_string) {
+      set $supercache_uri '';
+    }
+
+    if ($http_cookie ~* "comment_author_|wordpress|wp-postpass_" ) {
+      set $supercache_uri '';
+    }
+
+    if ($supercache_uri ~ ^(.+)$) {
+      set $supercache_file /wp-content/cache/supercache/$http_host/$1index.html;
+    }
+
+    if (-f $document_root$supercache_file) {
+      rewrite ^(.*)$ $supercache_file break;
+    }
+
+    if (!-e $request_filename) {
+      rewrite . /index.php last;
+    }
+}
