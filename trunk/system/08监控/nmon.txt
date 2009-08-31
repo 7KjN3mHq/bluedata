@@ -45,7 +45,7 @@ http://www.ibm.com/developerworks/wikis/display/Wikiptype/nmonanalyser
 
 把之前生成的 nmon 数据文件传到 Windows 机器上，用 Excel 打开分析工具 nmon analyser v33C.xls 。
 点击 Excel 文件中的 "Analyze nmon data" 按钮，选择 nmon 数据文件，这样就会生成一个分析后的结果文件：
-myhost_090824_0000.nmon.xls ，用 Excel 打开生成的文件就可以看到结果了。
+hostname_090824_1306.nmon.xls ，用 Excel 打开生成的文件就可以看到结果了。
 
 如果宏不能运行，需要做以下操作：
 工具 -> 宏 -> 安全性 -> 中，然后再打开文件并允许运行宏。
