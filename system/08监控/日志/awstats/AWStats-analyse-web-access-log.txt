@@ -231,6 +231,9 @@ vi /usr/local/nginx/conf/logrotate.conf
     notifempty
     create 640 www-data adm
     sharedscripts
+    prerotate
+    sleep 59
+    endscript
     postrotate
         if [ -f /var/run/nginx.pid ]; then
           kill -USR1 `cat /var/run/nginx.pid`
@@ -249,7 +252,7 @@ logrotate -f /usr/local/nginx/conf/logrotate.conf
 
 定期执行：
 vi /etc/crontab
-0 0 * * * root logrotate -f /usr/local/nginx/conf/logrotate.conf
+59 23 * * * root logrotate -f /usr/local/nginx/conf/logrotate.conf
 
 Bug:
 加上 -LogFile=access_domain.com.log.1 参数在 crontab 中不能执行。
