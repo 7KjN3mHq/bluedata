@@ -1,12 +1,10 @@
+使用 PSSH 在多主机上同时执行命令
+
+
+先要配置好 ssh 的 key 然后安装：
 apt-get install pssh
 
-vi servers.txt
-192.168.6.12
-192.168.6.101
-192.168.6.102
-192.168.6.201
-192.168.6.202
-
+设置一下别名和环境变量，让输入方便些（ CentOS 安装后的程序文件名直接就是短格式的）：
 vi ~/.bashrc
 alias pssh='parallel-ssh'
 alias pscp='parallel-scp'
@@ -21,6 +19,31 @@ export PSSH_OPTIONS="UserKnownHostsFile /root/.ssh/known_hosts"
 
 source ~/.profile
 
+创建主机列表文件：
+vi servers.txt
+192.168.6.101
+192.168.6.102
+192.168.6.103
+192.168.6.104
+
+测试：
 pssh hostname
-pssh /etc/init.d/ssh restart
+Success on 192.168.0.101:22
+Success on 192.168.0.102:22
+Success on 192.168.0.103:22
+Success on 192.168.0.104:22
+
+cat /tmp/192.168.0.*
+web1
+web2
+web3
+web4
+
+重启 Nginx:
+pssh killall -HUP nginx
+
+批量复制文件：
 pscp /etc/hosts /etc/hosts
+
+
+为了便于管理，可以使用 -h 参数指定主机列表文件，给主机分组。
