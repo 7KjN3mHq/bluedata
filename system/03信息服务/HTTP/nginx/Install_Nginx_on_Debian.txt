@@ -178,4 +178,8 @@ www-data hard nofile 65536
 启动：
 /etc/init.d/nginx start
 
-最后，运行 sysv-rc-conf ，设置 nginx 开机自启动。
+最后，设置 nginx 开机自启动：
+sysv-rc-conf nginx on
+
+sysv-rc-conf --list nginx
+nginx        2:on       3:on    4:on    5:on
