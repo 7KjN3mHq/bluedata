@@ -1,0 +1,55 @@
+先安装 libaio (Windows 自动支持异步I/O)
+
+apt-get install libaio1
+
+下载：
+http://www.oracle.com/technology/global/cn/software/tech/orion/index.html
+
+gzip -d orion_linux_x86.gz
+chmod +x orion_linux_x86
+mv orion_linux_x86 orion
+
+该软件的运行只需要一个配置文件， <testname>.lun ，配置了测试所需要用到的磁盘信息，而分别返回如下信息：
+<testname>_<date>_iops.csv: 小型随机负载 I/O 吞吐量
+<testname>_<date>_lat.csv: 小型随机负载等待
+<testname>_<date>_mbps.csv: 大型随机/连续负载的数据传输速率 (MBPS)
+<testname>_<date>_summary.txt: 测试结果的汇总信息
+<testname>_<date>_trace.txt: 原始数据
+
+vi test.lun
+/dev/sdb
+/dev/sdc
+/dev/sdd
+
+简单测试：
+./orion -run simple -testname test -num_disks 3
+ORION: ORacle IO Numbers -- Version 11.1.0.7.0
+test_20090902_1503
+Test will take approximately 23 minutes
+Larger caches may take longer
+
+高级测试：
+1、数据库 OLTP 类型，假定 IO 类型全部是 8K 随机操作，压力类型，自动加压，从小到大，一直到存储压力极限
+nohup ./orion -run advanced -testname test -num_disks 3 -size_small 8 -size_large 8 -type rand &
+
+随机写：
+nohup ./orion -run advanced -testname test -num_disks 3 -size_small 8 -size_large 8 -write 100 -type rand &
+
+2、数据库吞吐量测试，假定 IO 全部是 1M 的序列性 IO
+nohup ./orion -run advanced -testname test -num_disks 3 -size_small 1024 -size_large 1024 -type seq &
+
+序列写：
+nohup ./orion -run advanced -testname test -num_disks 3 -size_small 1024 -size_large 1024 -type seq &
+
+3、指定特定的 IO 类型与 IO 压力，如指定小 IO 为压力 500 的时候，不同大 IO 下的压力情况
+nohup ./orion -run advanced -testname test -num_disks 3 -size_small 8 -size_large 128 -matrix col -num_small 500 -type rand &
+
+4、结合不同的 IO 类型，测试压力矩阵
+nohup ./orion -run advanced -testname test -num_disks 3 -size_small 8 -size_large 128 -matrix detailed -type rand &
+
+
+nohup ./orion –run advanced –testname test –num_disks 3 –size_small (1-64) –size_large 16 –matrix point –num_small 64 –num_large 0 –write (0, 10, 30, 100) –type rand &
+
+
+参考资料：
+http://www.ixdba.com/html/y2007/m06/125-orion-storage-test.html
