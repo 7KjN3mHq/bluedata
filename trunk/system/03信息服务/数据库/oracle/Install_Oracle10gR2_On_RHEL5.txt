@@ -1,0 +1,390 @@
+RHEL 5.4 安装 Oracle 10gR2
+
+Oracle 10gR2 安装的硬件需求
+所需最小内存为 512MB ，而所需最小交换空间为 1GB 。
+对于内存小于或等于 2GB 的系统，交换空间应为 RAM 数量的两倍；对于内存大于 2GB 的系统，交换空间应为 RAM 数量的一到两倍。
+Oracle 10gR2 软件还需要 2.5GB 的可用磁盘空间，而数据库则另需 1.2GB 的可用磁盘空间。 /tmp 目录至少需要 400MB 的可用空间。
+
+
+RHEL 5.4 的安装
+使用“简体中文”安装。
+
+分区如下（安装完成后 df -h 的输出）：
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/sda3             996M  220M  725M  24% /
+/dev/mapper/vg-tmp    992M  1.3M  940M   1% /tmp
+/dev/mapper/vg-usr    3.9G  1.5G  2.2G  41% /usr
+/dev/mapper/vg-var    2.0G   96M  1.8G   6% /var
+/dev/sda1             122M  7.0M  109M   6% /boot
+
+/dev/sda2 为 2GB 的 swap 分区，/dev/sda4 为 LVM PV 。
+
+去掉默认要安装的包，选上自定义包，然后只留下“ Gnome 桌面环境”，“ X 窗口系统”（Oracle 10gR2 的安装需要桌面环境），
+“基本”和“中文支持”（“可以选择的软件包”都可去掉）的包，其它的都去掉。
+
+第一次启动时的设置：关闭防火墙并禁用 SELinux ，然后重新启动系统。
+
+
+安装 Oracle 10gR2 前的系统配置
+配置 Linux 内核参数
+设置共享内存
+设置 SHMMAX
+SHMMAX 参数定义共享内存段的最大大小（以字节为单位）。 Oracle SGA 由共享内存组成，且错误设置 SHMMAX 可能会限制 SGA 的大小。
+在设置 SHMMAX 时，切记 SGA 的大小应该适合于一个共享内存段。 SHMMAX 设置不足可能会导致以下问题：
+ORA-27123:unable to attach to shared memory segment
+
+可以通过执行以下命令确定 SHMMAX 的值：
+cat /proc/sys/kernel/shmmax
+4294967295
+
+SHMMAX 的默认值为 4GB 。这个值对于配置 Oracle SGA 足够了。 RHEL3 或 RHEL4 的默认值为 33554432(32MB) ，在早期的安装手册中就把这个值调整为了 2147483648(2GB) 。
+
+设置 SHMMNI
+这个内核参数用于设置系统范围内共享内存段的最大数量。
+可以通过执行以下命令确定 SHMMNI 的值：
+cat /proc/sys/kernel/shmmni
+4096
+
+SHMMNI 的默认设置足以满足 Oracle 10gR2 安装的需要。
+
+设置 SHMALL
+SHMALL 共享内存内核参数。该参数控制系统一次可以使用的共享内存总量（以页为单位）。简言之，该参数的值始终应至少为： ceil(SHMMAX/PAGE_SIZE)
+可以使用以下命令进行查询：
+cat /proc/sys/kernel/shmall
+268435456
+
+SHMALL 的默认设置足以满足 Oracle 10gR2 安装的需要。
+
+
+设置信号
+使用以下命令查看所有信号限制：
+cat /proc/sys/kernel/sem
+250     32000   32      128
+
+依次为：
+SEMMSL: 用于控制每个信号集合的最大信号数。
+        Oracle 建议将 SEMMSL 设置为 init.ora 文件（适用于 Linux 系统上所有数据库）中的最大 PROCESS 实例参数设置再加上 10 。此外， Oracle 建议将 SEMMSL 设置为不小于 100 。
+SEMMNS: 用于控制整个 Linux 系统中的信号（而非信号集）的最大数量。
+        Oracle 建议将 SEMMNS 设置为系统上每个数据库的 PROCESSES 实例参数设置之和，加上最大的 PROCESSES 的两倍，最后为系统上的每个 Oracle 数据库加上 10 。
+SEMOPM: 用于控制每个 semop 系统调用可以执行的信号操作数。 Oracle 建议将 SEMOPM 设置为不小于 100 。
+SEMMNI: 用于控制整个 Linux 系统中信号集的最大数量。 Oracle 建议将 SEMMNI 设置为不小于 100 。
+
+设置信号内核参数：
+echo -ne "
+kernel.sem = 250 32000 100 128
+" >> /etc/sysctl.conf
+
+
+设置文件句柄
+文件句柄的设置表示 Linux 系统上可以打开的文件数。使用以下命令来确定整个系统中文件句柄的最大数量：
+cat /proc/sys/fs/file-max
+50660
+
+Oracle 建议将整个系统的文件句柄值至少设置为 65536
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+
+可以使用以下命令查看文件句柄当前的使用情况：
+cat /proc/sys/fs/file-nr
+256    0       65536
+
+增大 file-max 的值，还需要设置 ulimit
+ulimit -a | grep "open files"
+open files                      (-n) 1024
+
+这是 Shell 对一个进程打开的文件句柄数量的限制。
+要增大这个值，可以修改 /etc/security/limits.conf
+echo -ne "
+oracle soft nofile 65536
+oracle hard nofile 65536
+" >> /etc/security/limits.conf
+
+
+设置向外连接的端口范围
+cat /proc/sys/net/ipv4/ip_local_port_range
+32768   61000
+
+可以扩大范围
+echo -ne "
+net.ipv4.ip_local_port_range = 1024    65000
+" >> /etc/sysctl.conf
+
+echo -ne "
+net.core.rmem_default = 262144
+net.core.rmem_max = 262144
+net.core.wmem_default = 262144
+net.core.wmem_max = 262144
+" >> /etc/sysctl.conf
+
+
+执行 sysctl -p 使更改内核参数的设置生效。
+
+
+设置 hosts 文件
+主机名与 IP 地址对应
+vi /etc/hosts
+192.168.0.250          rhel5.domain.com rhel5
+
+
+软件需求
+需要安装以下程序包：
+setarch-2.0-1.1
+make-3.81-3.el5
+glibc-2.5-42
+libaio-0.3.106-3.2
+compat-libstdc++-33-3.2.3-61
+compat-gcc-34-3.4.6-4
+compat-gcc-34-c++-3.4.6-4
+gcc-4.1.2-46.el5
+libXp-1.0.0-8.1.el5
+openmotif-2.3.1-2.el5
+compat-db-4.2.52-5.1
+
+查看系统上安装了这些程序包的哪些版本，以 root 用户身份运行以下命令：
+rpm -q setarch make glibc libaio compat-libstdc++-33 compat-gcc-34 compat-gcc-34-c++ gcc libXp openmotif compat-db
+缺什么就装什么：
+# RedHat AS5 Disk 1
+rpm -Uvh setarch-2*
+rpm -Uvh make-3*
+rpm -Uvh glibc-2*
+rpm -Uvh libaio-0*
+
+# RedHat AS5 Disk 2
+rpm -Uvh compat-libstdc++-33-3*
+rpm -Uvh compat-gcc-34-3*
+rpm -Uvh compat-gcc-34-c++-3*
+rpm -Uvh gcc-4*
+rpm -Uvh libXp-1*
+
+# RedHat AS5 Disk 3
+rpm -Uvh openmotif-2*
+rpm -Uvh compat-db-4*
+
+为方便安装，可以把 yum 设置为通过 DVD 光盘安装。例如这里用 yum 安装了这些没有安装的包：
+yum -y install compat-libstdc++-33 compat-gcc-34 compat-gcc-34-c++ gcc libXp openmotif compat-db
+yum 会自动解决 RPM 包依赖问题。
+
+
+创建安装 Oracle 10gR2 软件的分区及数据库的分区。
+创建逻辑卷并创建文件系统
+lvcreate -L 5120M -n u01 vg
+lvcreate -L 5120M -n u02 vg
+mkfs -t ext3 /dev/vg/u01
+mkfs -t ext3 /dev/vg/u02
+
+创建挂载点
+mkdir /u01 /u02
+
+在 /etc/fstab 文件中添加
+/dev/vg/u01             /u01                    ext3    defaults        1 2
+/dev/vg/u02             /u02                    ext3    defaults        1 2
+
+挂载
+mount -a
+
+
+创建目录及用户
+mkdir /u01/app
+groupadd -g 115 dba
+useradd -u 175 -g 115 -d /u01/app/oracle -s /bin/bash -c "Oracle Software Owner" oracle
+chown -R oracle:dba /u01 /u02
+passwd oracle
+
+
+配置 VNCServer 远程登录
+切换到 oracle 用户
+su - oracle
+vncserver
+设置密码并修改 .vnc/xstartup 文件，配置 VNC 使用中文的 Gnome 桌面环境。
+#!/bin/sh
+
+# Uncomment the following two lines for normal desktop:
+# unset SESSION_MANAGER
+# exec /etc/X11/xinit/xinitrc
+
+export LANG="zh_CN.GBK"
+
+[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
+[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
+xsetroot -solid grey
+vncconfig -iconic &
+#xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+#twm &
+gnome-session
+
+exit 回到 root 下，修改 /etc/sysconfig/vncservers 文件
+VNCSERVERS="2:oracle"
+VNCSERVERARGS[2]="-geometry 800x600"
+
+重启一下 VNCServer
+/etc/init.d/vncserver restart
+
+之后，可以通过 VNC 客户端远程连接了。
+去掉不需要的服务，但为了远程通过图形界面安装 Oracle 需要保留 vncserver 服务，为了使用中文还需要开启 xfs 字体服务。
+
+
+设置 oracle 用户的环境变量
+su - oracle
+vi .bash_profile
+export LANG=en_US
+export NLS_LANG="SIMPLIFIED CHINESE_CHINA.ZHS16GBK"
+export ORACLE_BASE=/u01/app/oracle
+export ORACLE_HOME=$ORACLE_BASE/product/10.2
+export ORACLE_SID=orcl
+export PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/usr/lib
+
+bash 使用英文环境（ ASCII 编码格式）是为了避免中文安装界面及运行 Oracle 应用程序的乱码问题。
+如果设置 LANG=en_US ，打开 OEM 的时候中文会是乱码。
+需要再配置一下 gnome-terminal ，使用 VNC 以 oracle 用户登录，打开 应用程序 -> 附件 -> 终端，做如下设置：
+编辑 -> 当前配置文件 -> 标题和命令，勾选上“以登录 Shell 方式运行命令”。
+这样，中文界面下的 gnome-terminal 的环境就是英文的了。
+
+
+准备安装文件
+unzip -d /u01/app/oracle/orainstall /usr/local/src/10201_database_linux32.zip
+unzip -d /u01/app/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
+
+
+安装 Oracle 10gR2
+以 oracle 用户登录后开始安装
+因为 Oracle 10gR2 不支持 RHEL5 操作系统，需要跳过操作系统验证，使用以下命令安装：
+/u01/app/oracle/orainstall/database/runInstaller -ignoreSysPrereqs
+
+1.  欢迎页面。直接点击 Next
+2.  oraInventory 位置及操作系统组都使用默认值。直接 Next 。
+3.  选择安装类型。企业版，产品语言中添加 "Simplified Chinese" 。
+4.  安装路径。使用默认值， Next 。
+5.  安装环境的检查。查看一下是否有问题，有问题就解决问题。对于操作系统版本不被支持的警告可以忽略。
+6.  不创建数据库，选择 "Install database Software only" 。
+7.  摘要。点击 Install 开始安装。
+8.  需要以 root 用户执行脚本，执行完后点击 OK 。
+9.  结束安装。
+
+升级到 10.2.0.4
+/u01/app/oracle/Disk1/runInstaller
+一路 Next 后 Install ，以 root 用户执行 $ORACLE_HOME/root.sh 脚本后结束安装。
+
+
+创建数据库
+打开 终端，运行 dbca
+1.  欢迎页面。直接点击 Next 。
+2.  选择创建数据库。
+3.  选择默认的模板，点击 Next 。
+4.  设置数据库名和 SID 。
+5.  使用 Enterprise Manager 。
+6.  创建用户密码。
+7.  存储选项。使用文件系统。
+8.  数据库文件路径。 Use Common Location for All Database Files: /u02/oradata 。
+9.  闪回目录。 /u02/flash_recover_area 。开启归档日志。
+10. Sample Schemas 选上可以创建示例。
+11. 初始化参数。 Database Character Set 改为 ZHS16GBK ，Default Language 选择 "Simplified Chinese" ，日期格式选择 "China" 。
+12. Database Storage 。可根据需要配置。
+13. 创建数据库和创建脚本。
+14. 配置详情。结束。
+
+
+安装后的任务
+启动/停止数据库
+以 root 用户编辑 /etc/oratab ，该文件指定了使用 dbstart/dbshut 工具时哪些数据库实例会被启动关闭。文件格式为：
+$ORACLE_SID:$ORACLE_HOME:<N|Y>
+如果最后一列为 Y ，那么在 $ORACLE_HOME 目录下的 SID 为 $ORACLE_SID 的实例会由 dbstart 工具启动。
+编辑完成后保存。然后以 oracle 用户运行 dbstart 命令，数据库启动。停止数据库以 oracle 用户运行 dbshut 命令。
+这会出现： ORACLE_HOME_LISTNER is not SET, unable to auto-start Oracle Net Listener 这样的提示。
+可以使用 dbstart $ORACLE_HOME 来同时启动 Oracle Net Listener 。 dbshut 同理。
+
+为便于管理，创建一个启动脚本
+vi /etc/init.d/oracle
+#!/bin/bash
+#
+# oracle    This shell script takes care of starting and stopping oracle server.
+#
+# chkconfig: 0356 99 01
+# description: Oracle is a Database Server
+# processname: oracle
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog="oracle"
+export ORACLE_HOME=/u01/app/oracle/product/10.2
+export ORACLE_SID=orcl
+export PATH=$PATH:$ORACLE_HOME/bin
+ORA_OWNR="oracle"
+# if the executables do not exist -- display error
+if [ ! -f $ORACLE_HOME/bin/dbstart -o ! -d $ORACLE_HOME ]
+then
+echo "Oracle startup: cannot start"
+exit 1
+fi
+# depending on parameter -- startup, shutdown, restart
+# of the instance and listener or usage display
+case $1 in
+start)
+# Oracle listener and instance startup
+echo -n "Starting Oracle: "
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/dbstart $ORACLE_HOME"
+touch /var/lock/oracle
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/emctl start dbconsole"
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/isqlplusctl start"
+echo "OK"
+;;
+stop)
+# Oracle listener and instance shutdown
+echo -n "Shutdown Oracle: "
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/emctl stop dbconsole"
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/isqlplusctl stop"
+su - $ORA_OWNR -c "$ORACLE_HOME/bin/dbshut $ORACLE_HOME"
+rm -f /var/lock/oracle
+echo "OK"
+;;
+reload|restart)
+$0 stop
+$0 start
+;;
+*)
+echo "Usage: `basename $0` start|stop|restart|reload"
+exit 1
+esac
+exit 0
+
+chmod +x /etc/init.d/oracle
+chkconfig --add oracle
+cd /etc/rc0.d ; mv S99oracle K01oracle ; cd /etc/rc6.d ; mv S99oracle K01oracle
+
+可以用 /etc/init.d/oracle start 或者 /etc/init.d/oracle stop 来启动、关闭 Oracle 了。
+
+登录地址
+isQL*Plus URL:
+http://rhel5.domain.com:5560/isqlplus
+isQL*Plus DBA URL:
+http://rhel5.domain.com:5560/isqlplus/dba
+Enterprise Manager 10gR2 Database Control URL:
+http://rhel5.domain.com:1158/em
+
+
+进入 iSQL*Plus DBA 的方法
+1. cd $ORACLE_HOME/oc4j/j2ee/isqlplus/application-deployments/isqlplus
+如果不进入该目录，以后命令执行会报错。
+2. 执行如下命令进入 JAZN 命令环境：
+$ORACLE_HOME/jdk/bin/java -Djava.security.properties=$ORACLE_HOME/sqlplus/admin/iplus/provider -jar $ORACLE_HOME/oc4j/j2ee/home/jazn.jar -user "iSQL*Plus DBA/admin" -password welcome -shell
+admin 和 welcome 分别为 iSQL*Plus DBA 的默认帐号和密码。
+3. 新建用户，设置密码
+JAZN:> adduser "iSQL*Plus DBA" username password
+4. 用 listusers 列出用户，看看用户是否存在
+JAZN:> listusers
+5. 给用户赋予 webDba 角色
+JAZN:> grantrole webDba "iSQL*Plus DBA" username
+6. 退出 JAZN 命令环境
+JAZN:> exit
+7. 再打开 http://host:port/isqlplus/dba
+在弹出的对话框中输入新建的 username 和 password 就可以进入到数据库登陆界面了，选择以 sysdba 或 sysoper 权限登陆。
+这里不是数据库用户，而是 isqlplus 应用服务器的用户和密码（要求具有 webDba 角色）。连接标识符： hostname:port/instname
+
+修改用户密码：
+JAZN:> setpasswd "iSQL*Plus DBA" username old_password new_password
+撤销用户 webDba 角色：
+JAZN:> revokerole webDba "iSQL*Plus DBA" username
+删除用户：
+JAZN:> remuser "iSQL*Plus DBA" username
