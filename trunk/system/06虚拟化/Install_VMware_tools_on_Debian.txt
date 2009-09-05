@@ -1,0 +1,13 @@
+apt-get install linux-headers-2.6.26-2-686 gcc-4.1 g++-4.1 make
+
+cd /usr/src
+ln -s linux-headers-2.6.26-2-686 linux
+
+mount -t iso9660 /dev/hda /cdrom
+cd /media/cdrom
+tar zxvf VMwareTools-1.0.9-156507.tar.gz -C /tmp/
+
+±¾µØµÇÂ¼£º
+cd /tmp/vmware-tools-distrib
+export CC=/usr/bin/gcc-4.1
+./vmware-install.pl

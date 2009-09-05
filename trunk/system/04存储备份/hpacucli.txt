@@ -1,0 +1,20 @@
+
+
+
+下载：
+http://h20000.www2.hp.com/bizsupport/TechSupport/SoftwareDescription.jsp?lang=en&cc=us&swItem=MTX-66b08e49c28f4bd49f4641ed80&jumpid=reg_R1002_USEN
+
+
+使用说明：
+http://h50176.www5.hp.com/support/438084-AA1/howto/112125.html
+
+
+依赖 libstdc++-libc6.2-2.so.3 ，需要先安装 compat-libstdc++
+wget ftp://195.220.108.108/linux/ASPLinux/i386/RPMS.11.2/compat-libstdc++-7.3-2.96.126.i386.rpm
+rpm -ivh compat-libstdc++-7.3-2.96.126.i386.rpm
+
+
+hpacucli
+=> ctrl all show status
+
+=> ctrl slot=0 show config detail
