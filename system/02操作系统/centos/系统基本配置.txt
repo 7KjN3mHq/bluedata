@@ -51,6 +51,7 @@ set nohlsearch
 
 ³£ÓÃÃüÁîµÄÅäÖÃ
 # vi ~/.bashrc
+alias vi='vim'
 alias h='history 25'
 alias ll='ls -lh --color=tty' 2>/dev/null
 # source ~/.bash_profile
@@ -63,7 +64,8 @@ yum -y install vixie-cron crontabs
 # vi /etc/ntp.conf
 #restrict -6 default kod nomodify notrap nopeer noquery
 #restrict -6 ::1
-server 210.72.145.44
+server 210.72.145.44 prefer
+restrict 210.72.145.44
 
 # vi /etc/sysconfig/ntpd
 SYNC_HWCLOCK=yes

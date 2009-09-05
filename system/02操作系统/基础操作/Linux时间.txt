@@ -29,6 +29,9 @@ restrict 0.pool.ntp.org
 restrict 1.pool.ntp.org
 restrict 2.pool.ntp.org
 
+vi /etc/sysconfig/clock
+UTC=true
+
 vi /etc/sysconfig/ntpd
 SYNC_HWCLOCK=yes
 
@@ -83,7 +86,7 @@ jitter：Linux 系統時間與 BIOS 硬體時間的差異時間， 單位為 10^(-6) 秒。
 #　　　noquery ：不提供 Client 端的时间查询
 #　　如果 paramter 完全没有设定，那就表示该 IP (或网域) 『没有任何限制！』
 
-#  　设定上层主机主要以 server这个参数来设定，语法为：
+#  　设定上层主机主要以 server 这个参数来设定，语法为：
 #　　server [IP|FQDN] [prefer]
 #　　Server 后面接的就是我们上层 Time Server 啰！而如果 Server 参数
 #　　后面加上 perfer 的话，那表示我们的 NTP 主机主要以该部主机来作为
