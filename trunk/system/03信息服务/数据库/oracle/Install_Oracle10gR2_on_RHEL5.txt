@@ -1,4 +1,4 @@
-RHEL 5.4 安装 Oracle 10gR2
+RHEL5 安装 Oracle 10gR2
 
 Oracle 10gR2 安装的硬件需求
 所需最小内存为 512MB ，而所需最小交换空间为 1GB 。
@@ -6,16 +6,17 @@ Oracle 10gR2 安装的硬件需求
 Oracle 10gR2 软件还需要 2.5GB 的可用磁盘空间，而数据库则另需 1.2GB 的可用磁盘空间。 /tmp 目录至少需要 400MB 的可用空间。
 
 
-RHEL 5.4 的安装
+RHEL5 的安装
 使用“简体中文”安装。
 
 分区如下（安装完成后 df -h 的输出）：
 Filesystem            Size  Used Avail Use% Mounted on
-/dev/sda3             996M  220M  725M  24% /
+/dev/sda3             996M  237M  708M  26% /
+/dev/mapper/vg-opt    9.7G  151M  9.1G   2% /opt
 /dev/mapper/vg-tmp    992M  1.3M  940M   1% /tmp
+/dev/mapper/vg-var    2.0G  102M  1.8G   6% /var
 /dev/mapper/vg-usr    3.9G  1.5G  2.2G  41% /usr
-/dev/mapper/vg-var    2.0G   96M  1.8G   6% /var
-/dev/sda1             122M  7.0M  109M   6% /boot
+/dev/sda1             122M  7.2M  109M   7% /boot
 
 /dev/sda2 为 2GB 的 swap 分区，/dev/sda4 为 LVM PV 。
 
@@ -166,29 +167,10 @@ yum -y install compat-libstdc++-33 compat-gcc-34 compat-gcc-34-c++ gcc libXp ope
 yum 会自动解决 RPM 包依赖问题。
 
 
-创建安装 Oracle 10gR2 软件的分区及数据库的分区。
-创建逻辑卷并创建文件系统
-lvcreate -L 5120M -n u01 vg
-lvcreate -L 5120M -n u02 vg
-mkfs -t ext3 /dev/vg/u01
-mkfs -t ext3 /dev/vg/u02
-
-创建挂载点
-mkdir /u01 /u02
-
-在 /etc/fstab 文件中添加
-/dev/vg/u01             /u01                    ext3    defaults        1 2
-/dev/vg/u02             /u02                    ext3    defaults        1 2
-
-挂载
-mount -a
-
-
 创建目录及用户
-mkdir /u01/app
 groupadd -g 115 dba
-useradd -u 175 -g 115 -d /u01/app/oracle -s /bin/bash -c "Oracle Software Owner" oracle
-chown -R oracle:dba /u01 /u02
+useradd -u 175 -g 115 -d /opt/oracle -s /bin/bash -c "Oracle Software Owner" oracle
+chown -R oracle:dba /opt/oracle
 passwd oracle
 
 
@@ -229,7 +211,7 @@ su - oracle
 vi .bash_profile
 export LANG=en_US
 export NLS_LANG="SIMPLIFIED CHINESE_CHINA.ZHS16GBK"
-export ORACLE_BASE=/u01/app/oracle
+export ORACLE_BASE=/opt/oracle
 export ORACLE_HOME=$ORACLE_BASE/product/10.2
 export ORACLE_SID=orcl
 export PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin
@@ -243,14 +225,14 @@ bash 使用英文环境（ ASCII 编码格式）是为了避免中文安装界面及运行 Oracle 应用程序
 
 
 准备安装文件
-unzip -d /u01/app/oracle/orainstall /usr/local/src/10201_database_linux32.zip
-unzip -d /u01/app/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
+unzip -d /opt/oracle/orainstall /usr/local/src/10201_database_linux32.zip
+unzip -d /opt/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
 
 
 安装 Oracle 10gR2
 以 oracle 用户登录后开始安装
 因为 Oracle 10gR2 不支持 RHEL5 操作系统，需要跳过操作系统验证，使用以下命令安装：
-/u01/app/oracle/orainstall/database/runInstaller -ignoreSysPrereqs
+/opt/oracle/orainstall/database/runInstaller -ignoreSysPrereqs
 
 1.  欢迎页面。直接点击 Next
 2.  oraInventory 位置及操作系统组都使用默认值。直接 Next 。
@@ -263,7 +245,7 @@ unzip -d /u01/app/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
 9.  结束安装。
 
 升级到 10.2.0.4
-/u01/app/oracle/Disk1/runInstaller
+/opt/oracle/Disk1/runInstaller
 一路 Next 后 Install ，以 root 用户执行 $ORACLE_HOME/root.sh 脚本后结束安装。
 
 
@@ -276,8 +258,8 @@ unzip -d /u01/app/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
 5.  使用 Enterprise Manager 。
 6.  创建用户密码。
 7.  存储选项。使用文件系统。
-8.  数据库文件路径。 Use Common Location for All Database Files: /u02/oradata 。
-9.  闪回目录。 /u02/flash_recover_area 。开启归档日志。
+8.  数据库文件路径。 Use Oracle-Managed Files Database Area: {ORACLE_BASE}/oradata 。
+9.  闪回目录。 {ORACLE_BASE}/flash_recover_area 。开启归档日志。
 10. Sample Schemas 选上可以创建示例。
 11. 初始化参数。 Database Character Set 改为 ZHS16GBK ，Default Language 选择 "Simplified Chinese" ，日期格式选择 "China" 。
 12. Database Storage 。可根据需要配置。
@@ -308,7 +290,7 @@ vi /etc/init.d/oracle
 . /etc/rc.d/init.d/functions
 
 prog="oracle"
-export ORACLE_HOME=/u01/app/oracle/product/10.2
+export ORACLE_HOME=/opt/oracle/product/10.2
 export ORACLE_SID=orcl
 export PATH=$PATH:$ORACLE_HOME/bin
 ORA_OWNR="oracle"
@@ -378,7 +360,7 @@ JAZN:> listusers
 JAZN:> grantrole webDba "iSQL*Plus DBA" username
 6. 退出 JAZN 命令环境
 JAZN:> exit
-7. 再打开 http://host:port/isqlplus/dba
+7. 再打开 http://rhel5.domain.com:5560/isqlplus/dba
 在弹出的对话框中输入新建的 username 和 password 就可以进入到数据库登陆界面了，选择以 sysdba 或 sysoper 权限登陆。
 这里不是数据库用户，而是 isqlplus 应用服务器的用户和密码（要求具有 webDba 角色）。连接标识符： hostname:port/instname
 

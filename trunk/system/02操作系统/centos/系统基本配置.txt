@@ -23,9 +23,8 @@ filter = [ "r|/dev/cdrom|", "r|/dev/hdc|", "a|/dev/sda4|" ]
 # vi /etc/sysconfig/selinux
 SELINUX=disabled
 
-修改 hosts 文件（可再添加 IP 对应的主机名）
-# vi /etc/hosts
-127.0.0.1    localhost
+修改 /etc/hosts 文件
+添加 IP 对应的主机名
 CentOS5.2 再注释掉如下设置：
 #::1            localhost6.localdomain6 localhost6
 
@@ -52,7 +51,7 @@ set nohlsearch
 常用命令的配置
 # vi ~/.bashrc
 alias vi='vim'
-alias h='history 25'
+alias h='history 22'
 alias ll='ls -lh --color=tty' 2>/dev/null
 # source ~/.bash_profile
 # alias -p

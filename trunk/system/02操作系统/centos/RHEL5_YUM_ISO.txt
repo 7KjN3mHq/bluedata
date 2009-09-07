@@ -56,5 +56,7 @@ mount --bind /var/rhel/ClusterStorage/repodata /media/rhel/ClusterStorage/repoda
 mount --bind /var/rhel/Server/repodata /media/rhel/Server/repodata
 mount --bind /var/rhel/VT/repodata /media/rhel/VT/repodata
 
+可加入 /etc/rc.local 开机自动绑定。
+
 6. 清除缓存
 yum clean all
