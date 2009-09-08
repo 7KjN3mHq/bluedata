@@ -1,0 +1,48 @@
+OEM 中文乱码问题
+分别进入以下三个目录：
+$ORACLE_HOME/jdk/jre/lib
+$ORACLE_HOME/jre/1.4.2/lib
+$ORACLE_HOME/javavm/lib/ojvmfonts
+
+替换字体配置文件
+mv font.properties font.properties.bak
+cp -a font.properties.zh_CN.Redhat font.properties
+
+如果之前已经运行过 OEM，需要进入 OEM 的缓存图片目录清除缓存图片
+cd $ORACLE_HOME/oc4j/j2ee/oc4j_applications/applications/em/em/cabo/images/cache/zhs
+rm -f *.gif *.imx
+重启 OEM
+emctl start dbconsole
+emctl stop dbconsole
+
+查看 OEM 状态
+emctl status dbconsole
+
+
+进入 iSQL*Plus DBA 的方法
+1. cd $ORACLE_HOME/oc4j/j2ee/isqlplus/application-deployments/isqlplus
+如果不进入该目录，之后命令的执行会报错。
+2. 执行如下命令进入 JAZN 命令环境：
+$ORACLE_HOME/jdk/bin/java -Djava.security.properties=$ORACLE_HOME/sqlplus/admin/iplus/provider -jar $ORACLE_HOME/oc4j/j2ee/home/jazn.jar -user "iSQL*Plus DBA/admin" -password welcome -shell
+admin 和 welcome 分别为 iSQL*Plus DBA 的默认帐号和密码。
+3. 新建用户，设置密码
+JAZN:> adduser "iSQL*Plus DBA" <username> <password>
+4. 用 listusers 列出用户，看看用户是否存在
+JAZN:> listusers
+5. 给用户赋予 webDba 角色
+JAZN:> grantrole webDba "iSQL*Plus DBA" <username>
+6. 退出 JAZN 命令环境
+JAZN:> exit
+7. 重启 iSQL*Plus
+isqlplusctl stop
+isqlplusctl start
+8. 再打开 http://rhel5.domain.com:5560/isqlplus/dba
+在弹出的对话框中输入新建的 username 和 password 就可以进入到数据库登陆界面了，选择以 sysdba 或 sysoper 权限登陆。
+这里不是数据库用户，而是 isqlplus 应用服务器的用户和密码（要求具有 webDba 角色）。连接标识符： hostname:port/instname
+
+修改用户密码：
+JAZN:> setpasswd "iSQL*Plus DBA" <username> <old_password> <new_password>
+撤销用户 webDba 角色：
+JAZN:> revokerole webDba "iSQL*Plus DBA" <username>
+删除用户：
+JAZN:> remuser "iSQL*Plus DBA" <username>

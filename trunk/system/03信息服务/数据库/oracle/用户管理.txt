@@ -1,0 +1,60 @@
+连接数据库：
+sqlplus '/ as sysdba'
+
+sqlplus /nolog
+SQL> connect / as sysdba
+
+SQL> show user
+USER 为 "SYS"
+
+
+查看当前用户的信息：
+查看当前用户的缺省表空间
+select username,default_tablespace from user_users;
+
+查看当前用户的角色
+select * from user_role_privs;
+
+查看当前用户的系统权限和表级权限
+select * from user_sys_privs;
+select * from user_tab_privs;
+
+查看用户下所有的表
+select * from user_tables;
+
+
+创建用户：
+create user <username> identified by <password>
+default tablespace <tablespace_name>
+temporary tablespace <tablespace_name>;
+
+
+授予权限：
+grant connect.resource to <username>;
+
+select * from dba_sys_privs where grantee='CONNECT';
+GRANTEE                        PRIVILEGE                                ADM
+------------------------------ ---------------------------------------- ---
+CONNECT                        CREATE SESSION                           NO
+
+select * from dba_sys_privs where grantee='RESOURCE';
+GRANTEE                        PRIVILEGE                                ADM
+------------------------------ ---------------------------------------- ---
+RESOURCE                       CREATE TRIGGER                           NO
+RESOURCE                       CREATE SEQUENCE                          NO
+RESOURCE                       CREATE TYPE                              NO
+RESOURCE                       CREATE PROCEDURE                         NO
+RESOURCE                       CREATE CLUSTER                           NO
+RESOURCE                       CREATE OPERATOR                          NO
+RESOURCE                       CREATE INDEXTYPE                         NO
+RESOURCE                       CREATE TABLE                             NO
+
+
+select * from dba_sys_privs where grantee='RESOURCE';
+
+
+通过代理用户实现 sudo 功能
+connect / as sysdba
+create user sudo identified by proxy;
+alter user <username> grant connect through sudo;
+connect sudo[<username>]/proxy
