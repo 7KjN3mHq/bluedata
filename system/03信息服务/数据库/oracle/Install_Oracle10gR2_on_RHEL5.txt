@@ -344,29 +344,3 @@ isQL*Plus DBA URL:
 http://rhel5.domain.com:5560/isqlplus/dba
 Enterprise Manager 10gR2 Database Control URL:
 http://rhel5.domain.com:1158/em
-
-
-进入 iSQL*Plus DBA 的方法
-1. cd $ORACLE_HOME/oc4j/j2ee/isqlplus/application-deployments/isqlplus
-如果不进入该目录，以后命令执行会报错。
-2. 执行如下命令进入 JAZN 命令环境：
-$ORACLE_HOME/jdk/bin/java -Djava.security.properties=$ORACLE_HOME/sqlplus/admin/iplus/provider -jar $ORACLE_HOME/oc4j/j2ee/home/jazn.jar -user "iSQL*Plus DBA/admin" -password welcome -shell
-admin 和 welcome 分别为 iSQL*Plus DBA 的默认帐号和密码。
-3. 新建用户，设置密码
-JAZN:> adduser "iSQL*Plus DBA" username password
-4. 用 listusers 列出用户，看看用户是否存在
-JAZN:> listusers
-5. 给用户赋予 webDba 角色
-JAZN:> grantrole webDba "iSQL*Plus DBA" username
-6. 退出 JAZN 命令环境
-JAZN:> exit
-7. 再打开 http://rhel5.domain.com:5560/isqlplus/dba
-在弹出的对话框中输入新建的 username 和 password 就可以进入到数据库登陆界面了，选择以 sysdba 或 sysoper 权限登陆。
-这里不是数据库用户，而是 isqlplus 应用服务器的用户和密码（要求具有 webDba 角色）。连接标识符： hostname:port/instname
-
-修改用户密码：
-JAZN:> setpasswd "iSQL*Plus DBA" username old_password new_password
-撤销用户 webDba 角色：
-JAZN:> revokerole webDba "iSQL*Plus DBA" username
-删除用户：
-JAZN:> remuser "iSQL*Plus DBA" username

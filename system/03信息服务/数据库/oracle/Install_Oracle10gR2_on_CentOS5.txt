@@ -1,4 +1,4 @@
-CentOS 5.1 °²×° Oracle 10gR2
+CentOS5 °²×° Oracle 10gR2
 
 Oracle 10gR2 °²×°µÄÓ²¼şĞèÇó
 ËùĞè×îĞ¡ÄÚ´æÎª 512MB£¬¶øËùĞè×îĞ¡½»»»¿Õ¼äÎª 1GB¡£
@@ -8,7 +8,7 @@ Oracle 10gR2 Èí¼ş»¹ĞèÒª 2.5GB µÄ¿ÉÓÃ´ÅÅÌ¿Õ¼ä£¬¶øÊı¾İ¿âÔòÁíĞè 1.2GB µÄ¿ÉÓÃ´ÅÅÌ¿Õ¼
 ¾İ´Ë£¬¸ù¾İËŞÖ÷»úÆ÷µÄÇé¿ö£¬ÔÚ VMware ÉÏ´´½¨ÁËĞéÄâÖ÷»ú¡£ÄÚ´æ 1GB£¬Ò»¿é 20GB µÄ IDE Ó²ÅÌ¡£
 
 
-CentOS 5.1 µÄ°²×°
+CentOS5 µÄ°²×°
 ÎÄ±¾Ä£Ê½°²×°£¨linux text£©£¬°²×°Íê³ÉÄ¬ÈÏÆô¶¯µÄÊÇÎÄ±¾½çÃæ£¨init 3£©¡£
 Ñ¡Ôñ ¼òÌåÖĞÎÄ£¬µ«ÎÄ±¾°²×°Ä£Ê½²»Ö§³Ö utf8£¬ËùÒÔ°²×°¹ı³Ì»¹ÊÇÓ¢ÎÄÄ£Ê½£¬µ«°²×°Íê³ÉºóµÄÏµÍ³ÊÇÖĞÎÄµÄ¡£
 
@@ -20,8 +20,6 @@ Filesystem            Size  Used Avail Use% Mounted on
 /dev/hda5             3.8G  1.5G  2.2G  40% /usr
 
 /dev/hda2 Îª 2GB µÄ swap ·ÖÇø£¬ÁôÁË 10GB ¿Õ¼ä°²×° Oracle 10gR2£¬»¹Ã»ÓĞ·ÖÇø¡£
-
-Ê±ÇøÈ¥µô Ê¹ÓÃ UTC¡£
 
 Ä¬ÈÏÒª°²×°µÄ°üÈ«È¥µô£¬Ñ¡ÉÏ×Ô¶¨Òå°ü£¬È»ºóÖ»Ñ¡ÁË Gnome ×ÀÃæ»·¾³ºÍ X Window System£¬ÆäËüµÄ¶¼È¥µô¡£
 Oracle 10gR2 µÄ°²×°ĞèÒª×ÀÃæ»·¾³¡£
@@ -280,21 +278,3 @@ isQL*Plus DBA URL:
 http://oracle:5560/isqlplus/dba
 Enterprise Manager 10gR2 Database Control URL:
 http://oracle:1158/em
-
-
-OEM ÖĞÎÄÂÒÂëÎÊÌâ
-·Ö±ğ½øÈëÒÔÏÂÈı¸öÄ¿Â¼£º
-$ORACLE_HOME/jdk/jre/lib
-$ORACLE_HOME/jre/1.4.2/lib
-$ORACLE_HOME/javavm/lib/ojvmfonts
-
-Ìæ»»×ÖÌåÅäÖÃÎÄ¼ş
-mv font.properties font.properties.bak
-cp -a font.properties.zh_CN.Redhat font.properties
-
-Èç¹ûÖ®Ç°ÒÑ¾­ÔËĞĞ¹ı OEM£¬ĞèÒª½øÈë OEM µÄ»º´æÍ¼Æ¬Ä¿Â¼Çå³ı»º´æÍ¼Æ¬
-cd $ORACLE_HOME/oc4j/j2ee/oc4j_applications/applications/em/em/cabo/images/cache/zhs
-rm -f *.gif *.imx
-ÖØÆô OEM:
-emctl stop dbconsole
-emctl start dbconsole

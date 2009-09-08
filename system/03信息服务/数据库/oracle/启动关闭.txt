@@ -1,0 +1,31 @@
+Oracle 有以下几种启动方式：
+1. startup nomount
+非安装启动，这种方式启动下可执行：重建控制文件、重建数据库读取 init.ora 文件，启动 instance ，即启动 SGA 和后台进程，这种启动只需要 init.ora 文件。
+
+2. startup mount dbname
+安装启动，这种方式启动下可执行：数据库日志归档、数据库介质恢复、使数据文件联机或脱机，重新定位数据文件、重做日志文件。
+执行 "nomount" ，然后打开控制文件，确认数据文件和联机日志文件的位置，但此时不对数据文件和日志文件进行校验检查。
+
+3. startup open dbname
+先执行 "nomount" ，然后执行 "mount" ，再打开包括 Redo log 文件在内的所有数据库文件，这种方式下可访问数据库中的数据。
+
+4. startup
+等于以下三个命令：
+startup nomount
+alter database mount
+alter database open
+
+5. startup restrict
+约束方式启动这种方式能够启动数据库，但只允许具有一定特权的用户访问。非特权用户访问时，会出现以下提示：
+ERROR: ORA-01035: ORACLE 只允许具有 RESTRICTED SESSION 权限的用户使用
+
+6. startup force
+强制启动方式
+当不能关闭数据库时，可以用 startup force 来完成数据库的关闭先关闭数据库，再执行正常启动数据库命令。
+
+7. startup pfile=参数文件名
+带初始化参数文件的启动方式。
+先读取参数文件，再按参数文件中的设置启动数据库
+例： startup pfile=E:\Oracleadminoradbpfileinit.ora
+
+8. startup EXCLUSIVE
