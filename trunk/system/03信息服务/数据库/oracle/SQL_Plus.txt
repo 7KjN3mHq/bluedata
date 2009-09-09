@@ -1,0 +1,6 @@
+ÉèÖÃÏÔÊ¾¿í¶È
+show pagesize linesize
+pagesize 14
+linesize 80
+
+set line 32767

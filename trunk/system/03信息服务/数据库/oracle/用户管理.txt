@@ -8,9 +8,12 @@ SQL> show user
 USER 为 "SYS"
 
 
-查看当前用户的信息：
+查看所有用户
+select * from all_users;
+select * from dba_users;
+
 查看当前用户的缺省表空间
-select username,default_tablespace from user_users;
+select username, default_tablespace from user_users;
 
 查看当前用户的角色
 select * from user_role_privs;
@@ -19,7 +22,7 @@ select * from user_role_privs;
 select * from user_sys_privs;
 select * from user_tab_privs;
 
-查看用户下所有的表
+查看当前用户下所有的表
 select * from user_tables;
 
 
@@ -30,7 +33,7 @@ temporary tablespace <tablespace_name>;
 
 
 授予权限：
-grant connect.resource to <username>;
+grant connect, resource to <username>;
 
 select * from dba_sys_privs where grantee='CONNECT';
 GRANTEE                        PRIVILEGE                                ADM
@@ -50,7 +53,22 @@ RESOURCE                       CREATE INDEXTYPE                         NO
 RESOURCE                       CREATE TABLE                             NO
 
 
-select * from dba_sys_privs where grantee='RESOURCE';
+限制用户使用表空间
+select * from dba_sys_privs where grantee='TEST';
+GRANTEE                        PRIVILEGE                                ADM
+------------------------------ ---------------------------------------- ---
+TEST                           UNLIMITED TABLESPACE                     NO
+
+这是 RESOURCE 角色拥有的权限。具备了这个权限，用户可以在所有表空间上不限空间的使用。
+
+revoke UNLIMITED TABLESPACE from test;
+alter user test quota unlimited on test;
+
+确认
+select * from dba_ts_quotas where username='TEST';
+TABLESPACE_NAME                USERNAME                            BYTES  MAX_BYTES     BLOCKS MAX_BLOCKS DRO
+------------------------------ ------------------------------ ---------- ---------- ---------- ---------- ---
+TEST                           TEST                                    0         -1          0         -1 NO
 
 
 通过代理用户实现 sudo 功能

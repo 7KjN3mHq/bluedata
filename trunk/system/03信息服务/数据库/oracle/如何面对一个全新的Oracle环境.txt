@@ -1,0 +1,110 @@
+1、先要了解当前的 Oracle 数据库的版本和平台和相关信息。
+select * from v$version;
+select * from dba_registry_database;
+select dbid, name, open_mode, database_role, platform_name from v$database;
+select dbms_utility.port_string from dual;
+
+set serveroutput on
+declare
+  ver VARCHAR2(100);
+  compat VARCHAR2(100);
+begin
+  dbms_utility.db_version(ver, compat);
+  dbms_output.put_line('Version: ' || ver ||' Compatible: ' || compat);
+end;
+/
+
+2、其次要了解数据库中装了哪些组件。
+   select * from dba_registry;
+　
+3、搞清楚这个环境是单机还是集群。
+
+set serveroutput on
+declare
+  inst_tab dbms_utility.instance_table;
+  inst_cnt NUMBER;
+begin
+  if dbms_utility.is_cluster_database then
+    dbms_utility.active_instances(inst_tab, inst_cnt);
+    dbms_output.put_line('-' || inst_tab.FIRST);
+    dbms_output.put_line(TO_CHAR(inst_cnt));
+  else
+    dbms_output.put_line('Not A Clustered Database');
+  end if;
+end;
+/
+
+4、是否配置了 DataGuard 。
+select protection_mode, protection_level, remote_archive, database_role, dataguard_broker,guard_status from v$database;
+
+5、是否起用了归档模式。
+conn /as sysdba
+archive log list;
+select log_mode from v$database;
+　
+6、是否起用了 flashback database 特性。如果是，再进一步查看 FRA 的配置情况。
+select flashback_on from v$database;
+
+7、是否起用了 force logging 和补充日志。
+select force_logging, supplemental_log_data_min, supplemental_log_data_pk, supplemental_log_data_ui,
+supplemental_log_data_fk, supplemental_log_data_all from v$database;
+
+8、了解控制文件的组成
+select * from v$controlfile;
+
+9、了解日志文件的组成
+select l.group#, lf.type, lf.member, l.bytes, l.status LOG_STATUS, lf.status LOGFILE_STATUS
+from v$log l, v$logfile lf
+where l.group# = lf.group#
+order by 1,3;
+
+10、了解参数文件的组成和位置
+show parameter spfile
+
+11、了解 instance 的相关信息
+select instance_name, host_name, status, archiver, database_status, instance_role, active_state from v$instance;
+
+12、用户和密码相关
+是否使用了缺省密码
+是否使用了 profile
+是否起用了密码验证函数
+用户身份验证的方法
+密码是否区分大小写等
+
+select name, value from gv$parameter where name = 'resource_limit';
+select profile, resource_name, limit from dba_profiles order by 1,2;
+
+select username, profile from dba_users where account_status = 'OPEN' order by 1;
+　
+select d.username, u.account_status
+from dba_users_with_defpwd d, dba_users u
+where d.username = u.username and account_status = 'OPEN'
+order by 2,1;
+　
+13、是否打开了 BLOCK CHANGE TRACKING
+select filename, status, bytes from v$block_change_tracking;
+
+14、起用了那些特性 (Feature)
+DBMS_FEATURE_USAGE_REPORT
+　
+15、表空间和数据文件的规划
+　
+16、字符集相关
+select * from database_properties;
+　
+17、系统中是否存在 invalid 对象
+select owner, object_type, COUNT(*)
+from dba_objects
+where status = 'INVALID'
+group by owner, object_type;
+
+18、更进一步的
+是否使用了 ASM
+当前系统的备份方法和策略是什么。
+网络文件的配置是如何的。
+　
+19、查看一下最近的 alert 日志，获取一些有用的信息。
+
+20、跑几个性能分析报告，看看最近系统的运行状态如何。
+
+21、跑一个 RDA 报告，收集完整的系统状态报告。
