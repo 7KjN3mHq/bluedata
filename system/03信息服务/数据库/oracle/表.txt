@@ -1,3 +1,8 @@
+查看属于某个表空间的所有表
+select owner, table_name
+from dba_tables
+where tablespace_name='<tablespace_name>';
+
 查看名称包含 log 字符的表
 select object_name, object_id from user_objects where instr(object_name,'LOG')>0;
 

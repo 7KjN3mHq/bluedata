@@ -1,0 +1,34 @@
+1、先要了解当前的 MySQL 数据库的版本和平台以及字符集等相关信息。
+status
+
+2、其次要了解你的数据库中支持哪些存储引擎， 5.1 的话顺便查下插件情况。
+show engines;
+
+3、搞清楚这个环境是单机还是集群。
+show variables like 'have_ndbcluster';
+
+4、是否配置了 REPLICATION 。
+show slave status\G;
+show master status\G;
+
+5、查看 MySQL 的日志模式，查看近期的慢查询日志和错误日志。
+show variables like 'log%';
+
+6、查看 MySQL 当前有哪些触发器和存储过程。
+show triggers;
+show procedure status;
+
+7、是否支持分区。如果支持，哪些使用了分区表。
+show variables like 'have_part%';
+select TABLE_NAME from information_schema.PARTITIONS where PARTITION_NAME is not null;
+
+8、有多少用户拥有超级权限，是否有密码为空（ ROOT 密码默认为空），密码为空马上处理。
+select * from information_schema.USER_PRIVILEGES where PRIVILEGE_TYPE='SUPER';
+select host, user, password from mysql.user where password='';
+
+9、执行一会 show processlist ，看看 MySQL 能有多少并发，一般都是什么 sql 。
+watch "mysql -e 'show processlist'"
+
+10、更进一步， MySQL 的备份方法和策略是什么。网络环境的配置是如何的。
+
+11、跑几个性能分析报告，看看最近系统的运行状态如何，例如用 mysqlreport 。

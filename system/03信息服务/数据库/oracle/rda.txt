@@ -1,0 +1,33 @@
+http://www.blogjava.net/Files/beauty_beast/rda.rar
+unzip rda_4.1-051205.zip
+
+测试：
+cd rda
+./rda.sh -c
+
+第一次使用需要做一个采集的初始配置，执行命令：
+./rda.sh -S
+
+默认值即可，需要输入的地方：
+Enter an Oracle User ID (userid only) to view DBA_ and V$ tables
+If RDA will be run under the Oracle software owner's ID, enter a '/' here,
+and select Y at the SYSDBA prompt to avoid being prompted for the database
+password at runtime.
+Hit 'Return' to accept the default (system):/
+
+Is '/' a sysdba user (will connect as sysdba) (Y/N)?
+Hit 'Return' to accept the default (N):Y
+
+完成配置后 rda 目录下会生成配置文件 setup.cfg, setup.bak ，如果需要重新调整配置参数，可以直接修改该文件。
+
+
+初始配置完毕后要采集数据，执行命令:
+./rda.sh
+如果要看到详细的采集过程，可以执行命令:
+./rda.sh -v
+
+在采集过程中有可能需要输入数据库相关用户的密码。
+
+
+采集完成后，在 output 目录下会生成格式为 zip 的报告文件以及采集日志，如： RDA.<report_group>_<hostname>.zip 。
+解压缩该文件，访问 <report_group>__start.htm ，就可以看到这次采集的数据的详细信息。
