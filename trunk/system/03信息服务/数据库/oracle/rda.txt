@@ -31,3 +31,6 @@ Hit 'Return' to accept the default (N):Y
 
 采集完成后，在 output 目录下会生成格式为 zip 的报告文件以及采集日志，如： RDA.<report_group>_<hostname>.zip 。
 解压缩该文件，访问 <report_group>__start.htm ，就可以看到这次采集的数据的详细信息。
+
+
+注： Windows 则执行 rda.bat

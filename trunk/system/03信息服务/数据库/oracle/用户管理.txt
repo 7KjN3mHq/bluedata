@@ -76,3 +76,7 @@ connect / as sysdba
 create user sudo identified by proxy;
 alter user <username> grant connect through sudo;
 connect sudo[<username>]/proxy
+
+
+ĞŞ¸ÄÃÜÂë
+alter user <username> identified by <password>
