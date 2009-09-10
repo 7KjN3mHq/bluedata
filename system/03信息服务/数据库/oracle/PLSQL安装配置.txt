@@ -1,0 +1,20 @@
+软件下载：
+http://allroundautomations.swmirror.com/plsqldev715.exe
+http://www.allroundautomations.com/plsqldevlang/70/chinese.exe
+http://www.31km.cn/upload/aalf.rar
+
+先安装 plsqldev715.exe ，然后安装中文补丁 chinese.exe ，再将 aalf.rar 解压后的 aalf.dat 复制到安装目录完成注册。
+
+再从 http://www.oracle.com/technology/software/tech/oci/instantclient/htdocs/winsoft.html
+下载 instantclient-basic-win32-10.2.0.4.zip ，解压到 C:\Program Files\instantclient_10_2 。
+然后从安装了 OEM 的机器上复制 $ORACLE_HOME\network\admin\tnsnames.ora ，也放到 C:\Program Files\instantclient_10_2 下。
+
+打开 PL/SQL ，在“工具 -> 首选项 -> Oracle -> 连接”里面设置“ Oracle 主目录名”，如：
+C:\Program Files\instantclient_10_2
+和“ OCI 库”，如：
+C:\Program Files\instantclient_10_2\oci.dll
+
+如果查询结果是乱码，可以写个批处理文件设置 NLS_LANG 后启动 PL/SQL Developer 。
+plsqldev.bat:
+set NLS_LANG=SIMPLIFIED CHINESE_CHINA.ZHS16GBK
+PLSQLDev.exe

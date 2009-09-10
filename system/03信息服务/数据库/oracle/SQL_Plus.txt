@@ -4,3 +4,23 @@ pagesize 14
 linesize 80
 
 set line 32767
+
+
+客户端
+下载：
+http://www.oracle.com/technology/software/tech/oci/instantclient/htdocs/winsoft.html
+
+instantclient-basic-win32-10.2.0.4.zip 是必须的。
+instantclient-sqlplus-win32-10.2.0.4.zip 即 sqlplus 的客户端。
+解压到 C:\Program Files\instantclient_10_2 。
+然后从安装了 OEM 的机器上复制 $ORACLE_HOME\network\admin\tnsnames.ora ，也放到 C:\Program Files\instantclient_10_2 下。
+
+环境变量的设置：
+在 PATH 中增加 ;C:\Program Files\instantclient_10_2
+新建 SQLPATH, LOCAL, TNS_ADMIN, LD_LIBRARY_PATH 四个环境变量名，变量值均为 C:\Program Files\instantclient_10_2
+如果查询结果为乱码，设置 set NLS_LANG=SIMPLIFIED CHINESE_CHINA.ZHS16GBK
+
+运行 cmd
+C:\>sqlplus /nolog
+SQL> conn username/password@orcl
+这样就可以连接远程服务器了。

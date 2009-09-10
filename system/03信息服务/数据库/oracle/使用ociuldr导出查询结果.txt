@@ -1,0 +1,11 @@
+下载： http://www.anysql.net/software/ociuldr.zip
+
+解压后将 ociuldr.exe 复制到 C:\Program Files\instantclient_10_2 。
+
+执行：
+C:\>ociuldr user=username/password@orcl query="select username from dba_users" file=dba_users.txt
+
+这样查询结果就输出到 dba_user.txt 文件里面了。
+
+ociuldr --help 查看更多参数信息。
+详情可查看 http://www.anysql.net/doc/ociuldr.pdf

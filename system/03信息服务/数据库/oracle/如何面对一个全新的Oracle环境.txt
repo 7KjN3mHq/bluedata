@@ -15,7 +15,7 @@ end;
 /
 
 2、其次要了解数据库中装了哪些组件。
-   select * from dba_registry;
+select * from dba_registry;
 　
 3、搞清楚这个环境是单机还是集群。
 
