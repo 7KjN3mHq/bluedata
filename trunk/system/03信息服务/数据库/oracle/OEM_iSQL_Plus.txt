@@ -1,3 +1,19 @@
+手工配置 DBControl
+emca -repos create
+输入以下信息:
+数据库 SID: orcl
+监听程序端口号: 1521
+SYS 用户的口令:
+SYSMAN 用户的口令:
+是否继续? [yes(Y)/no(N)]: Y
+
+set ORACLE_SID=orcl
+emctl start dbconsole
+
+重新配置 DBControl
+emca -config dbcontrol db -repos recreate
+
+
 OEM 中文乱码问题
 分别进入以下三个目录：
 $ORACLE_HOME/jdk/jre/lib

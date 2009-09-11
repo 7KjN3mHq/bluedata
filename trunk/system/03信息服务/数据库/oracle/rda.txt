@@ -33,4 +33,4 @@ Hit 'Return' to accept the default (N):Y
 解压缩该文件，访问 <report_group>__start.htm ，就可以看到这次采集的数据的详细信息。
 
 
-注： Windows 则执行 rda.bat
+注： Windows 下则执行 rda.bat 。

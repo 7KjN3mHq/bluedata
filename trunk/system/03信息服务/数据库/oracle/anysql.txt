@@ -1,0 +1,61 @@
+http://www.anysql.net/category/anysql
+
+
+安装：
+Windows:
+下载 JRE:
+http://www.java.com/zh_CN/download/manual.jsp
+
+下载 AnySQL:
+http://www.anysql.net/software/anysql.zip
+
+安装 JRE 后解压 anysql.zip ，直接双击 asql.exe 或 asqlw.exe 执行即可。
+
+
+Linux:
+mkdir /usr/local/lib/jlib
+unzip anysql.zip
+cd anysql/jlib
+cp oasql.jar oracle.jar /usr/local/lib/jlib/
+chmod 644 /usr/local/lib/jlib/*.jar
+
+vi /usr/local/bin/asql
+#!/bin/sh
+JAVA_HOME=/opt/oracle/product/10.2/jre/1.4.2
+ASQL_JLIB=/usr/local/lib/jlib
+$JAVA_HOME/bin/java -server -Xms8m -Xmx16m -cp $ASQL_JLIB/oasql.jar com.asql.tools.ASQL $*
+
+chmod +x /usr/local/bin/asql
+
+$ asql
+
+ AnySQL for Oracle(8i/9i/10g), Release 3.0.0 (Build:20060816-1013)
+
+ (@) Copyright Lou Fangxin 2004/2005, all rights reserved.
+
+ASQL>
+
+
+连接数据库：
+conn <username>/<password>@host.domain.com:1521:orcl [as sysdba]
+
+查询表空间使用情况：
+ora tsfree
+
+AnySQL 的 DESC 命令不仅可以显示表结构，还显示了表是否分区及其索引信息：
+desc scott.emp
+
+查看对象的依赖关系：
+depend sys.dbms_summary
+
+通过 SQL 的哈希值查看 SQL 的文本：
+ora hash 3109775760
+
+查所有用户下的表和索引的个数：
+CROSS SELECT OWNER,OBJECT_TYPE,COUNT(*)
+FROM DBA_OBJECTS
+WHERE OBJECT_TYPE IN ('TABLE','INDEX')
+GROUP BY OWNER,OBJECT_TYPE;
+
+anysql 默认是 queryonly 模式，不能做 DML 和 DDL 。
+可以 set queryonly false 后执行操作，再用 set queryonly true 改回 queryonly 模式。

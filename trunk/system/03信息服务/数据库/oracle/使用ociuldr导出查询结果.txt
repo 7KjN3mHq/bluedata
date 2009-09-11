@@ -7,5 +7,8 @@ C:\>ociuldr user=username/password@orcl query="select username from dba_users" f
 
 这样查询结果就输出到 dba_user.txt 文件里面了。
 
+sys 只能在本地连接:
+C:\>ociuldr -si user=sys/password@orcl query="select username from dba_users" file=dba_users.txt
+
 ociuldr --help 查看更多参数信息。
 详情可查看 http://www.anysql.net/doc/ociuldr.pdf

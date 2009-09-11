@@ -6,3 +6,7 @@ sc delete "windows 核心组件服务项"
 
 Vista 开启 Administrator 帐号：
 net user administrator /active:yes
+
+删除右键无效的“发送到”：
+C:\Documents and Settings\Administrator\SendTo
+SendTo 文件夹是隐藏的，删除其下的项目即可。
