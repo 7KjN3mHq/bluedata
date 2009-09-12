@@ -10,3 +10,7 @@ net user administrator /active:yes
 删除右键无效的“发送到”：
 C:\Documents and Settings\Administrator\SendTo
 SendTo 文件夹是隐藏的，删除其下的项目即可。
+
+自定义 IE 收藏夹的路径
+regedit -> HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders
+修改 Favorites 的值。
