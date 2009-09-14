@@ -1,0 +1,66 @@
+CentOS 安装：
+wget ftp://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p1688813097/v53850/hp-OpenIPMI-8.2.6-4.rhel4.x86_64.rpm
+wget ftp://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p308168484/v43003/hpasm-8.0.0-173.rhel4.x86_64.rpm
+
+wget ftp://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p122729156/v53851/hp-OpenIPMI-8.2.6-4.rhel4.i386.rpm
+wget ftp://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p308168320/v42991/hpasm-8.0.0-173.rhel4.i386.rpm
+
+yum install kernel-smp-devel
+rpm -ivh hp-OpenIPMI-8.2.6-4.rhel4.x86_64.rpm
+cd /opt/hp/hp-OpenIPMI/bin
+ln -s 2.6.9-78.ELsmp 2.6.9-78.0.1.ELsmp
+
+rpm -ivh hpasm-8.0.0-173.rhel4.x86_64.rpm
+/etc/init.d/hpasm start
+
+
+Debian 安装：
+wget ftp://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p1929417577/v49951/DebianEtchSWBundle7.80-1.deb.x86.tar.gz
+
+apt-get install snmpd
+
+wget http://www.anheng.com.cn/debian/pool/main/g/gcc-2.95/libstdc++2.10-glibc2.2_2.95.4-27_i386.deb
+
+dpkg -i libstdc++2.10-glibc2.2_2.95.4-27_i386.deb
+
+tar zxvf DebianEtchSWBundle7.80-1.deb.x86.tar.gz
+
+dpkg -i hpasm-7.8.0-100.etch26.i386.deb
+
+
+使用：
+hpasmcli -s 'show'
+
+Invalid Arguments
+         SHOW ASR
+         SHOW BOOT
+         SHOW DIMM
+         SHOW F1
+         SHOW FANS
+         SHOW HT
+         SHOW IML
+         SHOW IPL
+         SHOW NAME
+         SHOW PORTMAP
+         SHOW POWERSUPPLY
+         SHOW PXE
+         SHOW SERIAL [ BIOS | EMBEDDED | VIRTUAL ]
+         SHOW SERVER
+         SHOW TEMP
+         SHOW UID
+         SHOW WOL
+
+DIMM 内存
+FANS 风扇
+POWERSUPPLY 电源模块
+SERVER 系统
+TEMP 温度
+
+查看内存状态
+hpasmcli -s 'show dimm' | egrep -i 'module|stat'
+
+查看温度
+hpasmcli -s 'show temp'
+
+查看风扇
+hpasmcli -s 'show fans'

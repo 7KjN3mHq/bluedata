@@ -13,10 +13,10 @@ cpio -i < foo.cpio
 非正常重启后，系统缺省只会提示“Press Y in 5 seconds to force file system integrity check”。
 对于那些无人看守的服务器，系统只会在等待5秒之后继续正常启动而不会做 FSCK 操作。
 解决办法：
-# echo "AUTOFSCK_TIMEOUT=5" > /etc/sysconfig/autofsck
-# echo "AUTOFSCK_DEF_CHECK=yes" >> /etc/sysconfig/autofsck
+echo "AUTOFSCK_TIMEOUT=5" > /etc/sysconfig/autofsck
+echo "AUTOFSCK_DEF_CHECK=yes" >> /etc/sysconfig/autofsck
 
-扩展YUM源（DAG）
+扩展 YUM 源 (DAG)
 http://dag.wieers.com/rpm/FAQ.php#B
 
 使用 Fedora 源
@@ -28,9 +28,9 @@ rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noar
 
 YUM 使用 DVD 光盘或 ISO 文件
 先把光盘或 ISO 文件挂载到文件系统：
-# mkdir /media/CentOS
+mkdir /media/CentOS
 挂载光盘
-# mount /dev/cdrom /media/CentOS
+mount /dev/cdrom /media/CentOS
 或挂载 ISO 文件
 mount -o loop /home/iso/CentOS-5.1-i386-bin-DVD.iso /media/CentOS
 
@@ -41,8 +41,8 @@ baseurl=file:///media/CentOS/
 gpgcheck=0
 
 再把 Centos-Basic.repo 改名：
-# cd /etc/yum.repos.d
-# mv Centos-Basic.repo Centos-Basic.repo.bak
+cd /etc/yum.repos.d
+mv Centos-Basic.repo Centos-Basic.repo.bak
 
 yum 安装软件时就是使用光盘或者 ISO 文件了。
 
