@@ -1,0 +1,63 @@
+Debian:
+apt-get install lm-sensors
+
+sensors-detect
+一路“回车”。
+
+最后，需要手工做以下操作：
+To load everything that is needed, add this to /etc/modules:
+
+#----cut here----
+# I2C adapter drivers
+i2c-piix4
+# Chip drivers
+w83781d
+#----cut here----
+
+还要执行 pwmconfig
+
+手动加载内核模块：
+modprobe i2c-piix4
+modprobe w83781d
+
+
+CentOS:
+yum install lm-sensors
+
+sensors-detect
+一路“回车”。
+
+最后，需要手工做以下操作：
+To make the sensors modules behave correctly, add these lines to
+/etc/modules.conf:
+
+#----cut here----
+# I2C module options
+alias char-major-89 i2c-dev
+#----cut here----
+
+To load everything that is needed, add this to some /etc/rc* file:
+
+#----cut here----
+# I2C adapter drivers
+modprobe i2c-i801
+# I2C chip drivers
+modprobe smbus-arp
+# sleep 2 # optional
+/usr/bin/sensors -s # recommended
+#----cut here----
+
+不改似乎也可以。
+
+
+看看所需模块是否加载：
+lsmod | grep i2c
+i2c_sensor              7617  2 eeprom,lm85
+i2c_i801               11981  0
+i2c_dev                14529  0
+i2c_core               26305  5 eeprom,lm85,i2c_sensor,i2c_i801,i2c_dev
+
+
+/etc/init.d/lm_sensors restart
+
+执行 sensors 即可看到 CPU 温度及风扇转速。

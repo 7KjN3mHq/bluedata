@@ -1,0 +1,6 @@
+lspci | grep IPMI
+01:04.6 IPMI SMIC interface: Hewlett-Packard Company Proliant iLO2 virtual UART
+
+yum install OpenIPMI OpenIPMI-tools
+
+ipmitool sensor list | grep 'Ambient Temp'
