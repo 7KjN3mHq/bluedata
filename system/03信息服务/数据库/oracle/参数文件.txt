@@ -1,0 +1,48 @@
+SPFILE 的备份与恢复
+如果设置了控制文件自动备份， Oracle 会在数据库发生重大变化（如增减表空间）时自动进行控制文件和 SPFILE 文件的备份。
+设置控制文件自动备份：
+rman target /
+RMAN> configure controlfile autobackup on;
+
+查看是否启用自动备份：
+SQL> select * from v$rman_configuration;
+
+更改自动备份的位置：
+RMAN> configure controlfile autobackup format for device type disk to '/opt/oracle/orabackup/control%F';
+
+检查自动备份：
+SQL> select * from v$backup_spfile;
+
+RMAN> list backup of spfile;
+
+使用自动备份恢复 SPFILE 文件：
+数据库可以 mount:
+RMAN> restore spfile to '/tmp/spfileorcl.ora' from autobackup;
+
+也可恢复控制文件：
+RMAN> restore controlfile to '/tmp/control01.ctl' from autobackup;
+
+数据库不能 mount:
+RMAN> restore controlfile to '/tmp/control01.ctl' from '<c-DBID-YYYYMMDD-QQ>';
+
+数据库不能 nomount:
+编辑一个临时 PFILE 文件启动实例再恢复。
+rman target /
+RMAN> startup nomount;
+
+dbs 目录文件全部丢失且无备份的恢复：
+SQL> create spfile='/opt/oracle/product/10.2/dbs/spfile1.ora' from pfile='/opt/oracle/admin/orcl/scripts/init.ora';
+mv spfile1.ora spfileorcl.ora
+此时修改过的参数都会丢失。
+
+导出当前实例的参数：
+set linesize 120
+set pagesize 999
+set heading off
+set feedback off
+spool /tmp/inittmp.ora
+select '*.'||name||' = ' || value from v$parameter where isdefault = 'FALSE';
+spool off
+
+Oracle 11g 从当前实例创建参数文件：
+create <spfile|pfile> from memory;

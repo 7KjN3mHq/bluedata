@@ -1,0 +1,44 @@
+最近日期的日志生成统计：
+select trunc(completion_time), sum(mb) day_mb
+from (select name, completion_time, blocks*block_size/1024/1024 mb from v$archived_log)
+group by trunc(completion_time);
+
+某日全天的日志生成：
+select trunc(completion_time), sum(mb) day_mb
+from (select name, completion_time, blocks*block_size/1024/1024 mb
+      from v$archived_log
+      where completion_time between trunc(sysdate) -2 and trunc(sysdate) -1)
+group by trunc(completion_time);
+
+
+select * from v$log;
+select * from v$logfile;
+
+
+增加新的日志组：
+alter database add logfile group 4 '/opt/oracle/oradata/ORCL/onlinelog/redo04.dbf' size 50M;
+
+删除日志组（如果日志组处于 active 状态及未归档是不能删除的）：
+alter database drop logfile group 3;
+
+强制切换日志：
+alter system switch logfile;
+
+手动归档日志：
+alter system archive log sequence 29;
+
+手动检查点：
+alter system checkpoint;
+
+增加日志组成员：
+alter database add logfile member '/opt/oracle/flash_recovery_area/ORCL/onlinelog/redo04.dbf' to group 4;
+
+使用 OMF ，不需要指定日志文件名，并且会自动在闪回区增加日志组成员。
+
+
+redo 故障恢复
+inactive 日志组文件丢失：
+alter database clear logfile group 4;
+
+active 或 current 日志组文件丢失：
+在损失当前日志时，数据库是正常关闭的：

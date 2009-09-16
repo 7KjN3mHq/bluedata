@@ -1,0 +1,30 @@
+查看某个进程的 PGA 内存消耗详情
+! ps -ef | grep LOCAL | head -1
+oracle    2870     1  0 Sep07 ?        00:00:00 oracleorcl (LOCAL=NO)
+
+select p.program, p.spid, pm.category, pm.allocated, pm.used, pm.max_allocated
+from v$process p, v$process_memory pm
+where p.pid = pm.pid and p.spid = 2870;
+
+
+查看系统的 PGA 性能：
+select name, value,
+    100 * ( value
+    / decode ((select sum (value) from v$sysstat
+        where name like 'workarea executions%'), 0, NULL,
+        (select sum (value) from v$sysstat
+        where name like 'workarea executions%'))) pct
+from v$sysstat where name like 'workarea executions%';
+
+
+SGA
+show sga
+select * from v$sgainfo;
+
+查看共享内存的分配：
+ipcs -sa
+
+Oracle 11g MEMORY_TARGET 参数超过系统 shm 大小后出错，重设 Linux /dev/shm 大小：
+umount /dev/shm
+mount -t tmpfs shmfs -o size=3192M /dev/shm
+
