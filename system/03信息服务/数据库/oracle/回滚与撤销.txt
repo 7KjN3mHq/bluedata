@@ -1,0 +1,9 @@
+AUM 下重建 UNDO 表空间
+同平台迁移可以放弃 UNDO 表空间，但启动会报错 ORA-01157 并启动到 mount 状态。
+删除 UNDO 文件启动数据库：
+alter database datafile '/opt/oracle/oradata/ORCL/datafile/undotbs01.dbf' offline drop;
+alter database open;
+
+重建 UNDO 表空间并切换为当前 UNDO 表空间:
+create undo tablespace undotbs2 datafile '/opt/oracle/oradata/ORCL/datafile/undotbs02.dbf' size 10M;
+alter system set undo_tablespace='undotbs2';
