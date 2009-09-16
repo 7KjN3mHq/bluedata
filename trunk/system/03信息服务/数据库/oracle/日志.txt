@@ -42,3 +42,15 @@ alter database clear logfile group 4;
 
 active 或 current 日志组文件丢失：
 在损失当前日志时，数据库是正常关闭的：
+recover database until cancel;
+alter database open resetlogs;
+
+在损失当前日志时，数据库是异常关闭的（先备份再操作）：
+只能启动到 mount 状态，然后设置隐含参数 "_allow_resetlogs_corruption":
+alter system set "_allow_resetlogs_corruption"=true scope=spfile;
+shutdown immediate;
+startup mount;
+recover database using backup controlfile until cancel;
+alter database open resetlogs;
+shutdown immediate;
+startup
