@@ -85,3 +85,7 @@ alter user <username> identified by <password>
 删除用户
 drop user <username>;  仅仅删除用户。
 drop user <username> cascade;  会删除此用户名下的所有表和视图。
+
+
+创建口令文件
+orapwd file=<fname> password=<password> entries=<users> force=<y/n>

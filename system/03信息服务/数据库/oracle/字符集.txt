@@ -1,0 +1,59 @@
+查看数据库字符集：
+数据库服务器字符集 select * from nls_database_parameters ，其来源于 props$ ，是表示数据库的字符集。
+
+客户端字符集环境 select * from nls_instance_parameters ，其来源于 v$parameter ，
+表示客户端的字符集的设置，可能是参数文件，环境变量或者是注册表。
+
+会话字符集环境 select * from nls_session_parameters ，其来源于 v$nls_parameters ，
+表示会话自己的设置，可能是会话的环境变量或者是 alter session 完成，
+如果会话没有特殊的设置，将与 nls_instance_parameters 一致。
+
+客户端的字符集要求与服务器一致，才能正确显示数据库的非 ASCII 字符。如果多个设置存在的时候，
+alter session > 环境变量 > 注册表 > 参数文件
+
+字符集要求一致，但是语言设置却可以不同，语言设置建议用英文。
+如字符集是 ZHS16GBK ，则 NLS_LANG 可以是 AMERICAN_AMERICA.ZHS16GBK 。
+
+
+修改字符集：
+8i 以上版本可以通过 alter database 来修改字符集，但也只限于子集到超集，不建议修改 props$ 表，将可能导致严重错误。
+需要注意的是，此方法会破坏数据库中的原有双字节字符，可能某些表无法读取。先将数据库导出，修改完字符集后再导入较好。
+startup mount
+alter system enable restricted session;
+alter system set job_queue_processes=0;
+alter system set aq_tm_processes=0;
+alter database open;
+alter database character set <internal_use> AL32UTF8;
+shutdown immediate
+startup
+
+这里的 INTERNAL_USE 可选，譬如用于不能从父集转到子集的场合，但是这样做会产生乱码，或者表中的数据不能读取。
+如果数据库中存在 CLOB 字段，那么就不允许对字符集进行转换，此时可以查看 alert<sid>.log 文件，把含有 CLOB 的表 trancate 。
+trancate table [table_name];
+转换后的数据库字符集可以通过以下命令察看：
+select name, value$ from props$ where name like '%NLS%';
+
+导入导出是常用的一个数据迁移及转化工具，因其导出文件具有平台无关性，所以在跨平台迁移中，最为常用。
+在导出操作时，非常重要的是客户端的字符集设置，也就是客户端的 NLS_LANG 设置。
+NLS_LANG 参数由以下部分组成：
+NLS_LANG=<Language>_<Territory>.<Clients Characterset>
+NLS_LANG 各部分含义如下：
+    Language
+        - Oracle 消息使用的语言
+        - 日期中月份和日显示
+    Territory
+        - 货币和数字格式
+        - 地区和计算星期及日期的习惯
+    Clients Characterset
+        - 控制客户端应用程序使用的字符集
+
+例如：
+E:\>set NLS_LANG=SIMPLIFIED CHINESE_CHINA.ZHS16GBK
+或者
+E:\>set NLS_LANG=AMERICAN_AMERICA.ZHS16GBK
+
+Windows 客户端设置，可以在注册表中更改 NLS_LANG ，具体键值位于： HKEY_LOCAL_MACHINE\SOFTWARE\ORACLE\HOMExx\
+xx 指存在多个 ORACLE_HOME 时的系统编号。
+
+
+多语言支持最好使用 AL32UTF8 字符集。
