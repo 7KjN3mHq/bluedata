@@ -29,3 +29,18 @@ ERROR: ORA-01035: ORACLE 只允许具有 RESTRICTED SESSION 权限的用户使用
 例： startup pfile=E:\Oracleadminoradbpfileinit.ora
 
 8. startup EXCLUSIVE
+
+
+以只读读写方式打开数据库：
+alter database open read only;
+alter database open read write;
+
+
+关闭数据库：
+shutdown normal
+
+shutdown immediate
+
+shutdown transactional
+
+shutdown abort
