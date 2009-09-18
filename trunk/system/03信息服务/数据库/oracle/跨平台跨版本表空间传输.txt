@@ -1,0 +1,114 @@
+跨平台跨版本表空间传输 (Win32 10.2.0.1 -> lnx32 10.2.0.4)
+查询平台字节顺序：
+select * from v$transportable_platform;
+
+以只读模式打开数据库：
+startup mount
+alter database open read only;
+
+确认迁移是否支持：
+set serveroutput on
+declare
+  db_ready boolean;
+begin
+  db_ready := dbms_tdb.check_db('Linux IA (32-bit)');
+end;
+/
+
+检查外部对象：
+set serveroutput on
+declare
+  external boolean;
+begin
+  external := dbms_tdb.check_external;
+end;
+/
+
+使用 RMAN 转换数据文件：
+rman targe /
+convert database new database 'orcl'
+transport script 'D:\oracle\product\10.2.0\oradata\transport\transport.sql'
+to platform 'Linux IA (32-bit)'
+db_file_name_convert 'D:\ORACLE\PRODUCT\10.2.0\ORADATA\MPTEST\DATAFILE' 'D:\ORACLE\PRODUCT\10.2.0\ORADATA\TRANSPORT';
+
+(Windows Server 2003 SP1, Oracle 10.2.0.1 db_file_name_convert 后的文件保存在了 database 目录下。 )
+
+生成了一个转换脚本 transport.sql 用于参考。
+RMAN 还自动生成了一个参数文件 INIT_00KPFNQL_1_0.ORA ，可根据此文件修改目标平台的参数。
+把目录打包传输到目标平台上。
+
+在导入平台上创建相关目录：
+mkdir -p /opt/oracle/admin/orcl/{a,b,c,d,u}dump
+mkdir -p /opt/oracle/admin/orcl/pfile
+
+根据系统实际情况参考 INIT_00KPFNQL_1_0.ORA 文件创建 pfile 文件。
+把数据文件放到相应的目录下。
+
+启动实例：
+export ORACLE_SID=orcl
+sqlqlus '/ as sysdba'
+
+SQL> startup nomount pfile=?/dbs/initorcl.ora
+
+可根据 TRANSPORT.SQL 的内容创建控制文件：
+CREATE CONTROLFILE REUSE SET DATABASE "ORCL" RESETLOGS  NOARCHIVELOG
+    MAXLOGFILES 16
+    MAXLOGMEMBERS 3
+    MAXDATAFILES 100
+    MAXINSTANCES 8
+    MAXLOGHISTORY 292
+LOGFILE
+  GROUP 1 SIZE 50M,
+  GROUP 2 SIZE 50M,
+  GROUP 3 SIZE 50M
+DATAFILE
+  '/opt/oracle/oradata/ORCL/datafile/system.dbf',
+  '/opt/oracle/oradata/ORCL/datafile/undotbs1.dbf',
+  '/opt/oracle/oradata/ORCL/datafile/sysaux.dbf',
+  '/opt/oracle/oradata/ORCL/datafile/users.dbf',
+  '/opt/oracle/oradata/ORCL/datafile/mptable.dbf',
+  '/opt/oracle/oradata/ORCL/datafile/mpindex.dbf',
+  '/opt/oracle/oradata/ORCL/datafile/mpclob.dbf',
+  '/opt/oracle/oradata/ORCL/datafile/mpintermedia.dbf'
+CHARACTER SET AL32UTF8
+;
+
+然后把控制文件的信息追加到参数文件中：
+control_files=("/opt/oracle/oradata/ORCL/controlfile/o1_mf_5c60nk2p_.ctl", "/opt/oracle/flash_recovery_area/ORCL/controlfile/o1_mf_5c60nkgn_.ctl")
+
+重启数据库到 mount 状态：
+shutdown immediate
+startup mount pfile=?/dbs/initorcl.ora
+
+从 pfile 创建 spfile:
+create spfile='/opt/oracle/product/10.2/dbs/spfileorcl.ora' from pfile='/opt/oracle/product/10.2/dbs/initorcl.ora';
+
+重新生成日志文件：
+alter database open resetlogs;
+因为是跨版本打开，所以会出现错误。
+
+重启数据库到 upgrade 模式：
+shutdown immediate
+startup upgrade
+
+需要进行恢复：
+recover database;
+
+重启数据库到 upgrade 模式，执行 utlirp.sql 脚本使数据库中的 PL/SQL 对象失效：
+SQL> @@ ?/rdbms/admin/utlirp.sql
+
+重启数据库到 upgrade 模式，执行 utlrp.sql 脚本重新编译，消除跨平台的兼容性影响：
+SQL> @@ ?/rdbms/admin/utlrp.sql
+
+再执行和数据库升级相关的脚本：
+SQL> @@ ?/rdbms/admin/catupgrd.sql
+
+关闭数据库后正常打开数据库：
+shutdown immediate
+startup
+
+catupgrd.sql 脚本可能会使部分字典对象失效，可以再次运行 utlrp.sql 。
+
+最后，给数据库添加零时文件：
+alter tablespace temp add tempfile size 20971520 autoextend on next 655360 maxsize 32767M;
+alter tablespace mptemp add tempfile size 134217728 autoextend on next 10485760 maxsize 32767M;

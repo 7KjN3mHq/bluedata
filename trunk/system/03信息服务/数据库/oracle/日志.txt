@@ -1,3 +1,18 @@
+启用或停止归档模式：
+shutdown immediate;
+startup mount;
+alter database archivelog;
+alter database noarchivelog;
+alter database open;
+
+删除过期的归档日志：
+SQL> delete archivelog all completed before 'sysdate-7';
+或者
+find /oraarchive -xdev -mtime +7 -name "*.arc" -exec rm {} ;
+rman target /
+RMAN> crosscheck archivelog all;
+RMAN> delete expired archivelog all;
+
 最近日期的日志生成统计：
 select trunc(completion_time), sum(mb) day_mb
 from (select name, completion_time, blocks*block_size/1024/1024 mb from v$archived_log)
