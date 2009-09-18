@@ -79,7 +79,7 @@ connect sudo[<username>]/proxy
 
 
 ĞŞ¸ÄÃÜÂë
-alter user <username> identified by <password>
+alter user <username> identified by "<password>";
 
 
 É¾³ıÓÃ»§

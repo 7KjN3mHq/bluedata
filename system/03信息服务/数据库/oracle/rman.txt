@@ -1,0 +1,9 @@
+报告过期备份：
+report obsolete
+
+删除过期备份：
+delete obsolete
+
+清除未被 RMAN 管理的文件：
+crosscheck archivelog all;
+delete expired archivelog all;
