@@ -31,3 +31,10 @@ SID_LIST_LISTENER =
 lsnrctl stop
 lsnrctl start
 lsnrctl status
+
+
+查看当前会话：
+select sid,serial#,username,machine from v$session;
+
+结束一个会话：
+alter system kill session '<sid,serial#>';

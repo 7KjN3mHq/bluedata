@@ -1,0 +1,107 @@
+导出：
+EXP:
+exp MPUSER/mp file=/tmp/mp_log.dmp tables=mp_log query="where id \> 5000"
+
+使用参数文件：
+vi exp.par
+userid=MPUSER/mp
+file=/tmp/mp_log.dmp
+tables=mp_log
+query="where create_date>trunc(to_date('2009-01-01', 'yyyy-mm-dd'))"
+
+exp parfile=exp.par
+
+
+出现错误：
+EXP-00056: ORACLE error 1017 encountered
+ORA-01017: invalid username/password; logon denied
+用户名要大写。
+
+
+EXPDP:
+先创建导出目录：
+mkdir /tmp/expdir
+SQL> drop directory expdir;
+SQL> create directory expdir as '/tmp/expdir';
+SQL> grant read, write on directory expdir to mpuser;
+SQL> select * from dba_directories;
+
+导出：
+expdp mpuser/mp dumpfile=mp_log.dmp directory=expdir tables=mp_log
+
+出现错误：
+ORA-39006: internal error
+ORA-39213: Metadata processing is not available
+
+执行了：
+EXEC dbms_metadata_util.load_stylesheets
+
+错误变成：
+ORA-39006: internal error
+ORA-39065: unexpected master process exception in DISPATCH
+ORA-04063: package body "SYS.KUPW$WORKER" has errors
+ORA-06508: PL/SQL: could not find program unit being called: "SYS.KUPW$WORKER"
+
+ORA-39097: Data Pump job encountered unexpected error -6508
+
+ORA-06508 错误：
+SQL> @?/rdbms/admin/catalog.sql
+SQL> @?/rdbms/admin/catproc.sql
+SQL> @?/rdbms/admin/catblock.sql
+SQL> @?/rdbms/admin/catexp.sql
+
+
+ORA-00932 错误：
+SQL> @?/rdbms/admin/catmetx.sql
+SQL> @?/rdbms/admin/utlrp.sql
+
+
+重装 XDB 组件：
+SQL> connect / as sysdba
+SQL> @?/rdbms/admin/catqm.sql "iamENCY000" SYSAUX TEMP;
+SQL> @?/rdbms/admin/catxdbj.sql;
+SQL> @?/rdbms/admin/catrul.sql;
+SQL> select comp_id,comp_name,version,status,schema,other_schemas from dba_registry where comp_id in ('XDB','RUL');
+
+
+同样也可创建参数文件导出：
+vi expdp.par
+directory=expdir
+schemas=mpuser
+dumpfile=expdp_mp.dmp
+include=table:"like 'MP_%'"
+
+expdp \'/ as sysdba\' parfile=expdp.par job_name=expdp_mp
+
+Windows:
+expdp '/ as sysdba' parfile=expdp.txt job_name=expdp_mp
+
+Export> status
+Export> stop_job
+
+expdp \'/ as sysdba\' attach=expdp_mp
+Export> start_job
+
+
+EXCLUDE 的使用：
+EXCLUDE=TABLE:"IN ('TABLENAME1', 'TABLENAME2')"
+
+EXCLUDE/INCLUDE 参数不能共用。
+
+
+导入：
+IMP:
+imp MPUSER/mp file=/tmp/mp_log.dmp FULL=Y
+
+覆盖导入：
+imp MPUSER/mp file=mp_log.dmp FULL=Y IGNORE=Y DESTROY=Y
+
+导入到非缺省表空间：
+先生成 indexfile 文件:
+imp MPUSER/mp file=/tmp/mp_log.dmp indexfile=mp_log.idx rows=n FULL=Y
+
+修改文件中表空间的定义，去掉 REM 注释后再创建对象。
+
+
+IMPDP:
+impdp mpuser/mp dumpfile=expdp_mp.dmp directory=expdir

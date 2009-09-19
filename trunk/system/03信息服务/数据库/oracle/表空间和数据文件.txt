@@ -1,19 +1,42 @@
-查看表空间的名称及大小
+查看用户的默认表空间：
+select username, default_tablespace from dba_users;
+
+查看表空间的名称及大小：
 select t.tablespace_name, round(sum(bytes/(1024*1024)),0) ts_size
 from dba_tablespaces t, dba_data_files d where t.tablespace_name = d.tablespace_name
 group by t.tablespace_name;
 
-查看表空间物理文件的名称及大小
+查看表空间物理文件的名称及大小：
 select tablespace_name, file_id, file_name, round(bytes/(1024*1024),0) total_space
 from dba_data_files
 order by tablespace_name;
 
-查看表空间的使用情况
+查看表空间的使用情况：
 select sum(bytes)/(1024*1024) as free_space, tablespace_name from dba_free_space group by tablespace_name;
 
-创建表空间
+创建表空间：
 create tablespace test
 datafile '/opt/oracle/oradata/ORCL/datafile/test01.dbf'
 size 100M autoextend on next 10M maxsize 2048M
 extent management local uniform size 128K
 segment space management auto;
+
+查看属于某个表空间的所有表：
+select owner, table_name from dba_tables where tablespace_name='<tablespace_name>';
+
+查看某个表空间对象的情况：
+select segment_name,segment_type,bytes/1024/1024 as M from user_segments
+where tablespace_name = 'MPTABLE'
+order by 3 desc;
+
+删除表空间：
+drop tablespace <tablespace_name>;
+
+删除零时表空间的数据文件：
+alter database tempfile '<filename>' offline;
+alter database tempfile '<filename>' drop;
+
+更改数据文件路径：
+shutdown immediate;
+startup mount;
+alter database rename '<old_path_filename>' to '<new_path_filename>';

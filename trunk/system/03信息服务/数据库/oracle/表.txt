@@ -1,17 +1,17 @@
-查看属于某个表空间的所有表
-select owner, table_name from dba_tables where tablespace_name='<tablespace_name>';
-
-查看名称包含 log 字符的表
+查看名称包含 log 字符的表：
 select object_name, object_id from user_objects where instr(object_name,'LOG')>0;
 
-查看放在 Oracle 的内存区里的表
+查看放在 Oracle 的内存区里的表：
 select table_name, cache from user_tables where instr(cache,'Y')>0;
 
-查看表结构
+查看表结构：
 desc <table_name>
 
-查看表的大小
+查看表的大小：
 select sum(bytes)/(1024*1024) as "size(M)" from user_segments where segment_name=upper('<table_name>');
 
-查看表的创建时间
+查看表的创建时间：
 select object_name, created from user_objects where object_name=upper('<table_name>');
+
+删除表：
+drop table test;
