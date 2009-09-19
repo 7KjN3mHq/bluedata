@@ -1,0 +1,5 @@
+ORA-00932: inconsistent datatypes: expected DATE got NUMBER
+
+select * from mp_log where create_date>trunc(to_date('2009-09-01', 'yyyy-mm-dd'));
+
+select * from mp_log where (create_date between trunc(to_date('2009-09-01', 'yyyy-mm-dd')) and trunc(to_date('2009-09-19', 'yyyy-mm-dd')));

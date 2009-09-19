@@ -8,21 +8,21 @@ SQL> show user
 USER 为 "SYS"
 
 
-查看所有用户
+查看所有用户：
 select * from all_users;
 select * from dba_users;
 
-查看当前用户的缺省表空间
+查看当前用户的缺省表空间：
 select username, default_tablespace from user_users;
 
-查看当前用户的角色
+查看当前用户的角色：
 select * from user_role_privs;
 
-查看当前用户的系统权限和表级权限
+查看当前用户的系统权限和表级权限：
 select * from user_sys_privs;
 select * from user_tab_privs;
 
-查看当前用户下所有的表
+查看当前用户下所有的表：
 select * from user_tables;
 
 
@@ -53,7 +53,7 @@ RESOURCE                       CREATE INDEXTYPE                         NO
 RESOURCE                       CREATE TABLE                             NO
 
 
-限制用户使用表空间
+限制用户使用表空间：
 select * from dba_sys_privs where grantee='TEST';
 GRANTEE                        PRIVILEGE                                ADM
 ------------------------------ ---------------------------------------- ---
@@ -64,28 +64,28 @@ TEST                           UNLIMITED TABLESPACE                     NO
 revoke UNLIMITED TABLESPACE from test;
 alter user test quota unlimited on test;
 
-确认
+确认：
 select * from dba_ts_quotas where username='TEST';
 TABLESPACE_NAME                USERNAME                            BYTES  MAX_BYTES     BLOCKS MAX_BLOCKS DRO
 ------------------------------ ------------------------------ ---------- ---------- ---------- ---------- ---
 TEST                           TEST                                    0         -1          0         -1 NO
 
 
-通过代理用户实现 sudo 功能
+通过代理用户实现 sudo 功能：
 connect / as sysdba
 create user sudo identified by proxy;
 alter user <username> grant connect through sudo;
 connect sudo[<username>]/proxy
 
 
-修改密码
+修改密码：
 alter user <username> identified by "<password>";
 
 
-删除用户
+删除用户：
 drop user <username>;  仅仅删除用户。
 drop user <username> cascade;  会删除此用户名下的所有表和视图。
 
 
-创建口令文件
+创建口令文件：
 orapwd file=<fname> password=<password> entries=<users> force=<y/n>
