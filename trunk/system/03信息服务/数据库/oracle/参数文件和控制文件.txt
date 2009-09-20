@@ -1,0 +1,24 @@
+导出当前实例的参数：
+set linesize 120
+set pagesize 999
+set heading off
+set feedback off
+spool /tmp/inittmp.ora
+select '*.'||name||' = ' || value from v$parameter where isdefault = 'FALSE';
+spool off
+
+
+Oracle 11g 从当前实例创建参数文件：
+create <spfile|pfile> from memory;
+
+
+dbs 目录文件全部丢失且无备份恢复 SPFILE 文件：
+SQL> create spfile='/opt/oracle/product/10.2/dbs/spfile1.ora' from pfile='/opt/oracle/admin/orcl/scripts/init.ora';
+mv spfile1.ora spfileorcl.ora
+此时修改过的参数都会丢失。
+
+
+备份控制文件创建语句到跟踪文件中：
+alter database backup controlfile to trace;
+@?/rdbms/admin/gettrcname.sql
+在 nomount 状态下，可以使用这段脚本创建控制文件。控制文件会自动创建到参数文件中记录的控制文件位置。
