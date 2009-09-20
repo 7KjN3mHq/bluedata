@@ -6,7 +6,7 @@ select t.tablespace_name, round(sum(bytes/(1024*1024)),0) ts_size
 from dba_tablespaces t, dba_data_files d where t.tablespace_name = d.tablespace_name
 group by t.tablespace_name;
 
-查看表空间物理文件的名称及大小：
+查看表空间数据文件的名称及大小：
 select tablespace_name, file_id, file_name, round(bytes/(1024*1024),0) total_space
 from dba_data_files
 order by tablespace_name;
@@ -39,4 +39,6 @@ alter database tempfile '<filename>' drop;
 更改数据文件路径：
 shutdown immediate;
 startup mount;
-alter database rename '<old_path_filename>' to '<new_path_filename>';
+alter database rename file '<old_path_filename>' to '<new_path_filename>';
+recover datafile <file_id>;
+alter database open;
