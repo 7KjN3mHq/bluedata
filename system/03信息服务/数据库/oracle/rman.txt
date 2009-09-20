@@ -1,9 +1,62 @@
 报告过期备份：
-report obsolete
+report obsolete;
 
 删除过期备份：
-delete obsolete
+delete noprompt obsolete;
 
-清除未被 RMAN 管理的文件：
+手工删除备份文件后，需要验证备份是否有效并删除过期备份信息：
+crosscheck backup;
+delete expired backup;
+
+手工删除归档日志后，验证归档日志文件并删除缺失的归档日志信息：
 crosscheck archivelog all;
-delete expired archivelog all;
+delete noprompt expired archivelog all;
+
+参数文件的自动备份：
+如果设置了控制文件自动备份， Oracle 会在数据库发生重大变化（如增减表空间）时自动进行控制文件和 SPFILE 文件的备份。
+设置控制文件自动备份：
+rman target /
+RMAN> configure controlfile autobackup on;
+
+查看是否启用自动备份：
+RMAN> show controlfile autobackup;
+SQL> select * from v$rman_configuration;
+
+更改自动备份的位置：
+RMAN> configure controlfile autobackup format for device type disk to '/opt/oracle/orabackup/control%F';
+
+检查自动备份：
+SQL> select * from v$backup_spfile;
+RMAN> list backup of spfile;
+
+使用自动备份恢复控制文件：
+数据库可以 mount:
+RMAN> restore controlfile to '/tmp/control01.ctl' from autobackup;
+也可恢复 SPFILE 文件：
+RMAN> restore spfile to '/tmp/spfileorcl.ora' from autobackup;
+
+数据库不能 mount:
+RMAN> restore controlfile to '/tmp/control01.ctl' from '<controlc-DBID-YYYYMMDD-QQ>';
+
+数据库不能 nomount:
+编辑一个临时 PFILE 文件启动实例再恢复。
+也可使用 RMAN 启动默认实例进行恢复：
+rman target /
+RMAN> startup nomount;
+恢复 SPFILE 后再恢复控制文件，如：
+restore spfile to '/tmp/spfileorcl.ora' from '/opt/oracle/orabackup/controlc-2683682981-20090919-03';
+restore controlfile to '/tmp/control01.ctl' from '/opt/oracle/orabackup/controlc-2683682981-20090919-03';
+
+
+ORA-01152 错误：
+因为 controlfile 里所记录的 scn 与 datafile 里的 scn 不一致。
+如果当前 Redo 都可用，可以通过 noresetlogs 参数重建控制文件， Oracle 能够从日志文件中读取 Redo 信息，记录到控制文件中。实现完全恢复。
+startup nomount;
+CREATE CONTROLFILE REUSE DATABASE "ORCL" NORESETLOGS  ARCHIVELOG
+...
+按照控制文件的跟踪文件里的步骤完成参数的设置。
+再正常打开数据库并给零时表空间增加数据文件。
+如果日志文件有损坏，以 resetlogs 参数重建控制文件，则还需要进行恢复：
+recover database using backup controlfile until cancel;
+输入 AUTO ，最后可输入 CANCEL ，然后 resetlogs 打开数据库：
+alter database open resetlogs;
