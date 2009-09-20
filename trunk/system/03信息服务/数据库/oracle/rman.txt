@@ -12,6 +12,9 @@ delete expired backup;
 crosscheck archivelog all;
 delete noprompt expired archivelog all;
 
+控制文件拷贝备份：
+backup as copy current controlfile format '/opt/oracle/orabackup/control01.ctl';
+
 参数文件的自动备份：
 如果设置了控制文件自动备份， Oracle 会在数据库发生重大变化（如增减表空间）时自动进行控制文件和 SPFILE 文件的备份。
 设置控制文件自动备份：
@@ -60,3 +63,33 @@ CREATE CONTROLFILE REUSE DATABASE "ORCL" NORESETLOGS  ARCHIVELOG
 recover database using backup controlfile until cancel;
 输入 AUTO ，最后可输入 CANCEL ，然后 resetlogs 打开数据库：
 alter database open resetlogs;
+
+
+备份 system 表空间：
+backup datafile 1;
+
+
+镜像 COPY 功能：
+run {
+allocate channel ch1 type disk;
+copy
+datafile 5 to '/opt/oracle/orabackup/mptable.dbf',
+current controlfile to '/opt/oracle/orabackup/control01.ctl';
+}
+
+全数据库镜像拷贝备份：
+run {
+backup as copy tag "copy" database;
+}
+
+查看数据库的拷贝文件列表：
+list copy;
+
+基于镜像 COPY 的表空间恢复，恢复文件到不同位置：
+startup mount;
+run {
+set newname for datafile 5 to '/opt/oracle/oradata/ORCL/mptable.dbf';
+restore datafile 5;
+switch datafile all;
+recover datafile 5;
+}
