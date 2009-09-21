@@ -93,3 +93,125 @@ restore datafile 5;
 switch datafile all;
 recover datafile 5;
 }
+
+手动删除数据文件造成的 ORA-01116 错误，可先 offline 数据文件再恢复：
+SQL> alter database datafile '/opt/oracle/oradata/ORCL/datafile/mptable.dbf' offline;
+RMAN> restore datafile 5;
+RMAN> recover datafile 5;
+SQL> alter database datafile '/opt/oracle/oradata/ORCL/datafile/mptable.dbf' online;
+
+
+基于 SCN 的不完全恢复：
+run {
+set until scn <SCN>;
+restore database;
+recover database;
+}
+
+基于时间的不完全恢复：
+run {
+set until time '2009-09-20 09:45:30';
+restore database;
+recover database;
+}
+
+
+完全备份：
+run {
+backup full tag 'orcl' database
+include current controlfile format '/opt/oracle/orabackup/orclfull_%d_%T_%s'
+plus archivelog format '/opt/oracle/orabackup/orclarch_%d_%T_%s' delete all input;
+}
+
+查看备份结果：
+list backup;
+
+完全恢复：
+RMAN> startup mount;
+RMAN> restore database;
+RMAN> recover database;
+RMAN> alter database open;
+
+不完全恢复：
+export NLS_DATE_FORMAT="yyyy-mm-dd hh24:mi:ss"
+rman target /
+RMAN> startup mount;
+RMAN> restore database;
+RMAN> recover database until time '2009-09-21 09:55:30';
+RMAN> alter database open resetlogs;
+
+
+Oracle 10g Block Change Tracking:
+启用跟踪：
+alter database enable block change tracking using file '/opt/oracle/flash_recovery_area/ORCL/block_track.log';
+
+查看：
+select filename, status, bytes/1024/1024 as M from v$block_change_tracking;
+
+关闭跟踪：
+alter database disable block change tracking;
+
+
+基于数据块的恢复：
+验证数据文件，发现坏块：
+RMAN> backup validate datafile 5;
+
+查询坏块：
+SQL> select * from v$database_block_corruption where file#=5;
+
+恢复坏块：
+RMAN> blockrecover datafile 5 block 14 from backupset;
+
+清除 block corruption 信息：
+RMAN> backup validate datafile 5;
+
+
+恢复备份集到不同主机：
+备份源数据库：
+RMAN> backup database plus archivelog;
+
+备份控制文件：
+RMAN> backup current controlfile;
+
+导出当前实例的参数：
+set linesize 120
+set pagesize 999
+set heading off
+set feedback off
+spool /tmp/inittmp.ora
+select '*.'||name||' = ' || value from v$parameter where isdefault = 'FALSE';
+spool off
+
+修改后启动目标数据库：
+export ORACLE_SID=orcl
+sqlqlus '/ as sysdba'
+SQL> startup nomount pfile=?/dbs/initorcl.ora
+
+Windows 平台可通过 oradim 创建一个服务启动 Oracle 环境：
+C:\>oradim -new -sid orcl
+C:\>set oracle_sid=orcl
+C:\>rman target /
+RMAN> startup nomount;
+
+通过备份的控制文件恢复出控制文件：
+restore controlfile
+to '/opt/oracle/oradata/ORCL/controlfile/o1_mf_5c60nk2p_.ctl'
+from '/opt/oracle/flash_recovery_area/ORCL/backupset/2009_09_21/o1_mf_ncnnf_TAG20090921T163424_5cggnjpf_.bkp';
+
+加载数据库：
+RMAN> alter database mount;
+
+把备份集加载到控制文件：
+RMAN> catalog start with '/opt/oracle/flash_recovery_area/ORCL/backupset';
+
+效验备份集：
+RMAN> crosscheck backup;
+
+恢复数据文件：
+RMAN> restore database;
+
+应用归档日志进行恢复：
+RMAN> recover database;
+
+最后通过 resetlogs 方式打开数据库：
+RMAN> alter database open resetlog;

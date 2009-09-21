@@ -104,4 +104,4 @@ imp MPUSER/mp file=/tmp/mp_log.dmp indexfile=mp_log.idx rows=n FULL=Y
 
 
 IMPDP:
-impdp mpuser/mp dumpfile=expdp_mp.dmp directory=expdir
+impdp mpuser/mp dumpfile=mp_log.dmp directory=expdir
