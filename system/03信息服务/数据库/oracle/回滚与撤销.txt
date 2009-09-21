@@ -1,4 +1,4 @@
-AUM 下重建 UNDO 表空间
+AUM 下重建 UNDO 表空间：
 同平台迁移可以放弃 UNDO 表空间，但启动会报错 ORA-01157 并启动到 mount 状态。
 删除 UNDO 文件启动数据库：
 alter database datafile '/opt/oracle/oradata/ORCL/datafile/undotbs01.dbf' offline drop;
@@ -7,3 +7,55 @@ alter database open;
 重建 UNDO 表空间并切换为当前 UNDO 表空间:
 create undo tablespace undotbs2 datafile '/opt/oracle/oradata/ORCL/datafile/undotbs02.dbf' size 10M;
 alter system set undo_tablespace='undotbs2';
+
+
+启用闪回数据库：
+shutdown immediate;
+startup mount;
+alter database flashback on;
+alter database open;
+
+查看数据库的闪回状态：
+select dbid, name, flashback_on, current_scn from v$database;
+
+查看闪回时间上限：
+show parameter db_flashback
+
+
+flashback drop:
+sysdba 的 drop 操作不会被记录。
+删除表：
+drop table mp_log;
+
+查看对象：
+show recyclebin;
+
+恢复对象：
+flashback table mp_log to before drop;
+
+彻底删除对象：
+purge table mp_log;
+
+清空回收站：
+purge recyclebin;
+
+删除表时不放入回收站：
+drop table mp_log purge;
+
+
+结合 ora_rowscn 进行闪回恢复：
+update mp_log set target_id='111' where id=12782;
+commit;
+
+查看记录最近更新的信息：
+select target_id, ora_rowscn, scn_to_timestamp(ora_rowscn) from mp_log where id=12782;
+
+将 SCN 设为小于更新后的值，导出更改前的这条记录：
+exp mpuser/mp file=/tmp/mp_log_12782.dmp tables=mp_log flashback_scn=34745700 query=\"where id=12782\"
+
+删除这条记录：
+delete from mp_log where id=12782;
+commit;
+
+恢复这条记录：
+imp mpuser/mp file=/tmp/mp_log_12782.dmp full=y ignore=y
