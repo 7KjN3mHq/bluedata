@@ -215,3 +215,8 @@ RMAN> recover database;
 
 最后通过 resetlogs 方式打开数据库：
 RMAN> alter database open resetlog;
+
+
+增量备份：
+backup incremental level=0 database plus archivelog delete input;
+backup incremental level=1 database plus archivelog delete input;

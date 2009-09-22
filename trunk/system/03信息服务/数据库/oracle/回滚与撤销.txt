@@ -21,26 +21,47 @@ select dbid, name, flashback_on, current_scn from v$database;
 查看闪回时间上限：
 show parameter db_flashback
 
+基于时间点的闪回：
+SQL> alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss';
+SQL> select sysdate from dual;
+SQL> truncate table mp_log;
+SQL> shutdown immediate;
+SQL> startup mount;
+SQL> flashback database to timestamp to_timestamp('2009-09-22 11:37:12', 'yyyy-mm-dd hh24:mi:ss');
+SQL> alter database open resetlogs;
+
 
 flashback drop:
 sysdba 的 drop 操作不会被记录。
 删除表：
-drop table mp_log;
+drop table test;
 
 查看对象：
 show recyclebin;
 
 恢复对象：
-flashback table mp_log to before drop;
+flashback table test to before drop;
 
 彻底删除对象：
-purge table mp_log;
+purge table test;
 
 清空回收站：
 purge recyclebin;
 
 删除表时不放入回收站：
-drop table mp_log purge;
+drop table test purge;
+
+闪回表的版本：
+SQL> show recyclebin;
+ORIGINAL NAME    RECYCLEBIN NAME                OBJECT TYPE  DROP TIME
+---------------- ------------------------------ ------------ -------------------
+TEST             BIN$dCgXnW+rxyngQEvKqdgcGw==$0 TABLE        2009-09-22:17:28:16
+TEST             BIN$dCgXnW+oxyngQEvKqdgcGw==$0 TABLE        2009-09-22:17:19:15
+
+SQL> flashback table test to before drop rename to test1;
+SQL> flashback table test to before drop rename to test2;
+
+test1 为 17:28 drop 的表， test2 为 17:19 drop 的表。
 
 
 结合 ora_rowscn 进行闪回恢复：
@@ -59,3 +80,23 @@ commit;
 
 恢复这条记录：
 imp mpuser/mp file=/tmp/mp_log_12782.dmp full=y ignore=y
+
+
+Flashback Version Query:
+准备数据：
+create table t as select username, user_id from dba_users;
+select * from t;
+delete from t where username='OUTLN';
+commit;
+update t set user_id=1 where username='SCOTT';
+commit;
+delete from t where user_id>10;
+commit;
+查询版本：
+select versions_starttime, versions_endtime, versions_xid, versions_operation, username, user_id from t versions between timestamp minvalue and maxvalue;
+
+通过 Flashback Transaction Query 进行事物撤销：
+SQL> select undo_sql from flashback_transaction_query where xid='0600050043490000';
+UNDO_SQL                                                    
+------------------------------------------------------------
+update "MPUSER"."T" set "USER_ID" = '54' where ROWID = 'AAAZBgAAFAAAACMAAC';

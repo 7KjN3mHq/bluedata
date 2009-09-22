@@ -1,6 +1,9 @@
 下载： http://www.anysql.net/software/ociuldr.zip
 
+安装：
+Windows:
 解压后将 ociuldr.exe 复制到 C:\Program Files\instantclient_10_2 。
+
 
 执行：
 C:\>ociuldr user=username/password@orcl query="select username from dba_users" file=dba_users.txt
@@ -12,3 +15,14 @@ C:\>ociuldr -si user=sys/password@orcl query="select username from dba_users" fi
 
 ociuldr --help 查看更多参数信息。
 详情可查看 http://www.anysql.net/doc/ociuldr.pdf
+
+
+卸载数据并生成 SQLLDR 控制文件：
+D:\>set NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+D:\>ociuldr user=mpuser/mp@orcl query="select * from mp_log" file=mp_log.txt table=test
+
+在数据库创建测试表：
+SQL> create table test as select * from mp_log where 1=0;
+
+通过 SQLLDR 加载文件：
+$ sqlldr mpuser/mp@orcl control=test_sqlldr.ctl
