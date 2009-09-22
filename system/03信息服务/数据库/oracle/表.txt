@@ -15,3 +15,9 @@ select object_name, created from user_objects where object_name=upper('<table_na
 
 删除表：
 drop table test;
+
+重命名表：
+rename old_table_name to new_table_name;
+
+重命名表的 column 名：
+alter table table_name rename column col_old_name to col_new_name;
