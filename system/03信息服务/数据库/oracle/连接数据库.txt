@@ -38,3 +38,6 @@ select sid,serial#,username,machine from v$session;
 
 结束一个会话：
 alter system kill session '<sid,serial#>';
+
+查找某个会话的操作系统进程号：
+select pro.spid from v$session ses,v$process pro where ses.sid=141 and ses.paddr=pro.addr;

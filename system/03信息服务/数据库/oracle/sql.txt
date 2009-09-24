@@ -24,3 +24,13 @@ SELECT    a.VALUE
           FROM v$session s, v$process p, v$mystat m
          WHERE s.paddr = p.addr AND s.SID = m.SID AND m.statistic# = 0) d
 /
+
+
+getsqlbysid.sql:
+SELECT   sql_text
+    FROM v$sqltext a
+   WHERE a.hash_value = (SELECT sql_hash_value 
+                           FROM v$session b
+                          WHERE b.SID = '&sid')
+ORDER BY piece ASC
+/

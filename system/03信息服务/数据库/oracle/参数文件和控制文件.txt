@@ -18,6 +18,10 @@ mv spfile1.ora spfileorcl.ora
 此时修改过的参数都会丢失。
 
 
+查看控制文件：
+select name from v$controlfile;
+
+
 备份控制文件创建语句到跟踪文件中：
 alter database backup controlfile to trace;
 @?/rdbms/admin/gettrcname.sql
