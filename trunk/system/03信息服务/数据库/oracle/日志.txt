@@ -1,3 +1,6 @@
+查看日志文件：
+select member from v$logfile;
+
 启用或停止归档模式：
 shutdown immediate;
 startup mount;

@@ -1,0 +1,111 @@
+活动会话的最近十次等待事件：
+select event,p1text,p1,p2text,p2,p3text,p3,wait_time from v$session_wait_history where sid=<sid>;
+
+ASH 在内存中记录最近一小时的活动会话信息。
+脚本方式生成报告：
+@?/rdbms/admin/ashrpt.sql
+报告格式： text
+开始时间： 11:30
+结束时间： 默认到当前时间
+导出文件名： 接受默认值或重命名
+
+AWR 在 SYSAUX 表空间存放了每小时的状态，并保留一星期。
+脚本方式生成报告：
+@?/rdbms/admin/awrrpt.sql
+
+生成比较报告：
+@?/rdbms/admin/awrddrpt.sql
+
+
+顶级等待事件：
+select * from (select event,time_waited from v$system_event order by time_waited desc) where rownum<11;
+
+
+查看等待事件：
+select sid, event, p1, p1text from v$session;
+
+通过 sid 得到 sql 语句：
+vi $ORACLE_HOME/rdbms/admin/getsqlbysid.sql
+SELECT   sql_text
+    FROM v$sqltext a
+   WHERE a.hash_value = (SELECT sql_hash_value 
+                           FROM v$session b
+                          WHERE b.SID = '&sid')
+ORDER BY piece ASC
+/
+
+SQL> @?/rdbms/admin/getsqlbysid.sql
+
+
+SQL*Plus 的 autotrace 分析 sql 语句：
+set autotrace off: 不生成报告，这是缺省模式。
+set autotrace on explain: 只显示优化器执行路径报告。
+set autotrace on statistics: 只显示执行统计信息。
+set autotrace on: 显示执行计划和统计信息。
+set autotrace trace: 显示执行计划和统计信息，但不显示查询结果。
+
+set autotrace trace explain
+set linesize 999
+select * from mp_log where create_date>trunc(to_date('2009-09-01', 'yyyy-mm-dd'));
+set autotrace trace off;
+
+查看表的索引：
+select index_name,index_type from user_indexes where table_name='MP_LOG';
+
+进一步检查表索引键值：
+select index_name,column_name from user_ind_columns where table_name='MP_LOG';
+
+创建索引：
+create index mp_log_create_date on mp_log(create_date);
+
+再次跟踪 sql ，对比结果。
+
+
+SQL_TRACE 跟踪当前进程：
+alter session set sql_trace=true;
+结束跟踪：
+alter session set sql_trace=false;
+
+跟踪其他用户的进程：
+select sid, serial#, username from v$session where username is not null;
+exec dbms_system.set_sql_trace_in_session(<sid>,<serial#>,true)
+exec dbms_system.set_sql_trace_in_session(<sid>,<serial#>,false)
+
+得到产生的 trace 文件名：
+vi $ORACLE_HOME/rdbms/admin/gettrcname.sql:
+SELECT    a.VALUE
+       || b.symbol
+       || c.instance_name
+       || '_ora_'
+       || d.spid
+       || '.trc' trace_file
+  FROM (SELECT VALUE
+          FROM v$parameter
+         WHERE NAME = 'user_dump_dest') a,
+       (SELECT SUBSTR (VALUE, -6, 1) symbol
+          FROM v$parameter
+         WHERE NAME = 'user_dump_dest') b,
+       (SELECT instance_name
+          FROM v$instance) c,
+       (SELECT spid
+          FROM v$session s, v$process p, v$mystat m
+         WHERE s.paddr = p.addr AND s.SID = m.SID AND m.statistic# = 0) d
+/
+
+SQL> @?/rdbms/admin/gettrcname.sql
+
+
+10046 事件：
+Level 1: 启用标准的 SQL_TRACE 功能，等价于 SQL_TRACE 。
+Level 4: 等价于 Level 1 + 绑定值 (bind values) 。
+Level 8: 等价于 Level 1 + 等待事件跟踪。
+Level 12: 等价于 Level 1 + Level 4 + Level 8 。
+
+对当前用户设置：
+alter session set events '10046 trace name context forever, level 8';
+alter session set events '10046 trace name context off';
+
+对其他用户设置：
+select sid, serial#, username from v$session where username is not null;
+exec dbms_system.set_ev(<sid>,<serial#>,10046,8,'<username>');
+exec dbms_system.set_ev(<sid>,<serial#>,10046,0,'<username>');
