@@ -1,0 +1,61 @@
+给 root 用户设置密码：
+mysqladmin -u root password <password>
+
+修改 root 用户的密码：
+mysqladmin -u root password <new_password>
+Enter password:<old_password>
+
+
+查看数据库中的用户：
+select host, user from mysql.user;
+
+查看当前用户权限：
+show grants;
+
+查看指定用户权限：
+show grants for <username>@<hostname>;
+
+普通用户权限（查询、插入、更新、删除 表数据）：
+grant select, insert, update, delete on test.* to test@'%';
+
+开发人员权限：
+创建、修改、删除 表的权限：
+grant create, alter, drop on test.* to dev@'192.168.0.%';
+外键： references
+临时表： create temporary tables
+索引： index
+创建视图： create view
+查看视图源代码： show view
+创建存储过程： create routine
+修改存储过程： alter routine
+函数： execute
+
+普通数据库管理员权限：
+grant all on test.* to testdba@'localhost';
+
+顶级权限：
+grant all on *.* to dba@'localhost';
+
+
+撤销权限：
+revoke <privileges> on <dbname>.<tablename> from '<username>'@'<hostname>';
+
+撤销所有权限：
+revoke all on *.* from dba@'localhost';
+
+
+“授权”权限：
+grant all on test.* to testdba@localhost with grant option;
+revoke grant option on test.* from testdba@localhost;
+
+
+添加用户：
+grant all on <dbname>.<tablename> to '<username>'@'<hostname>' identified by '<password>';
+flush privileges;
+
+删除用户：
+delete from mysql.user where user='<username>' and host='<hostname>';
+flush privileges;
+
+修改用户密码：
+set password for '<username>'@'<hostname>' = password('<password>');
