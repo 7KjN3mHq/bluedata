@@ -1,0 +1,54 @@
+创建表空间：
+sqlplus /nolog
+conn / as sysdba
+create tablespace bluedata
+datafile 'D:\oracle\product\10.2.0\oradata\mptest\bluedata.dbf'
+size 512M autoextend on next 128M maxsize 2048M
+extent management local uniform size 128K;
+
+
+创建用户并授权：
+create user bluedata identified by bluedata
+default tablespace bluedata
+temporary tablespace temp
+quota unlimited on bluedata;
+
+grant connect, resource, dba to bluedata;
+
+
+导入数据：
+创建目录并授权：
+create or replace directory expdir as 'D:\oracle\expdir';
+grant read, write on directory expdir to bluedata;
+
+创建 dblink:
+conn bluedata/bluedata
+create database link orcl_link connect to mpuser identified by mp using 'orcl';
+
+从远程导出到本地：
+expdp bluedata/bluedata directory=expdir network_link=orcl_link job_name=expdp_orcl
+
+或者跳过导出直接导入到本地：
+impdp bluedata/bluedata network_link=orcl_link job_name=impdp_orcl
+
+删除 dblink:
+drop database link orcl_link;
+
+
+开启归档日志：
+shutdown immediate;
+startup mount;
+alter database archivelog;
+alter database open;
+
+
+启用闪回数据库：
+shutdown immediate;
+startup mount;
+alter database flashback on;
+alter database open;
+
+
+设置控制文件自动备份：
+rman target /
+configure controlfile autobackup on;
