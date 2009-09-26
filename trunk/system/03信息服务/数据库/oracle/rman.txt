@@ -1,3 +1,9 @@
+查看保留策略：
+show retention policy;
+
+配置保留策略：
+configure retention policy to redundancy 2;
+
 报告过期备份：
 report obsolete;
 
@@ -220,3 +226,29 @@ RMAN> alter database open resetlog;
 增量备份：
 backup incremental level=0 database plus archivelog delete input;
 backup incremental level=1 database plus archivelog delete input;
+
+
+目录数据库模式：
+创建表空间：
+create tablespace rman
+datafile 'D:\oracle\product\10.2.0\oradata\mptest\rman01.dbf'
+size 100M autoextend on next 10M maxsize 2048M
+extent management local uniform size 128K;
+
+创建用户并授权：
+create user rman identified by rmanbak
+default tablespace rman
+temporary tablespace temp
+quota unlimited on rman;
+
+grant connect, resource, recovery_catalog_owner to rman;
+
+创建恢复目录：
+rman catalog rman/rmanbak
+create catalog;
+
+注册目标数据库：
+rman catalog rman/rmanbak target mpuser/mp@orcl
+register database;
+注销：
+unregister database;

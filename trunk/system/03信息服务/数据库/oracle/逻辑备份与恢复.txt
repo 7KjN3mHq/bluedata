@@ -76,6 +76,7 @@ expdp \'/ as sysdba\' parfile=expdp.par job_name=expdp_mp
 Windows:
 expdp '/ as sysdba' parfile=expdp.txt job_name=expdp_mp
 
+管理任务：
 Export> status
 Export> stop_job
 
@@ -89,12 +90,31 @@ EXCLUDE=TABLE:"IN ('TABLENAME1', 'TABLENAME2')"
 EXCLUDE/INCLUDE 参数不能共用。
 
 
+EXPDP 通过 NETWORK_LINK 导出远程库到本地：
+在客户端数据库创建 dblink 和要保存数据文件的目录：
+conn <local_username>/<local_password>
+create database link <linkname> connect to <remote_username> identified by <remote_password> using '<connect_string>';
+
+conn / as sysdba
+create or replace directory expdir as 'D:\oracle\expdir';
+grant read, write on directory expdir to <local_username>;
+
+导出到本地：
+expdp <local_username>/<local_password> directory=expdir network_link=<linkname>
+
+删除 dblink:
+drop database link <linkname>;
+
+
 导入：
 IMP:
 imp MPUSER/mp file=/tmp/mp_log.dmp FULL=Y
 
 覆盖导入：
 imp MPUSER/mp file=mp_log.dmp FULL=Y IGNORE=Y DESTROY=Y
+
+导入到不同的表空间：
+imp NEWUSER/newpassword file=mp_log.dmp fromuser=MPUSER touser=NEWUSER grants=n FULL=Y
 
 导入到非缺省表空间：
 先生成 indexfile 文件:

@@ -17,9 +17,22 @@ alter database open;
 
 查看数据库的闪回状态：
 select dbid, name, flashback_on, current_scn from v$database;
+select * from v$flashback_database_log;
+
+查看闪回区使用率：
+select * from v$flash_recovery_area_usage;
 
 查看闪回时间上限：
-show parameter db_flashback
+show parameter db_flashback_retention_target
+
+查看闪回区空间上限：
+show parameter db_recovery_file_dest_size
+
+增加闪回时间上限为七天：
+alter system set db_flashback_retention_target = 10080 scope=both
+
+增加闪回区空间大小为 60GB:
+alter system set db_recovery_file_dest_size = 64424509440 scope=both
 
 基于时间点的闪回：
 SQL> alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss';

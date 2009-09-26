@@ -36,6 +36,9 @@ select * from v$logfile;
 增加新的日志组：
 alter database add logfile group 4 '/opt/oracle/oradata/ORCL/onlinelog/redo04.dbf' size 50M;
 
+添加日志组成员：
+alter database add logfile member 'D:\oracle\product\10.2.0\flash_recovery_area\MPTEST\ONLINELOG\REDO02.LOG' to group 2;
+
 删除日志组（如果日志组处于 active 状态及未归档是不能删除的）：
 alter database drop logfile group 3;
 
