@@ -1,0 +1,3 @@
+http://code.sixapart.com/svn/memcached/trunk/server/scripts/memcached-tool
+
+memcached-tool 192.168.0.11:11211
