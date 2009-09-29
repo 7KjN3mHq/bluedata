@@ -27,6 +27,7 @@ none                  506M     0  506M   0% /dev/shm
 /dev/mapper/vg-usr    4.0G  1.5G  2.3G  40% /usr
 /dev/mapper/vg-var    2.0G   67M  1.9G   4% /var
 
+操作系统的基本配置。
 
 vi /etc/hosts
 192.168.0.51    rac1
@@ -96,6 +97,20 @@ if ( $USER == "oracle" ) then
 endif
 
 
+配置 hangcheck-timer 模块：
+vi /etc/rc.modules
+#!/bin/sh
+#
+# This script will be load other user-defined modules.
+
+modprobe hangcheck-timer
+
+chmod +x /etc/rc.modules
+
+vi /etc/modprobe.conf
+options hangcheck-timer hangcheck_tick=30 hangcheck_margin=180
+
+
 su - oracle
 vi .bash_profile
 export NLS_LANG="AMERICAN_AMERICA.ZHS16GBK"
@@ -110,16 +125,119 @@ export ORACLE_SID=rac1
 PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin:$ORA_CRS_HOME/bin:/sbin
 
 
-
-配置 hangcheck-timer 模块：
-vi /etc/rc.modules
+vncserver
+设置密码并修改 .vnc/xstartup 文件，配置 VNC 使用中文的 Gnome 桌面环境。
 #!/bin/sh
-#
-# This script will be load other user-defined modules.
 
-modprobe hangcheck-timer
+# Uncomment the following two lines for normal desktop:
+# unset SESSION_MANAGER
+# exec /etc/X11/xinit/xinitrc
 
-chmod +x /etc/rc.modules
+export LANG="en_US.GBK"
 
-vi /etc/modprobe.conf
-options hangcheck-timer hangcheck_tick=30 hangcheck_margin=180
+[ -x /etc/vnc/xstartup ] && exec /etc/vnc/xstartup
+[ -r $HOME/.Xresources ] && xrdb $HOME/.Xresources
+xsetroot -solid grey
+vncconfig -iconic &
+#xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+#twm &
+gnome-session
+
+exit 回到 root 下，修改 /etc/sysconfig/vncservers 文件
+VNCSERVERS="1:oracle"
+VNCSERVERARGS[1]="-geometry 800x600"
+
+重启一下 VNCServer
+/etc/init.d/vncserver restart
+
+之后，可以通过 VNC 客户端远程连接了。
+
+
+配置 SSH 用户等价：
+su - oracle
+mkdir .ssh
+chmod 700 .ssh
+cd .ssh
+ssh-keygen -t rsa
+ssh-keygen -t dsa
+mv id_rsa.pub authorized_keys
+mv id_dsa.pub authorized_keys2
+
+
+添加共享存储：
+mkdir vmware/san
+cd vmware/san
+vmware-vdiskmanager -c -s 36Gb -a lsilogic -t 0 lun1.vmdk
+vmware-vdiskmanager -c -s 36Gb -a lsilogic -t 0 lun2.vmdk
+vmware-vdiskmanager -c -s 36Gb -a lsilogic -t 0 lun3.vmdk
+
+cd ../rac1
+vi rac1.vmx
+disk.locking = "FALSE"
+scsi1.present = "TRUE"
+scsi1.virtualDev = "lsilogic"
+
+scsi1:1.present = "TRUE"
+scsi1:1.fileName = "/home/vmware/san/lun1.vmdk"
+scsi1:1.shared = "TRUE"
+
+scsi1:2.present = "TRUE"
+scsi1:2.fileName = "/home/vmware/san/lun2.vmdk"
+scsi1:2.shared = "TRUE"
+
+scsi1:3.present = "TRUE"
+scsi1:3.fileName = "/home/vmware/san/lun3.vmdk"
+scsi1:3.shared = "TRUE"
+
+fdisk /dev/sdb
+sdb1: 100M
+sdb2: 100M
+sdb3: 27 - 2363
+sdb4: 2364-4699
+
+sdc1: ALL
+sdd1: ALL
+
+
+配置裸设备：
+vi /etc/sysconfig/rawdevices
+/dev/raw/raw1 /dev/sdb1
+/dev/raw/raw2 /dev/sdb2
+
+vi /etc/udev/permissions.d/50-udev.permissions
+# raw devices
+ram*:oracle:dba:0660
+raw/*:oracle:dba:0660
+
+chkconfig --list rawdevices
+rawdevices      0:off   1:off   2:off   3:on    4:on    5:on    6:off
+
+/etc/init.d/rawdevices restart
+
+
+创建 ASM 磁盘：
+oracleasm-2.6.9-89.EL-2.0.5-1.el4.i686.rpm
+oracleasm-support-2.1.3-1.el4.i386.rpm
+oracleasmlib-2.0.4-1.el4.i386.rpm
+
+rpm -ivh *.rpm
+
+/etc/init.d/oracleasm configure
+Default user to own the driver interface []: oracle
+Default group to own the driver interface []: dba
+Start Oracle ASM library driver on boot (y/n) [n]: y
+Scan for Oracle ASM disks on boot (y/n) [y]: y
+
+/etc/init.d/oracleasm createdisk VOL1 /dev/sdc1
+/etc/init.d/oracleasm createdisk VOL2 /dev/sdd1
+
+/etc/init.d/oracleasm listdisks
+
+其它节点需要：
+/etc/init.d/oracleasm scandisks
+
+
+准备安装文件：
+unzip -d /oracle /usr/local/src/10201_clusterware_linux32.zip
+unzip -d /oracle/orainstall /usr/local/src/10201_database_linux32.zip
+unzip -d /oracle /usr/local/src/p6810189_10204_Linux-x86.zip
