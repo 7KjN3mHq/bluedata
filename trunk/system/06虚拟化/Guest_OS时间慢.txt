@@ -1,0 +1,4 @@
+宿主机器是多核的，建立 guest os 时不要使用多核。
+
+或者在内核启动时加入以下参数：
+clocksource=pit nosmp noapic nolapic

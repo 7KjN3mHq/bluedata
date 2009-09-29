@@ -1,3 +1,5 @@
+使用 ociuldr 导出查询结果
+
 下载： http://www.anysql.net/software/ociuldr.zip
 
 安装：
