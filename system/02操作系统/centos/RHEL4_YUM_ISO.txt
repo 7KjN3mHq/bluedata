@@ -1,0 +1,27 @@
+mkdir /media/rhel
+mount -o loop RHEL4.8-i386-AS-DVD.iso /media/rhel
+vi /etc/fstab
+/dev/cdrom              /media/rhel             iso9660 ro              0 0
+mount -a
+
+
+rpm -Uvh ftp://194.199.20.114/linux/dag/redhat/el4/en/i386/dag/RPMS/createrepo-0.4.6-1.el4.rf.noarch.rpm
+mkdir -p /var/rhel/RPMS
+mount --bind /media/rhel/RedHat/RPMS /var/rhel/RPMS
+cd /var/rhel
+createrepo .
+
+
+rpm -Uvh ftp://194.199.20.114/linux/dag/redhat/el4/en/i386/dag/RPMS/python-elementtree-1.2.6-7.el4.rf.i386.rpm
+rpm -Uvh ftp://194.199.20.114/linux/dag/redhat/el4/en/i386/dag/RPMS/sqlite-2.8.17-1.el4.rf.i386.rpm
+rpm -Uvh ftp://194.199.20.114/linux/dag/redhat/el4/en/i386/dag/RPMS/python-sqlite-0.5.0-1.2.el4.rf.i386.rpm
+rpm -Uvh ftp://194.199.20.114/linux/dag/redhat/el4/en/i386/dag/RPMS/python-urlgrabber-2.9.7-1.2.el4.rf.noarch.rpm
+rpm -Uvh ftp://194.199.20.114/linux/dag/redhat/el4/en/i386/dag/RPMS/yum-2.4.2-0.4.el4.rf.noarch.rpm
+
+vi /etc/yum.repos.d/rhel-media.repo
+[rhel-media]
+name=RHEL-$releasever - Media
+baseurl=file:///var/rhel
+gpgcheck=0
+
+

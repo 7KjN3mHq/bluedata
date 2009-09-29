@@ -1,0 +1,125 @@
+http://www.oracle.com/technology/global/cn/software/products/database/oracle10g/htdocs/10201linuxsoft.html
+http://www.oracle.com/technology/software/tech/linux/asmlib/rhel4.html
+http://www.oracle.com/technology/documentation/index.html
+
+
+规划：
+主机规划：
+             节点1                  节点2
+主机名       rac1                   rac2
+Public NIC   eth0                   eth0
+Private NIC  eth1                   eth1
+Public IP    192.168.0.51/rac1      192.168.0.52/rac2
+VIP          192.168.0.81/rac1-vip  192.168.0.82/rac2-vip
+Private IP   10.0.0.51/rac1-priv    10.0.0.52/rac2-priv
+
+
+RHEL4 的安装，只留下了 X Window System 的 base, gdm, vncserver 和 Gnome 的 base 。
+
+
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/sda3            1012M  179M  782M  19% /
+/dev/sda1             122M  8.0M  108M   7% /boot
+none                  506M     0  506M   0% /dev/shm
+/dev/mapper/vg-oracle
+                      9.9G   55M  9.3G   1% /oracle
+/dev/mapper/vg-tmp   1008M  1.3M  956M   1% /tmp
+/dev/mapper/vg-usr    4.0G  1.5G  2.3G  40% /usr
+/dev/mapper/vg-var    2.0G   67M  1.9G   4% /var
+
+
+vi /etc/hosts
+192.168.0.51    rac1
+192.168.0.52    rac2
+
+10.0.0.51       rac1-priv
+10.0.0.52       rac2-priv
+
+192.168.0.81    rac1-vip
+192.168.0.82    rac2-vip
+
+
+查看缺哪些包：
+rpm -q binutils compat-db control-center gcc gcc-c++ glibc glibc-common gnome-libs libstdc++ \
+libstdc++-devel make pdksh sysstat xscreensaver libaio | grep not\ installed$ | awk '{print $2}'
+缺什么就装什么：
+yum install gcc gcc-c++ gnome-libs libstdc++-devel sysstat
+
+
+创建目录及用户
+groupadd -g 115 dba
+useradd -u 175 -g 115 -d /oracle -s /bin/bash -c "Oracle Software Owner" oracle
+chown -R oracle:dba /oracle
+passwd oracle
+
+
+vi /etc/sysctl.conf
+kernel.shmall = 2097152
+kernel.shmmax = 2147483648
+kernel.shmmni = 4096
+kernel.sem = 250 32000 100 128
+fs.file-max = 65536
+net.ipv4.ip_local_port_range = 1024 65000
+net.core.rmem_default = 1048576
+net.core.rmem_max = 1048576
+net.core.wmem_default = 262144
+net.core.wmem_max = 262144
+
+
+vi /etc/security/limits.conf
+oracle              soft    nproc   2047
+oracle              hard    nproc   16384
+oracle              soft    nofile  1024
+oracle              hard    nofile  65536
+
+
+vi /etc/pam.d/login
+session    required     /lib/security/pam_limits.so
+session    required     pam_limits.so
+
+
+vi /etc/profile
+if [ $USER = "oracle" ]; then
+        if [ $SHELL = "/bin/ksh" ]; then
+              ulimit -p 16384
+              ulimit -n 65536
+        else
+              ulimit -u 16384 -n 65536
+        fi
+fi
+
+
+vi /etc/csh.login
+if ( $USER == "oracle" ) then
+        limit maxproc 16384
+        limit descriptors 65536
+endif
+
+
+su - oracle
+vi .bash_profile
+export NLS_LANG="AMERICAN_AMERICA.ZHS16GBK"
+export NLS_TERRITORY="CHINA"
+export NLS_DATE_FORMAT="yyyy-mm-dd hh24:mi:ss"
+export ORACLE_BASE=/oracle
+export ORACLE_HOME=$ORACLE_BASE/product/database
+export ORA_CRS_HOME=$ORACLE_BASE/product/crs
+export ORA_NLS33=$ORACLE_HOME/ocommon/nls/admin/data
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib:/usr/local/lib
+export ORACLE_SID=rac1
+PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin:$ORA_CRS_HOME/bin:/sbin
+
+
+
+配置 hangcheck-timer 模块：
+vi /etc/rc.modules
+#!/bin/sh
+#
+# This script will be load other user-defined modules.
+
+modprobe hangcheck-timer
+
+chmod +x /etc/rc.modules
+
+vi /etc/modprobe.conf
+options hangcheck-timer hangcheck_tick=30 hangcheck_margin=180
