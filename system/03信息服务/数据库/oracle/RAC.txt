@@ -79,6 +79,10 @@ session    required     /lib/security/pam_limits.so
 session    required     pam_limits.so
 
 
+vi /etc/ssh/sshd_config
+UsePAM yes
+
+
 vi /etc/profile
 if [ $USER = "oracle" ]; then
         if [ $SHELL = "/bin/ksh" ]; then
@@ -153,7 +157,7 @@ VNCSERVERARGS[1]="-geometry 800x600"
 之后，可以通过 VNC 客户端远程连接了。
 
 
-配置 SSH 用户等价：
+生成 SSH 公私钥：
 su - oracle
 mkdir .ssh
 chmod 700 .ssh
@@ -241,3 +245,123 @@ Scan for Oracle ASM disks on boot (y/n) [y]: y
 unzip -d /oracle /usr/local/src/10201_clusterware_linux32.zip
 unzip -d /oracle/orainstall /usr/local/src/10201_database_linux32.zip
 unzip -d /oracle /usr/local/src/p6810189_10204_Linux-x86.zip
+
+
+此时，把 rac1 复制为 rac2 ，再修改 rac2 机器的配置：
+cd /etc/sysconfig/network-scripts
+修改 ifcfg-eth0 ifcfg-eth1 的 IP 地址和 MAC 地址。
+
+vi /etc/sysconfig/network
+HOSTNAME=rac2
+
+修改用户环境：
+su - oracle
+vi .bash_profile
+export ORACLE_SID=rac2
+
+配置 SSH 用户等价：
+在两个节点上：
+ssh rac1
+ssh rac1-priv
+ssh rac2
+ssh rac2-priv
+
+
+安装 Oracle Clusterware:
+/oracle/cluterware/runInstaller
+
+1.  欢迎页面。直接点击 Next 。
+2.  oraInventory 位置及操作系统组都使用默认值。直接 Next 。
+3.  安装路径 /oracle/product/crs ，产品语言中添加 "Simplified Chinese" 。
+4.  安装环境的检查。
+5.  集群配置： Add rac2
+6.  网络配置：把 eth0 改为 Public 。
+7.  指定 OCR 位置： /dev/raw/raw1 。
+8.  指定 Voting Disk 位置： /dev/raw/raw2 。
+9.  摘要。点击 Install 开始安装。
+10. 在所有节点以 root 身份执行 /oracle/oraInventory/orainstRoot.sh 和 /oracle/product/crs/root.sh 。
+    rac2 执行 root.sh 最后有个错误，先不管。
+
+最后会出现一个错误。是 VIPCA 失败问题。不要关闭这个页面。
+在 rac2 上以 root 身份执行：
+/oracle/product/crs/bin/vipca
+
+1.  欢迎页面。直接点击 Next 。
+2.  选择把 VIP 绑定在 eth0 上。
+3.  填写 VIP 信息。
+4.  摘要。结束。
+
+回到 rac1 的安装界面，重新执行检查。结束安装。
+
+检查安装是否成功：
+olsnodes
+crsctl check crs
+crs_stat -t -v
+
+
+安装 Oracle Database
+/oracle/orainstall/database/runInstaller
+
+1.  欢迎页面。直接点击 Next 。
+2.  选择安装类型。企业版，产品语言中添加 "Simplified Chinese" 。
+3.  安装路径。使用默认值， Next 。
+4.  安装集群版的数据库。选上 rac2 。
+5.  安装环境的检查。查看一下是否有问题，有问题就解决问题。对于操作系统版本不被支持的警告可以忽略。
+6.  不创建数据库，选择 "Install database Software only" 。
+7.  摘要。点击 Install 开始安装。
+8.  需要以 root 用户在两个节点执行 /oracle/product/database/root.sh ，执行完后点击 OK 。
+9.  结束安装。
+
+
+配置 Listener
+在任一节点执行 netca
+
+1.  选择 "Cluster configuration" 。
+2.  选择所有节点。
+3.  配置 Listener 。
+4.  添加 Listener 。
+5.  Listener 名称。
+6.  选择 TCP 协议。
+7.  使用端口 1521 。
+8.  不配置其它 Listener 。
+9.  结束。
+
+确认 Listener 配置成功：
+crs_stat -t -v | grep lsnr
+
+
+创建 ASM
+执行 dbca
+
+1.  欢迎页面。直接点击 Next 。
+2.  选择配置 ASM 。
+3.  选择所有节点。
+4.  设置 SYS 密码。使用 PFILE 。弹出框点 OK 开始启动 ASM 实例。
+5.  创建磁盘组。 DATA: ORCL:VOL1 , RECOVERY: ORCL:VOL2 ， Redundancy 都用 External 。
+6.  确认磁盘组的状态都是 MOUNTED ，结束。
+
+
+打补丁升级到 10.2.0.4:
+升级 Clusterware:
+以 root 用登陆，两个节点都停止：
+/oracle/product/crs/bin/crsctl stop crs
+
+/oracle/Disk1/runInstaller
+Destination 选择 OraCrs10g_home ，一路 Next 。
+
+最后依次在两个节点上再次停止 CRS 后执行 root102.sh:
+/oracle/product/crs/bin/crsctl stop crs
+/oracle/product/crs/install/root102.sh
+
+升级 Database:
+以 root 用登陆，两个节点都停止：
+/oracle/product/crs/bin/crsctl stop crs
+
+/oracle/Disk1/runInstaller
+Destination 选择 OraDb10g_home1 ，一路 Next 。
+
+最后依次在两个节点上执行 root.sh:
+/oracle/product/database/root.sh
+
+然后启动 CRS:
+/oracle/product/crs/bin/crsctl start crs

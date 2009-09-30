@@ -234,7 +234,7 @@ unzip -d /opt/oracle /usr/local/src/p6810189_10204_Linux-x86.zip
 因为 Oracle 10gR2 不支持 RHEL5 操作系统，需要跳过操作系统验证，使用以下命令安装：
 /opt/oracle/orainstall/database/runInstaller -ignoreSysPrereqs
 
-1.  欢迎页面。直接点击 Next
+1.  欢迎页面。直接点击 Next 。
 2.  oraInventory 位置及操作系统组都使用默认值。直接 Next 。
 3.  选择安装类型。企业版，产品语言中添加 "Simplified Chinese" 。
 4.  安装路径。使用默认值， Next 。
