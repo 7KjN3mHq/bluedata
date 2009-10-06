@@ -122,11 +122,11 @@ export NLS_TERRITORY="CHINA"
 export NLS_DATE_FORMAT="yyyy-mm-dd hh24:mi:ss"
 export ORACLE_BASE=/oracle
 export ORACLE_HOME=$ORACLE_BASE/product/database
-export ORA_CRS_HOME=$ORACLE_BASE/product/crs
+export CRS_HOME=$ORACLE_BASE/product/crs
 export ORA_NLS33=$ORACLE_HOME/ocommon/nls/admin/data
 export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib:/usr/local/lib
 export ORACLE_SID=rac1
-PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin:$ORA_CRS_HOME/bin:/sbin
+PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin:$CRS_HOME/bin:/sbin
 
 
 vncserver
@@ -171,9 +171,10 @@ mv id_dsa.pub authorized_keys2
 添加共享存储：
 mkdir vmware/san
 cd vmware/san
-vmware-vdiskmanager -c -s 36Gb -a lsilogic -t 0 lun1.vmdk
-vmware-vdiskmanager -c -s 36Gb -a lsilogic -t 0 lun2.vmdk
-vmware-vdiskmanager -c -s 36Gb -a lsilogic -t 0 lun3.vmdk
+vmware-vdiskmanager -c -s 72Gb -a lsilogic -t 0 lun1.vmdk
+vmware-vdiskmanager -c -s 72Gb -a lsilogic -t 0 lun2.vmdk
+vmware-vdiskmanager -c -s 72Gb -a lsilogic -t 0 lun3.vmdk
+vmware-vdiskmanager -c -s 72Gb -a lsilogic -t 0 lun4.vmdk
 
 cd ../rac1
 vi rac1.vmx
@@ -193,20 +194,30 @@ scsi1:3.present = "TRUE"
 scsi1:3.fileName = "/home/vmware/san/lun3.vmdk"
 scsi1:3.shared = "TRUE"
 
+scsi1:4.present = "TRUE"
+scsi1:4.fileName = "/home/vmware/san/lun4.vmdk"
+scsi1:4.shared = "TRUE"
+
 fdisk /dev/sdb
 sdb1: 100M
-sdb2: 100M
-sdb3: 27 - 2363
-sdb4: 2364-4699
+sdb2: 14 - 2357
+sdb3: 2358 - 4700
+sdb4: 4701 - 9399
 
-sdc1: ALL
+fdisk /dev/sdc
+sdc1: 100M
+sdc2: 14 - 2357
+sdc3: 2358 - 4700
+sdc4: 4701 - 9399
+
 sdd1: ALL
+sde1: ALL
 
 
 配置裸设备：
 vi /etc/sysconfig/rawdevices
 /dev/raw/raw1 /dev/sdb1
-/dev/raw/raw2 /dev/sdb2
+/dev/raw/raw2 /dev/sdc1
 
 vi /etc/udev/permissions.d/50-udev.permissions
 # raw devices
@@ -232,8 +243,10 @@ Default group to own the driver interface []: dba
 Start Oracle ASM library driver on boot (y/n) [n]: y
 Scan for Oracle ASM disks on boot (y/n) [y]: y
 
-/etc/init.d/oracleasm createdisk VOL1 /dev/sdc1
-/etc/init.d/oracleasm createdisk VOL2 /dev/sdd1
+/etc/init.d/oracleasm createdisk VOL1 /dev/sdb4
+/etc/init.d/oracleasm createdisk VOL2 /dev/sdc4
+/etc/init.d/oracleasm createdisk VOL3 /dev/sdd1
+/etc/init.d/oracleasm createdisk VOL4 /dev/sde1
 
 /etc/init.d/oracleasm listdisks
 
@@ -276,8 +289,8 @@ ssh rac2-priv
 4.  安装环境的检查。
 5.  集群配置： Add rac2
 6.  网络配置：把 eth0 改为 Public 。
-7.  指定 OCR 位置： /dev/raw/raw1 。
-8.  指定 Voting Disk 位置： /dev/raw/raw2 。
+7.  使用 External Redundancy 并指定 OCR 位置： /dev/raw/raw1 。
+8.  使用 External Redundancy 并指定 Voting Disk 位置： /dev/raw/raw2 。
 9.  摘要。点击 Install 开始安装。
 10. 在所有节点以 root 身份执行 /oracle/oraInventory/orainstRoot.sh 和 /oracle/product/crs/root.sh 。
     rac2 执行 root.sh 最后有个错误，先不管。
@@ -297,6 +310,13 @@ ssh rac2-priv
 olsnodes
 crsctl check crs
 crs_stat -t -v
+
+
+重装 Clusterware 在运行 root.sh 时出现问题：
+Checking to see if Oracle CRS stack is already configured
+Oracle CRS stack is already configured and will be running under init(1M)
+
+需要在所有节点删除： /etc/oracle/scls_scr/`uname -n`/oracle/cssfatal
 
 
 安装 Oracle Database
