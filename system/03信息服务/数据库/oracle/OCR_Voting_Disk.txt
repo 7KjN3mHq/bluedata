@@ -1,0 +1,59 @@
+Voting disk(表决磁盘方面):
+Voting disk记录节点成员信息，如包含哪些节点成员、节点的添加删除信息记录，大小为20MB
+查看voting disk位置：crsctl query css votedisk
+    $ crsctl query css votedisk
+    0.     0    /dev/rhdisk3
+如果CRS安装过程失败,需要重新安装则需要初始化voting disk盘,可用DD或重建卷
+    dd if=/dev/zero of=/dev/rhdisk3 bs=8192 count=2560
+备份votedisk: dd if=/dev/rhdisk3 of=/tmp/votedisk.bak
+恢复votedisk: dd if=/tmp/votedisk.bak of=/dev/rhdisk3
+添加voting disk镜像盘:
+crsctl add css votedisk /dev/rhdisk7 -force 
+删除voting disk镜像盘
+crsctl delete css votedisk /dev/rhdisk7 -force 
+
+
+OCR方面
+OCR记录节点成员的配置信息,如database、ASM、instance、listener、VIP等CRS资源的配置信息，可存储于裸设备或者群集文件系统上,推荐设置大小为100MB
+如以RAW的方式,则划分一个RAW,例如:/dev/rhdisk2
+如果CRS安装过程失败,需要重新安装则需要初始化OCR盘(RAW方式),可用DD或重建卷
+    dd if=/dev/zero of=/dev/rhdisk2 bs=8192 count=12800 
+Oracle每四个小时自动发起备份,并保存三个版本,但只存在一个节点上
+$ ocrconfig -showbackup
+poaisdb1     2008/04/10 22:53:29     /u01/app/oracle/product/10.2.0/crs/cdata/crs
+poaisdb1     2008/04/10 18:53:28     /u01/app/oracle/product/10.2.0/crs/cdata/crs
+poaisdb1     2008/04/10 14:53:27     /u01/app/oracle/product/10.2.0/crs/cdata/crs
+poaisdb1     2008/04/09 06:53:20     /u01/app/oracle/product/10.2.0/crs/cdata/crs
+poaisdb2     2008/04/03 03:31:28     /u01/app/oracle/product/10.2.0/crs/cdata/crs
+恢复OCR:ocrconfig -restore /u01/app/oracle/product/10.2.0/crs/cdata/crs/backup01.ocr
+OCR手动导出:ocrconfig -export /tmp/ocr_bak 
+OCR手动导入:ocrconfig -import /tmp/ocr_bak 
+添加OCR镜像盘:
+1.用crsctl stop crs停掉CRS服务
+2.创建用于镜像OCR的RAW设备,比如为:/dev/rhdisk6
+3.用ocrconfig –export 导出OCR的信息
+4.编辑/etc/oracle/ocr.loc文件,添加ocrmirrorconfig_loc行
+$ cat ocr.loc
+ocrconfig_loc=/dev/rhdisk2
+ocrmirrorconfig_loc=/dev/rhdisk6
+local_only=FALSE
+5.用ocrconfig –import 导入OCR的信息
+6.检查ocr设置信息
+$ ocrcheck
+Status of Oracle Cluster Registry is as follows :
+         Version                  :          2
+         Total space (kbytes)     :     103724
+         Used space (kbytes)      :       3824
+         Available space (kbytes) :      99900
+         ID                       : 1086971606
+         Device/File Name         : /dev/rhdisk2    Device/File integrity check succeeded 
+         Device/File Name         : /dev/rhdisk6    Device/File integrity check succeeded
+         Cluster registry integrity check succeeded
+7.最后用crsctl start crs启动CRS服务 
+
+原文：http://space.itpub.net/370491/viewspace-234468
+
+OCR 恢复
+# /u01/app/oracle/product/10.2.0/crs/bin/crsctl check boot
+OCR initialization failed with invalid format: PROC-22: The OCR backend has an invalid format
+# /u01/app/oracle/product/10.2.0/crs/bin/ocrconfig -restore /u01/app/oracle/product/10.2.0/crs/cdata/crs/week.ocr
