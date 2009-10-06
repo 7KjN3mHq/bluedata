@@ -125,8 +125,8 @@ export ORACLE_HOME=$ORACLE_BASE/product/database
 export CRS_HOME=$ORACLE_BASE/product/crs
 export ORA_NLS33=$ORACLE_HOME/ocommon/nls/admin/data
 export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib:/usr/local/lib
-export ORACLE_SID=rac1
-PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin:$CRS_HOME/bin:/sbin
+export ORACLE_SID=orcl1
+PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin:$CRS_HOME/bin:
 
 
 vncserver
@@ -346,24 +346,23 @@ Oracle CRS stack is already configured and will be running under init(1M)
 8.  不配置其它 Listener 。
 9.  结束。
 
-确认 Listener 配置成功：
-crs_stat -t -v | grep lsnr
+确认 Listener 配置成功： crs_stat -t -v | grep lsnr
 
 
 创建 ASM
 执行 dbca
 
-1.  欢迎页面。直接点击 Next 。
+1.  选择 "Oracle Real Application Cluster database" 。
 2.  选择配置 ASM 。
 3.  选择所有节点。
 4.  设置 SYS 密码。使用 PFILE 。弹出框点 OK 开始启动 ASM 实例。
-5.  创建磁盘组。 DATA: ORCL:VOL1 , RECOVERY: ORCL:VOL2 ， Redundancy 都用 External 。
+5.  创建磁盘组。 DATA: ORCL:VOL1 ORCL:VOL2 , RECOVERY: ORCL:VOL3 ORCL:VOL4 ， Redundancy 都用 External 。
 6.  确认磁盘组的状态都是 MOUNTED ，结束。
 
 
 打补丁升级到 10.2.0.4:
 升级 Clusterware:
-以 root 用登陆，两个节点都停止：
+以 root 登陆，两个节点都停止：
 /oracle/product/crs/bin/crsctl stop crs
 
 /oracle/Disk1/runInstaller
@@ -374,7 +373,7 @@ Destination 选择 OraCrs10g_home ，一路 Next 。
 /oracle/product/crs/install/root102.sh
 
 升级 Database:
-以 root 用登陆，两个节点都停止：
+以 root 登陆，两个节点都停止：
 /oracle/product/crs/bin/crsctl stop crs
 
 /oracle/Disk1/runInstaller
@@ -385,3 +384,26 @@ Destination 选择 OraDb10g_home1 ，一路 Next 。
 
 然后启动 CRS:
 /oracle/product/crs/bin/crsctl start crs
+
+
+创建数据库：
+执行 dbca
+1.  选择 "Oracle Real Application Cluster database" 。
+2.  选择 "Create a Database" 。
+3.  选择所有节点。
+4.  选择 "Custom Database" 。
+5.  设置数据库名和实例名前缀 (orcl) 。
+6.  使用 Enterprise Manager 。
+7.  创建用户密码。
+8.  存储选项。使用 ASM 。
+9.  选择 ASM Diskgroup (DATA) 。
+10. 数据库文件路径。 Use Oracle-Managed Files Database Area: +DATA 。
+11. 闪回目录。 Flash Recovery Area: +RECOVERY ，大小为卷组总大小。暂不开启归档日志。
+12. 设置数据库属性。使用默认设置。
+13. 是否配置 Services ，直接 Next 。
+14. 初始化参数。 Database Character Set 改为 ZHS16GBK, Default Language 选择 "American" ，日期格式选择 "China" 。
+15. Database Storage 。可根据需要配置。
+16. 创建数据库和创建脚本。
+17. 配置详情。结束。
+
+确认数据库创建成功： crs_stat -t -v
