@@ -1,10 +1,8 @@
 用 Wget 直接下载 OTN 上的 Oracle 安装文件：
 
 wget -b --post-data="https://profile.oracle.com/jsp/realms/otnLogin.jsp?\
-remoteIp=CLIENTIP&globalId=&redirectUrl=http%3a%2f%2fdownload-\
-llnw.oracle.com%3a80%2fotn%2flinux%2foracle10g%2f10201%2f\
-10201_clusterware_linux32.zip\
-&username=USERNAME&password=PASSWORD&submit=Continue" https://profile.oracle.com/jsp/reg/loginHandler.jsp \
+remoteIp=<CLIENTIP>&globalId=&redirectUrl=<URL>\
+&username=<USERNAME>&password=<PASSWORD>&submit=Continue" https://profile.oracle.com/jsp/reg/loginHandler.jsp \
 -o downloadOracle.log
 
 tail -f downloadOracle.log

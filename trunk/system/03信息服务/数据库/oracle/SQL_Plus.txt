@@ -7,6 +7,7 @@ set line 32767
 
 
 客户端
+Windows:
 下载：
 http://www.oracle.com/technology/software/tech/oci/instantclient/htdocs/winsoft.html
 
@@ -23,4 +24,22 @@ instantclient-sqlplus-win32-10.2.0.4.zip 即 sqlplus 的客户端。
 运行 cmd
 C:\>sqlplus /nolog
 SQL> conn username/password@orcl
-这样就可以连接远程服务器了。
+就可以连接远程服务器了。
+
+
+Linux:
+http://www.oracle.com/technology/software/tech/oci/instantclient/htdocs/linuxsoft.html
+
+unzip oracle-instantclient-basic-10.2.0.4-1.i386.zip
+unzip oracle-instantclient-sqlplus-10.2.0.4-1.i386.zip
+
+mv instantclient_10_2 /usr/local/
+
+vi .bash_profile
+PATH=/usr/local/instantclient_10_2
+export SQLPATH=/usr/local/instantclient_10_2
+export LOCAL=/usr/local/instantclient_10_2
+export TNS_ADMIN=/usr/local/instantclient_10_2
+export LD_LIBRARY_PATH=/usr/local/instantclient_10_2
+
+source .bash_profile

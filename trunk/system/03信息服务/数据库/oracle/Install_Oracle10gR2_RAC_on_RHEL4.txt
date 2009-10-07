@@ -407,3 +407,66 @@ Destination 选择 OraDb10g_home1 ，一路 Next 。
 17. 配置详情。结束。
 
 确认数据库创建成功： crs_stat -t -v
+
+
+客户端配置：
+vi /etc/hosts
+192.168.0.51    rac1
+192.168.0.52    rac2
+192.168.0.81    rac1-vip
+192.168.0.82    rac2-vip
+
+vi /usr/local/instantclient_10_2/tnsnames.ora
+ORCL =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = rac1-vip)(PORT = 1521))
+    (ADDRESS = (PROTOCOL = TCP)(HOST = rac2-vip)(PORT = 1521))
+    (LOAD_BALANCE = yes)
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = orcl)
+      (FAILOVER_MODE =
+        (TYPE = session)
+        (METHOD = basic)
+        (RETRIES = 180)
+        (DELAY = 5)
+      )
+    )
+  )
+
+sqlplus /nolog
+SQL> conn sys/<password>@orcl as sysdba
+SQL> select instance_name from v$instance;
+
+
+Failover 测试：
+SQL> shutdown immediate;
+SQL> exit
+
+sqlplus sys/<password>@orcl as sysdba
+SQL> select instance_name from v$instance;
+
+srvctl start instance -d orcl -i orcl2
+[oracle@rac2 ~]$ sqlplus '/ as sysdba'
+SQL> select status from v$instance;
+
+
+LoadBalance 测试：
+vi lb_test.sh
+#!/bin/sh
+count=0
+while [ $count -lt $2 ]
+do
+    cont=`expr $cont + 1`
+    sqlplus -s <username>/<password>@$1 @lb_test.sql
+    sleep 1
+done
+
+vi lb_test.sql
+col "INSTANCE_NAME" format a20
+select instance_name from v$instance;
+exit
+
+sh lb_test.sh orcl 100
+
+SQL> select inst_id, count(*) from gv$session group by inst_id;
