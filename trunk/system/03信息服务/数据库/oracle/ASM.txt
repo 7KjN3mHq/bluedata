@@ -1,0 +1,141 @@
+迁移数据库到 ASM
+
+查看内核版本：
+uname -r
+2.6.18-164.el5
+
+下载相应的包：
+http://www.oracle.com/technology/software/tech/linux/asmlib/rhel5.html
+wget http://oss.oracle.com/projects/oracleasm-support/dist/files/RPMS/rhel5/x86/2.1.3/oracleasm-support-2.1.3-1.el5.i386.rpm
+wget http://otn.oracle.com/software/tech/linux/asmlib/files/RPMS/rhel5/x86/2.0.4/oracleasmlib-2.0.4-1.el5.i386.rpm
+wget http://oss.oracle.com/projects/oracleasm/dist/files/RPMS/rhel5/x86/2.0.5/2.6.18-164.el5/oracleasm-2.6.18-164.el5-2.0.5-1.el5.i686.rpm
+
+安装：
+rpm -ivh oracleasm*.rpm
+
+配置 ASMLib 驱动：
+/etc/init.d/oracleasm configure
+Default user to own the driver interface []: oracle
+Default group to own the driver interface []: dba
+Start Oracle ASM library driver on boot (y/n) [n]: y
+Scan for Oracle ASM disks on boot (y/n) [y]: y
+
+
+创建 ASM Disk:
+/etc/init.d/oracleasm createdisk VOL1 /dev/sdb1
+/etc/init.d/oracleasm createdisk VOL2 /dev/sdc1
+/etc/init.d/oracleasm createdisk VOL3 /dev/sdd1
+/etc/init.d/oracleasm createdisk VOL4 /dev/sde1
+
+/etc/init.d/oracleasm listdisks
+
+
+配置 ASM 实例：
+创建目录：
+cd admin
+mkdir +ASM
+cd +ASM
+mkdir {b,c,u}dump
+
+创建 ASM 实例的 pfile 文件：
+cd $ORACLE_HOME/dbs
+vi init+ASM.ora
+background_dump_dest=/opt/oracle/admin/+ASM/bdump
+core_dump_dest=/opt/oracle/admin/+ASM/cdump
+user_dump_dest=/opt/oracle/admin/+ASM/udump
+instance_type=asm
+large_pool_size=12M
+remote_login_passwordfile=exclusive
+
+启动 CSS ，需要以 root 身份执行：
+/opt/oracle/product/10.2/bin/localconfig add
+
+再启动 ASM 实例：
+export ORACLE_SID=+ASM
+sqlplus / as sysdba
+SQL> startup
+
+创建 DiskGroup:
+SQL> create diskgroup DATA external redundancy disk 'ORCL:VOL1','ORCL:VOL2';
+SQL> create diskgroup RECOVERY external redundancy disk 'ORCL:VOL3','ORCL:VOL4';
+SQL> select NAME, TOTAL_MB, FREE_MB from v$asm_diskgroup;
+
+
+对 RDBMS 做一个 COPY:
+export ORACLE_SID=orcl
+rman target /
+RMAN> backup as copy database format '+DATA';
+
+
+修改 RDBMS 参数：
+sqlplus / as sysdba
+设置闪回区：
+SQL> alter system set db_recovery_file_dest_size=73668M scope=both;
+SQL> alter system set db_recovery_file_dest='+RECOVERY' scope=both;
+
+
+把联机日志和自动创建数据文件位置指定为磁盘组：
+SQL> alter system set db_create_file_dest='+DATA' scope=both;
+SQL> alter system set db_create_online_log_dest_1='+DATA' scope=both;
+SQL> alter system set db_create_online_log_dest_2='+RECOVERY' scope=both;
+
+
+迁移联机日志：
+SQL> select group#,member from v$logfile;
+给每个联机日志组添加两个成员：
+SQL> alter database add logfile member '+DATA','+RECOVERY' to group 1;
+SQL> alter database add logfile member '+DATA','+RECOVERY' to group 2;
+SQL> alter database add logfile member '+DATA','+RECOVERY' to group 3;
+删除原有的联机日志（必须要日志组状态为 INACTIVE 时才能删除）：
+SQL> select group#,status from v$log;
+删除 group 2 原有的联机日志：
+SQL> alter database drop logfile member '/opt/oracle/oradata/ORCL/onlinelog/o1_mf_1_5c63jpm0_.log';
+SQL> alter database drop logfile member '/opt/oracle/flash_recovery_area/ORCL/onlinelog/o1_mf_2_5c63jzoc_.log';
+再删除 group 3 的，因 group 1 处于 CURRENT 状态，需要强制切换日志组：
+SQL> alter system switch logfile;
+然后再删除。
+遇到 ORA-00362 错误也应该切换几次日志组后再删除。
+
+
+迁移临时表空间：
+查看当前临时表空间配置：
+SQL> select ts#,bytes/1024/1024,name from v$tempfile;
+SQL> select ts#,name from v$tablespace;
+给每个临时表空间添加文件：
+SQL> alter tablespace temp add tempfile size 200M;
+SQL> alter tablespace mptemp add tempfile size 100M;
+删除旧文件：
+SQL> alter database tempfile '/opt/oracle/oradata/ORCL/datafile/o1_mf_temp_5cd02fmb_.tmp' drop;
+SQL> alter database tempfile '/opt/oracle/oradata/ORCL/datafile/o1_mf_mptemp_5c67vmy8_.tmp' drop;
+
+
+迁移控制文件：
+查看当前控制文件的位置：
+SQL> show parameter control
+修改参数，把控制文件放到 ASM 磁盘组上：
+SQL> alter system set control_files='+DATA/orcl/controlfile/control01','+RECOVERY/orcl/controlfile/control02' scope=spfile;
+关闭数据库并启动到 nomount 状态：
+SQL> shutdown immediate;
+SQL> startup nomount;
+启动 RMAN 从原来的控制文件恢复出新的控制文件：
+rman target /
+RMAN> restore controlfile from '/opt/oracle/oradata/ORCL/controlfile/o1_mf_5c60nk2p_.ctl';
+
+
+迁移数据文件：
+挂载数据库：
+RMAN> alter database mount;
+切换数据文件：
+RMAN> switch database to copy;
+恢复：
+RMAN> recover database;
+打开数据库：
+RMAN> alter database open;
+
+
+确认所有文件已经迁移成功：
+sqlplus / as sysdba
+SQL> select name from v$controlfile;
+SQL> select name,status from v$datafile;
+SQL> select member from v$logfile;
+SQL> select name,status from v$tempfile;
