@@ -1,5 +1,6 @@
 迁移数据库到 ASM
 
+
 查看内核版本：
 uname -r
 2.6.18-164.el5
@@ -20,7 +21,6 @@ Default group to own the driver interface []: dba
 Start Oracle ASM library driver on boot (y/n) [n]: y
 Scan for Oracle ASM disks on boot (y/n) [y]: y
 
-
 创建 ASM Disk:
 /etc/init.d/oracleasm createdisk VOL1 /dev/sdb1
 /etc/init.d/oracleasm createdisk VOL2 /dev/sdc1
@@ -28,7 +28,6 @@ Scan for Oracle ASM disks on boot (y/n) [y]: y
 /etc/init.d/oracleasm createdisk VOL4 /dev/sde1
 
 /etc/init.d/oracleasm listdisks
-
 
 配置 ASM 实例：
 创建目录：
@@ -58,7 +57,7 @@ SQL> startup
 创建 DiskGroup:
 SQL> create diskgroup DATA external redundancy disk 'ORCL:VOL1','ORCL:VOL2';
 SQL> create diskgroup RECOVERY external redundancy disk 'ORCL:VOL3','ORCL:VOL4';
-SQL> select NAME, TOTAL_MB, FREE_MB from v$asm_diskgroup;
+SQL> select name,total_mb,free_mb from v$asm_diskgroup;
 
 
 对 RDBMS 做一个 COPY:
@@ -91,10 +90,10 @@ SQL> select group#,status from v$log;
 删除 group 2 原有的联机日志：
 SQL> alter database drop logfile member '/opt/oracle/oradata/ORCL/onlinelog/o1_mf_1_5c63jpm0_.log';
 SQL> alter database drop logfile member '/opt/oracle/flash_recovery_area/ORCL/onlinelog/o1_mf_2_5c63jzoc_.log';
-再删除 group 3 的，因 group 1 处于 CURRENT 状态，需要强制切换日志组：
+再删除 group 3 的，因 group 1 处于 CURRENT 状态，需要切换日志组：
 SQL> alter system switch logfile;
 然后再删除。
-遇到 ORA-00362 错误也应该切换几次日志组后再删除。
+遇到 ORA-00362 错误时，可切换几次日志组后再删除。
 
 
 迁移临时表空间：
