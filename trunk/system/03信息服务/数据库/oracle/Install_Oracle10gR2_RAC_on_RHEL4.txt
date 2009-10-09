@@ -125,7 +125,7 @@ export CRS_HOME=$ORACLE_BASE/product/crs
 export ORA_NLS33=$ORACLE_HOME/ocommon/nls/admin/data
 export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib:/usr/lib:/usr/local/lib
 export ORACLE_SID=orcl1
-PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin:$CRS_HOME/bin:
+PATH=$PATH:$HOME/bin:$ORACLE_HOME/bin:$CRS_HOME/bin
 
 
 vncserver
@@ -470,3 +470,64 @@ exit
 sh lb_test.sh orcl 100
 
 SQL> select inst_id, count(*) from gv$session group by inst_id;
+
+
+修改数据库到归档模式：
+日志存放路径：
+       local               remote
+rac1:  /oracle/orcl1_arch  rac2:/oracle/orcl1_arch
+rac2:  /oracle/orcl2_arch  rac1:/oracle/orcl2_arch
+
+创建目录：
+rac1:
+mkdir orcl{1,2}_arch
+rac2:
+mkdir orcl{1,2}_arch
+
+准备磁盘：
+su - root
+mkfs -t ext3 /dev/sdb2
+mkfs -t ext3 /dev/sdb3
+mkfs -t ext3 /dev/sdc2
+mkfs -t ext3 /dev/sdc3
+
+rac1:
+vi /etc/fstab
+/dev/sdb2               /oracle/orcl1_arch      ext3    defaults        1 2
+/dev/sdb3               /oracle/orcl2_arch      ext3    defaults        1 2
+rac2:
+vi /etc/fstab
+/dev/sdc2               /oracle/orcl1_arch      ext3    defaults        1 2
+/dev/sdc3               /oracle/orcl2_arch      ext3    defaults        1 2
+
+mount -a
+chown -R oracle:dba /oracle/orcl*
+
+配置每个实例的归档位置：
+sqlplus / as sysdba
+SQL> alter system set log_archive_dest_1='location=/oracle/orcl1_arch' scope=spfile sid='rac1';
+SQL> alter system set log_archive_dest_1='location=/oracle/orcl2_arch' scope=spfile sid='rac2';
+SQL> alter system set log_archive_dest_2='service=orcl2' scope=spfile sid='rac1';
+SQL> alter system set log_archive_dest_2='service=orcl1' scope=spfile sid='rac2';
+SQL> alter system set standby_archive_dest='/oracle/orcl2_arch' scope=spfile sid='rac1';
+SQL> alter system set standby_archive_dest='/oracle/orcl1_arch' scope=spfile sid='rac2';
+
+修改数据库为归档模式：
+10gR2 之前版本需要执行：
+SQL> alter system set cluster_database=false scope=spfile sid='*';
+关闭所有实例：
+SQL> shutdown immediate;
+启动某个实例到 mount 状态：
+SQL> startup mount;
+SQL> alter database archivelog;
+10gR2 之前版本需要执行：
+SQL> alter system set cluster_database=true scope=spfile sid='*';
+打开数据库：
+SQL> alter database open;
+另一个节点：
+SQL> startup;
+
+确认归档生效：
+SQL> archive log list;
+在每个实例上测试：
+SQL> alter system switch logfile;
