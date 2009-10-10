@@ -1,3 +1,6 @@
+修改备份路径：
+configure channel device type disk format '/opt/oracle/orabackup/%d/%Y_%M_%D/%s_%p.bkp';
+
 查看保留策略：
 show retention policy;
 
@@ -21,7 +24,7 @@ delete noprompt expired archivelog all;
 控制文件拷贝备份：
 backup as copy current controlfile format '/opt/oracle/orabackup/control01.ctl';
 
-参数文件的自动备份：
+控制文件的自动备份：
 如果设置了控制文件自动备份， Oracle 会在数据库发生重大变化（如增减表空间）时自动进行控制文件和 SPFILE 文件的备份。
 设置控制文件自动备份：
 rman target /
@@ -32,7 +35,7 @@ RMAN> show controlfile autobackup;
 SQL> select * from v$rman_configuration;
 
 更改自动备份的位置：
-RMAN> configure controlfile autobackup format for device type disk to '/opt/oracle/orabackup/control%F';
+RMAN> configure controlfile autobackup format for device type disk to '/opt/oracle/orabackup/autobackup/%F';
 
 检查自动备份：
 SQL> select * from v$backup_spfile;
@@ -45,7 +48,7 @@ RMAN> restore controlfile to '/tmp/control01.ctl' from autobackup;
 RMAN> restore spfile to '/tmp/spfileorcl.ora' from autobackup;
 
 数据库不能 mount:
-RMAN> restore controlfile to '/tmp/control01.ctl' from '<controlc-DBID-YYYYMMDD-QQ>';
+RMAN> restore controlfile to '/tmp/control01.ctl' from '<c-DBID-YYYYMMDD-QQ>';
 
 数据库不能 nomount:
 编辑一个临时 PFILE 文件启动实例再恢复。
@@ -53,8 +56,8 @@ RMAN> restore controlfile to '/tmp/control01.ctl' from '<controlc-DBID-YYYYMMDD-
 rman target /
 RMAN> startup nomount;
 恢复 SPFILE 后再恢复控制文件，如：
-restore spfile to '/tmp/spfileorcl.ora' from '/opt/oracle/orabackup/controlc-2683682981-20090919-03';
-restore controlfile to '/tmp/control01.ctl' from '/opt/oracle/orabackup/controlc-2683682981-20090919-03';
+restore spfile to '/tmp/spfileorcl.ora' from '/opt/oracle/orabackup/autobackup/c-2683682981-20090919-03';
+restore controlfile to '/tmp/control01.ctl' from '/opt/oracle/orabackup/autobackup/c-2683682981-20090919-03';
 
 
 ORA-01152 错误：
