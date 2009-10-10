@@ -197,26 +197,26 @@ scsi1:4.present = "TRUE"
 scsi1:4.fileName = "/home/vmware/san/lun4.vmdk"
 scsi1:4.shared = "TRUE"
 
-fdisk /dev/sdb
+磁盘分区如下：
 sdb1: 100M
-sdb2: 14 - 2357
-sdb3: 2358 - 4700
-sdb4: 4701 - 9399
+sdb2: ALL
 
-fdisk /dev/sdc
 sdc1: 100M
-sdc2: 14 - 2357
-sdc3: 2358 - 4700
-sdc4: 4701 - 9399
+sdc2: ALL
 
-sdd1: ALL
-sde1: ALL
+sdd1: 100M
+sdd2: ALL
+
+sde1: 100M
+sde2: ALL
 
 
 配置裸设备：
 vi /etc/sysconfig/rawdevices
 /dev/raw/raw1 /dev/sdb1
 /dev/raw/raw2 /dev/sdc1
+/dev/raw/raw3 /dev/sdd1
+/dev/raw/raw4 /dev/sde1
 
 vi /etc/udev/permissions.d/50-udev.permissions
 # raw devices
@@ -243,10 +243,10 @@ Default group to own the driver interface []: dba
 Start Oracle ASM library driver on boot (y/n) [n]: y
 Scan for Oracle ASM disks on boot (y/n) [y]: y
 
-/etc/init.d/oracleasm createdisk VOL1 /dev/sdb4
-/etc/init.d/oracleasm createdisk VOL2 /dev/sdc4
-/etc/init.d/oracleasm createdisk VOL3 /dev/sdd1
-/etc/init.d/oracleasm createdisk VOL4 /dev/sde1
+/etc/init.d/oracleasm createdisk VOL1 /dev/sdb2
+/etc/init.d/oracleasm createdisk VOL2 /dev/sdc2
+/etc/init.d/oracleasm createdisk VOL3 /dev/sdd2
+/etc/init.d/oracleasm createdisk VOL4 /dev/sde2
 
 /etc/init.d/oracleasm listdisks
 
@@ -270,7 +270,7 @@ HOSTNAME=rac2
 修改用户环境：
 su - oracle
 vi .bash_profile
-export ORACLE_SID=rac2
+export ORACLE_SID=orcl2
 
 配置 SSH 用户等价：
 在两个节点上：
@@ -457,77 +457,53 @@ vi lb_test.sh
 count=0
 while [ $count -lt $2 ]
 do
-    cont=`expr $cont + 1`
+    count=`expr $count + 1`
     sqlplus -s <username>/<password>@$1 @lb_test.sql
-    sleep 1
+    #sleep 1
 done
 
 vi lb_test.sql
 col "INSTANCE_NAME" format a20
 select instance_name from v$instance;
-exit
+exit;
 
-sh lb_test.sh orcl 100
+sh lb_test.sh orcl 1000 > lb_test.log
 
+grep orcl1 lb_test.log | wc -l
+grep orcl2 lb_test.log | wc -l
+
+查看实例的连接数：
 SQL> select inst_id, count(*) from gv$session group by inst_id;
 
 
-修改数据库到归档模式：
-日志存放路径：
-       local               remote
-rac1:  /oracle/orcl1_arch  rac2:/oracle/orcl1_arch
-rac2:  /oracle/orcl2_arch  rac1:/oracle/orcl2_arch
-
-创建目录：
-rac1:
-mkdir orcl{1,2}_arch
-rac2:
-mkdir orcl{1,2}_arch
-
-准备磁盘：
-su - root
-mkfs -t ext3 /dev/sdb2
-mkfs -t ext3 /dev/sdb3
-mkfs -t ext3 /dev/sdc2
-mkfs -t ext3 /dev/sdc3
-
-rac1:
-vi /etc/fstab
-/dev/sdb2               /oracle/orcl1_arch      ext3    defaults        1 2
-/dev/sdb3               /oracle/orcl2_arch      ext3    defaults        1 2
-rac2:
-vi /etc/fstab
-/dev/sdc2               /oracle/orcl1_arch      ext3    defaults        1 2
-/dev/sdc3               /oracle/orcl2_arch      ext3    defaults        1 2
-
-mount -a
-chown -R oracle:dba /oracle/orcl*
-
-配置每个实例的归档位置：
-sqlplus / as sysdba
-SQL> alter system set log_archive_dest_1='location=/oracle/orcl1_arch' scope=spfile sid='rac1';
-SQL> alter system set log_archive_dest_1='location=/oracle/orcl2_arch' scope=spfile sid='rac2';
-SQL> alter system set log_archive_dest_2='service=orcl2' scope=spfile sid='rac1';
-SQL> alter system set log_archive_dest_2='service=orcl1' scope=spfile sid='rac2';
-SQL> alter system set standby_archive_dest='/oracle/orcl2_arch' scope=spfile sid='rac1';
-SQL> alter system set standby_archive_dest='/oracle/orcl1_arch' scope=spfile sid='rac2';
-
 修改数据库为归档模式：
-10gR2 之前版本需要执行：
-SQL> alter system set cluster_database=false scope=spfile sid='*';
+sqlplus / as sysdba
+10gR2 之前版本需要在某个实例执行：
+SQL> alter system set cluster_database=false scope=spfile;
 关闭所有实例：
 SQL> shutdown immediate;
-启动某个实例到 mount 状态：
+启动这个实例到 mount 状态：
 SQL> startup mount;
+打开归档：
 SQL> alter database archivelog;
-10gR2 之前版本需要执行：
-SQL> alter system set cluster_database=true scope=spfile sid='*';
-打开数据库：
-SQL> alter database open;
-另一个节点：
+10gR2 之前版本需要在这个实例执行：
+SQL> alter system set cluster_database=true scope=spfile;
+关闭该实例：
+SQL> shutdown immediate;
+启动所有实例：
 SQL> startup;
-
 确认归档生效：
 SQL> archive log list;
+10g 后默认归档到参数 db_recovery_file_dest 指定的路径。
+为方便管理，可修改归档路径到 NFS 挂载点，只需在一个节点执行，如：
+SQL> alter system set log_archive_dest_1='LOCATION=/oracle/archivelog';
+改回默认路径：
+SQL> alter system set log_archive_dest_1='LOCATION=USE_DB_RECOVERY_FILE_DEST';
+
 在每个实例上测试：
 SQL> alter system switch logfile;
+查看是否产生归档日志：
+export ORACLE_SID=+ASM1
+asmcmd
+ASMCMD> cd RECOVERY/ORCL/ARCHIVELOG/2009_10_10
+ASMCMD> ls
