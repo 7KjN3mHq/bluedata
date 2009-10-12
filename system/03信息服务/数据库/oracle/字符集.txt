@@ -23,7 +23,7 @@ alter system enable restricted session;
 alter system set job_queue_processes=0;
 alter system set aq_tm_processes=0;
 alter database open;
-alter database character set <internal_use> AL32UTF8;
+alter database character set internal_use AL32UTF8;
 shutdown immediate
 startup
 
