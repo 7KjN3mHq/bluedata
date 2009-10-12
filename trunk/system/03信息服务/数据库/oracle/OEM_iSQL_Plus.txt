@@ -40,6 +40,50 @@ Windows 下 OEM 主机身份证明问题：
 加入 Administrator 用户。
 
 
+改机器名后重新配置 OEM
+1. 修改 DBSNMP 密码：
+重新配置 DBCONSOLE ，需要输入 DBSNMP 密码，但任何密码都会显示错误，需要预先修改：
+SQL> alter user DBSNMP identified by <password>;
+
+2. 删除早期 DBCONSOLE 创建的用户：
+SQL> drop role MGMT_USER;
+SQL> drop user MGMT_VIEW cascade;
+SQL> drop user SYSMAN cascade;
+
+3. 删除早期 DBCONSOLE 创建的对象：
+SQL> drop public synonym MGMT_TARGET_BLACKOUTS;
+SQL> drop public synonym SETEMVIEWUSERCONTEXT;
+
+4. 重新创建 DBCONSOLE：（如果是在 Windows 下，要先到注册表删除 DBCONSOLE 的服务，重启电脑）
+$emca -config dbcontrol db -repos create
+根据提示，先输入 SID ，再输入 Y 继续，输入端口 1521 ，输入 SYS 密码， DBSNMP 密码， SYSMAN 密码，输入 Y 继续，完成。
+
+5. 检查状态：
+emctl status dbconsole
+
+
+RAC OEM 重建：
+emca -deconfig dbcontrol db -repos drop -cluster
+emca -config dbcontrol db -repos create -cluster
+
+
+DBMS JOB EMD_MAINTENANCE.EXECUTE_EM_DBMS_JOB_PROCS 的删除：
+sqlplus sysman/<password>
+SQL> exec emd_maintenance.remove_em_dbms_jobs;
+
+重建：
+SQL> alter system set job_queue_processes=0;
+SQL> select * from dba_jobs_running;
+直到输出为 "no rows selected" 时，执行以下 sql:
+SQL> @?/sysman/admin/emdrep/sql/core/latest/admin/admin_remove_dbms_jobs.sql;
+SQL> @?/sysman/admin/emdrep/sql/core/latest/admin/admin_submit_dbms_jobs.sql;
+SQL> exec emd_maintenance.recompile_invalid_objects;
+SQL> alter system set job_queue_processes=10;
+SQL> select job,what from dba_jobs;
+得到 EMD_MAINTENANCE.EXECUTE_EM_DBMS_JOB_PROCS 的 jobid 后执行：
+SQL> exec dbms_job.run(<jobid>);
+
+
 进入 iSQL*Plus DBA 的方法：
 1. cd $ORACLE_HOME/oc4j/j2ee/isqlplus/application-deployments/isqlplus
 如果不进入该目录，之后命令的执行会报错。
