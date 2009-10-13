@@ -7,10 +7,13 @@ spool /tmp/inittmp.ora
 select '*.'||name||' = ' || value from v$parameter where isdefault = 'FALSE';
 spool off
 
+从 spfile 创建 pfile:
+create pfile from spfile;
+从 pfile 创建 spfile:
+create spfile from pfile;
 
 Oracle 11g 从当前实例创建参数文件：
 create <spfile|pfile> from memory;
-
 
 dbs 目录文件全部丢失且无备份恢复 SPFILE 文件：
 SQL> create spfile='/opt/oracle/product/10.2/dbs/spfile1.ora' from pfile='/opt/oracle/admin/orcl/scripts/init.ora';
@@ -21,8 +24,18 @@ mv spfile1.ora spfileorcl.ora
 查看控制文件：
 select name from v$controlfile;
 
-
 备份控制文件创建语句到跟踪文件中：
 alter database backup controlfile to trace;
 @?/rdbms/admin/gettrcname.sql
 在 nomount 状态下，可以使用这段脚本创建控制文件。控制文件会自动创建到参数文件中记录的控制文件位置。
+
+控制文件的自动备份：
+rman target /
+RMAN> configure controlfile autobackup <on/off>;
+
+查看是否启用自动备份：
+RMAN> show controlfile autobackup;
+SQL> select * from v$rman_configuration;
+
+更改自动备份的位置：
+RMAN> configure controlfile autobackup format for device type disk to '/opt/oracle/orabackup/autobackup/%F';
