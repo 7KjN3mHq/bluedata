@@ -138,3 +138,12 @@ SQL> select name from v$controlfile;
 SQL> select name,status from v$datafile;
 SQL> select member from v$logfile;
 SQL> select name,status from v$tempfile;
+
+
+把 spfile 放到 ASM:
+SQL> create spfile='+DATA/orcl/spfileorcl.ora' from pfile;
+Oracle 启动的时候还是会去找 $ORACLE_HOME/dbs 下的 spfile ，然后 pfile ，如果两个都不存在，就会报错。
+做个链接：
+vi $ORACLE_HOME/dbs/initorcl.ora 
+SPFILE='+DATA/orcl/spfileorcl.ora'
+SQL> show parameter spfile;

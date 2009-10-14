@@ -64,3 +64,8 @@ hpasmcli -s 'show temp'
 
 ≤Èø¥∑Á…»
 hpasmcli -s 'show fans'
+
+ASR:
+hpasmcli -s 'show asr'
+ASR timeout is 10 minutes.
+ASR is currently enabled.

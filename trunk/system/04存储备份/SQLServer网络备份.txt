@@ -1,0 +1,13 @@
+在查询分析器中操作：
+1. 映射
+exec master..xp_cmdshell 'net use z: \\192.168.0.1\mssql "password" /user:debian\mssql'
+注：
+z: 是映射网络路径对应本机的盘符；
+\\192.168.0.1\mssql 是要映射的网络路径；
+debian\mssql 的 debian 是远程的计算机名， mssql 是登陆的用户名。
+
+2. 进行数据库备份
+backup database dbname to disk='z:\dbname.bkp'
+
+3. 备份完成后删除映射
+exec master..xp_cmdshell 'net use z: /delete'
