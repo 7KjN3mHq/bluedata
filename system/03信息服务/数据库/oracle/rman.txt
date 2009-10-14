@@ -21,6 +21,9 @@ delete expired backup;
 crosscheck archivelog all;
 delete noprompt expired archivelog all;
 
+备份归档日志后删除：
+backup archivelog all delete all input;
+
 控制文件拷贝备份：
 backup as copy current controlfile format '/opt/oracle/orabackup/control01.ctl';
 
@@ -255,3 +258,12 @@ rman catalog rman/rmanbak target mpuser/mp@orcl
 register database;
 注销：
 unregister database;
+
+
+Windows Server 2003 下备份到 NFS:
+数据库服务 OracleService<sid> 默认是用 LocalSystem （本地系统帐户）帐户来启动的，但是要使 Oracle 可以写网络驱动器，
+需要用某个具体用户来启动，这个用户必须是 ORA_DBA 组的成员，当然最合适的就是 Administrator 了。
+把 OracleService<sid> 和 OracleOraDb10g_home1TNSListener 的登录身份都设为 Administrator ，重启服务。
+安装 SFU ，配置 Windows 的 NFS 客户端。
+测试备份：
+backup current controlfile format '\\192.168.0.1\backup\oracle\control.bkp';

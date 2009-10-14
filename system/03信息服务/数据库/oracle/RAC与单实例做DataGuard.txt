@@ -168,7 +168,7 @@ SQL> select name from v$tempfile;
 
 
 5. 创建 Standby Redo Log 日志：
-Standby Redo Log 的组数一般为 (N +1)*thread# （ N 分别为每个 thread# 的联机日志组数），大小必须和联机日志一样。
+Standby Redo Log 的组数一般为 (N +1)*thread# （ N 为每个 thread# 的联机日志组数），大小必须和联机日志一样。
 创建存放日志的目录：
 mkdir ~/oradata/orcl/standbyredo
 查看 RAC 中的联机日志：
@@ -187,9 +187,11 @@ SQL> select member from v$logfile;
 6. 开始同步：
 用修改后的 spfile 启动 RAC 的所有实例：
 SQL> create spfile='+DATA/orcl/spfileorcl.ora' from pfile='/oracle/product/database/dbs/initorcl1.ora';
-SQL> shutdown immediate;
-SQL> startup;
-启动 MRP:
+修改 initorcl1.ora 和 initorcl2.ora 为：
+SPFILE='+DATA/orcl/spfileorcl.ora'
+srvctl stop database -d orcl
+srvctl start database -d orcl
+在 Standby 上启动 MRP:
 SQL> recover managed standby database disconnect from session;
 在 RAC 各个实例上查看日志传送状况：
 SQL> select dest_name,status,error from v$archive_dest;
@@ -203,9 +205,8 @@ SQL> select name from v$datafile;
 
 
 7. 切换：
-RAC 切换时只能有一个实例活动，其它实例必须关闭。
-在 rac2 关闭 orcl2:
-SQL> shutdown immediate;
+RAC 切换时只能有一个实例活动，其它实例必须关闭：
+srvctl stop instance -d orcl -i orcl2
 在 rac1 上执行：
 SQL> alter database commit to switchover to physical standby with session shutdown;
 在 Standby 上执行：
@@ -221,7 +222,21 @@ SQL> alter database add standby logfile thread 2 group 10 size 100m;
 开始同步，在 rac1 上执行（ MRP 只能在一个实例上执行）：
 SQL> recover managed standby database disconnect from session;
 确认同步，在 Standby 上执行：
+SQL> alter database open;
 SQL> create tablespace tmp datafile '/opt/oracle/oradata/orcl/datafile/tmp.dbf' size 10m;
 SQL> alter system switch logfile;
-在 rac1 上确认同步：
+在 rac1 上确认：
 SQL> select name from v$datafile;
+
+之后，可以自由切换了。切换 RAC 为主库：
+在 Standby 上执行：
+SQL> alter database commit to switchover to physical standby with session shutdown;
+在 rac1 上执行：
+SQL> alter database commit to switchover to primary with session shutdown;
+在 Standby 上启动 MRP:
+SQL> startup mount;
+SQL> recover managed standby database disconnect from session;
+打开 rac1:
+SQL> alter database open;
+启动 rac2:
+srvctl start instance -d orcl -i orcl2

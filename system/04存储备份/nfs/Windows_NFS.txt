@@ -1,0 +1,29 @@
+http://cha.homeip.net/blog/archives/2005/11/_windows_unix_n.html
+
+下载 Microsoft Windows Services for UNIX 3.5 （约 218MB ）：
+http://download.microsoft.com/download/a/1/c/a1ca7af1-a6e3-46e7-874a-4c5d8c0fb3b7/SFU35SEL_EN.exe
+解压到： C:\SFU35SEL_EN
+
+只安装 Client for NFS on Windows 的命令：
+msiexec /I C:\SFU35SEL_EN\sfusetup.msi /qb addlocal="NFSClient"
+默认安装到 C:\SFU
+
+设置 User Name Mapping
+将 NFS Server 上的 /etc/passwd, /etc/group 复制到 Windows 机器的 C:\
+运行 Services for UNIX Administrator:
+User Name Mapping -> Configuration -> Use Password and Group files , 设置：
+Password file path and name: C:\passwd
+Group file path and name: C:\group
+
+Maps , 设置：
+Show User Maps -> List Windows Users, List UNIX Users
+在 Windows users 列表中选择自己的帐号。
+在 UNIX users 列表中选择要映射的帐号（想要以哪个 UNIX 用户挂载 NFS Folder ）
+点 Add -> 确定，点右上角的 Apply 完成设置。
+
+命令行模式挂载 NFS 目录：
+cd \SFU\common
+mount linux_ip:/path drive_id:
+如： mount 192.168.0.1:/backup/oracle F:
+一些参数：
+mount -o mtype=hard -o rsize=32 -o wsize=32 -o timeout=60 192.168.0.1:/backup/oracle F:
