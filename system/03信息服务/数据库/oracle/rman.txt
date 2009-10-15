@@ -5,7 +5,8 @@ configure channel device type disk format '/opt/oracle/orabackup/%d/%Y_%M_%D/%s_
 show retention policy;
 
 配置保留策略：
-configure retention policy to redundancy 2;
+configure retention policy to redundancy 3;
+configure retention policy to recovery window of 7 days;
 
 报告过期备份：
 report obsolete;

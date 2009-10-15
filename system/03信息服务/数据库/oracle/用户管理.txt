@@ -22,8 +22,11 @@ select * from user_role_privs;
 select * from user_sys_privs;
 select * from user_tab_privs;
 
-查看当前用户下所有的表：
+查看当前用户所有的表：
 select * from user_tables;
+
+查看当前用户有哪些作业：
+select what, broken from user_jobs;
 
 
 创建用户：
