@@ -1,0 +1,14 @@
+在删除一个作业时，出现错误：
+错误 14274：无法添加、更新或删除从 MSX 服务器上发起的作业（或其步骤或调试）。
+
+这可能由于重装系统、移植数据库等原因造成的，可以利用下面的 SQL 语句进行修正：
+use msdb
+go
+sp_configure 'allow updates',1 reconfigure with override
+go
+update sysjobs set originating_server = convert(varchar(50),serverproperty('servername'))
+go
+sp_configure 'allow updates',0 reconfigure with override
+go
+
+目的就是重新设置 msdb 数据库中 sysjobs 表的 originating_server 字段。
