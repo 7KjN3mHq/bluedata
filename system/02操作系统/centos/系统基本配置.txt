@@ -5,6 +5,7 @@ CentOS(4.6/5.2)
 LANG="zh_CN.GBK"
 CentOS4.6 再把如下设置改了：
 SUPPORTED="zh_CN.GBK:zh_CN:zh"
+英文环境可改为 en_US.ISO-8859-1
 
 关闭内核 ipv6 模块
 CentOS4.6:

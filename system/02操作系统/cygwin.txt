@@ -1,0 +1,92 @@
+参考： http://www.ibm.com/developerworks/cn/aix/library/au-spunix_cygwin/index.html
+
+安装 Cygwin:
+http://www.cygwin.com/setup.exe
+创建 C:\cygwin 目录，把 setup.exe 放到此目录下。
+使用 http://mirrors.163.com/cygwin
+选上 cygrunsrv openssh rsync vim 。
+如果有不能下载的包，可以换站点试试，比如： http://ftp.twaren.net/Unix/Sourceware/cygwin 。
+
+启用 sshd:
+chmod +r /etc/passwd
+chmod +r /etc/group
+chmod +rwx /var
+ssh-host-config
+Should privilege separation be used? (yes/no) yes
+Note that creating a new user requires that the current account have
+Administrator privileges.  Should this script attempt to create a
+ new local account 'sshd'? (yes/no) yes
+Do you want to install sshd as service? (yes/no) yes
+Query: Enter the value of CYGWIN for the daemon: [ntsec] <Enter>
+'cyg_server' will only be used by registered services.
+Do you want to use a different name? (yes/no) yes
+Enter the new user name: Administrator
+Reenter: Administrator
+Please enter the password for user 'Administrator':
+Reenter:
+
+启动：
+cygrunsrv -S sshd
+移除：
+cygrunsrv -R sshd
+
+启动服务：
+net start sshd
+停止服务：
+net stop sshd
+
+
+ssh 公私钥验证：
+mkdir ~/.ssh
+把 authorized_keys 放到 C:\cygwin\home\Administrator\.ssh 目录下。
+chmod -R 700 ~/.ssh
+
+
+设置 vim 方向键可用，高亮显示，返回上次打开的行：
+vi ~/.vimrc
+set nocp
+syntax on
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+    \| exe "normal! g'\"" | endif
+endif
+
+
+设置 PS1 显示，中文显示，别名：
+vi ~/.bash_profile
+export PS1="[\u@\h \W]\$ "
+export LC_ALL=zh_CN.GB2312
+export LC_CTYPE=zh_CN.GB2312
+export LANG=zh_CN.GB2312
+export LESSCHARSET=latin1
+export LC_MESSAGES=zh_CN.eucCN
+export XMODIFIERS="@im=Chinput"3
+stty cs8 -istrip
+stty pass8
+alias ls='ls --color --show-control-chars --time-style=long-iso'
+alias ll='ls -lh --color --show-control-chars --time-style=long-iso'
+
+
+设置终端可以输入中文：
+vi ~/.inputrc
+set meta-flag on
+set convert-meta off
+set input-meta on
+set output-meta on
+
+
+在 Linux 机器上同步 Windows 主机的目录：
+rsync -ae ssh --delete Administrator@192.168.0.254:/cygdrive/c/Inetpub/wwwroot/crm/ /backup/crm/
+
+
+远程主机使用本地主机 Cygwin 的 X Server:
+安装 xhost xinit xorg-server 。
+运行 C:\cygwin\bin\startxwin.bat
+执行 xhost + <remote host ip>
+如果本地主机在内网，需要在网关映射 6000 端口到本地主机，防火墙也应打开。
+
+远程主机上：
+export DISPLAY=<cygwin x server ip>:0.0
+./runInstaller
+
+更多参考： http://blog.chinaunix.net/u1/54044/showart_1730807.html

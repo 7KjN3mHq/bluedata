@@ -46,6 +46,10 @@ Linux 下 iconv 转换文件编码
 例如： iconv -f gb2312 -t utf-8 -o index.php index.php.bak
 
 
+挂载分区支持中文：
+mount -t ext3 -o codepage=936,iocharset=utf8 /dev/hdc1 /backup
+
+
 挂载 ISO 文件
 mount -t iso9660 -o loop /path/to/iso_file /cdrom
 
