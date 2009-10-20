@@ -1,0 +1,553 @@
+http://www.fovweb.com/security/2003-security-config.html
+
+
+一、系统的安装
+
+１、按照Windows2003安装光盘的提示安装，默认情况下2003没有把IIS6.0安装在系统里面。
+
+２、IIS6.0的安装
+开始菜单—>控制面板—>添加或删除程序—>添加/删除Windows组件
+应用程序 ———ASP.NET（可选）
+|——启用网络 COM+ 访问（必选）
+|——Internet 信息服务(IIS)———Internet 信息服务管理器（必选）
+|——公用文件（必选）
+|——万维网服务———Active Server pages（必选）
+|——Internet 数据连接器（可选）
+|——WebDAV 发布（可选）
+|——万维网服务（必选）
+|——在服务器端的包含文件（可选）
+然后点击确定—>下一步安装。
+
+３、系统补丁的更新
+点击开始菜单—>所有程序—>Windows Update
+按照提示进行补丁的安装。
+
+４、备份系统
+用GHOST备份系统。
+
+５、安装常用的软件
+例如：杀毒软件、解压缩软件等；安装之后用GHOST再次备份系统。
+
+二、系统权限的设置
+１、磁盘权限
+系统盘及所有磁盘只给 Administrators 组和 SYSTEM 的完全控制权限
+系统盘\Documents and Settings 目录只给 Administrators 组和 SYSTEM 的完全控制权限
+系统盘\Documents and Settings\All Users 目录只给 Administrators 组和 SYSTEM 的完全控制权限
+系统盘\Inetpub 目录及下面所有目录、文件只给 Administrators 组和 SYSTEM 的完全控制权限
+系统盘\Windows\System32\cacls.exe、cmd.exe、net.exe、net1.exe 文件只给 Administrators 组和 SYSTEM 的完全控制权限
+
+２、本地安全策略设置
+开始菜单—>管理工具—>本地安全策略
+A、本地策略——>审核策略
+审核策略更改　　　成功　失败
+审核登录事件　　　成功　失败
+审核对象访问　　　　　　失败
+审核过程跟踪　　　无审核
+审核目录服务访问　　　　失败
+审核特权使用　　　　　　失败
+审核系统事件　　　成功　失败
+审核账户登录事件　成功　失败
+审核账户管理　　　成功　失败
+
+B、 本地策略——>用户权限分配
+关闭系统：只有Administrators组、其它全部删除。
+通过终端服务拒绝登陆：加入Guests、User组
+通过终端服务允许登陆：只加入Administrators组，其他全部删除
+
+C、本地策略——>安全选项
+交互式登陆：不显示上次的用户名　　　　　　　启用
+网络访问：不允许SAM帐户和共享的匿名枚举　　 启用
+网络访问：不允许为网络身份验证储存凭证　　　启用
+网络访问：可匿名访问的共享　　　　　　　　　全部删除
+网络访问：可匿名访问的命　　　　　　　　　　全部删除
+网络访问：可远程访问的注册表路径　　　　　　全部删除
+网络访问：可远程访问的注册表路径和子路径　　全部删除
+帐户：重命名来宾帐户　　　　　　　　　　　　重命名一个帐户
+帐户：重命名系统管理员帐户　　　　　　　　　重命名一个帐户
+
+３、禁用不必要的服务
+开始菜单—>管理工具—>服务
+Print Spooler
+Remote Registry
+TCP/IP NetBIOS Helper
+Server
+
+以上是在Windows Server 2003 系统上面默认启动的服务中禁用的，默认禁用的服务如没特别需要的话不要启动。
+
+４、启用防火墙
+桌面—>网上邻居—>（右键）属性—>本地连接—>（右键）属性—>高级—>（选中）Internet 连接防火墙—>设置
+把服务器上面要用到的服务端口选中
+例如：一台WEB服务器，要提供WEB（80）、FTP（21）服务及远程桌面管理（3389）
+在“FTP 服务器”、“WEB服务器（HTTP）”、“远程桌面”前面打上对号
+如果你要提供服务的端口不在里面，你也可以点击“添加”铵钮来添加，具体参数可以参照系统里面原有的参数。
+然后点击确定。注意：如果是远程管理这台服务器，请先确定远程管理的端口是否选中或添加。
+ASP虚拟主机安全检测探针V1.5
+
+走出Windows权限迷魂阵
+在电脑应用中经常会看到”权限”这个词，特别是Windows 2000/XP被越来越多的朋友装进电脑后，常常会有读者问，什么是权限呢?它到底有什么用?下面我们将用几个典型实例为大家讲解windows中的权限应用，让你不仅可以在不安装任何软件的情况下，限制别人访问你的文件夹、指定用户不能使用的程序，而且还有来自微软内部的加强系统安全的绝招。
+——————————————————————————–
+
+初识Windows的权限
+首先，要完全使用windows权限的所有功能，请确保在应用权限的分区为NTFS文件系统。本文将以windowsXP简体中文专业版+SP2作为范例讲解。
+1．什么是权限?
+举个形象的例子，windows就像一个实验室，其中有导师A、导师B；学生A、学生B．大家都能在实验室里面完成实验。但在这里又是分等级的．两位导师可以指定学生能使用什么样的实验工具，不能碰什么工具，从而使得实验室不会因为学生乱用实验工具．而出现问题。同时．两位导师又能互相限制对方对实验工具的使用。因此．windows中的权限就是对某个用户或同等级的用户进行权力分配和限制的方法。正是有了它的出现，windows中的用户要遵循这种”不平等”的制度，而正是这个制度，才使得windows可以更好地为多个用户的使用创造了良好，稳定的运行环境。
+2．权限都包含有什么?
+在以NT内核为基础的Windows 2000/XP中，权限主要分为七大类完全控制、修改，读取和运行、列出文件夹目录、读取、写入、特别的权限(见图1)。
+
+其中完全控制包含了其他六大权限．只要拥有它，就等同于拥有了另外六大权限，其余复选框会被自动选中．属于”最高等级”的权限。
+而其他权限的等级高低分别是：特别的权限>读取和运行>修改>写入>读取。
+默认情况下，Windows XP将启用”简单文件共享”，这意味着安全性选项卡和针对权限的高级选项都不可用．也就不能进行本文所述的那些权限应用操作了。请现在就右击任意文件或文件夹．选择”属性”，如果没有看到”安全”选项卡，你可以通过如下方法打开它。
+打开”我的电脑”，点击”工具→文件夹选项→查看”，接着在然后单击取消”使用简单文件共享(推荐)”复选框即可。
+实战权限”正面”应用
+以下应用的前提，是被限制的用户不在Administrators组，否则将可能发生越权访问，后面”反面应用”会讲到。执行权限设置的用户至少需要为Power Users组的成员，才有足够权限进行设置。
+实例1：我的文档你别看－保护你的文件或文件夹
+假设A电脑中有三个用户，用户名分别为User1、User2、User3。Userl不想让User2和User3查看和操作自己的”test”文件夹。
+第一步：右击”test”文件夹并选择”属性”，进入”安全”选项卡，你将会看到”组或用户名称”栏里有 Administrators(A\Administrators)、CREATOR OWNER、SYSTEM Users(A\Users)、User1(A\ User1)。他们分别表示名为A电脑的管理员组，创建、所有者组，系统组，用户组以及用户User1对此文件夹的权限设置。当然，不同的电脑设置和软件安装情况，此栏里的用户或用户组信息不一定就是和我描述的一样．但正常情况下最少将包含3项之一：Administrators、SYSTEM、 Users或Everyone(见图2)。
+
+第二步：依次选中并删除Administrators、CREATOR OWNER、SYSTEM、Users，仅保留自己使用的Userl账户。在操作中可能会遇到如图3的提示框。
+
+其实只要单击”高级”按钮，在”权限”选项卡中，取消”从父项继承那些可以应用到子对象的权限项目，包括那些在此明确定义的项目”的复选框，在弹出对话框中单击”删除”即可。该操作使此文件夹清除了从上一级目录继承来的权限设置，仪保留了你使用的User1账户。
+就这么轻松，你就实现了其他用户，甚至系统权限都无法访问”test”文件夹的目的。
+★需要注意的是，如果这个文件夹中需要安装软件，那么就不要删除”SYSTEM”，不然可能引起系统访问出错
+★Administrator并不是最高指挥官：你可能会问，为什么这里会有一个”SYSTEM”账户呢?同时许多朋友认为windows2000/XP 中的Administrator是拥有权限最高的用户，其实不然，这个”SYSTEM”才具有系统最高权限，因为它是”作为操作系统的一部分工作”，任何用户通过某种方法获取了此权限，就能凌驾一切。
+
+——————————————————————————–
+实例2：上班时间别聊天－禁止用户使用某程序
+第一步：找到聊天程序的主程序，如QQ，其主程序就是安装目录下的QQ.exe，打开它的属性对话框，进入”安全”选项卡，选中或添加你要限制的用户，如User3。
+第二步：接着选择”完全控制”为”拒绝”，”读取和运行”也为”拒绝”。
+第三步：单击”高级”按钮进入高级权限没置，选中User3，点”编辑”按钮，进入权限项目。在这里的”拒绝”栏中选中”更改权限”和”取得所有权”的复选框。
+也可以使用组策略编辑器来实现此功能，但安全性没有上面方法高。点击”开始→运行”，输入”gpedit.msc”，回车后打开组策略编辑器，进入”计算机设置→windows设置→安全设置→软件限制策略→其他规则”，右击，选择”所有任务→新路径规则”，接着根据提示设置想要限制的软件的主程序路径，然后设定想要的安全级别，是”不允许的”还是”受限制的”。
+
+——————————————————————————–
+实例3：来者是客-－微软内部增强系统安全的秘技
+本实战内容将需要管理员权限。所谓入侵，无非就是利用某种方法获取到管理员级别的权限或系统级的权限，以便进行下一步操作，如添加自己的用户。如果想要使入侵者”进来”之后不能进行任何操作呢?永远只能是客人权限或比这个权限更低，就算本地登录，连关机都不可以。那么，他将不能实施任何破坏活动。
+注意：此法有较高的危险性．建议完全不知道以下程序用途的读者不要尝试．以免误操作引起系统不能进入或出现很多错误。
+第一步：确定要设置的程序
+搜索系统目录下的危险程序，它们可以用来创建用户夺取及提升低权限用户的权限，格式化硬盘，引起电脑崩溃等恶意操作：cmd.exe、 regedit.exe、regsvr32.exe、regedt32.exe、gpedit.msc、format.com、 compmgmt.msc、mmc.exe、telnet.exe、tftp.exe、ftp.exe、XCOPY.EXE、at.exe、 cacls.exe、edlin.exe、rsh.exe、finger.exe、runas.exe、net.exe、tracert.exe、 netsh.exe、tskill.exe、poledit.exe、regini.exe、cscript.exe、netstat.exe、 issync.exe、runonce.exe、debug.exe、rexec.exe、wscript.exe、command.com、 comsdupd.exe
+第二步：按系统调用的可能性分组设置
+按照下面分组．设置这些程序权限。完成一组后，建议重启电脑确认系统运行是否一切正常，查看”事件查看器”，是否有错误信息(”控制面板→管理工具→事件查看器”)。
+(1)cmd.exe、net.exe gpedit.msc telnet.exe command.com
+(仅保留你自己的用户，SYSTEM也删除)
+(2)mmc.exe、tftp.exe、ftp.exe、XCOPY.EXE、comsdupd.exe
+(仅保留你自己的用户，SYSTEM也删除)
+(3)regedit.exe、regedt32.exe、format.com、compmgmt.msc、at.exe、cacls.exe、 edlin.exe、rsh.exe、finger.exe、runas.exe、debug.exe、wscript.exe、 cscript.exe、rexec.exe
+(保留你自己的用户和SYSTEM)
+(4)tracert.exe、netsh.exe、tskill.exe、poledit.exe、regini.exe、netstat.exe、issync.exe、runonce.exe、regsvr32.exe
+(保留你自己的用户和SYSTEM)
+第三步：用户名欺骗
+这个方法骗不了经验丰富的入侵者，但却可以让不够高明的伪黑客们弄个一头雾水。
+打开”控制面板一管理工具一计算机管理”，找到”用户”，将默认的Administrator和Guest的名称互换，包括描述信息也换掉。完成后，双击假的”Administrator”用户，也就是以前的Guest用户．在其”属性”窗口中把隶属于列表里的Guests组删除．这样．这个假的”管理员”账号就成了”无党派人士”，不属于任何组，也就不会继承其权限。此用户的权限几乎等于0，连关机都不可以，对电脑的操作几乎都会被拒绝。如果有谁处心积虑地获取了这个用户的权限，那么他肯定吐血。
+第四步：集权控制，提高安全性
+打开了组策略编辑器，找到”计算机设置→windows设置→安全设置→本地策略→用户权利指派”(见图4)，接着根据下面的提示进行设置。
+
+(1)减少可访问此计算机的用户数，减少被攻击机会
+找到并双击”从网络访问此计算机”，删除账户列表中用户组，只剩下”Administrators”；
+找到并双击”拒绝本地登录”，删除列表中的”Guest”用户，添加用户组”Guests”。
+(2)确定不想要从网络访问的用户，加入到此”黑名单”内
+找到并双击”拒绝从刚络访问这台计算机”，删除账户列表中的”Guest”用户，添加用户组”Guests”；
+找到并双击”取得文件或其他对象的所有权”，添加你常用的账户和以上修改过名称为”Guest”的管理员账户，再删除列表中”Administrators”。
+(3)防止跨文件夹操作
+找到并双击”跳过遍历检查”，添加你所使用的账户和以上修改过名称为”Guest”的管理员账户，再删除账户列表中的”Administrators”、”Everyone”和”Users”用户组。
+(4)防止通过终端服务进行的密码猜解尝试
+找到并双击”通过终端服务拒绝登录”，添加假的管理员账户”Administrator”；找到”通过终端服务允许登录”，双击，添加你常用的账户和以上修改过名称为”Guest”的管理员账户，再删除账户列表中的”Administrators”，”Remote Desktop User”和”HelpAssistant”(如果你不用远程协助功能的话才可删除此用户)。
+(5)避免拒绝服务攻击
+找到并双击”调整进程的内存配额”，添加你常用的账户，再删除账户列表中的”Administrators”
+
+——————————————————————————–
+实例4：”你的文档”别独享——突破文件夹”私有”的限制
+windows XP安装完成并进入系统时，会询问是否将”我的文档”设为私有(专用)，如果选择了”是”，那将使该用户下的”我的文档”文件夹不能被其他用户访问，删除，修改。其实这就是利用权限设置将此文件夹的访问控制列表中的用户和用户组删除到了只剩下系统和你的用户，所有者也设置成了那个用户所有，Administrators组的用户也不能直接访问。如果你把这个文件夹曾经设置为专用，但又在该盘重装了系统，此文件夹不能被删除或修改。可按照下面步骤解决这些问题，让你对这个文件夹的访问，畅通无阻。
+第一步：登录管理员权限的账户，如系统默认的Administrator，找到被设为专用的”我的文档”，进入其”属性”的”安全”选项卡，你将会看到你的用户不在里面，但也无法添加和删除。
+第二步：单击”高级”按钮，进入高级权限设置，选择”所有者”选项卡，在”将所有者更改为”下面的列表中选中你现在使用的用户，如”Userl(A\Userl)”，然后再选中”替换子容器及对象的所有者”的复选框，然后单击”应用”，等待操作完成。
+第三步：再进入这个文件夹看看，是不是不会有任何权限的提示了?可以自由访问了?查看里面的文件，复制、删除试试看．是不是一切都和”自己的”一样了?嘿嘿。如果你想要删除整个文件夹，也不会有什么阻止你了。
+
+SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp 改3389 的
+
+Windows2003基本的web服务器安全设置
+栏目： | 作者：青鳥南飛 | 点击：164 | 回复：0 | 2006-6-26 14:40:39
+基本的服务器安全设置
+1、安装补丁
+
+安装好操作系统之后，最好能在托管之前就完成补丁的安装，配置好网络后，如果是2000则确定安装上了SP4，如果是2003，则最好安装上SP1，然后点击开始→Windows Update，安装所有的关键更新。
+
+2、安装杀毒软件
+
+至于杀毒软件目前我使用有两款，一款是瑞星，一款是诺顿，瑞星杀木马的效果比诺顿要强，我测试过病毒包，瑞星要多杀出很多，但是装瑞星的话会有一个问题就是会出现ASP动态不能访问，这时候需要重新修复一下，具体操作步骤是：
+
+关闭杀毒软件的所有的实时监控，脚本监控。
+
+╭═══════════════╮╭═══════════════╮
+
+在Dos命令行状态下分别输入下列命令并按回车（Enter）键：
+
+regsvr32 jscript.dll （命令功能：修复Java动态链接库）
+
+regsvr32 vbscript.dll （命令功能：修复VB动态链接库）
+
+╰═══════════════╯╰═══════════════╯
+
+不要指望杀毒软件杀掉所有的木马，因为ASP木马的特征是可以通过一定手段来避开杀毒软件的查杀。
+
+3、设置端口保护和防火
+
+2003的端口屏蔽可以通过自身防火墙来解决，这样比较好，比筛选更有灵活性，桌面—>网上邻居—>（右键）属性—>本地连接—>（右键）属性—>高级—>（选中）Internet 连接防火墙—>设置
+
+把服务器上面要用到的服务端口选中
+
+例如：一台WEB服务器，要提供WEB（80）、FTP（21）服务及远程桌面管理（3389）
+
+在“FTP 服务器”、“WEB服务器（HTTP）”、“远程桌面”前面打上对号
+
+如果你要提供服务的端口不在里面，你也可以点击“添加”铵钮来添加，具体参数可以参照系统里面原有的参数。
+
+然后点击确定。注意：如果是远程管理这台服务器，请先确定远程管理的端口是否选中或添加。
+
+权限设置
+
+权限设置的原理
+
+?WINDOWS用户，在WINNT系统中大多数时候把权限按用户（組）来划分。在【开始→程序→管理工具→计算机管理→本地用户和组】管理系统用户和用户组。
+
+?NTFS权限设置，请记住分区的时候把所有的硬盘都分为NTFS分区，然后我们可以确定每个分区对每个用户开放的权限。【文件（夹）上右键→属性→安全】在这里管理NTFS文件（夹）权限。
+
+?IIS匿名用户，每个IIS站点或者虚拟目录，都可以设置一个匿名访问用户（现在暂且把它叫“IIS匿名用户”），当用户访问你的网站的.ASP文件的时候，这个.ASP文件所具有的权限，就是这个“IIS匿名用户”所具有的权限。
+
+权限设置
+
+磁盘权限
+
+系统盘及所有磁盘只给 Administrators 组和 SYSTEM 的完全控制权限
+
+系统盘\Documents and Settings 目录只给 Administrators 组和 SYSTEM 的完全控制权限
+
+系统盘\Documents and Settings\All Users 目录只给 Administrators 组和 SYSTEM 的完全控制权限
+
+系统盘\Inetpub 目录及下面所有目录、文件只给 Administrators 组和 SYSTEM 的完全控制权限
+
+系统盘\Windows\System32\cacls.exe、cmd.exe、net.exe、net1.exe 文件只给 Administrators 组和 SYSTEM 的完全控制权限
+
+4、禁用不必要的服务
+
+开始菜单—>管理工具—>服务
+
+Print Spooler
+
+Remote Registry
+
+TCP/IP NetBIOS Helper
+
+Server
+
+以上是在Windows Server 2003 系统上面默认启动的服务中禁用的，默认禁用的服务如没特别需要的话不要启动。
+
+改名或卸载不安全组件
+
+不安全组件不惊人
+
+在阿江探针1.9里加入了不安全组件检测功能（其实这是参考7i24的代码写的，只是把界面改的友好了一点，检测方法和他是基本一样的），这个功能让很多站长吃惊不小，因为他发现他的服务器支持很多不安全组件。
+
+其实，只要做好了上面的权限设置，那么FSO、XML、strem都不再是不安全组件了，因为他们都没有跨出自己的文件夹或者站点的权限。那个欢乐时光更不用怕，有杀毒软件在还怕什么时光啊。
+
+最危险的组件是WSH和Shell，因为它可以运行你硬盘里的EXE等程序，比如它可以运行提升程序来提升SERV-U权限甚至用SERVU来运行更高权限的系统程序。
+
+谨慎决定是否卸载一个组件
+
+组件是为了应用而出现的，而不是为了不安全而出现的，所有的组件都有它的用处，所以在卸载一个组件之前，你必须确认这个组件是你的网站程序不需要的，或者即使去掉也不关大体的。否则，你只能留着这个组件并在你的ASP程序本身上下工夫，防止别人进来，而不是防止别人进来后SHELL。
+
+比如，FSO和XML是非常常用的组件之一，很多程序会用到他们。WSH组件会被一部分主机管理程序用到，也有的打包程序也会用到。
+
+5、卸载最不安全的组件
+
+最简单的办法是直接卸载后删除相应的程序文件。将下面的代码保存为一个.BAT文件，( 以下均以 WIN2000 为例，如果使用2003，则系统文件夹应该是 C:\WINDOWS\ )
+
+regsvr32/u C:\WINNT\System32\wshom.ocx
+
+del C:\WINNT\System32\wshom.ocx
+
+regsvr32/u C:\WINNT\system32\shell32.dll
+
+del C:\WINNT\system32\shell32.dll
+
+然后运行一下，WScript.Shell, Shell.application, WScript.Network就会被卸载了。可能会提示无法删除文件，不用管它，重启一下服务器，你会发现这三个都提示“×安全”了。
+
+改名不安全组件
+
+需要注意的是组件的名称和Clsid都要改，并且要改彻底了。下面以Shell.application为例来介绍方法。
+
+打开注册表编辑器【开始→运行→regedit回车】，然后【编辑→查找→填写Shell.application→查找下一个】，用这个方法能找到两个注册表项：“{13709620-C279-11CE-A49E-444553540000}”和“Shell.application”。为了确保万无一失，把这两个注册表项导出来，保存为 .reg 文件。
+
+比如我们想做这样的更改
+
+13709620-C279-11CE-A49E-444553540000 改名为 13709620-C279-11CE-A49E-444553540001
+
+Shell.application 改名为 Shell.application_ajiang
+
+那么，就把刚才导出的.reg文件里的内容按上面的对应关系替换掉，然后把修改好的.reg文件导入到注册表中（双击即可），导入了改名后的注册表项之后，别忘记了删除原有的那两个项目。这里需要注意一点，Clsid中只能是十个数字和ABCDEF六个字母。
+
+下面是我修改后的代码（两个文件我合到一起了）：
+
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\CLSID\{13709620-C279-11CE-A49E-444553540001}]
+
+@=”Shell Automation Service”
+
+[HKEY_CLASSES_ROOT\CLSID\{13709620-C279-11CE-A49E-444553540001}\InProcServer32]
+
+@=”C:\\WINNT\\system32\\shell32.dll”
+
+“ThreadingModel”=”Apartment”
+
+[HKEY_CLASSES_ROOT\CLSID\{13709620-C279-11CE-A49E-444553540001}\ProgID]
+
+@=”Shell.Application_ajiang.1″
+
+[HKEY_CLASSES_ROOT\CLSID\{13709620-C279-11CE-A49E-444553540001}\TypeLib]
+
+@=”{50a7e9b0-70ef-11d1-b75a-00a0c90564fe}”
+
+[HKEY_CLASSES_ROOT\CLSID\{13709620-C279-11CE-A49E-444553540001}\Version]
+
+@=”1.1″
+
+[HKEY_CLASSES_ROOT\CLSID\{13709620-C279-11CE-A49E-444553540001}\VersionIndependentProgID]
+
+@=”Shell.Application_ajiang”
+
+[HKEY_CLASSES_ROOT\Shell.Application_ajiang]
+
+@=”Shell Automation Service”
+
+[HKEY_CLASSES_ROOT\Shell.Application_ajiang\CLSID]
+
+@=”{13709620-C279-11CE-A49E-444553540001}”
+
+[HKEY_CLASSES_ROOT\Shell.Application_ajiang\CurVer]
+
+@=”Shell.Application_ajiang.1″
+
+你可以把这个保存为一个.reg文件运行试一下，但是可别就此了事，因为万一黑客也看了我的这篇文章，他会试验我改出来的这个名字的。
+
+6、防止列出用户组和系统进程
+
+在阿江ASP探针1.9中结合7i24的方法利用getobject(”WINNT”)获得了系统用户和系统进程的列表，这个列表可能会被黑客利用，我们应当隐藏起来，方法是：
+
+【开始→程序→管理工具→服务】，找到Workstation，停止它，禁用它。
+
+防止Serv-U权限提升
+
+其实，注销了Shell组件之后，侵入者运行提升工具的可能性就很小了，但是prel等别的脚本语言也有shell能力，为防万一，还是设置一下为好。
+
+用Ultraedit打开ServUDaemon.exe查找Ascii：LocalAdministrator，和#l@$ak#.lk;0@P，修改成等长度的其它字符就可以了，ServUAdmin.exe也一样处理。
+
+另外注意设置Serv-U所在的文件夹的权限，不要让IIS匿名用户有读取的权限，否则人家下走你修改过的文件，照样可以分析出你的管理员名和密码。
+
+利用ASP漏洞攻击的常见方法及防范
+
+一般情况下，黑客总是瞄准论坛等程序，因为这些程序都有上传功能，他们很容易的就可以上传ASP木马，即使设置了权限，木马也可以控制当前站点的所有文件了。另外，有了木马就然后用木马上传提升工具来获得更高的权限，我们关闭shell组件的目的很大程度上就是为了防止攻击者运行提升工具。
+
+如果论坛管理员关闭了上传功能，则黑客会想办法获得超管密码，比如，如果你用动网论坛并且数据库忘记了改名，人家就可以直接下载你的数据库了，然后距离找到论坛管理员密码就不远了。
+
+作为管理员，我们首先要检查我们的ASP程序，做好必要的设置，防止网站被黑客进入。另外就是防止攻击者使用一个被黑的网站来控制整个服务器，因为如果你的服务器上还为朋友开了站点，你可能无法确定你的朋友会把他上传的论坛做好安全设置。这就用到了前面所说的那一大堆东西，做了那些权限设置和防提升之后，黑客就算是进入了一个站点，也无法破坏这个网站以外的东西。
+
+QUOTE:
+c:\
+administrators 全部
+system 全部
+iis_wpg 只有该文件夹
+列出文件夹/读数据
+读属性
+读扩展属性
+读取权限
+
+c:\inetpub\mailroot
+administrators 全部
+system 全部
+service 全部
+
+c:\inetpub\ftproot
+everyone 只读和运行
+
+c:\windows
+administrators 全部
+Creator owner
+不是继承的
+只有子文件夹及文件
+完全
+Power Users
+修改，读取和运行，列出文件夹目录，读取，写入
+system 全部
+IIS_WPG 读取和运行，列出文件夹目录，读取
+Users 读取和运行(此权限最后调整完成后可以取消)
+
+C:\WINDOWS\Microsoft.Net
+administrators 全部
+Creator owner
+不是继承的
+只有子文件夹及文件
+完全
+Power Users
+修改，读取和运行，列出文件夹目录，读取，写入
+system 全部
+Users 读取和运行，列出文件夹目录，读取
+
+C:\WINDOWS\Microsoft.Net
+administrators 全部
+Creator owner
+不是继承的
+只有子文件夹及文件
+完全
+Power Users
+修改，读取和运行，列出文件夹目录，读取，写入
+system 全部
+Users 读取和运行，列出文件夹目录，读取
+
+C:\WINDOWS\Microsoft.Net\temporary ASP.NET Files
+administrators 全部
+Creator owner
+不是继承的
+只有子文件夹及文件
+完全
+Power Users
+修改，读取和运行，列出文件夹目录，读取，写入
+system 全部
+Users 全部
+
+c:\Program Files
+Everyone 只有该文件夹
+不是继承的
+列出文件夹/读数据
+administrators 全部
+iis_wpg 只有该文件夹
+列出文件/读数据
+读属性
+读扩展属性
+读取权限
+
+c:\windows\temp
+Administrator 全部权限
+System 全部权限
+users 全部权限
+
+c:\Program Files\Common Files
+administrators 全部
+Creator owner
+不是继承的
+只有子文件夹及文件
+完全
+Power Users
+修改，读取和运行，列出文件夹目录，读取，写入
+system 全部
+TERMINAL SERVER Users(如果有这个用户)
+修改，读取和运行，列出文件夹目录，读取，写入
+Users 读取和运行，列出文件夹目录，读取
+
+如果安装了我们的软件：
+c:\Program Files\LIWEIWENSOFT
+Everyone 读取和运行，列出文件夹目录，读取
+administrators 全部
+system 全部
+IIS_WPG 读取和运行，列出文件夹目录，读取
+
+c:\Program Files\Dimac(如果有这个目录)
+Everyone 读取和运行，列出文件夹目录，读取
+administrators 全部
+
+c:\Program Files\ComPlus Applications (如果有)
+administrators 全部
+
+c:\Program Files\GflSDK (如果有)
+administrators 全部
+Creator owner
+不是继承的
+只有子文件夹及文件
+完全
+Power Users
+修改，读取和运行，列出文件夹目录，读取，写入
+system 全部
+TERMINAL SERVER Users
+修改，读取和运行，列出文件夹目录，读取，写入
+Users 读取和运行，列出文件夹目录，读取
+Everyone 读取和运行，列出文件夹目录，读取
+
+c:\Program Files\InstallShield Installation Information (如果有)
+c:\Program Files\Internet Explorer (如果有)
+c:\Program Files\NetMeeting (如果有)
+administrators 全部
+
+c:\Program Files\WindowsUpdate
+Creator owner
+不是继承的
+只有子文件夹及文件
+完全
+administrators 全部
+Power Users
+修改，读取和运行，列出文件夹目录，读取，写入
+system 全部
+
+c:\Program Files\Microsoft SQL(如果SQL安装在这个目录)
+administrators 全部
+Service 全部
+system 全部
+
+c:\Main (如果主控端网站放在这个目录)
+administrators 全部
+system 全部
+IUSR_*，默认的Internet来宾帐户(或专用的运行用户)
+读取和运行
+
+d:\ (如果用户网站内容放置在这个分区中)
+administrators 全部权限
+
+d:\FreeHost (如果此目录用来放置用户网站内容)
+administrators 全部权限
+SERVICE 读取与运行
+system 读取与运行(全部权限，如果安装了一流信息监控)
+
+F:\ (如果此分区用来放置SQL2000用户数据库)
+administrators 全部权限
+System 全部权限
+SQL2000的运行用
+只有该文件夹
+列出文件夹/读数据
+读属性
+读扩展属性
+读取权限
+
+F:\SQLDATA (如果此目录用来放置SQL2000用户数据库)
+administrators 全部权限
+System 全部权限
+SQL2000的运行用户全部权限
+
+从安全角度，我们建议WebEasyMail(WinWebMail)安装在独立的盘中，例如E:
+E:\(如果webeasymail安装在这个盘中)
+administrators 全部权限
+system 全部权限
+IUSR_*，默认的Internet来宾帐户(或专用的运行用户)
+只有该文件夹
+列出文件夹/读数据
+读属性
+读扩展属性
+读取权限
+E:\WebEasyMail (如果webeasymail安装在这个目录中)
+administrators 全部
+system 全部权限
+SERVICE 全部
+IUSR_*，默认的Internet来宾帐户 (或专用的运行用户)
+全部权限
+
+C:\php\uploadtemp
+C:\php\sessiondata
+everyone
+全部
+
+C:\php\
+administrators 全部
+system 全部权限
+SERVICE 全部
+Users 只读和运行
+
+c:\windows\php.ini
+administrators 全部
+system 全部权限
+SERVICE 全部
+Users 只读和运行
