@@ -1,3 +1,10 @@
+创建帐号：
 smbpasswd -a mssql
 
-smbclient -L \\192.168.0.1 -U mssql
+查看共享资源：
+smbclient -L //192.168.0.1 -U mssql
+
+挂载：
+mount -t smbfs -o codepage=cp936,username=用户名,password=密码 //IP地址或主机名/共享文件夹名 挂载点
+例如：
+mount -t smbfs -o username=guest,password= //192.168.0.14/ecmimages /home/xnjcw_branch/9z/wwwroot/ecmall/initsys/images
