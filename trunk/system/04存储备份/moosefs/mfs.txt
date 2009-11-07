@@ -77,6 +77,13 @@ apt-get install libfuse-dev
 The following NEW packages will be installed:
   libfuse-dev libfuse2 libselinux1-dev libsepol1-dev
 
+CentOS:
+yum install fuse dkms dkms-fuse fuse-devel pkgconfig
+yum install kernel-devel
+yum install --enablerepo=rpmforge fuse dkms dkms-fuse
+yum install pkgconfig fuse-devel
+dkms build -m fuse -v 2.7.4-1.nodist.rf
+
 groupadd mfs
 useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
 
@@ -98,7 +105,7 @@ PATH=$PATH:/usr/local/mfs/bin
 export PATH
 
 modprobe fuse
-mfsmount ¨Ch mfsmaster -w /home
+mfsmount -h mfsmaster -w /home
 
 mfsgetgoal /home
 mfsrgetgoal /home
