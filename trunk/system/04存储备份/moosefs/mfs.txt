@@ -78,11 +78,12 @@ The following NEW packages will be installed:
   libfuse-dev libfuse2 libselinux1-dev libsepol1-dev
 
 CentOS:
+http://linux.web.psi.ch/dist/scientific/44/kernel/
+http://linux.web.psi.ch/dist/scientific/4/kernel/
 yum install fuse dkms dkms-fuse fuse-devel pkgconfig
 yum install kernel-devel
-yum install --enablerepo=rpmforge fuse dkms dkms-fuse
+yum install fuse dkms dkms-fuse
 yum install pkgconfig fuse-devel
-dkms build -m fuse -v 2.7.4-1.nodist.rf
 
 groupadd mfs
 useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
