@@ -1,0 +1,44 @@
+wget http://www.arpoison.net/arpoison-0.6.tar.gz
+wget http://sourceforge.net/projects/libnet/files/libnet/0.10.11/libnet-0.10.11.tar.gz/download
+
+先安装 libnet
+tar -xvzf libnet.tar.gz
+cd libnet
+./configure
+make
+make install
+
+Debian:
+apt-get install libnet1 libnet1-dev
+
+安装 arpoison
+tar -xvzf arpoison-0.6.tar.gz
+cd arpoison
+gcc arpoison.c /usr/lib/libnet.a -o arpoison
+mv arpoison /usr/sbin/
+
+
+arpoison -i eth0 -d 125.64.92.1 -s 125.64.92.34 -t ff:ff:ff:ff:ff:ff -r 00:1e:0b:73:ae:e0
+-i 指定发送 arp 包的网卡接口
+-d 指定目标 ip
+-s 指定源 ip
+-t 指定目的 MAC 地址（ ff:ff:ff:ff:ff:ff 为 arp 广播地址）
+-r 指定源 MAC 地址
+
+
+vi /usr/local/bin/arpdefend.sh
+#!/bin/sh
+
+INTERFACE=eth0
+INTERFACE_MAC=00:1e:0b:73:ae:e0
+INTERFACE_IP=125.64.92.34
+GATEWAY_MAC=00:17:94:f6:d0:c3
+DEST_MAC=ff:ff:ff:ff:ff:ff
+GATEWAY_IP=125.64.92.1
+
+arp -s $GATEWAY_IP $GATEWAY_MAC
+
+arpoison -i $INTERFACE -d $GATEWAY_IP -s $INTERFACE_IP -t $DEST_MAC -r $INTERFACE_MAC 1>/dev/null &
+
+
+chmod +x /usr/local/bin/arpdefend.sh
