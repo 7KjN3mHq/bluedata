@@ -182,3 +182,18 @@ Restoring boot/initrd.img-2.6.26-2-686
 Restoring boot/initrd.img-2.6.26-2-686.bak
 Restoring boot/vmlinuz-2.6.26-2-686
 Restoring vmware-update-2.6.26-5.5.7.tgz
+
+
+ext3grep $IMAGE --restore-all --after=1258437000 --before=1258443180
+
+ext3grep $IMAGE --print --inode 1149493
+
+ext3grep $IMAGE --inode-to-block 588701 | grep resides
+Inode 588701 resides in block 1179653 at offset 0xe00.
+
+ext3grep $IMAGE --journal --block 1179653
+Journal descriptors referencing block 1179653:
+15893558 6399
+
+ext3grep $IMAGE --print --block 6399 | grep -A15 'Inode 588701'
+ext3grep $IMAGE --show-journal-inodes 588701
