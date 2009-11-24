@@ -126,3 +126,21 @@ exit ÍË³öÏµÍ³: quit/exit
 
 
 http://bbs.it-adv.net/viewthread.php?tid=23&extra=page%3D4
+
+
+
+wget http://www.it-adv.net/fetion/downng/fetion20091117-linux.tar.gz
+tar zxvf fetion20091117-linux.tar.gz
+mv fx /usr/local/fetion
+
+cd /usr/local/fetion
+LD_LIBRARY_PATH=. ./fetion --mobile=15982058812 --pwd=fanssoft\!\@\# --to=15982058812 --msg-utf8=²âÊÔ
+
+vi /usr/local/bin/fetion.sh
+#!/bin/sh
+cd /usr/local/fetion
+LD_LIBRARY_PATH=. ./fetion --mobile=15982058812 --pwd=fanssoft\!\@\# --to=$1 --msg-utf8="$2" > /dev/null 2>&1
+
+nagios
+command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ `/usr/bin/printf "%s" "$HOSTALIAS$($HOSTADDRESS$) is $HOSTSTATE$ on $LONGDATETIME$"`
+command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ `/usr/bin/printf "%s" "$HOSTALIAS$/$SERVICEDESC$ $SERVICEOUTPUT$"`
