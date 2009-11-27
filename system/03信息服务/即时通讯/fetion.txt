@@ -142,5 +142,5 @@ cd /usr/local/fetion
 LD_LIBRARY_PATH=. ./fetion --mobile=15982058812 --pwd=fanssoft\!\@\# --to=$1 --msg-utf8="$2" > /dev/null 2>&1
 
 nagios
-command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ `/usr/bin/printf "%s" "$HOSTALIAS$($HOSTADDRESS$) is $HOSTSTATE$ on $LONGDATETIME$"`
-command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ `/usr/bin/printf "%s" "$HOSTALIAS$/$SERVICEDESC$ $SERVICEOUTPUT$"`
+command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ "`/usr/bin/printf "%s" "$HOSTALIAS$($HOSTADDRESS$) is $HOSTSTATE$ on $LONGDATETIME$"`"
+command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ "`/usr/bin/printf "%s" "$HOSTALIAS$/$SERVICEDESC$ $SERVICEOUTPUT$"`"
