@@ -198,6 +198,13 @@ wget http://phpfetionapi.googlecode.com/files/class_fetion.zip
 unzip class_fetion.zip
 mv class_fetion.php /usr/local/bin/
 
+## update 2009.11.17 :
+ÐÞ¸Ä class_fetion.php µÚ 15 ÐÐ£º
+Original file:
+private static $sign_in_url = "https://nav.fetion.com.cn/ssiportal/SSIAppSignIn.aspx";
+Updated file:
+private static $sign_in_url = "https://uid.fetion.com.cn/ssiportal/SSIAppSignIn.aspx";
+
 vi /usr/local/bin/sendsms.php
 #!/usr/local/php/bin/php -q
 <?php
