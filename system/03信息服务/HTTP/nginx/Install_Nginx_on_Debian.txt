@@ -5,9 +5,9 @@
 apt-get install libpcre3-dev libpcrecpp0 libssl-dev zlib1g-dev
 
 下载最新稳定版安装：
-wget http://sysoev.ru/nginx/nginx-0.7.61.tar.gz
-tar zxvf nginx-0.7.61.tar.gz
-cd nginx-0.7.61
+wget http://nginx.org/download/nginx-0.7.65.tar.gz
+tar zxvf nginx-0.7.65.tar.gz
+cd nginx-0.7.65
 ./configure \
 --user=www-data \
 --group=www-data \
@@ -23,9 +23,9 @@ mkdir /var/log/nginx
 vi /usr/local/nginx/conf/nginx.conf
 user  www-data www-data;
 
-worker_processes  2;
+worker_processes  4;
 
-worker_cpu_affinity 01 10;
+worker_cpu_affinity  0001 0010 0100 1000;
 
 worker_rlimit_nofile  65536;
 
