@@ -2,11 +2,11 @@ apt-get install lftp
 
 同步远程目录到本地：
 cd software/linux/rhel
-lftp -u "user,passwd" -e "cd software/linux/rhel && mirror --ignore-time -v && quit" IP
+lftp -u 'user,passwd' -e "cd software/linux/rhel && mirror --ignore-time -v && quit" IP
 
 同步本地目录到远程：
 cd /backup/202.75.216.163/20090801/home/xnjcw_branch/upload/upload/1
-lftp -u "user,passwd" -e "cd upload/upload/1 && mirror -R 200907 --ignore-time -v && quit" IP
+lftp -u 'user,passwd' -e "cd upload/upload/1 && mirror -R 200907 --ignore-time -v && quit" IP
 
 
 lftp –help

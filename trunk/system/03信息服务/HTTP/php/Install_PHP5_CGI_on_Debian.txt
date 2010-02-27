@@ -58,6 +58,10 @@ tmpfs                   /tmpfs              tmpfs   size=32m,mode=1777        0 
 
 mount -a
 
+¶¨Ê±Çå³ý»º´æ£º
+vi /etc/crontab
+0 * * * * root find /tmpfs -type f -amin +60 -exec rm {} \;
+
 
 ## Configure
 vi /etc/php5/cgi/php.ini
