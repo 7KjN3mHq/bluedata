@@ -16,6 +16,7 @@ rpm -ivh hpasm-8.0.0-173.rhel4.x86_64.rpm
 
 Debian °²×°£º
 wget ftp://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p1929417577/v49951/DebianEtchSWBundle7.80-1.deb.x86.tar.gz
+wget ftp://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p786656003/v49933/DebianEtchSWBundle7.80-1.deb.x86_64.tar.gz
 
 apt-get install snmpd
 
