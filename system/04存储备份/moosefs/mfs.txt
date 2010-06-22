@@ -1,74 +1,111 @@
-mfsmaster:
-groupadd mfs
-useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
+软件下载：
+http://www.moosefs.org/download.html
 
-wget http://www.moosefs.com/files/mfs-1.5.12.tar.gz
-tar zxvf mfs-1.5.12.tar.gz
-cd mfs-1.5.12
+主控服务器 Master Server 安装：
+groupadd mfs
+useradd -g mfs -d /var/lib/mfs -s /sbin/nologin mfs
+
+tar zxvf mfs-1.6.15.tar.gz
+cd mfs-1.6.15
 ./configure \
+--prefix=/usr \
+--sysconfdir=/etc \
+--localstatedir=/var/lib \
+--with-default-user=mfs \
+--with-default-group=mfs \
 --disable-mfschunkserver \
---disable-mfsmount \
---prefix=/usr/local/mfs \
---with-default-user=mfs \
---with-default-group=mfs
+--disable-mfsmount
 
 make
 make install
 
-cd /usr/local/mfs/etc
+cd /etc
+cp mfsmaster.cfg.dist mfsmaster.cfg
+cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
+cp mfsexports.cfg.dist mfsexports.cfg
 
-ln -s mfsmaster.cfg mfsmaster.cfg.var
+设置访问权限：
+vi mfsexports.cfg
+192.168.0.0/24 / rw,alldirs,maproot=0
 
-/usr/local/mfs/sbin/mfsmaster start
+cd /var/lib/mfs
+cp metadata.mfs.empty metadata.mfs
 
-ps aux | grep mfsmaster | grep -v grep
+修改 /etc/hosts 文件以绑定主机名 mfsmaster 与 ip 地址：
+vi /etc/hosts
+192.168.0.201 mfsmaster
 
-/usr/local/mfs/sbin/mfsmaster -s
+启动： /usr/sbin/mfsmaster start
+
+监控服务： /usr/sbin/mfscgiserv
+http://192.168.0.201:9425
 
 
-chunkserver:
+备份服务器 Backup Server (metalogger) 安装：
 groupadd mfs
-useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
+useradd -g mfs -d /var/lib/mfs -s /sbin/nologin mfs
 
-wget http://www.moosefs.com/files/mfs-1.5.12.tar.gz
-tar zxvf mfs-1.5.12.tar.gz
-cd mfs-1.5.12
+tar zxvf mfs-1.6.15.tar.gz
+cd mfs-1.6.15
 ./configure \
---disable-mfsmaster \
---disable-mfsmount \
---prefix=/usr/local/mfs \
+--prefix=/usr \
+--sysconfdir=/etc \
+--localstatedir=/var/lib \
 --with-default-user=mfs \
---with-default-group=mfs
+--with-default-group=mfs \
+--disable-mfschunkserver \
+--disable-mfsmount
 
 make
 make install
 
-cd /usr/local/mfs/etc
-ln -s mfschunkserver.cfg mfschunkserver.cfg.var
+cd /etc
+cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
 
-lvcreate -L 10G -n mfs vg
-apt-get install reiserfsprogs
-mkfs.reiserfs /dev/vg/mfs
+修改 /etc/hosts 文件，增加下面的行：
+192.168.0.201 mfsmaster
 
-mkdir /mfs
-
-vi /etc/fstab
-/dev/mapper/vg-mfs /mfs            reiserfs    noatime,nodiratime        0       2
-mount -a
-
-chown -R mfs:mfs /mfs
-
-vi /usr/local/mfs/etc/mfshdd.cfg
-/mfs
-
-/usr/local/mfs/sbin/mfschunkserver start
-
-ps aux | grep mfschunkserver | grep -v grep
-
-/usr/local/mfs/sbin/mfschunkserver -s
+运行备份服务 mfsmetaloger:
+/usr/sbin/mfsmetalogger start
 
 
-mfsmount:
+存储块服务器 Chunk Servers 安装：
+groupadd mfs
+useradd -g mfs -d /var/lib/mfs -s /sbin/nologin mfs
+
+tar zxvf mfs-1.6.15.tar.gz
+cd mfs-1.6.15
+./configure \
+--prefix=/usr \
+--sysconfdir=/etc \
+--localstatedir=/var/lib \
+--with-default-user=mfs \
+--with-default-group=mfs \
+--disable-mfsmaster \
+--enable-mfsmount
+
+make
+make install
+
+cd /etc
+cp mfschunkserver.cfg.dist mfschunkserver.cfg
+cp mfshdd.cfg.dist mfshdd.cfg
+
+vi mfshdd.cfg
+/data/mfs
+
+chown -R mfs:mfs /data/mfs
+
+vi /etc/hosts
+192.168.0.201 mfsmaster
+
+启动 Chunk Server:
+/usr/sbin/mfschunkserver start
+
+
+客户端安装：
+依赖 fuse:
+Debian:
 apt-get install pkg-config
 The following NEW packages will be installed:
   libglib2.0-0 libglib2.0-data libpcre3 pkg-config
@@ -85,49 +122,46 @@ yum install kernel-devel
 yum install fuse dkms dkms-fuse
 yum install pkgconfig fuse-devel
 
-groupadd mfs
-useradd -g mfs -d /usr/local/mfs -s /usr/sbin/nologin mfs
 
-wget http://www.moosefs.com/files/mfs-1.5.12.tar.gz
-tar zxvf mfs-1.5.12.tar.gz
-cd mfs-1.5.12
+groupadd mfs
+useradd -g mfs -d /var/lib/mfs -s /sbin/nologin mfs
+
+tar zxvf mfs-1.6.15.tar.gz
+cd mfs-1.6.15
 ./configure \
---disable-mfsmaster \
---enable-mfsmount \
---prefix=/usr/local/mfs \
+--prefix=/usr \
+--sysconfdir=/etc \
+--localstatedir=/var/lib \
 --with-default-user=mfs \
---with-default-group=mfs
+--with-default-group=mfs \
+--disable-mfsmaster \
+--disable-mfschunkserver
 
 make
 make install
 
-vi .bashrc
-PATH=$PATH:/usr/local/mfs/bin
-export PATH
+vi /etc/hosts
+192.168.0.201 mfsmaster
 
+挂载：
+mkdir -p /mnt/mfs
 modprobe fuse
-mfsmount -h mfsmaster -w /home
-
-mfsgetgoal /home
-mfsrgetgoal /home
-mfssetgoal 3 /home
-mfsrsetgoal 3 /home
-
-mfsgettrashtime /home
-mfsrgettrashtime /home
-mfssettrashtime 600 /home
-mfsrsettrashtime 600 /home
+/usr/bin/mfsmount /mnt/mfs -H mfsmaster
 
 
-Using MFS:
-mkdir /mfsmeta
-mfsmount -h mfsmaster -m -w /mfsmeta
+MooseFS 基础用法：
+mfsgetgoal /mnt/mfs
+mfssetgoal 2 /mnt/mfs
+mfsgetgoal -r /mnt/mfs
+mfssetgoal -r 2 /mnt/mfs
 
+mfsgettrashtime /mnt/mfs
+mfssettrashtime 600 /mnt/mfs
+mfsgettrashtime -r /mnt/mfs
+mfssettrashtime -r 600 /mnt/mfs
 
-/usr/local/mfs/sbin/mfsmetarestore -a
+mfscheckfile /mnt/mfs/mfs-1.6.15.tar.gz
 
-
-lvextend -L +5G /dev/vg/mfs
-resize_reiserfs /dev/vg/mfs
-/usr/local/mfs/sbin/mfschunkserver -s
-/usr/local/mfs/sbin/mfschunkserver start
+mfsmount -h mfsmaster -m -w /mnt/mfsmeta
+mfsmetarestore -a
+mfschunkserver -s
