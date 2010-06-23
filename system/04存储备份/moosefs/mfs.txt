@@ -162,6 +162,6 @@ mfssettrashtime -r 600 /mnt/mfs
 
 mfscheckfile /mnt/mfs/mfs-1.6.15.tar.gz
 
-mfsmount -h mfsmaster -m -w /mnt/mfsmeta
+mfsmount -m -w /mnt/mfsmeta -H mfsmaster
 mfsmetarestore -a
 mfschunkserver -s
