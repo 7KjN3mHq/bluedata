@@ -3,10 +3,10 @@
 
 软件下载：
 PHP5(http://www.php.net/downloads.php):
-wget http://cn.php.net/get/php-5.2.13.tar.bz2/from/this/mirror
+wget http://cn.php.net/get/php-5.2.14.tar.bz2/from/this/mirror
 
 php-fpm(http://php-fpm.org/downloads/):
-wget http://php-fpm.org/downloads/php-5.2.13-fpm-0.5.14.diff.gz
+wget http://php-fpm.org/downloads/php-5.2.14-fpm-0.5.14.diff.gz
 
 
 安装依赖的包：
@@ -18,12 +18,12 @@ apt-get install libmysqlclient15-dev libgd2-xpm-dev libxml2-dev
 
 
 应用 php-fpm 补丁：
-tar jxvf php-5.2.13.tar.bz2
-gzip -cd php-5.2.13-fpm-0.5.14.diff.gz | patch -d php-5.2.13 -p1
+tar jxvf php-5.2.14.tar.bz2
+gzip -cd php-5.2.14-fpm-0.5.14.diff.gz | patch -d php-5.2.14 -p1
 
 
 安装 PHP5:
-cd php-5.2.13
+cd php-5.2.14
 ./configure \
 --prefix=/usr/local/php5-fcgi \
 --enable-discard-path \
@@ -38,8 +38,7 @@ cd php-5.2.13
 --with-png-dir \
 --with-freetype-dir \
 --with-zlib \
---with-mysql \
---with-mysqli
+--with-mysql=/usr/local/mysql
 
 make
 make install
@@ -51,8 +50,9 @@ cp -f php.ini-recommended /usr/local/php5-fcgi/etc/php.ini
 安装 eAccelerator:
 PHP scripts 的缓存，对于提高 PHP 程序执行速度很有帮助。
 下载： http://eaccelerator.net/
-tar jxvf eaccelerator-0.9.5.3.tar.bz2
-cd eaccelerator-0.9.5.3
+wget http://bart.eaccelerator.net/source/0.9.6.1/eaccelerator-0.9.6.1.tar.bz2
+tar jxvf eaccelerator-0.9.6.1.tar.bz2
+cd eaccelerator-0.9.6.1
 /usr/local/php5-fcgi/bin/phpize
 ./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php5-fcgi/bin/php-config
 make
@@ -62,14 +62,15 @@ make install
 Zend 的优化器，免费使用，如果加密了 PHP 程序文件，这是必须的。
 如果没有使用 Zend 优化器，PHP 进程的内存会难以释放。
 下载： http://www.zend.com/en/products/guard/downloads
-tar zxvf ZendOptimizer-3.3.3-linux-glibc23-i386.tar.gz
+tar zxvf ZendOptimizer-3.3.9-linux-glibc23-x86_64.tar.gz
 cp ZendOptimizer-3.3.9-linux-glibc23-x86_64/data/5_2_x_comp/ZendOptimizer.so /usr/local/php5-fcgi/lib/php/extensions/no-debug-non-zts-20060613/
 
 安装 memcache:
 用于操作 Memcached ，应用非常广泛。
 下载： http://pecl.php.net/package/memcache
-tar zxvf memcache-2.2.5.tgz
-cd memcache-2.2.5
+wget http://pecl.php.net/get/memcache-2.2.6.tgz
+tar zxvf memcache-2.2.6.tgz
+cd memcache-2.2.6
 /usr/local/php5-fcgi/bin/phpize
 ./configure --with-php-config=/usr/local/php5-fcgi/bin/php-config
 make

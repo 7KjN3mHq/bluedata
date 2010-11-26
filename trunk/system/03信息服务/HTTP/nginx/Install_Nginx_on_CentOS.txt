@@ -1,0 +1,229 @@
+在 CentOS 上安装 Nginx
+
+
+安装依赖的包：
+yum -y install pcre-devel zlib-devel
+
+下载最新稳定版安装：
+http://nginx.org/en/download.html
+wget http://nginx.org/download/nginx-0.8.53.tar.gz
+tar zxvf nginx-0.8.53.tar.gz
+cd nginx-0.8.53
+./configure \
+--user=nobody \
+--group=nobody \
+--prefix=/usr/local/nginx \
+--with-http_stub_status_module
+
+make
+make install
+
+
+Nginx 的设置：
+mkdir /var/log/nginx
+vi /usr/local/nginx/conf/nginx.conf
+user  nobody nobody;
+
+worker_processes  4;
+
+worker_cpu_affinity  0001 0010 0100 1000;
+
+worker_rlimit_nofile  65536;
+
+error_log  /var/log/nginx/error.log;
+
+pid  /var/run/nginx.pid;
+
+events {
+    use  epoll;
+    worker_connections  65536;
+}
+
+http {
+    include  mime.types;
+    default_type  text/html;
+
+    access_log  /var/log/nginx/access.log combined;
+
+    sendfile        on;
+    tcp_nopush      on;
+    tcp_nodelay     on;
+
+    keepalive_timeout  65;
+
+    gzip  on;
+    gzip_min_length  1100;
+    gzip_buffers  4 8k;
+    gzip_types  text/css text/xml application/x-javascript text/plain;
+    gzip_comp_level  9;
+    gzip_proxied  any;
+    gzip_vary  on;
+    gzip_http_version  1.0;
+
+    output_buffers  4 32k;
+    postpone_output  1460;
+
+    client_header_buffer_size  128k;
+    large_client_header_buffers  4 256k;
+
+    fastcgi_buffers  8 128k;
+
+    client_header_timeout  1m;
+    client_body_timeout    1m;
+    client_max_body_size   8m;
+    send_timeout           1m;
+
+    server {
+        listen       80;
+        server_name  _;
+        root  /home/www;
+        location ~ .*\.php?$ {
+            fastcgi_pass  127.0.0.1:9000;
+            include  fastcgi_params;
+        }
+        location ~* ^.+.(jpg|gif|png)$ {
+            expires  30d;
+        }
+        location /server-status {
+            stub_status  on;
+        }
+    }
+}
+
+
+创建启动脚本：
+vi /etc/init.d/nginx
+#!/bin/sh
+#
+# nginx - this script starts and stops the nginx daemin
+#
+# chkconfig:   - 85 15
+# description:  Nginx is an HTTP(S) server, HTTP(S) reverse \
+#               proxy and IMAP/POP3 proxy server
+# processname: nginx
+# config:      /usr/local/nginx/conf/nginx.conf
+# config:      /etc/sysconfig/nginx
+# pidfile:     /var/run/nginx.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Check that networking is up.
+[ "$NETWORKING" = "no" ] && exit 0
+
+nginx="/usr/local/nginx/sbin/nginx"
+prog=$(basename $nginx)
+
+NGINX_CONF_FILE="/usr/local/nginx/conf/nginx.conf"
+
+[ -f /etc/sysconfig/nginx ] && . /etc/sysconfig/nginx
+
+lockfile=/var/lock/subsys/nginx
+
+start() {
+    [ -x $nginx ] || exit 5
+    [ -f $NGINX_CONF_FILE ] || exit 6
+    echo -n $"Starting $prog: "
+    daemon $nginx -c $NGINX_CONF_FILE
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog -QUIT
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    configtest || return $?
+    stop
+    start
+}
+
+reload() {
+    configtest || return $?
+    echo -n $"Reloading $prog: "
+    killproc $nginx -HUP
+    RETVAL=$?
+    echo
+}
+
+force_reload() {
+    restart
+}
+
+configtest() {
+  $nginx -t -c $NGINX_CONF_FILE
+}
+
+rh_status() {
+    status $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart|configtest)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+            ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload|configtest}"
+        exit 2
+esac
+
+
+chmod +x /etc/init.d/nginx
+
+
+系统的相关设置：
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
+
+echo -ne "
+www-data soft nofile 65536
+www-data hard nofile 65536
+" >> /etc/security/limits.conf
+
+
+启动：
+/etc/init.d/nginx start
+
+最后，设置 nginx 开机自启动：
+chkconfig nginx on
+
+chkconfig --list nginx
+nginx           0:off   1:off   2:on    3:on    4:on    5:on    6:off
