@@ -273,3 +273,32 @@ define contact {
         service_notification_commands  notify-service-by-sms
         host_notification_commands     notify-host-by-sms
         }
+
+
+
+
+Update(2010.11.27):
+Fetion:
+http://bbs.it-adv.net/viewthread.php?tid=1081
+tar zxvf fetion20101113-linux.tar.gz
+mv fetion20101113-linux /usr/local/fetion
+cp fetion /usr/local/fetion/
+chmod +x /usr/local/fetion/fetion
+
+vi /usr/local/bin/sendsms.sh
+#!/bin/sh
+cd /usr/local/fetion
+LD_LIBRARY_PATH=. ./fetion --mobile=159xxxxxxxx --pwd=xxxxxxxx --to=$1 --msg-gb="$2" > /dev/null 2>&1
+
+vi /usr/local/nagios/etc/objects/commands.cfg
+# notify-host-by-sms
+define command {
+        command_name    notify-host-by-sms
+        command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ "`/usr/bin/printf "%s" "$HOSTALIAS$($HOSTADDRESS$) is $HOSTSTATE$ on $LONGDATETIME$"`"
+        }
+
+# notify-service-by-sms
+define command {
+        command_name    notify-service-by-sms
+        command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ "`/usr/bin/printf "%s" "$HOSTALIAS$/$SERVICEDESC$ $SERVICEOUTPUT$"`"
+        }
