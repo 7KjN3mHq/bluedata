@@ -91,6 +91,10 @@ http {
 }
 
 
+并在 /usr/local/nginx/conf/fastcgi_params 中增加如下一行：
+fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+
+
 创建启动脚本：
 vi /etc/init.d/nginx
 #!/bin/sh
