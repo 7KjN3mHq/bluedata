@@ -10,7 +10,7 @@ Block count:              14355456
 Block size:               4096
 
 umount /home
-resize2fs -f /dev/vg/home 53G
+resize2fs -p /dev/vg/home 53G
 The filesystem on /dev/vg/home is now 13893632 blocks long.
 
 14355456 - 13893632 = 461824 blocks
