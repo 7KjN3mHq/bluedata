@@ -31,6 +31,10 @@ data_connection_timeout=3600
 把 ftp 用户限制在自己的主目录：
 chroot_local_user=YES
 
+指定被动模式使用的端口：
+pasv_enable=YES
+pasv_min_port=30000
+pasv_max_port=30099
 
 未指定用户 shell 会导致 "530 Login incorrect" 错误：
 vi /etc/passwd

@@ -1,0 +1,85 @@
+vi /etc/apt/sources.list
+deb-src http://mirrors.163.com/debian lenny main non-free contrib
+
+apt-get source php5-cgi
+
+netpayclinetforredhatX64.64.tar php_linux&freeBSD.rar
+
+cp php/netpayclient.h /usr/include/chinapay.h
+cp -a lib/gcc/libnpc.so /usr/lib/libchinapay.so
+
+cp php/chinapay.def php5-5.2.6.dfsg.1/ext/
+cd php5-5.2.6.dfsg.1/ext/
+./ext_skel --extname=chinapay --proto=chinapay.def
+
+cd ~/php
+cp chinapay.c php_chinapay.h ~/php5-5.2.6.dfsg.1/ext/chinapay/
+cd ~/php5-5.2.6.dfsg.1/ext/chinapay/
+vi config.m4
+PHP_ARG_WITH(chinapay, for chinapay support,
+[  --with-chinapay             Include chinapay support])
+
+if test "$PHP_CHINAPAY" != "no"; then
+  SEARCH_PATH="/usr/local /usr"
+  SEARCH_FOR="/include/chinapay.h"
+  if test -r $PHP_CHINAPAY/$SEARCH_FOR; then
+     CHINAPAY_DIR=$PHP_CHINAPAY
+  else
+     AC_MSG_CHECKING([for chinapay files in default path])
+     for i in $SEARCH_PATH ; do
+       if test -r $i/$SEARCH_FOR; then
+         CHINAPAY_DIR=$i
+         AC_MSG_RESULT(found in $i)
+       fi
+     done
+   fi
+
+  if test -z "$CHINAPAY_DIR"; then
+     AC_MSG_RESULT([not found])
+     AC_MSG_ERROR([Please reinstall the chinapay distribution])
+  fi
+
+  PHP_ADD_INCLUDE($CHINAPAY_DIR/include)
+
+  LIBNAME=chinapay
+  LIBSYMBOL=signOrder
+
+  PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
+  [
+     PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $CHINAPAY_DIR/lib, CHINAPAY_SHARED_LIBADD)
+     AC_DEFINE(HAVE_CHINAPAYLIB,1,[ ])
+  ],[
+     AC_MSG_ERROR([wrong chinapay lib version or lib not found])
+  ],[
+     -L$CHINAPAY_DIR/lib -lm -ldl
+   ])
+
+  PHP_SUBST(CHINAPAY_SHARED_LIBADD)
+
+  PHP_NEW_EXTENSION(chinapay, chinapay.c, $ext_shared)
+fi
+
+
+vi chinapay.c
+change
+#include "netpayclient.h"
+to
+#include "chinapay.h"
+
+
+phpize
+./configure --with-php-config=/usr/bin/php-config --with-chinapay
+make
+make install
+
+
+ldd /usr/lib/php5/20060613/chinapay.so
+        linux-vdso.so.1 =>  (0x00007fff94049000)
+        libchinapay.so => /usr/lib/libchinapay.so (0x00007fff93c29000)
+        libc.so.6 => /lib/libc.so.6 (0x00007fff938d6000)
+        libm.so.6 => /lib/libm.so.6 (0x00007fff93652000)
+        /lib64/ld-linux-x86-64.so.2 (0x00007fff9404a000)
+
+
+cd ~/php
+php5-cgi chinapay.php
