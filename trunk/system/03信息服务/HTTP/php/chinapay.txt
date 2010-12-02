@@ -1,21 +1,29 @@
-vi /etc/apt/sources.list
-deb-src http://mirrors.163.com/debian lenny main non-free contrib
+Debian 下添加 PHP 的 chinapay 扩展模块
 
+获取 PHP 源码
+cat "deb-src http://mirrors.163.com/debian lenny main non-free contrib" >> /etc/apt/sources.list
+apt-get update
 apt-get source php5-cgi
 
-netpayclinetforredhatX64.64.tar php_linux&freeBSD.rar
+获取 chinapay 源代码及库
+php_linux&freeBSD.rar
+64位系统需要 netpayclinetforredhatX64.64.tar
 
+把头文件及库文件放到相应目录下
 cp php/netpayclient.h /usr/include/chinapay.h
 cp -a lib/gcc/libnpc.so /usr/lib/libchinapay.so
 
+生成 chinapay 扩展的目录
 cp php/chinapay.def php5-5.2.6.dfsg.1/ext/
 cd php5-5.2.6.dfsg.1/ext/
 ./ext_skel --extname=chinapay --proto=chinapay.def
 
+复制所需文件到 PHP chinapay 扩展的目录
 cd ~/php
 cp chinapay.c php_chinapay.h ~/php5-5.2.6.dfsg.1/ext/chinapay/
 cd ~/php5-5.2.6.dfsg.1/ext/chinapay/
-vi config.m4
+
+修改 config.m4 如下：
 PHP_ARG_WITH(chinapay, for chinapay support,
 [  --with-chinapay             Include chinapay support])
 
@@ -59,20 +67,15 @@ if test "$PHP_CHINAPAY" != "no"; then
   PHP_NEW_EXTENSION(chinapay, chinapay.c, $ext_shared)
 fi
 
+修改 chinapay.c 文件中的 #include "netpayclient.h" 为 #include "chinapay.h" 。
 
-vi chinapay.c
-change
-#include "netpayclient.h"
-to
-#include "chinapay.h"
-
-
+安装 chinapay 扩展模块
 phpize
 ./configure --with-php-config=/usr/bin/php-config --with-chinapay
 make
 make install
 
-
+查看模块的依赖库里是否有 libchinapay.so
 ldd /usr/lib/php5/20060613/chinapay.so
         linux-vdso.so.1 =>  (0x00007fff94049000)
         libchinapay.so => /usr/lib/libchinapay.so (0x00007fff93c29000)
@@ -80,6 +83,11 @@ ldd /usr/lib/php5/20060613/chinapay.so
         libm.so.6 => /lib/libm.so.6 (0x00007fff93652000)
         /lib64/ld-linux-x86-64.so.2 (0x00007fff9404a000)
 
+在 php.ini 添加
+extension=chinapay.so
 
+重启 php-cgi 进程或重启 Apache
+
+测试
 cd ~/php
-php5-cgi chinapay.php
+php5-cgi -f chinapay.php
