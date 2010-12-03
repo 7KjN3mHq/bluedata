@@ -1,3 +1,6 @@
+grep 多条件检索
+grep -E "one|two|three"
+
 IP 地址排序
 sort -n -t. +0 -1 +1 -2 +2 -3 +3 -4 ip.txt
 

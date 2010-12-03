@@ -3,6 +3,8 @@ cat /proc/net/ip_conntrack | cut -d ' ' -f 10 | cut -d '=' -f 2 | sort | uniq -c
 找出连接最多的 IP 地址
 netstat -na | grep ESTABLISHED | awk '{print $5}' | awk -F: '{print $1}' | sort | uniq -c | sort -r +0n
 netstat -na | grep SYN | awk '{print $5}' | awk -F: '{print $1}' | sort | uniq -c | sort -r +0n
+获取全部链接的状态类型以及每个状态的数量
+ss | awk '{print $1}' | sort | uniq -c | sort -r +0n
 
 netstat:
 netstat -s -t | grep connections\ established

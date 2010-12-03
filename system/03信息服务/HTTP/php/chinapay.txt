@@ -1,7 +1,7 @@
 Debian 下添加 PHP 的 chinapay 扩展模块
 
 获取 PHP 源码
-cat "deb-src http://mirrors.163.com/debian lenny main non-free contrib" >> /etc/apt/sources.list
+echo "deb-src http://mirrors.163.com/debian lenny main non-free contrib" >> /etc/apt/sources.list
 apt-get update
 apt-get source php5-cgi
 
