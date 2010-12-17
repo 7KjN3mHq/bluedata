@@ -1,3 +1,11 @@
+cut -d '分隔字符' -f fields
+参数：
+-d: 后面接分隔字符，与-f一起使用
+-f: 依据-d的分隔字符将一段信息分割成为数据,用-f取取第几段的意思
+-c: 以字符(characters)的单位取出固定字符的区间
+例如：
+cat /etc/passwd | cut -d ':' -f 1
+
 grep 多条件检索
 grep -E "one|two|three"
 

@@ -30,6 +30,10 @@ cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 chmod -w /etc/localtime
 
 -----
+vi /etc/modprobe.d/blacklist
+blacklist ipv6
+
+-----
 vi /etc/network/interfaces
 auto lo
 iface lo inet loopback
