@@ -1,0 +1,15 @@
+表结构：
++------------+-------------+------+-----+---------+----------------+
+| Field      | Type        | Null | Key | Default | Extra          |
++------------+-------------+------+-----+---------+----------------+
+| id         | int(11)     | NO   | PRI | NULL    | auto_increment |
+| name       | varchar(40) | YES  |     | NULL    |                |
+| parent_id  | int(11)     | NO   | MUL | 0       |                |
+| shop_id    | int(11)     | NO   | MUL | 0       |                |
+| class_list | varchar(40) | NO   | MUL |         |                |
+| orderId    | tinyint(4)  | NO   | MUL | 0       |                |
+| weblabel   | int(11)     | NO   | MUL | 1       |                |
++------------+-------------+------+-----+---------+----------------+
+
+删除 MYI 文件后使用 use_frm 参数修复：
+5.0.19 5.0.24 可以恢复； 5.0.37 5.0.51 把 MYD 文件清空了。
