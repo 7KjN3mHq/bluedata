@@ -8,7 +8,7 @@ ssh SERVER
 
 mkdir .ssh
 
-chmod -R 0600 ~/.ssh
+chmod -R 0700 ~/.ssh
 
 exit
 
