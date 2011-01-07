@@ -1,0 +1,14 @@
+<VirtualHost *:80>
+ServerAdmin          <%= admin %>
+DocumentRoot         <%= docroot %>
+ServerName           <%= "#{name}.#{domain}" %>
+<% aliases.each do |al| -%>
+ServerAlias          <%= al %>
+<% end -%>
+<Directory "<%= docroot %>">
+    Options None
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+</VirtualHost> 

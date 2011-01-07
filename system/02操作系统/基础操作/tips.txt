@@ -1,3 +1,7 @@
+查看系统软硬件信息
+wget http://aspersa.googlecode.com/svn/trunk/summary
+bash summary
+
 Debian 计划任务
 at 15:00 2009-08-26
 warning: commands will be executed using /bin/sh

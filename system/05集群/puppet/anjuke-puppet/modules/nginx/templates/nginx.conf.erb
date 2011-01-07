@@ -1,0 +1,341 @@
+user www-data;
+worker_processes  <%= processorcount %>;
+
+error_log  /data1/logs/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    server_names_hash_bucket_size 64;
+    include         /home/www/conf/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  gzip  '$request_time - $remote_addr - $remote_user [$time_local] '
+                      '"$request" $status $bytes_sent '
+                      '"$http_referer" "$http_user_agent" "$gzip_ratio" "$http_x_forwarded_for"';
+      access_log /data1/logs/nginx/access.log gzip;
+    # access_log off;
+
+    sendfile        on;
+    tcp_nopush     on;
+
+    keepalive_timeout  10;
+    tcp_nodelay        on;
+
+    server_tokens off;
+
+    gzip on;
+    gzip_types  text/css application/x-javascript;
+    #gzip_proxied expired no-cache no-store private;
+    gzip_proxied any;
+    gzip_http_version 1.0;
+    gzip_vary on;
+
+    client_max_body_size 2m;
+    #client_body_temp_path /home/www/tmp;
+    client_body_temp_path /dev/shm;
+
+    proxy_buffering  on;
+    proxy_buffers 400 256k;
+    #proxy_temp_path /home/www/tmp;
+    proxy_temp_path /dev/shm;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    charset utf-8;
+    #root /home/www/pags;
+
+
+    fastcgi_connect_timeout 30;
+    fastcgi_send_timeout 30;
+    fastcgi_read_timeout 30;
+    fastcgi_buffer_size 2048k;
+    fastcgi_buffers 200 256k;
+
+    large_client_header_buffers 4 8k;
+
+
+upstream v2-backend {
+    server 127.0.0.1:20080;
+}
+upstream php-cgi {
+    server 127.0.0.1:9000;
+}
+
+
+#
+#monitor
+#
+
+server {
+    listen 80;
+    server_name _;
+
+    location /nginx_status {
+        stub_status on;
+        access_log off;
+    }
+}
+
+server {
+    listen 20080;
+    server_name www.haozu.com .haozu.com;
+    proxy_buffering off;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    location ~ haozu.xml$ {
+        charset gbk;
+        root /home/www/tmp/;
+        }
+    location ~ ^/navi {
+       root /data1/seo/;
+       }
+    location ~ ^/kw {
+       root /data1/seo/;
+      }
+    location ~ .xml$ {
+        root /home/www/tmp/;
+        }
+
+    
+    location  / {
+        rewrite . /index.php last;
+    }
+    location  = / {
+        rewrite . /index.php last;
+    }
+    location /index.php {
+        internal;
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/v2/haozu/index.php;
+        include /home/www/conf/fastcgi_params;
+        expires 0;
+    }
+    location = /robots.txt {
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/tmp/robots.php;
+        include /home/www/conf/fastcgi_params;
+    }
+    location = /get_kw.php {
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/tmp/Seo.php;
+        include /home/www/conf/fastcgi_params;
+    }
+    location = /version_switch.php {
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/tmp/version_switch.php;
+        include /home/www/conf/fastcgi_params;
+    }
+
+}
+
+
+###
+### api.haozu.com
+###
+
+server {
+    listen 20080;
+    server_name api.haozu.com;
+
+    location  / {
+        rewrite . /index.php last;
+    }
+    location  = / {
+        rewrite . /index.php last;
+    }
+    location /index.php {
+        internal;
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/v2/api/index.php;
+        include /home/www/conf/fastcgi_params;
+        expires 0;
+    }
+}
+
+###
+### m.haozu.com
+###
+
+server {
+    listen 20080;
+    server_name .m.haozu.com;
+
+    location  / {
+        rewrite . /index.php last;
+    }
+    location  = / {
+        rewrite . /index.php last;
+    }
+    location /index.php {
+        internal;
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/v2/haozu-mobile/index.php;
+        include /home/www/conf/fastcgi_params;
+        expires 0;
+    }
+}
+
+
+
+server {
+    listen 20080;
+    server_name include.haozu.com;
+    root /home/www/tmp/cache;
+    gzip off;
+    location /haozu {
+        rewrite . /haozu/index.php last;
+    }
+    location /haozu/index.php {
+        internal;
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/v2/haozu/res.php;
+        fastcgi_temp_path /home/www/tmp/cache;
+        include /home/www/conf/fastcgi_params;
+       # expires max;
+    }
+
+    location /admin {
+        rewrite . /admin/index.php last;
+    }
+    location /admin/index.php {
+        internal;
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/v2/admin/res.php;
+        fastcgi_temp_path /home/www/tmp/cache;
+        include /home/www/conf/fastcgi_params;
+        expires max;
+    }
+
+}
+
+
+server {
+    listen 20080;
+    server_name inc.haozu.ajkcdn.com;
+    root /home/www/tmp/cache;
+    gzip off;
+    location /haozu {
+        rewrite . /haozu/index.php last;
+    }
+    location /haozu/index.php {
+        internal;
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/v2/haozu/res.php;
+        fastcgi_temp_path /home/www/tmp/cache;
+        include /home/www/conf/fastcgi_params;
+        expires max;
+    }
+
+    location /admin {
+        rewrite . /admin/index.php last;
+    }
+    location /admin/index.php {
+        internal;
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/v2/admin/res.php;
+        fastcgi_temp_path /home/www/tmp/cache;
+        include /home/www/conf/fastcgi_params;
+        expires max;
+    }
+
+}
+
+
+
+
+
+#
+#pages
+#
+server {
+    listen 8001;
+    server_name pages.haozu.com;
+    root /home/www/pages/;
+    expires max;
+}
+
+
+server {
+    listen 8001;
+    server_name pages.haozu.ajkcdn.com;
+    root /home/www/pages/;
+    expires max;
+}
+
+
+#
+# admin
+#
+server {
+    listen 20080;
+    server_name admin.haozu.com;
+    proxy_buffering off;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    location  / {
+        rewrite . /index.php last;
+    }
+    location  = / {
+        rewrite . /index.php last;
+    }
+    location /index.php {
+        internal;
+        fastcgi_pass php-cgi;
+        fastcgi_param SCRIPT_FILENAME /home/www/v2/admin/index.php;
+        include /home/www/conf/fastcgi_params;
+        expires 0;
+    }
+}
+
+
+#
+# upload1
+#
+server {
+        listen       20080;
+        server_name  upload1.haozu.com;
+        location / {
+            rewrite . /index.php last;
+        }
+        location = /index.php {
+            internal;
+            fastcgi_pass php-cgi;
+            fastcgi_param SCRIPT_FILENAME /home/www/v2/upload/index.php;
+            fastcgi_temp_path /home/www/tmp/cache;
+            include /home/www/conf/fastcgi_params;
+            expires epoch;
+            add_header Cache-Control private;
+            add_header Cache-Control must-revalidate;
+            add_header Cache-Control no-store;
+            add_header Pragma no-cache;
+            access_log /data1/logs/nginx/access.log;
+        }
+}
+
+server {
+        listen       20080;
+        server_name  images1.haozu.com;
+        root /data1/upload/1/;
+        expires max;
+        location / {
+            if (!-f $request_filename) {
+                rewrite . /index.php last;
+            }
+        }
+        location = /index.php {
+            internal;
+            fastcgi_pass php-cgi;
+            fastcgi_param SCRIPT_FILENAME /home/www/v2/upload/index.php;
+            fastcgi_temp_path /home/www/tmp/cache;
+            include /home/www/conf/fastcgi_params;
+            expires max;
+            access_log /data1/logs/nginx/access.log;
+        }
+    }
+
+}

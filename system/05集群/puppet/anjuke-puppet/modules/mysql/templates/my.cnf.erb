@@ -1,0 +1,28 @@
+[client]
+port            = 3306
+socket=/var/lib/mysql/mysql.sock
+[mysql]
+prompt="(\\u@\h \R:\m:\\s)[\\d]> "
+pager="less -i -n -S"
+tee="/tmp/query.log"
+no-auto-rehash 
+
+
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+
+table_cache = 128
+skip-name-resolve
+
+innodb_additional_mem_pool = 16M
+innodb_buffer_pool_size = 512M
+#innodb_log_file_size = 128M
+#innodb_log_files_in_group = 3
+innodb_log_buffer_size = 3M
+#innodb_flush_logs_at_trx_commit = 1 
+innodb_file_per_table = 1
+innodb_file_io_threads = 4
+innodb_open_files = 350
+innodb_max_dirty_pages_pct = 50

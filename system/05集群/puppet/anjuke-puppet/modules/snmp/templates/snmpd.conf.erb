@@ -1,0 +1,20 @@
+com2sec noconfiguser 127.0.0.1       public
+com2sec noconfiguser 192.168.1.0/24      public
+com2sec noconfiguser 10.0.0.0/8     public       
+group noconfigGROUP v1        noconfiguser
+group noconfigGROUP v2c       noconfiguser
+group noconfigGROUP usm       noconfiguser
+view all    included  .1                               80
+view system included  .iso.org.dod.internet.mgmt.mib-2.system
+access MyROSystem ""     any       noauth    exact  all all none
+access MyROGroup ""      any       noauth    exact  all    all none
+access MyRWGroup ""      any       noauth    exact  all    all    none
+access noconfigGROUP ""     any       noauth    exact  all    all  none
+disk / 100000
+disk /home 100000
+disk /data 10000000
+disk /var 100000
+agentaddress <%= ipaddress_eth0 %>
+<% if @hostname =~ /dns/i %>
+pass .1.3.6.1.4.1.2021.55 /usr/bin/perl /usr/local/bin/bind9-stats-snmpd.pl
+<% end -%>

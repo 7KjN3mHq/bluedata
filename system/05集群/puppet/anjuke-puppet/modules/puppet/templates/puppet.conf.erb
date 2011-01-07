@@ -1,0 +1,16 @@
+[main]
+    vardir = /var/lib/puppet
+    logdir = /var/log/puppet
+    rundir = /var/run/puppet
+    ssldir = $vardir/ssl
+[puppetd]
+    server = <%= @server %>
+    authconfig = /etc/puppet/namespaceauth.conf
+    classfile = $vardir/classes.txt
+    localconfig = $vardir/localconfig
+    puppetdlog = /var/log/puppet/puppetd.log
+    runinterval = 86400
+    listen = true
+    bindaddress = <%= @ipaddress_eth0 %>
+    puppetport = 8139
+
