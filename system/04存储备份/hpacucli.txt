@@ -1,9 +1,12 @@
+RHEL/CentOS:
 wget ftp://ftp.hp.com/pub/softlib2/software1/pubsw-linux/p414707558/v51709/hpacucli-8.28-13.0.noarch.rpm
-
 yum install libstdc++
-
 rpm -ivh hpacucli-8.28-13.0.noarch.rpm
 
+Debian:
+wget http://debian.skyrock.net/pool/main/h/hpacucli/hpacucli_8.50-6.0.2-2_amd64.deb
+apt-get install lib32gcc1 lib32stdc++6 libc6-i386
+dpkg -i hpacucli_8.50-6.0.2-2_amd64.deb
 
 hpacucli
 => ctrl all show status
