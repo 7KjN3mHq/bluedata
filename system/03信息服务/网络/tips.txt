@@ -1,3 +1,16 @@
+Debian/Ubuntu 下针对网卡的限速
+apt-get install wondershaper iproute
+wondershaper eth0 200 100  ;限制第一块网卡的下行速度200kb，上行速度100kb。
+wondershaper clear eth0    ;清除带宽限制。
+wondershaper eth0          ;查看第一块网卡的限速情况。
+
+ethtool 网卡限速
+ethtool只支持三个速度等级的限制：10 100 1000
+ifdown eth0; ethtool -s eth0 speed 10; ifup eth0
+或者在 /etc/sysconfig/network-scripts/ifcfg-eth0 添加
+ETHTOOL_OPTS="speed 10 duplex full autoneg off" 后重启网卡。
+ethtool eth0 查看。
+
 增删 IP 地址
 ip addr del 192.168.0.240/24 dev eth0
 
