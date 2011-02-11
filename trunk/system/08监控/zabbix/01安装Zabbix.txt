@@ -1,0 +1,141 @@
+安装 Zabbix 1.8.4
+
+安装 Zabbix 之前先要安装好 PHP5 ，并确保安装了以下模块：
+CentOS:
+php-gd php-bcmath php-xml php-mysql php-net-socket php-mbstring
+
+Ubuntu:
+sudo apt-get install php5-gd php5-mysql
+
+
+编译安装，依赖于：
+CentOS:
+mysql-dev
+
+Ubuntu:
+sudo apt-get install libmysqlclient15-dev libsnmp-base libsnmp15 libsnmp-dev libcurl4-openssl-dev
+
+
+创建运行 Zabbix 的用户：
+sudo groupadd zabbix
+sudo useradd zabbix -g zabbix
+
+
+使用 MySQL 数据库：
+tar zxvf zabbix-1.8.4.tar.gz
+cd zabbix-1.8.4
+mysql -uroot -p
+
+mysql> create database zabbix character set utf8;
+mysql> grant all on zabbix.* to zabbix@localhost identified by 'zabbix';
+mysql> use zabbix;
+mysql> source create/schema/mysql.sql;
+mysql> source create/data/data.sql;
+mysql> source create/data/images_mysql.sql;
+mysql> exit;
+
+
+配置编译：
+./configure \
+--prefix=/usr/local/zabbix \
+--enable-server \
+--enable-proxy \
+--enable-agent \
+--with-mysql \
+--with-net-snmp \
+--with-libcurl
+
+sudo make install
+
+
+添加服务端口：
+sudo vi /etc/services
+zabbix-agent    10050/tcp  Zabbix Agent
+zabbix-agent    10050/udp  Zabbix Agent
+zabbix-trapper  10051/tcp  Zabbix Trapper
+zabbix-trapper  10051/udp  Zabbix Trapper
+
+
+复制配置文件：
+sudo mkdir /etc/zabbix
+sudo cp misc/conf/zabbix_server.conf /etc/zabbix/
+sudo cp misc/conf/zabbix_proxy.conf /etc/zabbix/
+sudo cp misc/conf/zabbix_agent.conf /etc/zabbix/
+sudo cp misc/conf/zabbix_agentd.conf /etc/zabbix/
+sudo chown -R zabbix:zabbix /etc/zabbix
+
+
+修改 /etc/zabbix/zabbix_server.conf 中的数据库用户名和密码：
+DBUser=zabbix
+DBPassword=zabbix
+
+修改 /etc/zabbix/zabbix_agentd.conf 中的主机名为本机的 hostname :
+Hostname=localhost.localdomain
+
+
+安装启动脚本：
+sudo cp misc/init.d/debian/zabbix-server /etc/init.d/
+sudo cp misc/init.d/debian/zabbix-agent /etc/init.d/zabbix-agentd
+
+添加可执行权限：
+sudo chmod +x /etc/init.d/zabbix-server
+sudo chmod +x /etc/init.d/zabbix-agentd
+
+修改 zabbix-server 头部变量定义：
+NAME=zabbix_server
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+DAEMON=/usr/local/zabbix/sbin/${NAME}
+DESC="Zabbix server daemon"
+PID=/var/run/$NAME.pid
+
+修改 zabbix-agentd 头部变量定义：
+NAME=zabbix_agentd
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+DAEMON=/usr/local/zabbix/sbin/${NAME}
+DESC="Zabbix agent daemon"
+PID=/var/run/$NAME.pid
+
+设置开机自启动：
+sudo sysv-rc-conf zabbix-server on
+sudo sysv-rc-conf zabbix-agentd on
+
+
+启动 Zabbix Server :
+sudo /etc/init.d/zabbix-server start
+
+启动 Zabbix Agentd :
+sudo /etc/init.d/zabbix-agentd start
+
+
+复制 Web Interface 到 web 目录：
+sudo cp -r frontends/php /var/www/zabbix
+sudo chown -R zabbix:zabbix /var/www/zabbix
+
+
+新建 nginx 配置：
+server {
+    listen  80;
+    server_name  zabbix.test.com;
+    root  /var/www/zabbix;
+    index  index.php;
+    location ~ .*\.php?$ {
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include  /etc/nginx/fastcgi_params;
+    }
+}
+
+
+安装 Zabbix Web Interface :
+修改 php.ini 如下：
+max_execution_time = 300
+max_input_time = 600
+memory_limit = 256M
+post_max_size = 32M
+date.timezone = Asia/Shanghai
+mbstring.func_overload = 2
+
+重启 php-cgi 进程。
+
+
+浏览器上打开： http://zabbix.test.com/ 进行配置。默认用户名和密码是： admin/zabbix
