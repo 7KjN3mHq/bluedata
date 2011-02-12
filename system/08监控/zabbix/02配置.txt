@@ -1,0 +1,12 @@
+MySQL 的配置：
+在配置文件 /etc/zabbix/zabbix_agentd.conf 增加：
+UserParameter=mysql.ping,mysqladmin -uroot -pstm123 ping | grep alive | wc -l | tr -d " "
+UserParameter=mysql.uptime,mysqladmin -uroot -pstm123 status | cut -f2 -d":" | cut -f1 -d"T" | tr -d " "
+UserParameter=mysql.threads,mysqladmin -uroot -pstm123 status | cut -f3 -d":" | cut -f1 -d"Q" | tr -d " "
+UserParameter=mysql.questions,mysqladmin -uroot -pstm123 status | cut -f4 -d":" | cut -f1 -d"S" | tr -d " "
+UserParameter=mysql.slowqueries,mysqladmin -uroot -pstm123 status | cut -f5 -d":" | cut -f1 -d"O" | tr -d " "
+UserParameter=mysql.qps,mysqladmin -uroot -pstm123 status | cut -f9 -d":" | tr -d " "
+UserParameter=mysql.version,mysql -V
+
+重启 zabbix_agentd :
+sudo /etc/init.d/zabbix-agentd restart

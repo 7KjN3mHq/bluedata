@@ -58,20 +58,26 @@ zabbix-trapper  10051/udp  Zabbix Trapper
 
 复制配置文件：
 sudo mkdir /etc/zabbix
-sudo cp misc/conf/zabbix_server.conf /etc/zabbix/
-sudo cp misc/conf/zabbix_proxy.conf /etc/zabbix/
-sudo cp misc/conf/zabbix_agent.conf /etc/zabbix/
-sudo cp misc/conf/zabbix_agentd.conf /etc/zabbix/
+sudo cp -r misc/conf/* /etc/zabbix/
 sudo chown -R zabbix:zabbix /etc/zabbix
 
 
 修改 /etc/zabbix/zabbix_server.conf 中的数据库用户名和密码：
 DBUser=zabbix
 DBPassword=zabbix
+LogFile=/var/log/zabbix/zabbix_server.log
+PidFile=/var/run/zabbix/zabbix_server.pid
 
 修改 /etc/zabbix/zabbix_agentd.conf 中的主机名为本机的 hostname :
 Hostname=localhost.localdomain
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
 
+建立相关目录：
+sudo mkdir /var/run/zabbix
+sudo chown zabbix /var/run/zabbix
+sudo mkdir /var/log/zabbix
+sudo chown zabbix:adm /var/log/zabbix
 
 安装启动脚本：
 sudo cp misc/init.d/debian/zabbix-server /etc/init.d/
@@ -86,14 +92,14 @@ NAME=zabbix_server
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 DAEMON=/usr/local/zabbix/sbin/${NAME}
 DESC="Zabbix server daemon"
-PID=/var/run/$NAME.pid
+PID=/var/run/zabbix/$NAME.pid
 
 修改 zabbix-agentd 头部变量定义：
 NAME=zabbix_agentd
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 DAEMON=/usr/local/zabbix/sbin/${NAME}
 DESC="Zabbix agent daemon"
-PID=/var/run/$NAME.pid
+PID=/var/run/zabbix/$NAME.pid
 
 设置开机自启动：
 sudo sysv-rc-conf zabbix-server on
