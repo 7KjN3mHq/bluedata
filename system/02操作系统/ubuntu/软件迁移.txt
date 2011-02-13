@@ -12,22 +12,24 @@ Symantec Endpoint Protection 11.0.4000 MR4 简体中文版
 
 
 浏览器：
-Firefox + IEtab(IE8)  (http://www.mozilla.com/en-US/firefox/all.html)
+Firefox + IE Tab Plus(IE8)  (http://www.mozilla.com/en-US/firefox/all.html)
 Firefox + IEs4Linux  (http://www.tatanka.com.br/ies4linux/page/Installation)
 
 
 浏览器插件：
 Adobe Flash Player: http://get.adobe.com/flashplayer/
 Google Toobar: http://toolbar.google.com/intl/zh-CN
-Coral IE Tab: https://addons.mozilla.org/zh-CN/firefox/addon/10909
+IE Tab Plus: http://coralietab.mozdev.org/installation.html
 FlashGot: https://addons.mozilla.org/zh-CN/firefox/addon/220
 Tab Mix Plus: https://addons.mozilla.org/zh-CN/firefox/addon/1122
 Alexa Toolbar: https://addons.mozilla.org/zh-CN/firefox/addon/5362
-FoxyProxy: https://addons.mozilla.org/zh-CN/firefox/addon/2464
-RefControl: https://addons.mozilla.org/zh-CN/firefox/addon/953
+AutoProxy: https://addons.mozilla.org/zh-CN/firefox/addon/autoproxy/
 Chromifox Basic: https://addons.mozilla.org/zh-CN/firefox/addon/8782
 FlashBlock: http://flashblock.mozdev.org/
 PlacesCleaner: https://addons.mozilla.org/zh-CN/firefox/addon/13860
+Firebug: http://getfirebug.com/
+YSlow: http://developer.yahoo.com/yslow/
+RefControl: https://addons.mozilla.org/zh-CN/firefox/addon/953
 
 
 输入法：
