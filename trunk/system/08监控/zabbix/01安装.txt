@@ -18,7 +18,7 @@ sudo apt-get install libmysqlclient15-dev libsnmp-base libsnmp15 libsnmp-dev lib
 
 创建运行 Zabbix 的用户：
 sudo groupadd zabbix
-sudo useradd zabbix -g zabbix
+sudo useradd zabbix -g zabbix -d /usr/local/zabbix -s /bin/bash
 
 
 使用 MySQL 数据库：
@@ -50,28 +50,34 @@ sudo make install
 
 添加服务端口：
 sudo vi /etc/services
-zabbix-agent    10050/tcp  Zabbix Agent
-zabbix-agent    10050/udp  Zabbix Agent
-zabbix-trapper  10051/tcp  Zabbix Trapper
-zabbix-trapper  10051/udp  Zabbix Trapper
+zabbix-agent    10050/tcp                       # Zabbix Agent
+zabbix-agent    10050/udp                       # Zabbix Agent
+zabbix-trapper  10051/tcp                       # Zabbix Trapper
+zabbix-trapper  10051/udp                       # Zabbix Trapper
 
 
 复制配置文件：
 sudo mkdir /etc/zabbix
-sudo cp -r misc/conf/* /etc/zabbix/
+cp misc/conf/zabbix_server.conf /etc/zabbix/
+cp misc/conf/zabbix_proxy.conf /etc/zabbix/
+cp misc/conf/zabbix_agent.conf /etc/zabbix/
+cp misc/conf/zabbix_agentd.conf /etc/zabbix/
 sudo chown -R zabbix:zabbix /etc/zabbix
 
 
-修改 /etc/zabbix/zabbix_server.conf 中的数据库用户名和密码：
+修改 /etc/zabbix/zabbix_server.conf 如下：
+LogFile=/var/log/zabbix/zabbix-server.log
+PidFile=/var/run/zabbix/zabbix-server.pid
+DBName=zabbix
 DBUser=zabbix
 DBPassword=zabbix
-LogFile=/var/log/zabbix/zabbix_server.log
-PidFile=/var/run/zabbix/zabbix_server.pid
+AlertScriptsPath=/usr/local/zabbix/bin/
 
-修改 /etc/zabbix/zabbix_agentd.conf 中的主机名为本机的 hostname :
-Hostname=localhost.localdomain
-PidFile=/var/run/zabbix/zabbix_agentd.pid
-LogFile=/var/log/zabbix/zabbix_agentd.log
+修改 /etc/zabbix/zabbix_agentd.conf 如下：
+PidFile=/var/run/zabbix/zabbix-agentd.pid
+LogFile=/var/log/zabbix/zabbix-agentd.log
+Server=127.0.0.1
+Hostname=<uname -n>
 
 建立相关目录：
 sudo mkdir /var/run/zabbix
@@ -88,16 +94,16 @@ sudo chmod +x /etc/init.d/zabbix-server
 sudo chmod +x /etc/init.d/zabbix-agentd
 
 修改 zabbix-server 头部变量定义：
-NAME=zabbix_server
+NAME=zabbix-server
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-DAEMON=/usr/local/zabbix/sbin/${NAME}
+DAEMON=/usr/local/zabbix/sbin/zabbix_server
 DESC="Zabbix server daemon"
 PID=/var/run/zabbix/$NAME.pid
 
 修改 zabbix-agentd 头部变量定义：
-NAME=zabbix_agentd
+NAME=zabbix-agentd
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
-DAEMON=/usr/local/zabbix/sbin/${NAME}
+DAEMON=/usr/local/zabbix/sbin/zabbix_agentd
 DESC="Zabbix agent daemon"
 PID=/var/run/zabbix/$NAME.pid
 
@@ -145,3 +151,45 @@ mbstring.func_overload = 2
 
 
 浏览器上打开： http://zabbix.test.com/ 进行配置。默认用户名和密码是： admin/zabbix
+
+
+被监控端的安装：
+添加运行 zabbix_agentd 的用户：
+sudo groupadd zabbix
+CentOS:
+sudo useradd zabbix -g zabbix -d / -s /bin/bash
+Ubuntu:
+sudo useradd zabbix -g zabbix -d /nonexistent -s /bin/bash
+
+可以直接下载预编译好的二进制文件： http://www.zabbix.com/download.php
+wget http://www.zabbix.com/downloads/1.8.3/zabbix_agents_1.8.3.linux2_6.amd64.tar.gz
+tar zxvf zabbix_agents_1.8.3.linux2_6.amd64.tar.gz
+sudo cp sbin/zabbix_agentd /usr/sbin/
+sudo chmod +x /usr/sbin/zabbix_agentd
+
+创建配置文件：
+sudo mkdir /etc/zabbix
+sudo vi /etc/zabbix/zabbix_agentd.conf
+PidFile=/var/run/zabbix/zabbix-agentd.pid
+LogFile=/var/log/zabbix/zabbix-agentd.log
+Server=<zabbix server host>
+Hostname=<uname -n>
+
+建立相关目录：
+sudo mkdir /var/run/zabbix
+sudo chown zabbix:zabbix /var/run/zabbix
+sudo mkdir /var/log/zabbix
+sudo chown zabbix:zabbix /var/log/zabbix
+
+添加服务端口：
+sudo vi /etc/services
+zabbix-agent    10050/tcp                       # Zabbix Agent
+zabbix-trapper  10051/tcp                       # Zabbix Trapper
+
+创建相应操作系统的启动脚本，可参考 misc/init.d 目录下的脚本。
+sudo chkconfig --add zabbix-agentd
+sudo chkconfig zabbix-agentd on
+sudo /etc/init.d/zabbix-agentd start
+
+检查是否可以得到数据：
+/usr/local/zabbix/bin/zabbix_get -s<zabbix agent host> -p10050 -k"system.cpu.load[all,avg1]"
