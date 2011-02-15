@@ -66,16 +66,16 @@ sudo chown -R zabbix:zabbix /etc/zabbix
 
 
 修改 /etc/zabbix/zabbix_server.conf 如下：
-LogFile=/var/log/zabbix/zabbix-server.log
-PidFile=/var/run/zabbix/zabbix-server.pid
+LogFile=/var/log/zabbix/zabbix_server.log
+PidFile=/var/run/zabbix/zabbix_server.pid
 DBName=zabbix
 DBUser=zabbix
 DBPassword=zabbix
 AlertScriptsPath=/usr/local/zabbix/bin/
 
 修改 /etc/zabbix/zabbix_agentd.conf 如下：
-PidFile=/var/run/zabbix/zabbix-agentd.pid
-LogFile=/var/log/zabbix/zabbix-agentd.log
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
 Server=127.0.0.1
 Hostname=<uname -n>
 
@@ -86,37 +86,23 @@ sudo mkdir /var/log/zabbix
 sudo chown zabbix:adm /var/log/zabbix
 
 安装启动脚本：
-sudo cp misc/init.d/debian/zabbix-server /etc/init.d/
-sudo cp misc/init.d/debian/zabbix-agent /etc/init.d/zabbix-agentd
+sudo cp misc/init.d/debian/zabbix-server /etc/init.d/zabbix_server
+sudo cp misc/init.d/debian/zabbix-agent /etc/init.d/zabbix_agentd
 
-添加可执行权限：
-sudo chmod +x /etc/init.d/zabbix-server
-sudo chmod +x /etc/init.d/zabbix-agentd
-
-修改 zabbix-server 头部变量定义：
-NAME=zabbix-server
-PATH=/bin:/usr/bin:/sbin:/usr/sbin
-DAEMON=/usr/local/zabbix/sbin/zabbix_server
-DESC="Zabbix server daemon"
-PID=/var/run/zabbix/$NAME.pid
-
-修改 zabbix-agentd 头部变量定义：
-NAME=zabbix-agentd
-PATH=/bin:/usr/bin:/sbin:/usr/sbin
-DAEMON=/usr/local/zabbix/sbin/zabbix_agentd
-DESC="Zabbix agent daemon"
+修改 zabbix_server 及 zabbix_agentd 头部变量定义：
+DAEMON=/usr/local/zabbix/sbin/${NAME}
 PID=/var/run/zabbix/$NAME.pid
 
 设置开机自启动：
-sudo sysv-rc-conf zabbix-server on
-sudo sysv-rc-conf zabbix-agentd on
+sudo sysv-rc-conf zabbix_server on
+sudo sysv-rc-conf zabbix_agentd on
 
 
 启动 Zabbix Server :
-sudo /etc/init.d/zabbix-server start
+sudo /etc/init.d/zabbix_server start
 
 启动 Zabbix Agentd :
-sudo /etc/init.d/zabbix-agentd start
+sudo /etc/init.d/zabbix_agentd start
 
 
 复制 Web Interface 到 web 目录：
@@ -165,13 +151,14 @@ sudo useradd zabbix -g zabbix -d /nonexistent -s /bin/bash
 wget http://www.zabbix.com/downloads/1.8.3/zabbix_agents_1.8.3.linux2_6.amd64.tar.gz
 tar zxvf zabbix_agents_1.8.3.linux2_6.amd64.tar.gz
 sudo cp sbin/zabbix_agentd /usr/sbin/
-sudo chmod +x /usr/sbin/zabbix_agentd
+某些程序或许会用到 zabbix_sender :
+sudo cp bin/zabbix_sender /usr/bin/
 
 创建配置文件：
 sudo mkdir /etc/zabbix
 sudo vi /etc/zabbix/zabbix_agentd.conf
-PidFile=/var/run/zabbix/zabbix-agentd.pid
-LogFile=/var/log/zabbix/zabbix-agentd.log
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
 Server=<zabbix server host>
 Hostname=<uname -n>
 
@@ -187,9 +174,9 @@ zabbix-agent    10050/tcp                       # Zabbix Agent
 zabbix-trapper  10051/tcp                       # Zabbix Trapper
 
 创建相应操作系统的启动脚本，可参考 misc/init.d 目录下的脚本。
-sudo chkconfig --add zabbix-agentd
-sudo chkconfig zabbix-agentd on
-sudo /etc/init.d/zabbix-agentd start
+sudo chkconfig --add zabbix_agentd
+sudo chkconfig zabbix_agentd on
+sudo /etc/init.d/zabbix_agentd start
 
 检查是否可以得到数据：
 /usr/local/zabbix/bin/zabbix_get -s<zabbix agent host> -p10050 -k"system.cpu.load[all,avg1]"
