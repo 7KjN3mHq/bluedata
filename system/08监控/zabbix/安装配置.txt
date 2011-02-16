@@ -1,0 +1,326 @@
+安装 Zabbix 1.8.4
+
+安装 Zabbix 之前先要安装好 PHP5 ，并确保安装了以下模块：
+CentOS:
+php-gd php-bcmath php-xml php-mysql php-net-socket php-mbstring
+
+Ubuntu:
+sudo apt-get install php5-gd php5-mysql
+
+
+编译安装，依赖于：
+CentOS:
+mysql-dev
+
+Ubuntu:
+sudo apt-get install libmysqlclient15-dev libsnmp-base libsnmp15 libsnmp-dev libcurl4-openssl-dev
+
+
+创建运行 Zabbix 的用户：
+sudo groupadd zabbix
+sudo useradd zabbix -g zabbix -d /usr/local/zabbix -s /bin/bash
+
+
+使用 MySQL 数据库：
+tar zxvf zabbix-1.8.4.tar.gz
+cd zabbix-1.8.4
+mysql -uroot -p
+
+mysql> create database zabbix character set utf8;
+mysql> grant all on zabbix.* to zabbix@localhost identified by 'zabbix';
+mysql> use zabbix;
+mysql> source create/schema/mysql.sql;
+mysql> source create/data/data.sql;
+mysql> source create/data/images_mysql.sql;
+mysql> exit;
+
+
+配置编译：
+./configure \
+--prefix=/usr/local/zabbix \
+--enable-server \
+--enable-proxy \
+--enable-agent \
+--with-mysql \
+--with-net-snmp \
+--with-libcurl
+
+sudo make install
+
+
+添加服务端口：
+sudo vi /etc/services
+zabbix-agent    10050/tcp                       # Zabbix Agent
+zabbix-agent    10050/udp                       # Zabbix Agent
+zabbix-trapper  10051/tcp                       # Zabbix Trapper
+zabbix-trapper  10051/udp                       # Zabbix Trapper
+
+
+复制配置文件：
+sudo mkdir /etc/zabbix
+cp misc/conf/zabbix_server.conf /etc/zabbix/
+cp misc/conf/zabbix_proxy.conf /etc/zabbix/
+cp misc/conf/zabbix_agent.conf /etc/zabbix/
+cp misc/conf/zabbix_agentd.conf /etc/zabbix/
+sudo chown -R zabbix:zabbix /etc/zabbix
+
+
+修改 /etc/zabbix/zabbix_server.conf 如下：
+LogFile=/var/log/zabbix/zabbix_server.log
+PidFile=/var/run/zabbix/zabbix_server.pid
+DBName=zabbix
+DBUser=zabbix
+DBPassword=zabbix
+AlertScriptsPath=/usr/local/zabbix/bin/
+
+修改 /etc/zabbix/zabbix_agentd.conf 如下：
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+Server=127.0.0.1
+Hostname=<uname -n>
+
+建立相关目录：
+sudo mkdir /var/run/zabbix
+sudo chown zabbix /var/run/zabbix
+sudo mkdir /var/log/zabbix
+sudo chown zabbix:adm /var/log/zabbix
+
+安装启动脚本：
+sudo cp misc/init.d/debian/zabbix-server /etc/init.d/zabbix_server
+sudo cp misc/init.d/debian/zabbix-agent /etc/init.d/zabbix_agentd
+
+修改 zabbix_server 及 zabbix_agentd 头部变量定义：
+DAEMON=/usr/local/zabbix/sbin/${NAME}
+PID=/var/run/zabbix/$NAME.pid
+
+设置开机自启动：
+sudo sysv-rc-conf zabbix_server on
+sudo sysv-rc-conf zabbix_agentd on
+
+
+启动 Zabbix Server :
+sudo /etc/init.d/zabbix_server start
+
+启动 Zabbix Agentd :
+sudo /etc/init.d/zabbix_agentd start
+
+
+复制 Web Interface 到 web 目录：
+sudo cp -r frontends/php /var/www/zabbix
+sudo chown -R zabbix:zabbix /var/www/zabbix
+
+
+新建 nginx 配置：
+server {
+    listen  80;
+    server_name  zabbix.test.com;
+    root  /var/www/zabbix;
+    index  index.php;
+    location ~ .*\.php?$ {
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include  /etc/nginx/fastcgi_params;
+    }
+}
+
+
+安装 Zabbix Web Interface :
+修改 php.ini 如下：
+max_execution_time = 300
+max_input_time = 600
+memory_limit = 256M
+post_max_size = 32M
+date.timezone = Asia/Shanghai
+mbstring.func_overload = 2
+
+重启 php-cgi 进程。
+
+
+浏览器上打开： http://zabbix.test.com/ 进行配置。默认用户名和密码是： admin/zabbix
+
+
+被监控端的安装：
+添加运行 zabbix_agentd 的用户：
+sudo groupadd zabbix
+CentOS:
+sudo useradd zabbix -g zabbix -d / -s /bin/bash
+Ubuntu:
+sudo useradd zabbix -g zabbix -d /nonexistent -s /bin/bash
+
+可以直接下载预编译好的二进制文件： http://www.zabbix.com/download.php
+wget http://www.zabbix.com/downloads/1.8.3/zabbix_agents_1.8.3.linux2_6.amd64.tar.gz
+tar zxvf zabbix_agents_1.8.3.linux2_6.amd64.tar.gz
+sudo cp sbin/zabbix_agentd /usr/sbin/
+某些程序或许会用到 zabbix_sender :
+sudo cp bin/zabbix_sender /usr/bin/
+
+创建配置文件：
+sudo mkdir /etc/zabbix
+sudo vi /etc/zabbix/zabbix_agentd.conf
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+Server=<zabbix server host>
+Hostname=<uname -n>
+
+建立相关目录：
+sudo mkdir /var/run/zabbix
+sudo chown zabbix:zabbix /var/run/zabbix
+sudo mkdir /var/log/zabbix
+sudo chown zabbix:zabbix /var/log/zabbix
+
+添加服务端口：
+sudo vi /etc/services
+zabbix-agent    10050/tcp                       # Zabbix Agent
+zabbix-trapper  10051/tcp                       # Zabbix Trapper
+
+创建相应操作系统的启动脚本，可参考 misc/init.d 目录下的脚本。
+sudo chkconfig --add zabbix_agentd
+sudo chkconfig zabbix_agentd on
+sudo /etc/init.d/zabbix_agentd start
+
+检查是否可以得到数据：
+/usr/local/zabbix/bin/zabbix_get -s<zabbix agent host> -p10050 -k"system.cpu.load[all,avg1]"
+
+
+更多的配置
+通过 Gmail 发邮件：
+http://caspian.dotconf.net/menu/Software/SendEmail/
+wget http://caspian.dotconf.net/menu/Software/SendEmail/sendEmail-v1.56.tar.gz
+tar zxvf sendEmail-v1.56.tar.gz
+mv sendEmail-v1.56/sendEmail /usr/local/bin/
+
+创建 zabbix 脚本：
+vi /usr/local/zabbix/bin/sendmail.sh
+#!/bin/sh
+#send Email by sendEmail
+#Write by Bluedata
+
+#$1, $2, $3 mean Recipient, Subject and Message.
+/usr/local/bin/sendEmail -f zabbix@gmail.com -t $1 -s smtp.gmail.com -u "$2" -xu zabbix@gmail.com -xp PASSWORD -m "$3"
+
+在 Administration -> Media types 添加 SendEmail ， Type 选 Script ， Script name 填 sendmail.sh
+
+如果要使用 SSL 连接，依赖： Net::SSLeay and IO::Socket::SSL
+apt-get install libnet-ssleay-perl libio-socket-ssl-perl
+发送命令再加上 -o tls=yes 。
+
+
+Web 监控的配置：
+自动创建的items在host的items列表中是看不到的，需要在创建trigger时选择items时才能看到。
+
+
+默认 MySQL 监控的配置：
+在配置文件 /etc/zabbix/zabbix_agentd.conf 增加：
+UserParameter=mysql.ping,mysqladmin -uroot -pstm123 ping | grep alive | wc -l | tr -d " "
+UserParameter=mysql.uptime,mysqladmin -uroot -pstm123 status | cut -f2 -d":" | cut -f1 -d"T" | tr -d " "
+UserParameter=mysql.threads,mysqladmin -uroot -pstm123 status | cut -f3 -d":" | cut -f1 -d"Q" | tr -d " "
+UserParameter=mysql.questions,mysqladmin -uroot -pstm123 status | cut -f4 -d":" | cut -f1 -d"S" | tr -d " "
+UserParameter=mysql.slowqueries,mysqladmin -uroot -pstm123 status | cut -f5 -d":" | cut -f1 -d"O" | tr -d " "
+UserParameter=mysql.qps,mysqladmin -uroot -pstm123 status | cut -f9 -d":" | tr -d " "
+UserParameter=mysql.version,mysql -V
+
+重启 zabbix_agentd :
+sudo /etc/init.d/zabbix-agentd restart
+
+
+Nginx 的监控： http://www.zabbix.com/forum/showthread.php?t=11067
+vi /etc/zabbix/nginx_status.sh
+#!/bin/bash
+# Script to fetch nginx statuses for tribily monitoring systems
+
+# Set Variables
+HOST=127.0.0.1
+PORT=80
+URI=/nginx_status
+
+# Functions to return nginx stats
+
+function active {
+         /usr/bin/curl "http://$HOST:$PORT$URI" 2>/dev/null| grep 'Active' | awk '{print $NF}'        
+         }      
+
+function reading {
+         /usr/bin/curl "http://$HOST:$PORT$URI" 2>/dev/null| grep 'Reading' | awk '{print $2}'        
+         }      
+
+function writing {
+         /usr/bin/curl "http://$HOST:$PORT$URI" 2>/dev/null| grep 'Writing' | awk '{print $4}'        
+         }      
+
+function waiting {
+         /usr/bin/curl "http://$HOST:$PORT$URI" 2>/dev/null| grep 'Waiting' | awk '{print $6}'        
+         }      
+
+function accepts {
+         /usr/bin/curl "http://$HOST:$PORT$URI" 2>/dev/null| awk NR==3 | awk '{print $1}'
+         }      
+
+function handled {
+         /usr/bin/curl "http://$HOST:$PORT$URI" 2>/dev/null| awk NR==3 | awk '{print $2}'
+         }      
+
+function requests {
+         /usr/bin/curl "http://$HOST:$PORT$URI" 2>/dev/null| awk NR==3 | awk '{print $3}'
+         }
+
+# Run the requested function
+$1
+
+chmod +x /etc/zabbix/nginx_status.sh
+
+vi /etc/zabbix/zabbix_agentd.conf
+UserParameter=nginx.accepts,/etc/zabbix/nginx_status.sh accepts
+UserParameter=nginx.handled,/etc/zabbix/nginx_status.sh handled
+UserParameter=nginx.requests,/etc/zabbix/nginx_status.sh requests
+UserParameter=nginx.connections.active,/etc/zabbix/nginx_status.sh active
+UserParameter=nginx.connections.reading,/etc/zabbix/nginx_status.sh reading
+UserParameter=nginx.connections.writing,/etc/zabbix/nginx_status.sh writing
+UserParameter=nginx.connections.waiting,/etc/zabbix/nginx_status.sh waiting
+
+/etc/init.d/zabbix_agentd restart
+
+/usr/local/zabbix/bin/zabbix_get -s<zabbix agent host> -p10050 -k"nginx.accepts"
+
+
+问题：不能发现 item ，日志文件出现： No active checks on server
+解决：zabbix_agentd.conf 文件里 Hostname 的设置要和 Web Interface 里的 主机名 一致。
+
+
+MySQL 的监控：
+http://code.google.com/p/appaloosa-zabbix-templates/
+wget http://appaloosa-zabbix-templates.googlecode.com/files/appaloosa-zabbix-templates-0.0.1.tgz
+tar zxvf appaloosa-zabbix-templates-0.0.1.tgz
+cd appaloosa-zabbix-templates-0.0.1
+apt-get install libxml-simple-perl libdatetime-perl
+perl tools/gen_template.pl defs/mysql.pl mysql.xml
+sed -e 's|$ZABBIX_AGENT_PATH|/etc/zabbix|' conf/mysql_agentd.conf > mysql.conf
+
+wget http://mysql-cacti-templates.googlecode.com/files/better-cacti-templates-1.1.8.tar.gz
+tar zxvf better-cacti-templates-1.1.8.tar.gz
+
+把 mysql.conf 和 better-cacti-templates-1.1.8/scripts/ss_get_mysql_stats.php 都放到被监控主机的 /etc/zabbix 目录下。
+
+修改 zabbix_agentd.conf ，添加：
+Include=/etc/zabbix/mysql.conf
+
+MySQL 创建个专用账号：
+mysql> GRANT SUPER, PROCESS ON *.* TO 'zabbix'@'localhost' identified BY 'zabbix';
+
+修改 ss_get_mysql_stats.php 文件里数据库的用户名和密码。
+
+
+Memcached 的监控：
+cd appaloosa-zabbix-templates-0.0.1
+perl tools/gen_template.pl defs/memcached.pl memcached.xml
+如需指定端口：
+perl tools/gen_template.pl defs/memcached.pl memcached_9000.xml --memcached-port 9000
+
+xml 文件有个错误，把 <expression>{Template_Memcached_11211:memcached[rusage_user,11211].change(0)/Template_Memcached_11211:system.cpu.num.last(0)}&gt;90</expression> 改为：
+<expression>{Template_Memcached_11211:memcached[rusage_user,11211].change(0)}/{Template_Memcached_11211:system.cpu.num.last(0)}&gt;90</expression>
+使用中，这个触发器还是会有问题，可以禁用了。
+Item Memcached version 也会有问题，也可禁用。
+
+把 scripts/zbx_memcached.pl 放到被监控端的 /etc/zabbix 目录并在 zabbix_agentd.conf 添加：
+UserParameter=memcached[*],/usr/bin/perl /etc/zabbix/zbx_memcached.pl --item $1 --port $2 --host $3
+
+/etc/init.d/zabbix_agentd restart
