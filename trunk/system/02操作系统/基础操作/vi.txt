@@ -7,7 +7,7 @@
 :set hlsearch
 关闭
 :set nohlsearch
-debian 可以加入 /etc/vim/vimrc，redhat 9 加入 ~/.vimrc，rhel 加入 /etc/vimrc
+debian 可以加入 /etc/vim/vimrc，CentOS 加入 /etc/vimrc
 
 redhat vim 中显示颜色或不显示颜色
 首先确保安装了 vim-enhanced 包，然后，vi ~/.vimrc，syntax on，显示颜色，syntax off，则不显示颜色
