@@ -1,0 +1,1 @@
+duplicity --full-if-older-than 5W --encrypt-key="${PGPKEYID}" $DIRECTORY scp://myarchives@mybackuphost/ $BACKUPSET$dir
