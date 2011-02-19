@@ -1,1 +1,33 @@
+http://www.elias.cn/Linux/Backup2S3
+
 duplicity --full-if-older-than 5W --encrypt-key="${PGPKEYID}" $DIRECTORY scp://myarchives@mybackuphost/ $BACKUPSET$dir
+
+groupadd aws
+useradd test -g aws -d /aws/test -s /bin/bash
+
+export PASSPHRASE=backup
+export AWS_ACCESS_KEY_ID=<your access key>
+export AWS_SECRET_ACCESS_KEY=<your access key>
+mysqldump --password=YourSqlPass --opt --skip-extended-insert database > /root/backup/backup-file.sql 
+duplicity --include /etc --include /var/www --include /root/backup --exclude '**' / s3+http://elias.cn-backup
+
+
+ssh-keygen -t rsa
+
+#!/bin/bash
+#mysqldump -uroot -p<password> --opt --skip-extended-insert --all-databases > /data/backup.sql 
+PASSPHRASE=test duplicity --full-if-older-than 5W /data scp://test@backuphost//aws/test
+
+ --encrypt-key test
+
+duplicity list-current-files scp://test@backuphost//aws/test
+
+duplicity restore --file-to-restore=www/wallpaper/wallpaper/tiny_mce/tiny_mce.js scp://test@backuphost//aws/test /tmp/tiny_mce.js
+
+恢复某个特定日期的文件： --restore-time "2011-01-25"
+
+
+
+PASSPHRASE=test duplicity list-current-files file:///aws/test
+
+PASSPHRASE=test duplicity restore file:///aws/test /tmp/test
