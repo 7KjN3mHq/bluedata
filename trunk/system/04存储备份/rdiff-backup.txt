@@ -1,0 +1,8 @@
+http://www.nongnu.org/rdiff-backup/
+http://bbs.chinaunix.net/viewthread.php?tid=583574
+
+apt-get install rdiff-backup
+
+rdiff-backup /aws/test/current /aws/test/backup
+
+rdiff-backup --remove-older-than 5W /aws/test/backup

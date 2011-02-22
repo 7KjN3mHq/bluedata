@@ -52,3 +52,7 @@ SMTP_SUBJECT = DenyHosts Report from domain.com
 
 # DenyHosts 的日志文件
 DAEMON_LOG = /var/log/denyhosts
+
+
+白名单：
+/var/lib/denyhosts/allowed-hosts

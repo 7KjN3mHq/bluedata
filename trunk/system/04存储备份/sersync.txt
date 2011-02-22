@@ -1,0 +1,31 @@
+http://code.google.com/p/sersync/
+
+wget http://sersync.googlecode.com/files/sersync2.5_32bit_binary_stable_final.tar.gz
+tar zxvf sersync2.5_32bit_binary_stable_final.tar.gz
+mv GNU-Linux-x86 /usr/local/sersync
+
+cd /usr/local/sersync
+vi confxml.xml
+<localpath watch="/data">
+    <remote ip="test@backuphost" name="current/data"/>
+
+<ssh start="true"/>
+
+
+backuphost:
+vi /etc/rsyncd.conf
+max connections=36000
+use chroot=no
+log file=/var/log/rsyncd.log
+pid file=/var/run/rsyncd.pid
+lock file=/var/run/rsyncd.lock
+
+[test_data]
+uid=test
+gid=aws
+path=/aws/test/current/data
+comment  = iphone test files
+ignore errors = yes
+read only = no
+hosts allow =  10.254.231.84
+hosts deny = *
