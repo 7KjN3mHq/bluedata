@@ -1,0 +1,3 @@
+http://blog.jianingy.com/content/sshËíµÀ¼¼Êõ¼ò½é
+
+ssh -f test@backuphost -L 873:backuphost:21873 -N
