@@ -1,3 +1,8 @@
 http://blog.jianingy.com/content/ssh隧道技术简介
 
-ssh -f test@backuphost -L 873:backuphost:21873 -N
+建立 MySQL 的远程隧道：
+远程主机：
+ssh -N -f -R 33006:127.0.0.1:3306 test@backuphost
+
+backuphost 机器上：
+mysql -h127.0.0.1 -P33006 -uroot -p
