@@ -1,0 +1,22 @@
+wget http://www.percona.com/redir/downloads/Percona-Server-5.1/Percona-Server-5.1.54-12.5/source/Percona-Server-5.1.54-rel12.5.tar.gz
+tar zxvf Percona-Server-5.1.54-rel12.5.tar.gz
+cd Percona-Server-5.1.54-rel12.5
+
+groupadd mysql
+useradd -g mysql -d /usr/local/mysql -s /bin/false mysql
+
+apt-get install bison
+
+./configure \
+--prefix=/usr/local/mysql \
+--sysconfdir=/usr/local/mysql/etc \
+--enable-thread-safe-client \
+--with-mysqld-user=mysql \
+--without-debug
+
+make
+make install
+cd ..
+mkdir /usr/local/mysql/etc
+cp -f /usr/local/mysql/share/mysql/my-huge.cnf /usr/local/mysql/etc/my.cnf
+chown -R mysql:mysql /usr/local/mysql
