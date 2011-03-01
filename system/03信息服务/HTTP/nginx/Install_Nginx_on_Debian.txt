@@ -1,4 +1,4 @@
-在 Debian 上安装 Nginx
+在 Debian/Ubuntu 上安装 Nginx
 
 
 安装依赖的包：
@@ -6,9 +6,9 @@ apt-get install libpcre3-dev libpcrecpp0 libssl-dev zlib1g-dev
 
 下载最新稳定版安装：
 http://nginx.org/en/download.html
-wget http://nginx.org/download/nginx-0.7.67.tar.gz
-tar zxvf nginx-0.7.67.tar.gz
-cd nginx-0.7.67
+wget http://nginx.org/download/nginx-0.8.54.tar.gz
+tar zxvf nginx-0.8.54.tar.gz
+cd nginx-0.8.54
 ./configure \
 --user=www-data \
 --group=www-data \
@@ -20,8 +20,11 @@ make install
 
 
 Nginx 的设置：
-mkdir /var/log/nginx
-vi /usr/local/nginx/conf/nginx.conf
+cd /usr/local/nginx
+mv logs /var/log/nginx && ln -s /var/log/nginx ./logs
+mv conf /etc/nginx && ln -s /etc/nginx ./conf
+cd /etc/nginx
+vi nginx.conf
 user  www-data www-data;
 
 worker_processes  4;
@@ -73,30 +76,52 @@ http {
     client_max_body_size   8m;
     send_timeout           1m;
 
-    server {
-        listen       80;
-        server_name  _;
-        root  /home/www;
-        location ~ .*\.php?$ {
-            fastcgi_pass  127.0.0.1:9000;
-            include  fastcgi_params;
-        }
-        location ~* ^.+.(jpg|gif|png)$ {
-            expires  30d;
-        }
-        location /server-status {
-            stub_status  on;
-        }
-    }
+    include upstream.conf;
+    include vhosts_*.conf;
 }
 
+cat <<EOF> upstream.conf
+upstream php5-fcgi {
+    server 127.0.0.1:9000;
+}
+EOF
 
-并在 /usr/local/nginx/conf/fastcgi_params 中增加如下一行：
+cat <<EOF> vhosts_default.conf
+server {
+    include  port.conf;
+    server_name  _;
+    root  /var/www;
+
+    include  location_default.conf;
+
+    location ~ .*\.php?$ {
+        fastcgi_pass  php5-fcgi;
+        include  fastcgi_params;
+    }
+
+    location /nginx_status {
+        stub_status  on;
+        access_log  off;
+        allow  127.0.0.1;
+        deny  all;
+    }
+}
+EOF
+
+cat <<EOF> location_default.conf
+location ~* ^.+.(jpg|gif|png)$ {
+    expires  max;
+}
+EOF
+
+echo "listen  80;" > port.conf
+
+并在 fastcgi_params 中增加如下一行：
 fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
 
 
 创建启动脚本：
-vi /etc/init.d/nginx
+cat <<EOF> /etc/init.d/nginx
 #! /bin/sh
 
 ### BEGIN INIT INFO
@@ -159,7 +184,7 @@ case "$1" in
 esac
 
 exit 0
-
+EOF
 
 chmod +x /etc/init.d/nginx
 
