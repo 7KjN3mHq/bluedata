@@ -1,0 +1,84 @@
+eaccelerator.shm_size="32"
+eAccelerator 可以使用的共享内存的数量 (以兆为单位) . "0" 是指操作系统的默认值. 默认值是 "0".可根据服务器的实际情况来调整，16，32，64，128都是可以的。
+
+eaccelerator.cache_dir="/home/php/tmp"
+这个目录是给磁盘缓存使用. eAccelerator 在这里储存预先编译好的代码, 进程数据, 内容以及用户的自定义内容. 同样的数据也能被储存在共享内存中 (这样可以提高访问速度). 默认的设置是 "/tmp/eaccelerator".
+
+eaccelerator.enable="1"
+开启或关闭 eAccelerator。"1" 为开启，"0" 为关闭。默认值为 "1"。
+
+eaccelerator.optimizer="1"
+启或关闭内部优化器，可以提升代码执行速度。"1" 为开启，"0" 为关闭。默认值为 "1"。
+
+eaccelerator.check_mtime="1"
+打开或者关闭 PHP 的文件修改检查. "1" 是指打开, "0" 是指关闭. 如果您在修改以后重新编译 PHP 的文件,那么您应当设置为 "1". 默认值是 "1".
+
+eaccelerator.debug="0"
+开启或关闭调试日志记录。"1" 为开启，"0" 为关闭。默认值为 "0"。会将缓存命中得记录写入日志。
+
+eaccelerator.filter=""
+判断哪些 PHP 文件必须缓存。您可以指定缓存和不缓存的文件类型（如 "*.php *.phtml"等）
+如果参数以 "!" 开头，则匹配这些参数的文件被忽略缓存。默认值为 ""，即，所有 PHP 文件都将被缓存。
+
+eaccelerator.shm_max="0"
+当使用 "eaccelerator_put()" 函数时禁止其向共享内存中存储过大的文件。该参数指定允许存储的最大值，单位：字节 (10240, 10K, 1M)。"0" 为不限制。默认值为 "0"。
+
+eaccelerator.shm_ttl="0"
+当 eAccelerator 获取新脚本的共享内存大小失败时，它将从共享内存中删除所有在最后 "shm_ttl" 秒内没有存取的脚本缓存。默认值为 "0"，即：不从共享内存中删除任何缓存文件。
+
+eaccelerator.shm_prune_period="0"
+当 eAccelerator 获取新脚本的共享内存大小失败时，它将试图从共享内存中删除早于"shm_prune_period" 秒的缓存脚本。默认值为 "0"，即：不从共享内存中删除任何缓存文件。
+
+eaccelerator.shm_only="0"
+允许或禁止将已编译脚本缓存在磁盘上。该选项对 session 数据和内容缓存无效。默认值为 "0"，即：使用磁盘和共享内存进行缓存。
+
+eaccelerator.compress="1"
+允许或禁止压缩内容缓存。默认值为 "1"，即：允许压缩。
+
+eaccelerator.compress_level="9"
+指定内容缓存的压缩等级。默认值为 "9"，为最高等级。
+
+eaccelerator.keys = "disk_only"
+eaccelerator.session = "disk_only"
+eaccelerator.content = "disk_only"
+设置内容缓存的存放的地方，可以设置为：
+shm_and_disk 在共享缓存和硬盘(默认值)
+shm 默认存在共享内存，如果共享内存已满或大小超过 "eaccelerator.shm_max" 的值，就存到硬盘
+shm_only 只存放在共享内存
+disk_only 只存放在硬盘
+none 不缓存数据
+
+eaccelerator.allowed_admin_path = "/var/www/eaccelerator"
+这是控制面板的地址
+安装包里有个control.php，把它复制到网站的任意目录，可以用它查看和管理，这个必须指定，否则查看缓存内容的时候会出错
+
+样例 eAccelerator 设置
+; eaccelerator
+[eaccelerator]
+zend_extension="/usr/local/php/lib/php/extensions/no-debug-non-zts-20060613/eaccelerator.so"
+eaccelerator.shm_size="128"
+eaccelerator.cache_dir="/tmp/eaccelerator"
+eaccelerator.enable="1"
+eaccelerator.optimizer="1"
+eaccelerator.check_mtime="1"
+eaccelerator.debug="0"
+eaccelerator.filter=""
+eaccelerator.shm_max="0"
+eaccelerator.shm_ttl="3600"
+eaccelerator.shm_prune_period="3600"
+eaccelerator.shm_only="0"
+eaccelerator.compress="1"
+eaccelerator.compress_level="9"
+eaccelerator.keys = "disk_only"
+eaccelerator.sessions = "disk_only"
+eaccelerator.content = "disk_only"
+eaccelerator.allowed_admin_path = "/var/www/eaccelerator"
+
+
+eAccelerator 的安装
+# wget http://bart.eaccelerator.net/source/0.9.6/eaccelerator-0.9.6.tar.bz2
+# tar -jxvf eaccelerator-0.9.6.tar.bz2
+# cd eaccelerator-0.9.6
+# /usr/local/php/bin/phpize
+# ./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php/bin/php-config
+# make && make install

@@ -7,6 +7,8 @@ useradd -g mysql -d /usr/local/mysql -s /bin/false mysql
 
 apt-get install bison
 
+apt-get install libncurses5-dev
+
 ./configure \
 --prefix=/usr/local/mysql \
 --sysconfdir=/usr/local/mysql/etc \

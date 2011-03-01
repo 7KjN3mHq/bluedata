@@ -1,3 +1,6 @@
+rm 删除特殊字符文件，如 --exclude
+rm -- --exclude
+
 查看系统软硬件信息
 wget http://aspersa.googlecode.com/svn/trunk/summary
 bash summary

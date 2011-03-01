@@ -7,12 +7,24 @@ mv GNU-Linux-x86 /usr/local/sersync
 cd /usr/local/sersync
 vi confxml.xml
 <localpath watch="/data">
-    <remote ip="test@backuphost" name="current/data"/>
+    <remote ip="wallpaper@backuphost" name="current/data"/>
 
 <ssh start="true"/>
 
+ssh-keygen -t rsa
+
 
 backuphost:
+ssh mode:
+groupadd aws
+useradd wallpaper -g aws -d /aws/wallpaper -s /bin/bash
+mkdir -p /aws/wallpaper/.ssh
+cd /aws/wallpaper
+mkdir -p current/data
+mkdir backup
+
+
+
 vi /etc/rsyncd.conf
 max connections=36000
 use chroot=no
@@ -20,10 +32,10 @@ log file=/var/log/rsyncd.log
 pid file=/var/run/rsyncd.pid
 lock file=/var/run/rsyncd.lock
 
-[test_data]
-uid=test
+[wallpaper_data]
+uid=wallpaper
 gid=aws
-path=/aws/test/current/data
+path=/aws/wallpaper/current/data
 comment  = iphone test files
 ignore errors = yes
 read only = no
