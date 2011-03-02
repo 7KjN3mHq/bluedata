@@ -1,0 +1,17 @@
+备份：
+innobackupex-1.5.1 --user=root --password=123 --stream=tar /mnt/bakcup | gzip > /mnt/backup/1.tar.gz
+
+innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --databases="wallpaper" --ibbackup=/usr/bin/xtrabackup --slave-info /mnt/backup
+
+innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --databases="wallpaper" --slave-info /mnt/backup
+
+恢复：
+innobackupex-1.5.1 --apply-log --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --no-lock --user=root /mnt/2011-03-02_11-38-46
+innobackupex-1.5.1 --copy-back --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --no-lock --user=root /mnt/2011-03-02_11-38-46
+
+
+全备：
+xtrabackup --defaults-file=/etc/mysql/my.cnf --backup --target-dir=/var/backups/zabbix/mysql/base
+
+增量备份：
+xtrabackup --defaults-file=/etc/mysql/my.cnf --backup --target-dir=/var/backups/zabbix/mysql/1 --incremental-basedir=/var/backups/zabbix/mysql/base

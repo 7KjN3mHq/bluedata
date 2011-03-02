@@ -156,7 +156,10 @@ vi /usr/local/php5-fcgi/etc/php-fpm.conf
 <value name="group">nobody</value>
 始终运行 80 个子进程，根据内存总量和应用的消耗内存状况估算。
 <value name="max_children">80</value>
+设置 php-cgi 进程处理脚本的超时时间为 60 秒，可以防止进程都被挂起。
+<value name="request_terminate_timeout">60s</value>
 记录慢响应的日志文件
+<value name="request_slowlog_timeout">1s</value>
 <value name="slowlog">/var/log/php5-fpm/slow.log</value>
 增大一个进程可打开文件句柄数量
 <value name="rlimit_files">65536</value>

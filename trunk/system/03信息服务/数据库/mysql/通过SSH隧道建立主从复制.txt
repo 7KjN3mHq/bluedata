@@ -1,0 +1,9 @@
+建立 MySQL 的远程隧道：
+远程主机 master :
+ssh -N -f -R 33007:127.0.0.1:3306 wallpaper@backuphost
+
+backuphost 机器上：
+mysql -h127.0.0.1 -P33007 -uroot -p
+
+
+GRANT REPLICATION SLAVE ON *.* TO 'slave'@'127.0.0.1' IDENTIFIED BY 'slave';

@@ -1,3 +1,6 @@
+下载源码包：
+apt-get source packagename
+
 中文显示：
 apt-get install locales
 en_US ISO-8859-1

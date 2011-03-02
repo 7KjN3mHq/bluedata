@@ -5,20 +5,36 @@ cd Percona-Server-5.1.54-rel12.5
 groupadd mysql
 useradd -g mysql -d /usr/local/mysql -s /bin/false mysql
 
-apt-get install bison
-
-apt-get install libncurses5-dev
+apt-get install bison libncurses5-dev
 
 ./configure \
 --prefix=/usr/local/mysql \
---sysconfdir=/usr/local/mysql/etc \
+--exec-prefix=/usr/local/mysql \
 --enable-thread-safe-client \
 --with-mysqld-user=mysql \
+--with-plugins=heap,innodb_plugin,myisam,partition \
 --without-debug
 
 make
 make install
-cd ..
-mkdir /usr/local/mysql/etc
-cp -f /usr/local/mysql/share/mysql/my-huge.cnf /usr/local/mysql/etc/my.cnf
+
+cd /usr/local/mysql
+mkdir etc var
+cp share/mysql/my-huge.cnf etc/my.cnf
 chown -R mysql:mysql /usr/local/mysql
+
+vi etc/my.cnf
+user            = mysql
+basedir         = /usr/local/mysql
+datadir         = /usr/local/mysql/var
+pid-file        = /usr/local/mysql/var/mysqld.pid
+socket          = /usr/local/mysql/var/mysqld.sock
+log-error       = /usr/local/mysql/var/err.log
+skip-name-resolve
+skip-locking ¸ÄÎª skip-external-locking
+
+/usr/local/mysql/bin/mysql_install_db --defaults-file=/usr/local/mysql/etc/my.cnf
+
+/usr/local/mysql/bin/mysqld_safe --defaults-file=/usr/local/mysql/etc/my.cnf 2>&1 > /dev/null &
+
+/usr/local/mysql/bin/mysqladmin -uroot -p shutdown
