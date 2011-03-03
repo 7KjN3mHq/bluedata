@@ -4,13 +4,13 @@ The following NEW packages will be installed:
 
 http://www.phpmyadmin.net/home_page/index.php
 
-tar jxvf phpMyAdmin-3.3.3-all-languages.tar.bz2
-mv phpMyAdmin-3.3.3-all-languages /home/www/wwwroot/phpmyadmin
+tar jxvf phpMyAdmin-3.3.9.2-all-languages.tar.bz2
+mv phpMyAdmin-3.3.9.2-all-languages /var/www/phpmyadmin
 
-cd /home/www/wwwroot/phpmyadmin
-cp libraries/config.default.php config.inc.php
+cd /var/www/phpmyadmin
+cp config.sample.inc.php config.inc.php
 vi config.inc.php
 $cfg['blowfish_secret'] = 'ba17c1ec07d65003';
 $cfg['Servers'][$i]['host'] = '192.168.6.200';
 
-open url: http://192.168.0.240/phpmyadmin/index.php
+open url: http://phpmyadmin.domain.com/index.php

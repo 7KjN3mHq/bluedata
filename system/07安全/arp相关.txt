@@ -1,0 +1,32 @@
+删除 arp 信息：
+arp -i eth1 -d 192.168.0.120
+
+
+手动绑定 arp 信息：
+arp -i eth1 -s 192.168.0.120 BC:30:5B:D1:04:12
+
+
+自动绑定 mac 地址：
+vi /etc/ethers
+192.168.0.1 00:1A:4B:A9:CF:36
+
+arp -f
+
+
+获取当前网段的 ip/mac 地址：
+vi arping.sh
+#!/bin/bash
+for ((i = 1; i < 254; i++))
+do
+    arping -I eth1 192.168.0.$i -c 1
+done
+arp -n > mac.txt
+
+
+广播 arp 信息：
+arping -A -I <device> <destination_ip_address>
+arping -U -I eth1 -s 192.168.0.10 192.168.0.1
+
+
+模拟 arp 攻击：
+arpoison -i eth1 -d 192.168.0.255 -s 192.168.0.120 -t ff:ff:ff:ff:ff:ff -r ff:ff:ff:ff:ff:ff

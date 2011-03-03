@@ -2,7 +2,11 @@ http://blog.jianingy.com/content/ssh隧道技术简介
 
 建立 MySQL 的远程隧道：
 远程主机：
-ssh -N -f -R 33006:127.0.0.1:33006 wallpaper@backuphost
+ssh -N -f -R 33006:127.0.0.1:3306 wallpaper@backuphost
 
 backuphost 机器上：
 mysql -h127.0.0.1 -P33006 -uroot -p
+
+
+本地隧道：
+ssh -N -f -L 3721:<remote_host>:3306 <localhost>
