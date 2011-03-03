@@ -5,13 +5,16 @@ innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --databases="wa
 
 innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --databases="wallpaper" --slave-info /mnt/backup
 
+
+innobackupex-1.5.1 --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --user=root --databases="wallpaper" /aws/wallpaper/backup/mysql
+
 恢复：
 innobackupex-1.5.1 --apply-log --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --no-lock --user=root /mnt/2011-03-02_11-38-46
 innobackupex-1.5.1 --copy-back --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --no-lock --user=root /mnt/2011-03-02_11-38-46
 
 
 全备：
-xtrabackup --defaults-file=/etc/mysql/my.cnf --backup --target-dir=/var/backups/zabbix/mysql/base
+xtrabackup --defaults-file=/etc/mysql/my.cnf --backup --target-dir=/var/backups/zabbix/mysql/0
 
 增量备份：
-xtrabackup --defaults-file=/etc/mysql/my.cnf --backup --target-dir=/var/backups/zabbix/mysql/1 --incremental-basedir=/var/backups/zabbix/mysql/base
+xtrabackup --defaults-file=/etc/mysql/my.cnf --backup --target-dir=/var/backups/zabbix/mysql/1 --incremental-basedir=/var/backups/zabbix/mysql/0

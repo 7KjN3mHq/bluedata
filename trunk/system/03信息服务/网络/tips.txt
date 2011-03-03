@@ -1,6 +1,3 @@
-广播 arp 信息：
-arping -A -I <device> <ip_address>
-
 Debian/Ubuntu 下针对网卡的限速
 apt-get install wondershaper iproute
 wondershaper eth0 200 100  ;限制第一块网卡的下行速度200kb，上行速度100kb。
