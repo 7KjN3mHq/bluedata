@@ -36,7 +36,7 @@ basedir         = /usr
 datadir         = /aws/wallpaper/current/mysql
 tmpdir          = /tmp
 skip-external-locking
-innodb_file_per_table
+skip-slave-start
 bind-address            = 127.0.0.1
 key_buffer              = 16M
 max_allowed_packet      = 16M
@@ -46,6 +46,8 @@ myisam-recover          = BACKUP
 query_cache_limit       = 1M
 query_cache_size        = 16M
 log_error               = /var/log/mysql/error_3307.log
+log-bin                 = mysql-bin
+log_slave_updates       = 1
 expire_logs_days        = 10
 max_binlog_size         = 100M
 
@@ -59,7 +61,8 @@ max_allowed_packet      = 16M
 [isamchk]
 key_buffer              = 16M
 
-!includedir /etc/mysql/conf.d/
+
+注： my.cnf 中的选项 !includedir /etc/mysql/conf.d/ 在 my.cnf.multi 中不能使用。
 
 
 /usr/local/mysql/bin/mysql_install_db --user=mysql --datadir=/aws/wallpaper/current/mysql

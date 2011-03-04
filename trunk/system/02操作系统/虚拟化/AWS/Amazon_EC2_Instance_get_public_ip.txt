@@ -1,0 +1,1 @@
+curl http://fw.qq.com/ipaddress 2>/dev/null | cut -d '"' -f 2

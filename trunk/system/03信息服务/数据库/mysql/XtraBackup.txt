@@ -1,20 +1,36 @@
-备份：
-innobackupex-1.5.1 --user=root --password=123 --stream=tar /mnt/bakcup | gzip > /mnt/backup/1.tar.gz
+http://www.percona.com/docs/wiki/percona-xtrabackup:innobackupex:how_to_recipes
 
-innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --databases="wallpaper" --ibbackup=/usr/bin/xtrabackup --slave-info /mnt/backup
+在线制作 复制：
+master 上：
+innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --slave-info /mnt/backup
 
-innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --databases="wallpaper" --slave-info /mnt/backup
+从其它 slave 制作：
+innobackupex-1.5.1 --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --user=root --slave-info /mnt
+
+slave 上：
+innobackupex-1.5.1 --apply-log --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --no-lock --user=root /mnt/2011-03-04_02-05-39
+停机拷贝：
+innobackupex-1.5.1 --copy-back --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --no-lock --user=root /mnt/2011-03-04_02-05-39
+
+恢复目录权限：
+chown -R mysql:mysql mysql
+chown -R mysql:root mysql/mysql
+
+查看 xtrabackup_slave_info 文件得到相关信息后：
+change master to master_host='127.0.0.1', master_port=33007, master_user='slave', master_password='slave', master_log_file='mysql-bin.000013', master_log_pos=85329;
+start slave;
 
 
-innobackupex-1.5.1 --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --user=root --databases="wallpaper" /aws/wallpaper/backup/mysql
-
-恢复：
-innobackupex-1.5.1 --apply-log --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --no-lock --user=root /mnt/2011-03-02_11-38-46
-innobackupex-1.5.1 --copy-back --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --no-lock --user=root /mnt/2011-03-02_11-38-46
-
+http://www.percona.com/docs/wiki/percona-xtrabackup:xtrabackup:incremental
 
 全备：
 xtrabackup --defaults-file=/etc/mysql/my.cnf --backup --target-dir=/var/backups/zabbix/mysql/0
 
 增量备份：
 xtrabackup --defaults-file=/etc/mysql/my.cnf --backup --target-dir=/var/backups/zabbix/mysql/1 --incremental-basedir=/var/backups/zabbix/mysql/0
+
+恢复：
+xtrabackup --prepare --apply-log-only --target-dir=/var/backups/zabbix/mysql/0
+xtrabackup --prepare --apply-log-only --target-dir=/var/backups/zabbix/mysql/0 --incremental-dir=/var/backups/zabbix/mysql/1
+
+把全备目录下的 innodb 表空间文件复制回数据库目录就行了。注意： xtrabackup 并不备份表结构文件 frm ，需要另行备份。

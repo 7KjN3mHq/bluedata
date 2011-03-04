@@ -1,0 +1,72 @@
+tar zxvf $ATTACH_DIR/zabbix_agentd.tar.gz
+cd zabbix_agentd
+
+
+groupadd zabbix
+useradd zabbix -g zabbix -d /nonexistent -s /bin/bash
+
+cp zabbix_agentd /usr/sbin/
+chmod +x /usr/sbin/zabbix_agentd
+cp zabbix_sender /usr/bin/
+chmod +x /usr/bin/zabbix_sender
+
+mkdir /etc/zabbix
+mkdir /var/run/zabbix
+chown zabbix:zabbix /var/run/zabbix
+mkdir /var/log/zabbix
+chown zabbix:zabbix /var/log/zabbix
+
+ZABBIX_SERVER_HOST=74.86.2.131
+ZABBIX_AGENTD_HOSTNAME=`curl http://fw.qq.com/ipaddress 2>/dev/null | cut -d '"' -f 2`
+#ip addr sh | grep eth0 | grep inet | awk '{print $2}' | cut -d '/' -f 1
+
+echo -ne "PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+Server=$ZABBIX_SERVER_HOST
+Hostname=$ZABBIX_AGENTD_HOSTNAME
+" > /etc/zabbix/zabbix_agentd.conf
+
+echo -ne '
+zabbix-agent    10050/tcp                       # Zabbix Agent
+zabbix-trapper  10051/tcp                       # Zabbix Trapper
+' >> /etc/services
+
+cp zabbix_agentd.init /etc/init.d/zabbix_agentd
+chmod +x /etc/init.d/zabbix_agentd
+sysv-rc-conf zabbix_agentd on
+
+
+## Nginx
+cp nginx_status.sh /etc/zabbix/
+chmod +x /etc/zabbix/nginx_status.sh
+
+echo -ne '
+UserParameter=nginx.accepts,/etc/zabbix/nginx_status.sh accepts
+UserParameter=nginx.handled,/etc/zabbix/nginx_status.sh handled
+UserParameter=nginx.requests,/etc/zabbix/nginx_status.sh requests
+UserParameter=nginx.connections.active,/etc/zabbix/nginx_status.sh active
+UserParameter=nginx.connections.reading,/etc/zabbix/nginx_status.sh reading
+UserParameter=nginx.connections.writing,/etc/zabbix/nginx_status.sh writing
+UserParameter=nginx.connections.waiting,/etc/zabbix/nginx_status.sh waiting
+' >> /etc/zabbix/zabbix_agentd.conf
+
+
+## MySQL
+cp mysql.conf ss_get_mysql_stats.php /etc/zabbix/
+
+echo -ne '
+Include=/etc/zabbix/mysql.conf
+' >> /etc/zabbix/zabbix_agentd.conf
+
+mysql -uroot -e "GRANT SUPER, PROCESS ON *.* TO 'zabbix'@'localhost' identified BY 'zabbix'"
+
+
+## Memcached
+cp zbx_memcached.pl /etc/zabbix/
+echo -ne '
+UserParameter=memcached[*],/usr/bin/perl /etc/zabbix/zbx_memcached.pl --item $1 --port $2 --host $3
+' >> /etc/zabbix/zabbix_agentd.conf
+
+
+cd ..
+rm -rf zabbix_agentd

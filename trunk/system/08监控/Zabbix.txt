@@ -189,6 +189,8 @@ wget http://caspian.dotconf.net/menu/Software/SendEmail/sendEmail-v1.56.tar.gz
 tar zxvf sendEmail-v1.56.tar.gz
 mv sendEmail-v1.56/sendEmail /usr/local/bin/
 
+apt-get install libnet-ssleay-perl libio-socket-ssl-perl
+
 创建 zabbix 脚本：
 vi /usr/local/zabbix/bin/sendmail.sh
 #!/bin/sh
@@ -199,10 +201,6 @@ vi /usr/local/zabbix/bin/sendmail.sh
 /usr/local/bin/sendEmail -f zabbix@gmail.com -t $1 -s smtp.gmail.com -u "$2" -xu zabbix@gmail.com -xp PASSWORD -m "$3"
 
 在 Administration -> Media types 添加 SendEmail ， Type 选 Script ， Script name 填 sendmail.sh
-
-如果要使用 SSL 连接，依赖： Net::SSLeay and IO::Socket::SSL
-apt-get install libnet-ssleay-perl libio-socket-ssl-perl
-发送命令再加上 -o tls=yes 。
 
 
 Web 监控的配置：
