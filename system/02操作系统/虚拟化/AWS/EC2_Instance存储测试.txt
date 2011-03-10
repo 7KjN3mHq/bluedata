@@ -1,0 +1,45 @@
+创建非 EBS EC2 Instance ， Image 为 RightImage_Ubuntu_10.04_i386_v5.6.8.1
+
+
+系统默认存储：
+/dev/sda1 挂载在 / 目录， 10GB
+/dev/sdb 挂载在 /mnt 目录， 147GB
+
+大多数常用工具都有安装，例如： emace vim wget subversion ...
+
+
+创建 EBS 设备， Attach now to Instance 。
+进行分区、格式化等操作后挂载到 /data 。
+
+
+向 /root /mnt /data 目录写入文件。
+
+
+init 6 重启后， /root /mnt /data 目录下的文件都还在。
+RightScale Reboot 后， /root /mnt /data 目录下的文件都还在。
+以上操作后， IP 地址未变。重启的速度非常快，一分钟内就启动了。
+
+
+RightScale Relaunch 后， / 和 /mnt 的分区都复原了， EBS 也没有挂接到 Instance 了。
+重新 Attach now EBS 设备到 Instance ，分区表信息还在，挂载后，数据也还在。
+Relaunch 后自动挂载应该可以使用 Attach on boot time 。
+init 0 关闭 Instance 后再启动，和 Relaunch 一个效果。
+这两种操作后系统的启动时间要长很多，六分多钟，并且 IP 地址也变了。
+
+
+Terminate 操作就是一切重来了，但 EBS 设备上的数据依然不会被清空，Attach 到其它 Instance 可以正常挂载使用。
+
+
+
+
+创建 EBS EC2 Instance ， Image 为 RightImage_OSS_Ubuntu_Maverick_i386_5.5.9.7_RC3_EBS
+进行之前的测试，在 stop instance 后， Image 所在的 /dev/sda1 数据是永久存在的，因为这是一个 EBS 设备。
+但是， /mnt 下的数据没有了。
+非 EBS Instance 没有 stop 按钮，就是为了避免用户误关机造成数据丢失。
+
+
+再在 EBS EC2 Instance 上进行 Terminate 操作，会发现 /dev/sda1 的 EBS 设备也被一并删除了， / 下面的数据肯定就没了。
+但是，自己手动建立并 Attach 的 EBS 设备同样是不受影响的。
+
+
+EBS EC2 Instance 进行 Stop 及 Terminate 操作后的 IP 依然是会改变的。

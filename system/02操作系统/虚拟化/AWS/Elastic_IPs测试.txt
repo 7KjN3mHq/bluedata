@@ -1,0 +1,18 @@
+在一个 Instance 上使用 EIP
+自有的公网 IP 不能使用了，只能使用 EIP 访问。
+Instance 访问公网使用的也是 EIP 。
+
+
+再启动一个 Instance ，使用同样的 EIP
+只能获得内网 IP ，不能获得公网 IP ， Console Output 显示一直在“绑定” 公网 IP 和 EIP ，但不能成功。
+已经使用 EIP 的机器的 EIP 也失效了。
+
+Terminate 这个 Instance ，先前的 Instance 的 EIP 恢复。
+
+
+利用 EIP 的这一特点，要实现初级的热备，并快速恢复（几分钟，相对于 HA 还是慢很多的），可以用以下步骤实现：
+1. 一个 EIP 对应两个 Instance 。
+
+2. 把需要持久存储的数据单独放到一个 EBS 设备上，并在两个 Instance 都设置启动时挂接。
+
+3. 启动其中一个 Instance 对外提供服务，另一个 Instance 处于备用状态。
