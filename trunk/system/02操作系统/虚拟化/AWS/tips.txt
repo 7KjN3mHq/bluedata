@@ -1,0 +1,8 @@
+查看当前 Instance 的信息：
+curl http://169.254.169.254/latest/meta-data/
+
+获取 Instance 的公网 IP:
+curl http://169.254.169.254/latest/meta-data/public-ipv4
+
+
+EC2 Instance 上 ping 其它 Instance 的 Public DNS name 返回的是内网 IP 。
