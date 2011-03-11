@@ -1,3 +1,6 @@
+通过腾讯的 IP 查询接口查询本机公网 IP:
+curl http://fw.qq.com/ipaddress 2>/dev/null | cut -d '"' -f 2
+
 Debian/Ubuntu 下针对网卡的限速
 apt-get install wondershaper iproute
 wondershaper eth0 200 100  ;限制第一块网卡的下行速度200kb，上行速度100kb。

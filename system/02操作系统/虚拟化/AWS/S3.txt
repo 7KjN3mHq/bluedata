@@ -1,0 +1,15 @@
+创建包含下划线 ("_") 的 bucket 不能设置为 Website ，提示 bucket 不存在，应该是命名的问题。
+
+文件需要单独赋予 Open/Download 权限才能被访问。
+
+
+操作 S3 的常用工具：
+http://www.s3fm.com/
+
+http://s3tools.org/s3cmd
+apt 安装的可以使用 s3cmd --configure 配置， AWS EC2 自带的没这功能，需要增加环境变量：
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+
+apt 安装的功能要丰富些。
+http://wangyan.org/blog/s3cmd-how-to-use.html

@@ -17,7 +17,7 @@ mkdir /var/log/zabbix
 chown zabbix:zabbix /var/log/zabbix
 
 ZABBIX_SERVER_HOST=74.86.2.131
-ZABBIX_AGENTD_HOSTNAME=`curl http://fw.qq.com/ipaddress 2>/dev/null | cut -d '"' -f 2`
+ZABBIX_AGENTD_HOSTNAME=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
 #ip addr sh | grep eth0 | grep inet | awk '{print $2}' | cut -d '/' -f 1
 
 echo -ne "PidFile=/var/run/zabbix/zabbix_agentd.pid
