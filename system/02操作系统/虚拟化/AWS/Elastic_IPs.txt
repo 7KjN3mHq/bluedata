@@ -1,6 +1,8 @@
 在一个 Instance 上使用 EIP
 自有的公网 IP 不能使用了，只能使用 EIP 访问。
 Instance 访问公网使用的也是 EIP 。
+原有的 Public DNS name 也不能解析，需要把 Public DNS name 中的 IP 部分改为 EIP 才能解析。
+ping Public DNS name 得到的是内网 IP ，但外网 ping 不通 Public DNS name 。
 
 
 再启动一个 Instance ，使用同样的 EIP
@@ -16,3 +18,5 @@ Terminate 这个 Instance ，先前的 Instance 的 EIP 恢复。
 2. 把需要持久存储的数据单独放到一个 EBS 设备上，并在两个 Instance 都设置启动时挂接。
 
 3. 启动其中一个 Instance 对外提供服务，另一个 Instance 处于备用状态。
+
+4. 应用使用 Public DNS name 访问这部机器（数据库或应用服务）。
