@@ -159,8 +159,8 @@ CentOS5(RHEL5) 使用了 udev 来管理系统设备文件名，/dev 目录下只有 md0，需要手动建
 再恢复 LVM
 # vgcfgrestore -f vga vga
 第一个 vga 是备份的文件名，第二个是要还原的 Volume Group Name 。如果 vga 这个卷组名被占用了，需要重命名。
-# vgscan
 # pvscan
+# vgscan
 然后启动 VG
 # vgchange -a y vga
 再扫描 LV
