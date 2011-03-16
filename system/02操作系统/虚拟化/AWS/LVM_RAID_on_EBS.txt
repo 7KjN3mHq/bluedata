@@ -1,0 +1,65 @@
+http://www.mysqlperformanceblog.com/2009/08/06/ec2ebs-single-and-raid-volumes-io-bencmark/
+
+apt-get install mdadm
+
+创建 RAID:
+mdadm -C /dev/md0 -l5 -n4 /dev/sd[j,k,l,m]
+
+基本命令：
+mdadm -A /dev/md0  #启动阵列
+mdadm -S /dev/md0  #停止阵列（停止前必须先 umount）
+mdadm -D /dev/md0  #显示阵列详细信息
+
+查看 sync 进度：
+watch "cat /proc/mdstat"
+
+生成配置文件：
+echo 'DEVICE /dev/sd[j,k,l,m]' > /etc/mdadm/mdadm.conf
+mdadm -Ds >> /etc/mdadm/mdadm.conf
+
+没有配置文件的启动：
+mdadm -A /dev/md0 /dev/sd[j,k,l,m]
+
+
+apt-get -y install lvm2
+
+pvcreate /dev/md0
+vgcreate vg /dev/md0
+lvcreate -l 767 -n mysql vg
+
+apt-get install xfsprogs
+mkfs.xfs /dev/vg/mysql
+mkdir /mysql
+mount -t xfs /dev/vg/mysql /mysql
+
+
+实例销毁后的恢复操作：
+apt-get install -y mdadm lvm2
+mdadm -A /dev/md0 /dev/sd[j,k,l,m]
+mkdir /mysql
+mount -t xfs /dev/vg/mysql /mysql
+
+
+只使用 LVM:
+apt-get -y install lvm2
+
+pvcreate /dev/sd[j,k,l,m]
+vgcreate vg /dev/sd[j,k,l,m]
+lvcreate -L 3G -n mysql vg
+
+apt-get install xfsprogs
+mkfs.xfs /dev/vg/mysql
+mkdir /mysql
+mount -t xfs /dev/vg/mysql /mysql
+
+lvextend -l +252 /dev/vg/mysql
+xfs_growfs /mysql
+
+
+pvscan
+vgscan
+vgchange -ay
+lvscan
+
+mkdir /mysql
+mount -t xfs /dev/vg/mysql /mysql

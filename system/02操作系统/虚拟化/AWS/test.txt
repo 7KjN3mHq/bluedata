@@ -1,0 +1,21 @@
+echo 0 > /proc/sys/vm/swappiness
+
+
+#!/bin/sh
+set -u
+set -x
+set -e
+
+for size in 256M 1G; do
+   for mode in seqwr seqrd rndrd rndwr rndrw; do
+      sysbench --test=fileio --file-num=1 --file-total-size=$size prepare
+      for threads in 1 4 8 16; do
+         echo PARAMS $size $mode $threads > sysbench-size-$size-mode-$mode-threads-$threads
+         sysbench --test=fileio --file-total-size=$size --file-test-mode=$mode\
+            --max-time=60 --max-requests=10000000 --num-threads=$threads --init-rng=on \
+            --file-num=1 --file-extra-flags=direct --file-fsync-freq=0 run \
+            >> sysbench-size-$size-mode-$mode-threads-$threads 2>&1
+      done
+     sysbench --test=fileio --file-total-size=$size cleanup
+   done
+done

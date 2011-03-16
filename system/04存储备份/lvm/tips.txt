@@ -1,0 +1,2 @@
+LVM 报错 Couldn't find device with uuid 'xxxxxxxxxxxxx' 的处理
+vgreduce --removemissing vg
