@@ -1,0 +1,42 @@
+cd /mysql
+wget http://www.percona.com/redir/downloads/Percona-Server-5.1/Percona-Server-5.1.55-12.6/source/Percona-Server-5.1.55-rel12.6.tar.gz
+tar zxvf Percona-Server-5.1.55-rel12.6.tar.gz
+cd Percona-Server-5.1.55-rel12.6
+
+groupadd mysql
+useradd -g mysql -d /mysql -s /bin/false mysql
+
+apt-get install -y bison libncurses5-dev
+
+./configure \
+--prefix=/mysql \
+--exec-prefix=/mysql \
+--sysconfdir=/mysql/etc \
+--enable-thread-safe-client \
+--with-mysqld-user=mysql \
+--with-plugins=heap,innodb_plugin,myisam,partition \
+--without-debug
+
+make
+make install
+
+cd /mysql
+mkdir etc var
+cp share/mysql/my-huge.cnf etc/my.cnf
+chown -R mysql:mysql /usr/local/mysql
+
+vi etc/my.cnf
+user            = mysql
+basedir         = /mysql
+datadir         = /mysql/var
+pid-file        = /mysql/var/mysqld.pid
+socket          = /mysql/var/mysqld.sock
+log-error       = /mysql/var/err.log
+skip-name-resolve
+skip-locking ¸ÄÎª skip-external-locking
+
+/usr/local/mysql/bin/mysql_install_db --defaults-file=/usr/local/mysql/etc/my.cnf
+
+/usr/local/mysql/bin/mysqld_safe --defaults-file=/usr/local/mysql/etc/my.cnf 2>&1 > /dev/null &
+
+/usr/local/mysql/bin/mysqladmin -uroot -p shutdown
