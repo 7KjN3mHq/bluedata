@@ -1,0 +1,39 @@
+PARAMS 1G rndrd 1
+sysbench 0.4.12:  multi-threaded system evaluation benchmark
+
+Running the test with following options:
+Number of threads: 1
+Initializing random number generator from timer.
+
+
+Extra file open flags: 16384
+1 files, 1Gb each
+1Gb total file size
+Block size 16Kb
+Number of random requests for random IO: 10000000
+Read/Write ratio for combined random IO test: 1.50
+Calling fsync() at the end of test, Enabled.
+Using synchronous I/O mode
+Doing random read test
+Threads started!
+Time limit exceeded, exiting...
+Done.
+
+Operations performed:  66034 Read, 0 Write, 0 Other = 66034 Total
+Read 1.0076Gb  Written 0b  Total transferred 1.0076Gb  (17.196Mb/sec)
+ 1100.55 Requests/sec executed
+
+Test execution summary:
+    total time:                          60.0007s
+    total number of events:              66034
+    total time taken by event execution: 59.9028
+    per-request statistics:
+         min:                                  0.46ms
+         avg:                                  0.91ms
+         max:                                214.05ms
+         approx.  95 percentile:               1.11ms
+
+Threads fairness:
+    events (avg/stddev):           66034.0000/0.00
+    execution time (avg/stddev):   59.9028/0.00
+
