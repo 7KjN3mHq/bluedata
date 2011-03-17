@@ -1,6 +1,8 @@
 echo 0 > /proc/sys/vm/swappiness
+apt-get install sysbench
 
-
+cd /mysql
+vi test.sh
 #!/bin/sh
 set -u
 set -x
@@ -19,3 +21,5 @@ for size in 256M 1G; do
      sysbench --test=fileio --file-total-size=$size cleanup
    done
 done
+
+sh test.sh

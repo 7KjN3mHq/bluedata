@@ -2,8 +2,16 @@ http://www.mysqlperformanceblog.com/2009/08/06/ec2ebs-single-and-raid-volumes-io
 
 apt-get install mdadm
 
-创建 RAID:
+创建 RAID5:
 mdadm -C /dev/md0 -l5 -n4 /dev/sd[j,k,l,m]
+
+创建 RAID0:
+mdadm -C /dev/md0 -c 256 -n 4 -l 0 /dev/sd[j,k,l,m]
+
+创建 RAID10:
+mdadm -v --create /dev/md1 --chunk=256 --level=raid1 --raid-devices=2 /dev/sdj /dev/sdk
+mdadm -v --create /dev/md2 --chunk=256 --level=raid1 --raid-devices=2 /dev/sdm /dev/sdl
+mdadm -v --create /dev/md0 --chunk=256 --level=raid0 --raid-devices=2 /dev/md1 /dev/md2
 
 基本命令：
 mdadm -A /dev/md0  #启动阵列
