@@ -1,4 +1,17 @@
-修改 HELO 信息
+修改 HELO 信息：
 编辑 /etc/mail/sendmail.cf
 去掉 #Dj$w.Foo.COM 的注释，改为相应域名。
 检查 /usr/lib/sendmail -d0.1 -bt < /dev/null
+
+
+命令行发邮件：
+/usr/sbin/sendmail -t <<EOF
+From: Mail testing <xxx@gmail.com.cn>
+To: yyy@gmail.com.cn
+Cc: zzz@gmail.com.cn
+Bcc: aaa@gmail.com.cn
+Subject: Mail testing
+----------------------------------
+This is the mail content from xxx server.
+---------------------------------
+EOF
