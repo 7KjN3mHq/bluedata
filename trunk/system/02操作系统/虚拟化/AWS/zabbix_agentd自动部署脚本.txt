@@ -1,3 +1,5 @@
+## depend: curl mysql-client-core-5.1 mysql-client-5.1 php5-cli php5-mysql sysv-rc-conf
+
 tar zxvf $ATTACH_DIR/zabbix_agentd.tar.gz
 cd zabbix_agentd
 
@@ -17,8 +19,7 @@ mkdir /var/log/zabbix
 chown zabbix:zabbix /var/log/zabbix
 
 ZABBIX_SERVER_HOST=74.86.2.131
-ZABBIX_AGENTD_HOSTNAME=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
-#ip addr sh | grep eth0 | grep inet | awk '{print $2}' | cut -d '/' -f 1
+ZABBIX_AGENTD_HOSTNAME=`curl http://169.254.169.254/latest/meta-data/public-ipv4
 
 echo -ne "PidFile=/var/run/zabbix/zabbix_agentd.pid
 LogFile=/var/log/zabbix/zabbix_agentd.log
@@ -26,8 +27,7 @@ Server=$ZABBIX_SERVER_HOST
 Hostname=$ZABBIX_AGENTD_HOSTNAME
 " > /etc/zabbix/zabbix_agentd.conf
 
-echo -ne '
-zabbix-agent    10050/tcp                       # Zabbix Agent
+echo -ne 'zabbix-agent    10050/tcp                       # Zabbix Agent
 zabbix-trapper  10051/tcp                       # Zabbix Trapper
 ' >> /etc/services
 
