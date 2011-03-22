@@ -1,0 +1,21 @@
+http://www.mysqlperformanceblog.com/2007/11/01/innodb-performance-optimization-basics/
+
+MySQL Innodb Settings 
+The most important ones are:
+innodb_buffer_pool_size 70-80% of memory is a safe bet. I set it to 12G on 16GB box.
+UPDATE: If you¡¯re looking for more details, check out detailed guide on tuning innodb buffer pool
+innodb_log_file_size ¨C This depends on your recovery speed needs but 256M seems to be a good balance between reasonable recovery time and good performance
+innodb_log_buffer_size=4M 4M is good for most cases unless you¡¯re piping large blobs to Innodb in this case increase it a bit.
+innodb_flush_log_at_trx_commit=2 If you¡¯re not concern about ACID and can loose transactions for last second or two in case of full OS crash than set this value. It can dramatic effect especially on a lot of short write transactions.
+innodb_thread_concurrency=8 Even with current Innodb Scalability Fixes having limited concurrency helps. The actual number may be higher or lower depending on your application and default which is 8 is decent start
+innodb_flush_method=O_DIRECT Avoid double buffering and reduce swap pressure, in most cases this setting improves performance. Though be careful if you do not have battery backed up RAID cache as when write IO may suffer.
+innodb_file_per_table ¨C If you do not have too many tables use this option, so you will not have uncontrolled innodb main tablespace growth which you can¡¯t reclaim. This option was added in MySQL 4.1 and now stable enough to use.
+
+
+innodb_buffer_pool_size = 6G
+innodb_log_file_size = 256M
+innodb_log_buffer_size = 4M
+innodb_flush_log_at_trx_commit = 2
+innodb_thread_concurrency = 8
+innodb_flush_method = O_DIRECT
+innodb_file_per_table

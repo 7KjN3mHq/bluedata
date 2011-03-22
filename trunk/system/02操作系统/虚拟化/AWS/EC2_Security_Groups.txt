@@ -1,0 +1,3 @@
+http://support.rightscale.com/12-Guides/Dashboard_Users_Guide/Clouds/AWS_Region/EC2_Security_Groups/Concepts/About_EC2_Security_Groups
+
+instance 必须终止了才能更改安全组。
