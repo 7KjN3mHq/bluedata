@@ -1,6 +1,6 @@
-wget http://www.percona.com/redir/downloads/Percona-Server-5.1/Percona-Server-5.1.54-12.5/source/Percona-Server-5.1.54-rel12.5.tar.gz
-tar zxvf Percona-Server-5.1.54-rel12.5.tar.gz
-cd Percona-Server-5.1.54-rel12.5
+wget http://www.percona.com/redir/downloads/Percona-Server-5.1/Percona-Server-5.1.55-12.6/source/Percona-Server-5.1.55-rel12.6.tar.gz
+tar zxvf Percona-Server-5.1.55-rel12.6.tar.gz
+cd Percona-Server-5.1.55-rel12.6
 
 groupadd mysql
 useradd -g mysql -d /usr/local/mysql -s /bin/false mysql

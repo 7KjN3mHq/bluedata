@@ -14,29 +14,41 @@ apt-get install -y bison libncurses5-dev
 --sysconfdir=/mysql/etc \
 --enable-thread-safe-client \
 --with-mysqld-user=mysql \
---with-plugins=heap,innodb_plugin,myisam,partition \
+--with-plugins=heap,innodb_plugin,myisam \
 --without-debug
 
 make
 make install
 
 cd /mysql
-mkdir etc var
-cp share/mysql/my-huge.cnf etc/my.cnf
-chown -R mysql:mysql /usr/local/mysql
+mkdir etc var log binlog
+cp share/mysql/my-innodb-heavy-4G.cnf etc/my.cnf
 
 vi etc/my.cnf
-user            = mysql
-basedir         = /mysql
-datadir         = /mysql/var
-pid-file        = /mysql/var/mysqld.pid
-socket          = /mysql/var/mysqld.sock
-log-error       = /mysql/var/err.log
+pid-file        = /tmp/mysqld.pid
+log-error       = /mysql/log/err.log
 skip-name-resolve
-skip-locking ¸ÄÎª skip-external-locking
 
-/usr/local/mysql/bin/mysql_install_db --defaults-file=/usr/local/mysql/etc/my.cnf
+default-storage-engine = INNODB
 
-/usr/local/mysql/bin/mysqld_safe --defaults-file=/usr/local/mysql/etc/my.cnf 2>&1 > /dev/null &
+log-bin=/mysql/binlog/mysql-bin
+log-bin-index=/mysql/binlog/mysql-bin.index
 
-/usr/local/mysql/bin/mysqladmin -uroot -p shutdown
+long_query_time = 1
+slow_query_log_file = /mysql/log/slow.log
+
+innodb_buffer_pool_size = 4G
+innodb_thread_concurrency = 8
+innodb_flush_log_at_trx_commit = 2
+innodb_log_buffer_size = 4M
+innodb_log_file_size = 256M
+innodb_flush_method = O_DIRECT
+innodb_file_per_table
+
+/mysql/bin/mysql_install_db --defaults-file=/mysql/etc/my.cnf
+
+chown -R mysql:mysql /mysql
+
+/mysql/bin/mysqld_safe --defaults-file=/mysql/etc/my.cnf 2>&1 > /dev/null &
+
+/mysql/bin/mysqladmin -uroot -p shutdown

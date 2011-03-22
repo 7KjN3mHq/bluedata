@@ -43,3 +43,6 @@ Terminate 操作就是一切重来了，但 EBS 设备上的数据依然不会被清空，Attach 到其它 I
 
 
 EBS EC2 Instance 进行 Stop 及 Terminate 操作后的 IP 依然是会改变的。
+
+
+Attach on boot time 的 EBS 要 Terminate instance 后才会 deattach ，否则要手动 deattach 才能给其它 instance 使用。

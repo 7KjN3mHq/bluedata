@@ -1,0 +1,7 @@
+http://www.splunk.com/page/predownload
+
+tar zxvf splunk-4.2-96430-Linux-x86_64.tgz -C /usr/local/
+
+/usr/local/splunk/bin/splunk start
+
+http://<URL>:8000

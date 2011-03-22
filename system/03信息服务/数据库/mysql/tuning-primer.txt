@@ -1,5 +1,7 @@
 tuning-primer.sh Ö§³Ö my.cnf
 
+apt-get install bc
+
 wget http://www.day32.com/MySQL/tuning-primer.sh
 chmod +x tuning-primer.sh
 ./tuning-primer.sh

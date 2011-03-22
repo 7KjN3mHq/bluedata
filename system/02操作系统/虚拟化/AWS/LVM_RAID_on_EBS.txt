@@ -29,11 +29,11 @@ mdadm -Ds >> /etc/mdadm/mdadm.conf
 mdadm -A /dev/md0 /dev/sd[j,k,l,m]
 
 
-apt-get -y install lvm2
+apt-get install -y lvm2
 
 pvcreate /dev/md0
 vgcreate vg /dev/md0
-lvcreate -l 767 -n mysql vg
+lvcreate -l 25000 -n mysql vg
 
 apt-get install xfsprogs
 mkfs.xfs /dev/vg/mysql
@@ -43,7 +43,9 @@ mount -t xfs /dev/vg/mysql /mysql
 
 实例销毁后的恢复操作：
 apt-get install -y mdadm lvm2
-mdadm -A /dev/md0 /dev/sd[j,k,l,m]
+mdadm -A /dev/md1 /dev/sdj /dev/sdk
+mdadm -A /dev/md2 /dev/sdl /dev/sdm
+mdadm -A /dev/md0 /dev/md1 /dev/md2
 mkdir /mysql
 mount -t xfs /dev/vg/mysql /mysql
 
