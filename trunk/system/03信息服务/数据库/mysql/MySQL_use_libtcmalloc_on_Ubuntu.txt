@@ -1,0 +1,10 @@
+apt-get install libtcmalloc-minimal0
+
+修改 mysqld_safe ，在
+# executing mysqld_safe
+下添加一行：
+export LD_PRELOAD="/usr/lib/libtcmalloc_minimal.so.0"
+
+重启 MySQL ，查看 tcmalloc 是否启用：
+lsof -n | grep tcmalloc
+mysqld    6421   mysql  mem       REG              202,1    125968     139277 /usr/lib/libtcmalloc_minimal.so.0.0.0

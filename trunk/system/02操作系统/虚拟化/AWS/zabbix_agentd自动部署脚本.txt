@@ -19,7 +19,7 @@ mkdir /var/log/zabbix
 chown zabbix:zabbix /var/log/zabbix
 
 ZABBIX_SERVER_HOST=74.86.2.131
-ZABBIX_AGENTD_HOSTNAME=`curl http://169.254.169.254/latest/meta-data/public-ipv4
+ZABBIX_AGENTD_HOSTNAME=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
 
 echo -ne "PidFile=/var/run/zabbix/zabbix_agentd.pid
 LogFile=/var/log/zabbix/zabbix_agentd.log
