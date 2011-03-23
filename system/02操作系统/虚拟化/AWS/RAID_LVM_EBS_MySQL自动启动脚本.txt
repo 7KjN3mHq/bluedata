@@ -1,0 +1,64 @@
+## depend: mdadm lvm2 libtcmalloc-minimal0 memcached php5-cli php5-mysql sysv-rc-conf
+
+#!/bin/bash -ex
+
+## nomal reboot:
+if test "$RS_REBOOT" = "true" ; then
+  mdadm -A /dev/md0 /dev/md1 /dev/md2
+  pvscan
+  vgscan
+  vgchange -ay
+  lvscan
+  mount -t xfs -o noatime /dev/vg/mysql /mysql
+  hostname `cat /mysql/etc/hostname`
+  /mysql/share/mysql/mysql.server start
+  exit 0
+fi
+
+
+## create user
+groupadd mysql
+useradd -g mysql -d /mysql -s /bin/bash mysql
+
+## prepare storage
+mkdir /mysql
+
+# RAID
+mdadm -A /dev/md1 /dev/sdj /dev/sdk
+mdadm -A /dev/md2 /dev/sdl /dev/sdm
+
+sleep 5
+mdadm -A /dev/md0 /dev/md1 /dev/md2
+
+# LVM
+pvscan
+vgscan
+vgchange -ay
+lvscan
+
+mount -t xfs -o noatime /dev/vg/mysql /mysql
+
+## start MySQL
+apt-get autoremove -y
+
+HOSTNAME=`cat /mysql/etc/hostname`
+hostname $HOSTNAME
+sed -i "s/^127.0.0.1 localhost$/127.0.0.1 localhost $HOSTNAME/" /etc/hosts
+
+mv /etc/mysql/my.cnf /etc/mysql/my.cnf~
+ln -s /mysql/etc/my.cnf /etc/mysql/my.cnf
+
+mkdir /var/run/mysqld
+chown -R mysql /var/run/mysqld
+
+/mysql/share/mysql/mysql.server start
+
+## restart memcached
+mv /etc/memcached.conf /etc/memcached.conf~
+cp -f /mysql/etc/memcached.conf /etc/memcached.conf
+service memcached restart
+
+## install zabbix_agentd
+cd /mysql/zabbix_agentd
+bash install.sh
+service zabbix_agentd start

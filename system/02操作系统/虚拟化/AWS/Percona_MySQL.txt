@@ -25,7 +25,8 @@ mkdir etc var log binlog
 cp share/mysql/my-innodb-heavy-4G.cnf etc/my.cnf
 
 vi etc/my.cnf
-pid-file        = /tmp/mysqld.pid
+socket          = /var/run/mysqld/mysqld.sock
+pid-file        = /var/run/mysqld/mysqld.pid
 log-error       = /mysql/log/err.log
 skip-name-resolve
 
@@ -45,10 +46,14 @@ innodb_log_file_size = 256M
 innodb_flush_method = O_DIRECT
 innodb_file_per_table
 
-/mysql/bin/mysql_install_db --defaults-file=/mysql/etc/my.cnf
+mv /etc/mysql/my.cnf /etc/mysql/my.cnf~
+ln -s /mysql/etc/my.cnf /etc/mysql/my.cnf
+
+/mysql/bin/mysql_install_db
 
 chown -R mysql:mysql /mysql
 
-/mysql/bin/mysqld_safe --defaults-file=/mysql/etc/my.cnf 2>&1 > /dev/null &
+mkdir /var/run/mysqld
+chown -R mysql /var/run/mysqld
 
-/mysql/bin/mysqladmin -uroot -p shutdown
+/mysql/share/mysql/mysql.server start
