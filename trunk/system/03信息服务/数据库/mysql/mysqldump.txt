@@ -9,3 +9,6 @@ mysql> lock table shop_117 read;
 
 恢复数据
 mysql> source visitor-shop_117.sql;
+
+只导出表结构：
+mysqldump --opt -d -uroot <DATABASE> > <DATABASE>_frm.sql
