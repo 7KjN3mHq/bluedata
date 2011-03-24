@@ -1,0 +1,7 @@
+输入自己的密码取得 root 权限：
+visudo
+develop ALL=(ALL) ALL
+
+
+配制空密码的 sudo:
+mysql ALL=(ALL) NOPASSWD: ALL

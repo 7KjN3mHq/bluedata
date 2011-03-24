@@ -1,4 +1,4 @@
-## depend: mdadm lvm2 libtcmalloc-minimal0 memcached php5-cli php5-mysql sysv-rc-conf
+## depend: mdadm lvm2 libtcmalloc-minimal0 memcached libdbi-perl libdbd-mysql-perl php5-cli php5-mysql sysv-rc-conf
 
 #!/bin/bash -ex
 
@@ -19,6 +19,10 @@ fi
 ## create user
 groupadd mysql
 useradd -g mysql -d /mysql -s /bin/bash mysql
+chmod +w /etc/sudoers
+echo '
+mysql ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+chmod -w /etc/sudoers
 
 ## prepare storage
 mkdir /mysql
@@ -41,6 +45,8 @@ mount -t xfs -o noatime /dev/vg/mysql /mysql
 ## start MySQL
 apt-get autoremove -y
 
+dpkg -i /mysql/tools/xtrabackup_1.4-193.lucid.25_amd64.deb
+
 HOSTNAME=`cat /mysql/etc/hostname`
 hostname $HOSTNAME
 sed -i "s/^127.0.0.1 localhost$/127.0.0.1 localhost $HOSTNAME/" /etc/hosts
@@ -62,3 +68,7 @@ service memcached restart
 cd /mysql/zabbix_agentd
 bash install.sh
 service zabbix_agentd start
+
+## limit ssh key
+mv /root/.ssh/rightscale_ssh_key_pair-AWS-US-East.pub /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys

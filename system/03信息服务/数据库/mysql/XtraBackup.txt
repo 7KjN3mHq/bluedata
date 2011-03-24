@@ -21,6 +21,21 @@ change master to master_host='127.0.0.1', master_port=33007, master_user='slave'
 start slave;
 
 
+压缩传输到远程主机：
+在目标主机：
+打包备份：
+nc -l 12345 | cat - > /data/backups/backup.tar
+解压到当前目录：
+nc -l 12345 | tar -ix
+在源主机：
+innobackupex-1.5.1 --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --user=root --slave-info --stream=tar ./ | nc ec2-50-17-223-70.compute-1.amazonaws.com 12345
+
+innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --slave-info --stream=tar ./ | nc ec2-50-17-223-70.compute-1.amazonaws.com 12345
+
+innobackupex-1.5.1 --apply-log --defaults-file=/etc/mysql/my.cnf --no-lock --user=root /mysql/backup
+innobackupex-1.5.1 --copy-back --defaults-file=/etc/mysql/my.cnf --no-lock --user=root /mysql/backup
+
+
 http://www.percona.com/docs/wiki/percona-xtrabackup:xtrabackup:incremental
 
 全备：

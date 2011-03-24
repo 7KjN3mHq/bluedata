@@ -25,6 +25,7 @@ mkdir etc var log binlog
 cp share/mysql/my-innodb-heavy-4G.cnf etc/my.cnf
 
 vi etc/my.cnf
+datadir         = /mysql/var
 socket          = /var/run/mysqld/mysqld.sock
 pid-file        = /var/run/mysqld/mysqld.pid
 log-error       = /mysql/log/err.log
