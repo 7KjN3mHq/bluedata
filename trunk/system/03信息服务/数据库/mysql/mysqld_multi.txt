@@ -33,7 +33,7 @@ socket          = /var/run/mysqld/mysqld_3307.sock
 pid-file        = /var/run/mysqld/mysqld_3307.pid
 port            = 3307
 basedir         = /usr
-datadir         = /aws/wallpaper/current/mysql
+datadir         = /aws/mysql-all/current/mysql
 tmpdir          = /tmp
 skip-external-locking
 skip-slave-start
@@ -65,7 +65,7 @@ key_buffer              = 16M
 注： my.cnf 中的选项 !includedir /etc/mysql/conf.d/ 在 my.cnf.multi 中不能使用。
 
 
-/usr/local/mysql/bin/mysql_install_db --user=mysql --datadir=/aws/wallpaper/current/mysql
+/usr/local/mysql/bin/mysql_install_db --defaults-file=/usr/local/mysql/etc/my.cnf.3307
 
 /usr/local/mysql/bin/mysqld_multi --defaults-file=/usr/local/mysql/etc/my.cnf.multi start 3307
 
