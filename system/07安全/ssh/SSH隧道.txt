@@ -10,3 +10,4 @@ mysql -h127.0.0.1 -P33006 -uroot -p
 
 ±¾µØËíµÀ£º
 ssh -N -f -L 3721:<remote_host>:3306 <localhost>
+# 127.0.0.1 or local network IP.
