@@ -1,4 +1,5 @@
 http://code.google.com/p/sersync/
+http://blog.johntechinfo.com/sersyncguild
 
 wget http://sersync.googlecode.com/files/sersync2.5_32bit_binary_stable_final.tar.gz
 tar zxvf sersync2.5_32bit_binary_stable_final.tar.gz
@@ -41,3 +42,10 @@ ignore errors = yes
 read only = no
 hosts allow =  10.254.231.84
 hosts deny = *
+
+
+整体同步一次：
+./sersync2 -r
+
+运行实时同步：
+./sersync2 -d
