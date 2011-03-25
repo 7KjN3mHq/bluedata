@@ -28,11 +28,10 @@ nc -l 12345 | cat - > /data/backups/backup.tar
 解压到当前目录：
 nc -l 12345 | tar -ix
 在源主机：
-innobackupex-1.5.1 --defaults-file=/usr/local/mysql/etc/my.cnf.3307 --user=root --slave-info --stream=tar ./ | nc ec2-50-17-223-70.compute-1.amazonaws.com 12345
-
-innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --slave-info --stream=tar ./ | nc ec2-50-17-223-70.compute-1.amazonaws.com 12345
-
+innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --slave-info --stream=tar ./ | nc backuphost 12345
+在目标主机：
 innobackupex-1.5.1 --apply-log --defaults-file=/etc/mysql/my.cnf --no-lock --user=root /mysql/backup
+service mysql stop
 innobackupex-1.5.1 --copy-back --defaults-file=/etc/mysql/my.cnf --no-lock --user=root /mysql/backup
 
 
