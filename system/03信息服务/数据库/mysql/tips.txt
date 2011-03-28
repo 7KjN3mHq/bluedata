@@ -1,3 +1,8 @@
+binlog 清理：
+FLUSH LOGS;
+PURGE BINARY LOGS TO 'mysql-bin.010';
+PURGE BINARY LOGS BEFORE '2008-04-02 22:46:26';
+
 批量转表引擎：
 apt-get install libdbi-perl libdbd-mysql-perl
 mysql_convert_table_format 的 -e 参数没用，要修改脚本，如果要转为 INNODB ，就把 MYISAM 改为 INNODB 。

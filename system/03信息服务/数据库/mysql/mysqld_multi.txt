@@ -1,7 +1,7 @@
 [mysqld_multi]
-mysqld          = /usr/bin/mysqld_safe
-mysqladmin      = /usr/bin/mysqladmin
-user            = mysql
+mysqld          = /usr/local/mysql/bin/mysqld_safe
+mysqladmin      = /usr/local/mysql/bin/mysqladmin
+user            = root
 
 [mysqld3306]
 server-id       = 3306
@@ -9,7 +9,7 @@ user            = mysql
 socket          = /var/run/mysqld/mysqld_3306.sock
 pid-file        = /var/run/mysqld/mysqld_3306.pid
 port            = 3306
-basedir         = /usr
+basedir         = /usr/local/mysql
 datadir         = /var/lib/mysql
 tmpdir          = /tmp
 skip-external-locking
@@ -22,7 +22,7 @@ thread_cache_size       = 8
 myisam-recover          = BACKUP
 query_cache_limit       = 1M
 query_cache_size        = 16M
-log_error               = /var/log/mysql/error_3306.log
+log-error               = /var/log/mysql/error_3306.log
 expire_logs_days        = 10
 max_binlog_size         = 100M
 
@@ -32,7 +32,7 @@ user            = mysql
 socket          = /var/run/mysqld/mysqld_3307.sock
 pid-file        = /var/run/mysqld/mysqld_3307.pid
 port            = 3307
-basedir         = /usr
+basedir         = /usr/local/mysql
 datadir         = /aws/mysql-all/current/mysql
 tmpdir          = /tmp
 skip-external-locking
@@ -45,7 +45,7 @@ thread_cache_size       = 8
 myisam-recover          = BACKUP
 query_cache_limit       = 1M
 query_cache_size        = 16M
-log_error               = /var/log/mysql/error_3307.log
+log-error               = /var/log/mysql/error_3307.log
 log-bin                 = mysql-bin
 log_slave_updates       = 1
 expire_logs_days        = 10
@@ -64,11 +64,20 @@ key_buffer              = 16M
 
 注： my.cnf 中的选项 !includedir /etc/mysql/conf.d/ 在 my.cnf.multi 中不能使用。
 
+mkdir /var/log/mysql
+chown mysql:adm /var/log/mysql
+mkdir /var/run/mysqld
+chwon mysql:root /var/run/mysqld
 
-/usr/local/mysql/bin/mysql_install_db --defaults-file=/usr/local/mysql/etc/my.cnf.3307
+echo '
+export PATH=$PATH:/usr/local/mysql/bin' >> /etc/profile
 
-/usr/local/mysql/bin/mysqld_multi --defaults-file=/usr/local/mysql/etc/my.cnf.multi start 3307
+mysql_install_db --defaults-file=/usr/local/mysql/etc/my.cnf.3307
 
-/usr/local/mysql/bin/mysqld_multi --defaults-file=/usr/local/mysql/etc/my.cnf.multi report
+mysqld_multi --defaults-file=/usr/local/mysql/etc/my.cnf.multi start 3307
 
-/usr/local/mysql/bin/mysql -h127.0.0.1 -P3307 -uroot
+mysqld_multi --defaults-file=/usr/local/mysql/etc/my.cnf.multi report
+
+mysql -h127.0.0.1 -P3307 -uroot
+
+mysqld_multi --defaults-file=/usr/local/mysql/etc/my.cnf.multi stop 3307
