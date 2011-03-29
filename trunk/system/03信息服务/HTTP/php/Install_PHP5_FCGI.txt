@@ -33,6 +33,7 @@ cd php-5.2.14
 --enable-mbstring \
 --enable-sockets \
 --with-config-file-path=/usr/local/php5-fcgi/etc \
+--with-curl \
 --with-gd \
 --with-jpeg-dir \
 --with-png-dir \
