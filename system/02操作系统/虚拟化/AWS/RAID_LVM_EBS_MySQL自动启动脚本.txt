@@ -10,7 +10,7 @@ if test "$RS_REBOOT" = "true" ; then
   vgchange -ay
   lvscan
   mount -t xfs -o noatime /dev/vg/mysql /mysql
-  hostname `cat /mysql/etc/hostname`
+  #hostname `cat /mysql/etc/hostname`
   /mysql/share/mysql/mysql.server start
   exit 0
 fi
@@ -48,7 +48,7 @@ apt-get autoremove -y
 dpkg -i /mysql/tools/xtrabackup_1.4-193.lucid.25_amd64.deb
 
 HOSTNAME=`cat /mysql/etc/hostname`
-hostname $HOSTNAME
+#hostname $HOSTNAME
 sed -i "s/^127.0.0.1 localhost$/127.0.0.1 localhost $HOSTNAME/" /etc/hosts
 
 mv /etc/mysql/my.cnf /etc/mysql/my.cnf~
@@ -56,6 +56,21 @@ ln -s /mysql/etc/my.cnf /etc/mysql/my.cnf
 
 mkdir /var/run/mysqld
 chown -R mysql /var/run/mysqld
+
+sysfilemax=`sysctl -n fs.file-max`
+mysql_file_ulimit=$(($sysfilemax/33))
+
+cat <<EOF>> /etc/security/limits.conf
+mysql soft nofile $mysql_file_ulimit
+mysql hard nofile $mysql_file_ulimit
+root soft nofile $mysql_file_ulimit
+root hard nofile $mysql_file_ulimit
+mysql soft nproc unlimited
+mysql hard nproc unlimited
+
+EOF
+
+ulimit -n $mysql_file_ulimit
 
 /mysql/share/mysql/mysql.server start
 
