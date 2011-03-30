@@ -1,0 +1,38 @@
+http {
+    ...
+    fastcgi_cache_path /path/to/cache levels=1:2 keys_zone=NAME:10m inactive=5m max_size=2m;
+    ...
+
+server {
+    location / {
+    fastcgi_pass localhost:9000;
+
+    fastcgi_cache NAME;
+    fastcgi_cache_key  localhost:9000$request_uri;
+
+    fastcgi_cache_valid 200 302 1h;
+    fastcgi_cache_valid 301 1d;
+    fastcgi_cache_valid any 1m;
+
+    #fastcgi_cache_min_uses 1;
+    }
+}
+
+
+fastcgi_cache_path /home/cache levels=1:2 keys_zone=wallpaper:100m inactive=5m max_size=10g;
+
+fastcgi_cache wallpaper;
+fastcgi_cache_key wallpaper$request_uri;
+fastcgi_cache_valid 200 301 302 5m;
+fastcgi_cache_valid any 1m;
+fastcgi_cache_min_uses 1;
+fastcgi_cache_use_stale  error timeout invalid_header http_500;
+
+
+fastcgi_cache_path：缓存目录，可以设置目录层级，比如1:2会生成16*256个字目录，wallpaper是这个缓存空间的名字，100m是用多少内存（这样热门的内容会直接放到内存，提高访问速度），inactive表示默认失效时间，max_size表示最多用多少硬盘空间。本来还有个fastcgi_temp_path参数，但似乎没用。
+
+fastcgi_cache_valid：定义哪些http头要缓存
+fastcgi_cache_min_uses：URL经过多少次请求将被缓存
+fastcgi_cache_use_stale：定义哪些情况下用过期缓存
+fastcgi_cache_key：定义fastcgi_cache的key，示例中就以请求的URI作为缓存的key，Nginx会取这个key的md5作为缓存文件，如果设置了缓存哈希目录，Nginx会从后往前取相应的位数做为目录
+fastcgi_cache：用哪个缓存空间
