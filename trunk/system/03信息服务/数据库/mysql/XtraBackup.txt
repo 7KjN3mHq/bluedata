@@ -1,5 +1,8 @@
 http://www.percona.com/docs/wiki/percona-xtrabackup:innobackupex:how_to_recipes
 
+打包备份指定的库：
+innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --databases=wallpaper --stream=tar ./ | gzip - > /backup/wallpaper_db.tar.gz
+
 在线制作 复制：
 master 上：
 innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --slave-info /mnt/backup
