@@ -1,0 +1,47 @@
+Nginx的Location可以有以下几个匹配：
+1. =  严格匹配这个查询。如果找到，停止搜索。
+2. ^~ 匹配路径的前缀，如果找到，停止搜索。
+3. ~  为区分大小写的正则匹配  
+4. ~* 为不区分大小写匹配
+
+例子：
+location = / {
+# matches the query / only.
+# 只匹配 / 查询。
+[ configuration A ]
+}
+
+location / {
+# matches any query, since all queries begin with /, but regular
+# expressions and any longer conventional blocks will be
+# matched first.
+# 匹配任何查询，因为所有请求都以 / 开头。但是正则表达式规则和长的规则将被优先和查询匹配。
+[ configuration B ]
+}
+
+location ^~ /images/ {
+# matches any query beginning with /images/ and halts searching,
+# so regular expressions will not be checked.
+# 匹配任何以 /images/ 开头的任何查询并且停止搜索。任何正则表达式将不会被测试。
+[ configuration C ]
+}
+
+location ~* ".(gif|jpg|jpeg)$ {
+# matches any request ending in gif, jpg, or jpeg. However, all
+# requests to the /images/ directory will be handled by
+# Configuration C.
+# 匹配任何以 gif、jpg 或 jpeg 结尾的请求。然而所有 /images/ 目录的请求将使用 Configuration C。
+[ configuration D ]
+}
+
+如果要定义多个location，则可以有2种方式：
+使用/ ：location / { client_max_body_size 200m; proxy_connect_timeout 30; proxy_set_header Host $http_host; proxy_set_header x-forwarded-for $remote_addr; proxy_pass http://127.0.0.1:8008; } location /tmp/{ root /; internal; } 采用这种方式，/tmp可以放在/的下面，因为“/是匹配任何查询，但是正则表达式规则和长的块规则将被优先和查询匹配”
+
+使用~ /* ： location ~ /tmp/ { root /tmp; internal; } location ~ /* { client_max_body_size 20m; proxy_connect_timeout 30; fastcgi_pass fpass; include fastcgi_params; } 采用这种方式，/tmp则必须放在~ /*这个前面，因为~是正则匹配的，正则匹配是有顺序的，只要匹配上就不会再往下匹配了。除非在conf中有定义=或者^~，也就是说=和^~的优先级最高，如果匹配上，就不会再去匹配其它的规则了。
+
+总之，引用Nginx的官方文档的匹配规则：
+Directives with the = prefix that match the query exactly. If found, searching stops.
+All remaining directives with conventional strings, longest match first. If this match used the ^~ prefix, searching stops.
+Regular expressions, in order of definition in the configuration file.
+If #3 yielded a match, that result is used. Else the match from #2 is used.
+注意：正则表达式的匹配是有顺序的，按顺序匹配。其它的匹配理论上讲是只有优先级，而没有顺序的。

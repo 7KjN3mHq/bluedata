@@ -16,3 +16,22 @@ proxy_set_header referer "http://$hostx";
 访问方法：http://www.domain.com/get/http://www.google.com/tools/dlpage/res/chrome/images/chrome-205_noshadow.png
 
 因为 nginx 不会自动读取系统的 dns 去解析域名，所以需要定义一个 resolver 作为 dns 服务器。
+
+
+正向代理：
+server{
+    resolver x.x.x.x;
+    listen 80;
+    location / {
+        proxy_pass http://$http_host$request_uri;
+    }
+}
+
+注意事项：
+1. 不能有 hostname 。
+2. 必须有 resolver , 即 dns ，即上面的 x.x.x.x 。
+3. $http_host 和 $request_uri 是 nginx 系统变量。
+
+使用代理：
+export http_proxy=http://<proxy_address>:<proxy_port>
+echo "export http_proxy=http://<proxy_address>:<proxy_port>" >> ~/.bashrc

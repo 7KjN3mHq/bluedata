@@ -34,7 +34,7 @@ sleep 5
 modprobe dm-snapshot
 lvcreate -l 486 -s -n mysql_snap $backup_lv_name
 
-## ªªÊ¼ slave
+## Æô¶¯ slave
 mysql -u$user -p$password -P$port -e 'slave start'
 
 ## ±¸·Ý binlog
@@ -47,7 +47,7 @@ tar cjpf $backup_path/$backup_binlog_dir/$backup_binlog_name `ls | grep mysql-bi
 rsync -a --delete --exclude "mysql-bin.*" --exclude "*.MYI" --exclude "relay-log.info" /mnt/mysql_snap/ $backup_path/$backup_dir/
 cp -af /mnt/mysql_snap/mysql/*.MYI $backup_path/$backup_dir/mysql/
 
-#Ñ °Ñ±¸µÄµÄ binloÑ¹Ëõ°ü°ü´«ËÍµ½Ô¶³Ì±¸·ÝÖ÷»úscpcp $backup_path/$backup_binlog_d/r/$backup_binlog_name $remote_backup_ho:t:$remote_backup_path/$remote_backup_binlog_name
+#?°Ñ±¸µÄµÄ binloÑ¹Ëõ°ü°ü´«ËÍµ½Ô¶³Ì±¸·ÝÖ÷»úscpcp $backup_path/$backup_binlog_d/r/$backup_binlog_name $remote_backup_ho:t:$remote_backup_path/$remote_backup_binlog_name
 
 ## ´ò°ü±¸·ÝÄ¿Â¼²¢´«ËÍµ½Ô¶³Ì±¸·ÝÖ÷»ú
 cd $backup_path
