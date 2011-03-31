@@ -1,3 +1,5 @@
+http://wiki.nginx.org/HttpFcgiModule
+
 http {
     ...
     fastcgi_cache_path /path/to/cache levels=1:2 keys_zone=NAME:10m inactive=5m max_size=2m;
@@ -19,6 +21,7 @@ server {
 }
 
 
+Ê¾Àý£º
 fastcgi_cache_path /home/cache levels=1:2 keys_zone=wallpaper:100m inactive=5m max_size=10g;
 
 fastcgi_cache wallpaper;

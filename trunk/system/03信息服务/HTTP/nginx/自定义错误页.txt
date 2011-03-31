@@ -1,0 +1,13 @@
+error_page 404 /404.html;
+error_page 500 502 503 504 /50x.html;
+全局加入 http 段。加入 server 段对指定 vhost 有效。
+
+如果是通过 fastcgi 生成的页面，需要设置：
+fastcgi_intercept_errors on;
+默认是 off 的。
+
+可以强制 response code 返回 200 ：
+error_page 500 502 503 504 =200 /50x.html;
+
+注意：返回页面是 URL 地址，不是系统路径。如果要跨 server ，可以写全，比如：
+error_page 404 http://www.domain.com/sorry.htm;

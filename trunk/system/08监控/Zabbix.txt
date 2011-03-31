@@ -204,7 +204,7 @@ vi /usr/local/zabbix/bin/sendmail.sh
 
 
 Web 监控的配置：
-自动创建的items在host的items列表中是看不到的，需要在创建trigger时选择items时才能看到。
+自动创建的 items 在 host 的 items 列表中是看不到的，需要在创建 trigger 时选择 items 才能看到。
 
 
 默认 MySQL 监控的配置：
@@ -221,7 +221,7 @@ UserParameter=mysql.version,mysql -V
 sudo /etc/init.d/zabbix-agentd restart
 
 
-Nginx 的监控： http://www.zabbix.com/forum/showthread.php?t=11067
+Nginx 的监控：
 vi /etc/zabbix/nginx_status.sh
 #!/bin/bash
 # Script to fetch nginx statuses for tribily monitoring systems
@@ -279,9 +279,9 @@ UserParameter=nginx.connections.waiting,/etc/zabbix/nginx_status.sh waiting
 
 /usr/local/zabbix/bin/zabbix_get -s<zabbix agent host> -p10050 -k"nginx.accepts"
 
-
 问题：不能发现 item ，日志文件出现： No active checks on server
-解决：zabbix_agentd.conf 文件里 Hostname 的设置要和 Web Interface 里的 主机名 一致。
+解决： item type 为 Zabbix agent (active) 时， zabbix_agentd.conf 文件里 Hostname 的设置要和 zabbix_server Web Interface 里的 主机名 一致。
+或者把 item type 替换为 Zabbix agent 。
 
 
 MySQL 的监控：

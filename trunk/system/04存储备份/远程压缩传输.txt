@@ -1,0 +1,13 @@
+防火墙允许可以通过 nc 实现，不加密更快速。
+在目标主机：
+打包备份：
+nc -l 12345 | cat - > /data/backups/backup.tar.bz2
+解压到当前目录：
+nc -l 12345 | tar -ijx
+
+在源主机：
+tar -cjpf - backup | nc <host> 12345
+
+
+通过 SSH 实现：
+tar -cjpf - backup | ssh <user>@<host> "cat - > /path/to/filename"
