@@ -1,0 +1,40 @@
+#!/bin/sh
+FILE=/tmp/ip_apnic
+rm -f $FILE 
+wget http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest -O $FILE
+grep 'apnic|CN|ipv4|' $FILE | cut -f 4,5 -d'|'| sed -e 's/|/ /g' | while read ip cnt
+do
+  echo $ip:$cnt
+mask=$(cat << EOF | bc | tail -1
+pow=32;
+define log2(x)
+{
+  if(x<=1) return(pow);
+  pow--;
+  return(log2(x/2));
+}
+log2($cnt)
+EOF)
+  echo $ip/$mask >> cnnet.txt
+  NETNAMEF=`whois $ip@whois.apnic.net | sed -e '/./{H;$!d;}' -e 'x;/netnum/!d' | grep ^netname | sed -e 's/.*:      \(.*\)/\1/g' | sort -u`
+  NETNAMEL=`echo $NETNAMEF | sed -e 's/-.*//g'`
+  case $NETNAMEL in
+  CHINANET|CHINATELECOM)
+    echo $ip/$mask >> chinanet.txt
+  ;;
+  UNICOM|CNCGROUP)
+    echo $ip/$mask >> unicom.txt
+  ;;
+  esac
+  case $NETNAMEF in
+  YINGYFWQ-INFORMATION-CENTER|SN-COM-NET-INFO-CENT-NET|SNXIAN|HFLAN|WHTEL|BBTEL|SXXZX|JX-DCB|CNINFONET-XJ|WH-CHINANET-NIC|CSIF|DNS-VLAN|XN-TELCOM|JINHUA-TELECOM-COMPANY|SHANGHAI-ONLINE|CNINFONET-BB)
+    echo $ip/$mask >> chinanet.txt
+  ;;
+  DQTNET|CNC-JS-suzhou-MAN|CHINAINFO-SD|SH-CHINA-NETCOM|guotong-stock|CQCNC)
+    echo $ip/$mask >> unicom.txt
+  ;;
+  CMNET|CRTC|CRGxBsS|CRHunCsS)
+    echo $ip/$mask >> cmnet.txt
+  ;;
+  esac
+done

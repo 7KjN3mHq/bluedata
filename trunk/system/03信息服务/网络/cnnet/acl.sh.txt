@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "acl \"$1\" {" > acl_$1.conf
+for x in `cat $1.txt`; do
+  echo "$x;" >> acl_$1.conf
+done
+echo "};" >> acl_$1.conf

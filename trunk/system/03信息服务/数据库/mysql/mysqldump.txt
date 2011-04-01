@@ -12,3 +12,6 @@ mysql> source visitor-shop_117.sql;
 
 只导出表结构：
 mysqldump --opt -d -uroot <DATABASE> > <DATABASE>_frm.sql
+
+导出并打包：
+mysqldump <mysqldump options> | gzip > outputfile.sql.gz
