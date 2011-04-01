@@ -1,3 +1,6 @@
+查看文件句柄当前的使用情况：
+cat /proc/sys/fs/file-nr
+
 rm 删除特殊字符文件，如 --exclude
 rm -- --exclude
 

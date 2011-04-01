@@ -1,0 +1,32 @@
+#!/bin/sh
+
+NAME=$0
+STATIC_ROUTE=202.91.231.161
+DEFAULT_ROUTE=202.75.216.161
+POSITION=`grep -n "exit 0" $NAME | cut -d ":" -f 1 | tail -1`
+POSITION=`expr $POSITION + 2`
+DEST=`tail -n +$POSITION $NAME | cut -d "#" -f 2`
+
+set -e
+
+case "$1" in
+  add)
+        for net in $DEST; do
+          route add -net $net gw $STATIC_ROUTE
+        done
+        ip route replace default via $DEFAULT_ROUTE
+        ;;
+  del)
+        for net in $DEST; do
+          route del -net $net
+        done
+        ;;
+  *)
+        echo "Usage: $NAME {add|del}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
+
+## add dest net list ##
