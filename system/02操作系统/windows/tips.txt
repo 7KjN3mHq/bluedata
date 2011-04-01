@@ -1,3 +1,7 @@
+开关机执行批处理文件
+把文件放到 C:\WINDOWS\system32\GroupPolicy\Machine\Scripts 对应目录下。
+运行 gpedit.msc ，依次展开：计算机配置 -> WINDOWS设置 -> 脚本（启动/关机），选择相应脚本。
+
 禁止产生 Thumbs.db 文件的方法：
 控制面板 -> 文件夹选项 -> 查看，选中 不缓存缩略图
 
