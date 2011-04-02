@@ -1,0 +1,58 @@
+添加中文字符编码：
+sudo locale-gen zh_CN.GBK
+
+某些软件中文字体显示为方块的问题：
+sudo vi /etc/fonts/conf.d/49-sansserif.conf
+找到倒数第 4 行的 sans-serif ，替换成 <string> 使用的中文字体 </string> ，即可解决。例如使用文泉驿正黑，替换成：
+<string>WenQuanYi Zen Hei</string>
+
+Chrome 字体发虚问题：
+sudo vi /etc/fonts/conf.d/66-wqy-zenhei-sharp.conf
+把 <test compare=”more_eq” name=”pixelsize”><double>12</double></test> 中的 12 改成 16 或 18 。
+
+gedit 编辑器打开某些中文文档时乱码问题：
+gconftool-2 --set --type=list --list-type=string /apps/gedit-2/preferences/encodings/auto_detected "[UTF-8,CURRENT,GB18030,BIG5-HKSCS,UTF-16]"
+
+vim 乱码问题：
+先安装 vim: sudo apt-get install vim
+在 /etc/vim/vimrc 添加：
+" Encoding settings
+if has("multi_byte")
+" Set fileencoding priority
+if getfsize(expand("%")) > 0
+set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,latin1
+else
+set fileencodings=cp936,big5,euc-jp,euc-kr,latin1
+endif
+" CJK environment detection and corresponding setting
+if v:lang =~ "^zh_CN"
+" Use cp936 to support GBK, euc-cn == gb2312
+set encoding=cp936
+set termencoding=cp936
+set fileencoding=cp936
+elseif v:lang =~ "^zh_TW"
+" cp950, big5 or euc-tw
+" Are they equal to each other?
+set encoding=big5
+set termencoding=big5
+set fileencoding=big5
+elseif v:lang =~ "^ko"
+" Copied from someone's dotfile, untested
+set encoding=euc-kr
+set termencoding=euc-kr
+set fileencoding=euc-kr
+elseif v:lang =~ "^ja_JP"
+" Copied from someone's dotfile, unteste
+set encoding=euc-jp
+set termencoding=euc-jp
+set fileencoding=euc-jp
+endif
+" Detect UTF-8 locale, and replace CJK setting if needed
+if v:lang =~ "utf8$" || v:lang =~ "UTF-8$"
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+endif
+else
+echoerr "Sorry, this version of (g)vim was not compiled with multi_byte"
+endif
