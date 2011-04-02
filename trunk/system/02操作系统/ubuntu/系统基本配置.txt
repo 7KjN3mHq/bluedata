@@ -1,0 +1,25 @@
+屏蔽登陆窗口中有效用户列表：
+sudo gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.mandatory --type Boolean --set /apps/gdm/simple-greeter/disable_user_list True
+
+更改最大化最小化关闭按钮位置：
+1. Alt + F2 ，运行 gconf-editor
+2. 在左侧目录树中，找到 /apps/metacity/general/
+3. 在右侧找到键： button_layout ， 修改值为 menu:minimize,maximize,close
+还原只要在步骤 3 中修改值为 close,minimize,maximize
+
+显卡驱动程序：
+打开 系统 -> 系统管理 -> 硬件驱动（或者受限驱动管理器）。
+Ubuntu 自动开始查找驱动程序，选中需要启用的显卡驱动程序， Ubuntu 将自动安装。安装完成后按提示重启即可。
+
+把终端加到右键菜单：
+sudo apt-get install nautilus-open-terminal
+
+以 root 权限打开文件夹：
+sudo apt-get install nautilus-gksu
+
+VPN(PPTP) 设置：
+sudo apt-get install network-manager-pptp pptp-linux
+Advanced 选项中取消 EAP 选项，选中 Use point-to-point encryption(MPPE) 选项。
+
+安装基础编译程序：
+sudo apt-get install build-essential autoconf automake1.9

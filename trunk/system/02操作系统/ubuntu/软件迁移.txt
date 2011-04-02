@@ -4,19 +4,19 @@ Linux
 
 
 杀毒软件：
-Symantec Endpoint Protection 11.0.4000 MR4 简体中文版
+金山毒霸
+avast!
 
 
 安全：
-360 安全卫士  http://www.360.cn/
+QQ 电脑管家
 
 
 浏览器：
-Firefox + IE Tab Plus(IE8)  (http://www.mozilla.com/en-US/firefox/all.html)
-Firefox + IEs4Linux  (http://www.tatanka.com.br/ies4linux/page/Installation)
+Chrome + IE Tab Multi
+Chrome + IEs4Linux  (http://www.tatanka.com.br/ies4linux/page/Installation)
 
-
-浏览器插件：
+Firefox 插件：
 Adobe Flash Player: http://get.adobe.com/flashplayer/
 Google Toobar: http://toolbar.google.com/intl/zh-CN
 IE Tab Plus: http://coralietab.mozdev.org/installation.html
@@ -34,22 +34,36 @@ RefControl: https://addons.mozilla.org/zh-CN/firefox/addon/953
 
 输入法：
 搜狗拼音输入法  http://pinyin.sogou.com/
-SCIM
+ibus
 
 
 PDF:
 Adobe Reader (http://get.adobe.com/cn/reader/)
-Document Viewer
+Adobe Reader
+
+
+CHM:
+chm
+chmsee
 
 
 Office:
-WPS Office 2009 个人版  http://www.wps.cn/
-永中集成 Office 2009 个人版  http://www.evermoresw.com.cn/webch/download/downEIOPersonal.jsp
+WPS Office 2010 个人版  http://www.wps.cn/
+永中 Office2010 试用版 Linux  http://www.yozosoft.com/download/zmo.jsp
 
 
 QQ:
-QQ 2008 狂人版
+QQ 2010
 QQ for Linux (http://im.qq.com/qq/linux/)
+
+
+MSN:
+Messenger  http://messenger.live.cn/
+Emesene
+
+Gtalk:
+Gtalk
+Empathy
 
 
 XMPP:
@@ -57,14 +71,9 @@ Pandion  (http://www.pandion.be/download/)
 Pidgin  (http://www.pidgin.im/)
 
 
-MSN:
-Messenger  http://messenger.live.cn/
-Pidgin
-
-
 下载软件：
 迅雷  http://dl.xunlei.com/
-D4X
+mldonkey
 
 
 文件打包：
@@ -74,17 +83,17 @@ tar + gzip + bzip2 + unrar
 
 SSH:
 PuTTY (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html ) + WinSCP (http://winscp.net/eng/download.php)
-OpenSSH + gFTP
+OpenSSH + FileZilla
 
 
 FTP:
 FlashFXP
-gFTP
+FileZilla
 
 
 SVN:
 TortoiseSVN (http://tortoisesvn.tigris.org/)
-nautilussvn (http://code.google.com/p/nautilussvn/)
+RabbitVCS (http://rabbitvcs.org/)
 
 
 文件同步：
@@ -93,7 +102,7 @@ Rsync
 
 
 翻译软件：
-谷歌金山词霸合作版  http://g.iciba.com/
+有道
 Stardict
 
 
@@ -104,16 +113,16 @@ gedit + vim
 
 图片：
 ACDSee
-Picasa  http://picasa.google.com/intl/zh-CN/
+gThumb
 
 
 音频：
-千千静听  http://ttplayer.qianqian.com/
+QQ 音乐
 Rhythmbox + EasyTAG
 
 
 视频：
-QQ 影音  http://player.qq.com/
+QQ 影音
 SMPlayer + win32codecs (https://help.ubuntu.com/community/Medibuntu)
 
 
