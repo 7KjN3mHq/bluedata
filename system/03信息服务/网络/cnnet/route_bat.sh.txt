@@ -1,9 +1,13 @@
 #!/bin/sh
 echo "@echo off
-set GATEWAY=192.168.1.3
+
+set GATEWAY=192.168.1.1
+set ROUTE=c:\windows\system32\route.exe -p
 " > route.bat
 for x in `cat cnnet.txt`; do
   net=`echo $x | cut -d "/" -f 1`
   mask=`ipcalc -m $x | cut -d "=" -f 2`
-  echo "c:\windows\system32\route.exe add $net mask $mask %GATEWAY%" >> route.bat
+  echo "%ROUTE% add $net mask $mask %GATEWAY%" >> route.bat
 done
+echo "
+exit" >> route.bat
