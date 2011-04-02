@@ -8,8 +8,9 @@ Linux
 avast!
 
 
-安全：
+系统优化：
 QQ 电脑管家
+Ubuntu Tweak
 
 
 浏览器：
@@ -48,12 +49,12 @@ chmsee
 
 
 Office:
-WPS Office 2010 个人版  http://www.wps.cn/
-永中 Office2010 试用版 Linux  http://www.yozosoft.com/download/zmo.jsp
+WPS Office  http://www.wps.cn/
+永中 Office  http://www.yozosoft.com/download/zmo.jsp
 
 
-QQ:
-QQ 2010
+QQ: web2.qq.com
+QQ
 QQ for Linux (http://im.qq.com/qq/linux/)
 
 
@@ -77,7 +78,7 @@ mldonkey
 
 
 文件打包：
-WinRAR V3.80 简体中文正式版
+WinRAR
 tar + gzip + bzip2 + unrar
 
 
@@ -133,13 +134,18 @@ mount
 
 刻录软件
 Nero
+mkisofs + cdrecord (http://www.ibm.com/developerworks/cn/linux/l-cdburn/index.html)
 
+
+邮件：
+Foxmail (http://fox.foxmail.com.cn/)
+Evolution
 
 
 网银：
 招行专业版
 
 
-邮件：
-Foxmail  (http://fox.foxmail.com.cn/)
-Evolution
+交易：
+富易集中交易
+富通页面交易
