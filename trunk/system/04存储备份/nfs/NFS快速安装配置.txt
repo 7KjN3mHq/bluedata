@@ -1,0 +1,39 @@
+安装：
+Redhat/CentOS:
+yum -y install nfs-utils
+Installing for dependencies: libevent libgssapi nfs-utils-lib portmap
+
+Debian/Ubuntu:
+apt-get install nfs-kernel-server
+The following NEW packages will be installed:
+  libevent1 libgssglue1 libldap-2.4-2 libnfsidmap2 librpcsecgss3 nfs-common nfs-kernel-server portmap
+
+修改 nfs 启动参数：
+Redhat/CentOS:
+vi /etc/sysconfig/nfs
+MOUNTD_NFS_V3="yes"
+RPCNFSDCOUNT=32
+
+Debian/Ubuntu:
+vi /etc/default/nfs-kernel-server
+RPCNFSDCOUNT=32
+
+设置 export 信息：
+vi /etc/exports
+/home 192.168.0.0/24(rw,no_root_squash,async)
+
+发布：
+exportfs -a
+
+重启：
+exportfs -r
+
+
+客户端自动挂载：
+vi /etc/fstab
+192.168.0.250:/home  /home  nfs  noatime,nodev,nosuid,intr,rsize=32768,wsize=32768  0 0
+
+mount -a
+
+Redhat/CentOS 需要启动 netfs 服务。
+Debian/Ubuntu 需要安装 nfs-common portmap

@@ -1,0 +1,13 @@
+echo 'export PATH=$PATH:~/bin' >> /etc/profile
+source /etc/profile
+
+cd
+mkdir bin
+cd bin
+
+echo '#!/bin/sh
+ssh `basename $0` $*' > ssh-to
+
+ln -s ssh-to user@server
+
+user@server uptime
