@@ -30,4 +30,5 @@ esac
 
 exit 0
 
-## add dest net list ##
+## add dest net list, example:
+## sed 's/^/#/' unicom.txt >> route.sh
