@@ -1,12 +1,18 @@
+dos/unix 文件互转： dos2unix unxi2dos
+
+
 查看文件句柄当前的使用情况：
 cat /proc/sys/fs/file-nr
+
 
 rm 删除特殊字符文件，如 --exclude
 rm -- --exclude
 
+
 查看系统软硬件信息
 wget http://aspersa.googlecode.com/svn/trunk/summary
 bash summary
+
 
 Debian 计划任务
 at 15:00 2009-08-26
@@ -17,6 +23,12 @@ job 1 at Wed Aug 26 15:00:00 2009
 <EOT> 是按 Ctrl+D 生成的，表示结束输入。
 
 任务被存放在了 /var/spool/cron/atjobs 目录下。
+
+
+Cron
+编辑 cron: crontab -e
+从文件复制 cron: crontab <crontab file>
+cron 任务被存放在了 /var/spool/cron/crontabs/<user>
 
 
 不同主机上 top 命令的列排序不一致

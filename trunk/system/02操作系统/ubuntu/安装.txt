@@ -1,0 +1,4 @@
+使用 Universal USB Installer 从 U 盘安装：
+http://www.pendrivelinux.com/universal-usb-installer-easy-as-1-2-3/
+
+安装过程不要使用网络，安装完后再配置 source 安装补充的包。
