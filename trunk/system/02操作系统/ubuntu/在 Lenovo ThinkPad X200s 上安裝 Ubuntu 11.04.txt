@@ -1,0 +1,16 @@
+…Ë÷√πˆ¬÷ (http://www.thinkwiki.org/wiki/How_to_configure_the_TrackPoint)
+vi /usr/share/X11/xorg.conf.d/20-thinkpad.conf
+Section "InputClass"
+	Identifier	"Trackpoint Wheel Emulation"
+	MatchProduct	"TPPS/2 IBM TrackPoint|DualPoint Stick|Synaptics Inc. Composite TouchPad / TrackPoint|ThinkPad USB Keyboard with TrackPoint|USB Trackpoint pointing device|Composite TouchPad / TrackPoint"
+	MatchDevicePath	"/dev/input/event*"
+	Option		"EmulateWheel"		"true"
+	Option		"EmulateWheelButton"	"2"
+	Option		"Emulate3Buttons"	"false"
+	Option		"XAxisMapping"		"6 7"
+	Option		"YAxisMapping"		"4 5"
+EndSection
+
+
+…Ë÷√ hdaps ()
+apt-get -y install tp-smapi-dkms hdapsd
