@@ -19,7 +19,8 @@ sudo apt-get install nautilus-gksu
 
 VPN(PPTP) 设置：
 sudo apt-get install network-manager-pptp pptp-linux
-Advanced 选项中取消 EAP 选项，选中 Use point-to-point encryption(MPPE) 选项。
+Advanced 选项中只留下 MSCHAPv2 并选中 Use point-to-point encryption(MPPE) 选项。
+Allow stateful encryption 不选，之下三个选中， ECHO packets 也不选。
 
 安装基础编译程序：
 sudo apt-get install build-essential autoconf automake1.9
