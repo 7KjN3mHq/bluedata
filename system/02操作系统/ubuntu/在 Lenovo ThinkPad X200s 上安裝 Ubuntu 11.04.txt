@@ -12,5 +12,89 @@ Section "InputClass"
 EndSection
 
 
-设置 hdaps ()
-apt-get -y install tp-smapi-dkms hdapsd
+设置 hdaps (http://www.php-oa.com/2009/05/20/thinkpad-x200_ubuntu_aps.html)
+要支持aps,有几点：
+要使用hdaps驱动程序，从硬件传感器读取数据（内核内置此驱动，但不要使用，推荐使用tp_smapi 提供的驱动）,所以先用下面的方法先删除原来的.
+
+#sudo rm /lib/modules/`uname -r`/kernel/ubuntu/misc/thinkpad_ec.ko
+#sudo rm /lib/modules/`uname -r`/kernel/ubuntu/misc/tp_smapi.ko
+#sudo rm /lib/modules/`uname -r`/kernel/drivers/hwmon/hdaps.ko
+
+然后下载所需要的软件
+
+    * tp_smapi-0.4 from here: http://sourceforge.net/project/showfiles.php?group_id=1212&package_id=171579
+    * hdapsd-20090401.tar.gz from here: http://sourceforge.net/project/showfiles.php?group_id=138242&package_id=308030
+    * gnome-hdaps-applet-20081204.tar.gz from here: http://www.zen24593.zen.co.uk/hdaps/
+
+解压到桌面
+#tar xvfz hdapsd-20090401.tar.gz
+#tar xvfz tp_smapi-0.40.tgz
+#tar xvfz gnome-hdaps-applet-20081204.tar.gz
+
+开始安装tp_smapi之类相当模块
+#cd Desktop/tp_smapi-0.40
+测试着load那个mod
+#sudo make load HDAPS=1 FORCE_IO=1
+如果上面显示"drivers successfully loaded",你就可以进行下面的安装
+#sudo make install HDAPS=1 FORCE_IO=1
+以后要自动加载模块的话
+#sudo gedit /etc/modules
+加入下面几行
+thinkpad_ec    
+tp_smapi
+hdaps
+在打开
+#sudo gedit /etc/modprobe.d/local.conf
+# enable thinkpad_ec
+options thinkpad_ec force_io=1
+
+# option to correctly set tilting through hdaps sensor
+options hdaps invert=1
+
+检查
+现在查看是不是有hdaps的mod.
+lsmod | grep hdaps
+如果没有的话
+sudo modprobe thinkpad_ec tp_smapi hdaps
+你有可能要安装
+sudo apt-get install hdaps-utils hdapsd
+
+测试
+现在就可以打开测试一下,呵呵
+hdaps-gl
+移动一下你的电脑看看,是不是在动?
+
+如果hdapsd不能工作,就编译一下他吧
+cd Desktop/hdapsd-20090401/
+./configure –prefix=/usr/
+make ; sudo make install
+
+好了,可以使用命令来测试一下
+sudo hdapsd -d sda -s 15 -a -v -y 
+如果你移动时上面的数据改变,就行了
+
+ 
+
+自动启动和APS图标监控
+
+为了让hdapsd能系统启动就启动,还要进行下面的事情
+
+wget http://www.unet.univie.ac.at/~a0604095/hdapsd
+sudo chmod 733 hdapsd
+sudo cp hdapsd /etc/init.d/
+sudo /etc/init.d/hdapsd start
+以上命令启动
+sudo cp hdapsd /etc/default/hdapsd
+默认启动
+
+现在安装gnome-panel-applet,这样可以在系统上面显示个小图标,来显示状态,就知道是否工作正常了
+
+sudo apt-get install libpanel-applet2-dev
+cd Desktop/gnome-hdaps-applet-20081204
+gcc $(pkg-config –cflags –libs libpanelapplet-2.0) -o gnome-hdaps-applet gnome-hdaps-applet.c
+sudo cp gnome-hdaps-applet /usr/bin/
+sudo mkdir /usr/share/pixmaps/gnome-hdaps-applet/
+sudo cp *.png /usr/share/pixmaps/gnome-hdaps-applet/
+sudo cp GNOME_HDAPS_StatusApplet.server /usr/lib/bonobo/servers/
+
+这样你就算安装成功了，在面板上添加附件能看到hdapsd的图标。
