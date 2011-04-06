@@ -7,8 +7,8 @@ sudo vi /etc/fonts/conf.d/49-sansserif.conf
 <string>WenQuanYi Zen Hei</string>
 
 Chrome 字体发虚问题：
-sudo vi /etc/fonts/conf.d/66-wqy-zenhei-sharp.conf
-把 <test compare=”more_eq” name=”pixelsize”><double>12</double></test> 中的 12 改成 16 或 18 。
+使用 Force Microsoft Yahei Font 扩展。
+https://chrome.google.com/extensions/detail/ojlocjfaheiilmgjdgnoehhdigfedhjl?hl=zh-CN
 
 gedit 编辑器打开某些中文文档时乱码问题：
 gconftool-2 --set --type=list --list-type=string /apps/gedit-2/preferences/encodings/auto_detected "[UTF-8,CURRENT,GB18030,BIG5-HKSCS,UTF-16]"
