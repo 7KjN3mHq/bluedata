@@ -2,6 +2,17 @@
 visudo
 develop ALL=(ALL) ALL
 
-
 配制空密码的 sudo:
 mysql ALL=(ALL) NOPASSWD: ALL
+
+重定向的 sudo 问题：
+sudo echo 1 > /proc/sys/vm/overcommit_memory
+返回权限不够。
+
+但是
+sudo su
+echo 1 > /proc/sys/vm/overcommit_memory
+可以执行。
+
+可以这样执行：
+sudo echo 1 | sudo tee /proc/sys/vm/overcommit_memory

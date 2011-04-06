@@ -27,3 +27,22 @@ puttygen my_ssh_key.ppk -O private-openssh -o my_openssh_key.ssh
 
 使用指定私钥：
 ssh user@host -i my_openssh_key.ssh -p 9922
+
+使用 keychain 自动管理 key:
+apt-get install keychain
+keychain /path/to/key
+source ~/.keychain/<hostname>.sh
+
+ssh 的配置：
+vi ~/.ssh/config
+IdentityFile ~/.ssh/<key>
+
+可以加入 ~/.profile 自动执行：
+for f in ~/.ssh/*.ssh ; do 
+    if [[ $f != '.pub$' && -e "$f.pub" ]] ; then
+        echo "Adding $f to keychain.."
+        keychain -q $f
+    fi
+done
+echo "Reload keychain env..."
+source ~/.keychain/*-sh

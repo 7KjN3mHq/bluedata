@@ -19,7 +19,7 @@ putty 小键盘不能用的问题
 在选项 Terminal(终端) -> Features(特性) 里，找到 Disable application keypad mode(禁止应用小键盘模式)，选上就可以了。
 
 替换空行
-:1,$s/\n\n/\r/g
+:g/^\s*$/d
 
 替换换行符为空格
 :1,$s/\r/ /g
