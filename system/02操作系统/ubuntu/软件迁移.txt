@@ -53,9 +53,9 @@ WPS Office  http://www.wps.cn/
 ÓÀÖÐ Office  http://www.yozosoft.com/download/zmo.jsp
 
 
-QQ: web2.qq.com
+QQ: 
 QQ
-QQ for Linux (http://im.qq.com/qq/linux/)
+web2.qq.com + skype
 
 
 MSN:
@@ -84,12 +84,12 @@ tar + gzip + bzip2 + unrar
 
 SSH:
 PuTTY (http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html ) + WinSCP (http://winscp.net/eng/download.php)
-OpenSSH + FileZilla
+OpenSSH
 
 
 FTP:
 FlashFXP
-FileZilla
+lftp
 
 
 SVN:
