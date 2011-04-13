@@ -1,0 +1,29 @@
+apt-get install -y python-software-properties
+
+add-apt-repository ppa:nginx/stable
+add-apt-repository ppa:uwsgi/release
+
+apt-get update
+apt-get install -y nginx
+
+如果已经 apt 安装了 nginx ，需要 dpkg -P nginx nginx-full 清除，之前先备份 /etc/nginx 的配置文件。
+
+apt-get install uwsgi
+
+apt-get install libxml2-dev build-essential python-dev python-pip
+pip install http://projects.unbit.it/downloads/uwsgi-latest.tar.gz
+
+
+apt-get install build-essential psmisc python-dev libxml2 libxml2-dev python-setuptools
+
+wget http://projects.unbit.it/downloads/uwsgi-0.9.6.8.tar.gz
+tar zxvf uwsgi-0.9.6.8.tar.gz
+cd uwsgi-0.9.6.8
+python setup.py install
+
+
+./configure \
+--user=www-data \
+--group=www-data \
+--prefix=/usr/local/nginx \
+--with-http_stub_status_module
