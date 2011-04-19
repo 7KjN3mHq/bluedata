@@ -322,3 +322,8 @@ Item Memcached version 也会有问题，也可禁用。
 UserParameter=memcached[*],/usr/bin/perl /etc/zabbix/zbx_memcached.pl --item $1 --port $2 --host $3
 
 /etc/init.d/zabbix_agentd restart
+
+
+Redis 的监控：
+http://addmoremem.blogspot.com/2010/10/zabbixs-template-to-monitor-redis.html
+需要把 item type 替换为 Zabbix agent 。

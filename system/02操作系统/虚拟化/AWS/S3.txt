@@ -7,9 +7,48 @@
 http://www.s3fm.com/
 
 http://s3tools.org/s3cmd
-apt 安装的可以使用 s3cmd --configure 配置， AWS EC2 自带的没这功能，需要增加环境变量：
+apt 安装可以使用 s3cmd --configure 进行配置，生成的配置文件为 ~/.s3cfg
+
+AWS EC2 自带的没这功能，需要增加环境变量：
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
 
 apt 安装的功能要丰富些。
 http://wangyan.org/blog/s3cmd-how-to-use.html
+
+设置公开访问权限：
+s3cmd setacl --acl-public s3://<bucket>/<file>
+
+公开整个 bucket:
+s3cmd setacl --acl-public --recursive s3://<bucket>
+
+
+s3fs:
+http://code.google.com/p/s3fs/
+
+apt-get install build-essential libfuse-dev fuse-utils libcurl4-openssl-dev libxml2-dev mime-support
+
+需要 fuse >= 2.8.4 ，如果 fuse 版本不够：
+http://fuse.sourceforge.net/
+tar zxvf fuse-2.8.5.tar.gz
+cd fuse-2.8.5
+./configure --prefix=/usr
+make
+make install
+
+wget http://s3fs.googlecode.com/files/s3fs-1.40.tar.gz
+tar zxvf s3fs-1.40.tar.gz
+cd s3fs-1.40
+./configure --prefix=/usr
+make
+make install
+
+echo "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" > /etc/passwd-s3fs
+chmod 640 /etc/passwd-s3fs
+
+mkdir /mnt/s3
+s3fs $AWS_S3_BUCKET /mnt/s3
+
+谁挂载谁有权限使用。
+先查找 ~/.passwd-s3fs ，再查找 /etc/passwd-s3fs
+~/.passwd-s3fs 权限为 600

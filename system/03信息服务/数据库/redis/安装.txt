@@ -146,3 +146,6 @@ chown -R redis:redis /redis
 
 sysctl vm.overcommit_memory=1
 /redis/sbin/redis-server start
+
+主从复制设置只需在 slave 上加上：
+slaveof 192.168.1.1 6379
