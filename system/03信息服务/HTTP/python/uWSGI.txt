@@ -1,0 +1,7 @@
+apt-get install build-essential python-dev
+
+wget http://projects.unbit.it/downloads/uwsgi-0.9.7.2.tar.gz
+tar zxvf uwsgi-0.9.7.2.tar.gz
+cd uwsgi-0.9.7.2
+make
+mv uwsgi /usr/bin/

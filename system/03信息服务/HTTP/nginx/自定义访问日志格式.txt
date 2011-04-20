@@ -1,0 +1,3 @@
+log_format  custom  '$http_x_forwarded_for [$time_local] "$host$request_uri" - '
+                    '$status $body_bytes_sent $request_time - '
+                    '$upstream_status $upstream_cache_status $upstream_response_time';

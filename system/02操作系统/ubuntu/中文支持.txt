@@ -13,6 +13,10 @@ https://chrome.google.com/extensions/detail/ojlocjfaheiilmgjdgnoehhdigfedhjl?hl=
 gedit 编辑器打开某些中文文档时乱码问题：
 gconftool-2 --set --type=list --list-type=string /apps/gedit-2/preferences/encodings/auto_detected "[UTF-8,CURRENT,GB18030,BIG5-HKSCS,UTF-16]"
 
+Windows 下用 WinRAR 压缩的中文文件乱码问题：
+在 Ubuntu 下用 unrar 解压。
+使用归档管理器的话，可以删除 rar ，只用 unrar 。
+
 vim 乱码问题：
 先安装 vim: sudo apt-get install vim
 在 /etc/vim/vimrc 添加：

@@ -104,7 +104,7 @@ Rsync
 
 翻译软件：
 有道
-Stardict
+星际译王 + 朗道英汉/英汉 (http://iask.sina.com.cn/u/1636105630/ish?folderid=231430&page=3)
 
 
 文本：

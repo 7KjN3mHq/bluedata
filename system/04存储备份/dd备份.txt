@@ -3,3 +3,8 @@ backup:
 
 restore:
 # gzip -dc backup-sda1.gz | dd of=/dev/sda1
+
+
+远程备份：
+slave: nc -l <PORT> | dd of=/backup/master
+master: dd if=/dev/sda1 | nc <IP> <PORT>
