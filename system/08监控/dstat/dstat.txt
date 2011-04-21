@@ -1,0 +1,18 @@
+http://articles.slicehost.com/2010/11/12/using-dstat-with-scripts-and-external-modules
+
+mysql5-io
+apt-cache search mysqldb
+
+vi mysql5-io.sh
+#!/bin/bash
+
+DSTAT_MYSQL_USER=username
+DSTAT_MYSQL_PWD=password
+
+dstat --mysql5-io $@
+
+
+找出系统问题：
+dstat -t -c --top-cpu --top-bio --top-mem -d -D sda1,md0 -n -i 5
+记录到日志：
+0 * * * * mysql kill -9 `ps aux | grep dstat | grep -v grep | awk '{print $2}'` > /dev/null 2>&1 ; dstat -t -c --top-cpu --top-bio --top-mem -d -D sda1,md0 -n -i --noheaders --nocolor 5 > /mysql/log/dstat/`date +\%Y\%m\%d\%H`.log 2>&1
