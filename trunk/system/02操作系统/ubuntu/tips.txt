@@ -3,3 +3,7 @@ sudo add-apt-repository ppa:user/ppa-name
 
 删除一个PPA源
 sudo add-apt-repository -r ppa:user/ppa-name
+
+修改 sh 默认使用 bash 而不是 dash
+dpkg-reconfigure dash
+选 “否”
