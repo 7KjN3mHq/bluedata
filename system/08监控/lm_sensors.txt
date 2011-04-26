@@ -24,6 +24,11 @@ modprobe w83781d
 CentOS:
 yum install lm-sensors
 
+CentOS 5 需要额外安装：
+yum install dkms
+wget http://www.cs.vsu.ru/~raskhozhev/files/dkms-coretemp-1.00-1.noarch.rpm
+rpm -i dkms-coretemp-1.00-1.noarch.rpm
+
 sensors-detect
 一路“回车”。
 
