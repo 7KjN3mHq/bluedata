@@ -1,9 +1,9 @@
-wget http://www.percona.com/redir/downloads/Percona-Server-5.1/Percona-Server-5.1.55-12.6/source/Percona-Server-5.1.55-rel12.6.tar.gz
-tar zxvf Percona-Server-5.1.55-rel12.6.tar.gz
-cd Percona-Server-5.1.55-rel12.6
+wget http://www.percona.com/redir/downloads/Percona-Server-5.1/Percona-Server-5.1.56-12.7/source/Percona-Server-5.1.56.tar.gz
+tar zxvf Percona-Server-5.1.56.tar.gz
+cd Percona-Server-5.1.56
 
 groupadd mysql
-useradd -g mysql -d /usr/local/mysql -s /bin/false mysql
+useradd -m -g mysql -d /usr/local/mysql -s /bin/false mysql
 
 apt-get install bison libncurses5-dev
 

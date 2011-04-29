@@ -5,7 +5,7 @@ wget http://mirrors.163.com/.help/sources.list.lucid -O sources.list
 apt-get update
 
 -----
-apt-get install vim sysv-rc-conf
+apt-get install vim
 
 vi /etc/vim/vimrc
 if has("autocmd")
@@ -21,6 +21,23 @@ alias rm='rm -i'
 cp ~/.bash_aliases /etc/skel/
 
 -----
+apt-get autoremove libdbd-mysql-perl libmysqlclient16 mysql-client-5.1 mysql-client-core-5.1 mysql-common mysql-server mysql-server-5.1 mysql-server-core-5.1 php5-mysql
+dpkg -P libmysqlclient16 mysql-common mysql-server-5.1 php5-mysql
+
+apt-get autoremove apache2 apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common libapache2-mod-php5
+dpkg -P apache2.2-common libapache2-mod-php5
+
+apt-get autoremove bind9 bind9utils
+dpkg -P bind9
+
+or:
+
+apt-get autoremove libdbd-mysql-perl libmysqlclient16 mysql-client-5.1 mysql-client-core-5.1 mysql-common mysql-server mysql-server-5.1 mysql-server-core-5.1 php5-mysql apache2 apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common libapache2-mod-php5 bind9 bind9utils
+
+dpkg -P libmysqlclient16 mysql-common mysql-server-5.1 php5-mysql apache2.2-common libapache2-mod-php5 bind9
+
+-----
+apt-get install sysv-rc-conf
 sysv-rc-conf
 
 -----
