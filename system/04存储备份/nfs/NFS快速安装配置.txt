@@ -8,7 +8,7 @@ apt-get install nfs-kernel-server
 The following NEW packages will be installed:
   libevent1 libgssglue1 libldap-2.4-2 libnfsidmap2 librpcsecgss3 nfs-common nfs-kernel-server portmap
 
-修改 nfs 启动参数：
+如需增加 NFS 进程数量，可以修改启动参数：
 Redhat/CentOS:
 vi /etc/sysconfig/nfs
 MOUNTD_NFS_V3="yes"
@@ -20,7 +20,7 @@ RPCNFSDCOUNT=32
 
 设置 export 信息：
 vi /etc/exports
-/home 192.168.0.0/24(rw,no_root_squash,async)
+/home 192.168.0.0/24(rw,async,no_root_squash,no_subtree_check)
 
 发布：
 exportfs -a
