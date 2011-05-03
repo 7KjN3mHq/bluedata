@@ -1,18 +1,19 @@
+mkdir /redis
+cd /redis
+mkdir bin data etc log run sbin swap
 groupadd redis
-useradd -m -g redis -d /usr/local/redis -s /bin/bash redis
-cd /usr/local/redis
-mkdir bin etc
-cd
-wget http://redis.googlecode.com/files/redis-2.2.5.tar.gz
-tar zxvf redis-2.2.5.tar.gz
-cd redis-2.2.5
-make
-cp redis.conf /usr/local/redis/etc/
-cd src
-cp redis-benchmark redis-check-aof redis-check-dump redis-cli redis-server /usr/local/redis/bin/
+useradd -g redis -d /redis -s /bin/bash redis
 
-vi /etc/init.d/redis-server
-#! /bin/sh
+wget http://redis.googlecode.com/files/redis-2.2.4.tar.gz
+tar zxvf redis-2.2.4.tar.gz
+cd redis-2.2.4
+
+make
+cp redis.conf /redis/etc/
+cd src
+cp redis-benchmark redis-check-aof redis-check-dump redis-cli redis-server /redis/bin/
+
+echo '#! /bin/sh
 ### BEGIN INIT INFO
 # Provides:		redis-server
 # Required-Start:	$syslog $remote_fs
@@ -27,8 +28,8 @@ vi /etc/init.d/redis-server
 
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/local/redis/bin/redis-server
-DAEMON_ARGS=/usr/local/redis/etc/redis.conf
+DAEMON=/redis/bin/redis-server
+DAEMON_ARGS=/redis/etc/redis.conf
 NAME=redis-server
 DESC=redis-server
 PIDFILE=/var/run/redis.pid
@@ -82,54 +83,69 @@ case "$1" in
 	;;
 esac
 
-exit 0
+exit 0' > /redis/sbin/redis-server
 
-chmod +x /etc/init.d/redis-server
-
-sysv-rc-conf redis-server on
+chmod +x /redis/sbin/redis-server
 
 echo '
 vm.overcommit_memory = 1' >> /etc/sysctl.conf
 
-mv /usr/local/redis/etc/redis.conf /usr/local/redis/etc/redis.conf.default
-vi /usr/local/redis/etc/redis.conf
-daemonize yes
-pidfile /var/run/redis/redis.pid
+mv /redis/etc/redis.conf /redis/etc/redis.conf.default
+
+echo "daemonize yes
+
+pidfile /redis/run/redis.pid
+
 port 6379
+
+#bind $EC2_LOCAL_IPV4
+
 timeout 300
+
 loglevel notice
-logfile  /var/log/redis/redis.log
+
+logfile  /redis/log/redis.log
+
 databases 16
+
 save 900 1
 save 300 10
 save 60 10000
 save 30 100000
+
 rdbcompression yes
+
 dbfilename database.rdb
-dir /redis
+
+dir /redis/data
+
 appendonly no
+
 appendfsync everysec
+
 vm-enabled no
-vm-swap-file /redis/redis.swap
+
+vm-swap-file /redis/swap/redis.swap
+
 vm-max-memory 0
+
 vm-page-size 32
+
 vm-pages 134217728
+
 vm-max-threads 4
+
 glueoutputbuf yes
+
 hash-max-zipmap-entries 64
 hash-max-zipmap-value 512
-activerehashing yes
 
-mkdir /redis
-chown -R redis:redis /redis /usr/local/redis
+activerehashing yes" > /redis/etc/redis.conf
 
-mkdir /var/run/redis
-chown redis /var/run/redis
-mkdir /var/log/redis
-chown redis /var/log/redis
+chown -R redis:redis /redis
 
 sysctl vm.overcommit_memory=1
-service redis-server start
+/redis/sbin/redis-server start
 
 主从复制设置只需在 slave 上加上：
 slaveof 192.168.1.1 6379

@@ -3,7 +3,7 @@ tar zxvf Percona-Server-5.1.56.tar.gz
 cd Percona-Server-5.1.56
 
 groupadd mysql
-useradd -m -g mysql -d /usr/local/mysql -s /bin/false mysql
+useradd -m -g mysql -d /usr/local/mysql -s /bin/bash mysql
 
 apt-get install bison libncurses5-dev
 
@@ -19,22 +19,42 @@ make
 make install
 
 cd /usr/local/mysql
-mkdir etc var
-cp share/mysql/my-huge.cnf etc/my.cnf
-chown -R mysql:mysql /usr/local/mysql
+mkdir etc
+cp share/mysql/my-innodb-heavy-4G.cnf etc/my.cnf
 
 vi etc/my.cnf
-user            = mysql
-basedir         = /usr/local/mysql
-datadir         = /usr/local/mysql/var
-pid-file        = /usr/local/mysql/var/mysqld.pid
-socket          = /usr/local/mysql/var/mysqld.sock
-log-error       = /usr/local/mysql/var/err.log
+datadir         = /mysql/data
+socket          = /var/run/mysqld/mysqld.sock
+pid-file        = /var/run/mysqld/mysqld.pid
+log-error       = /var/log/mysql/err.log
 skip-name-resolve
-skip-locking ¸ÄÎª skip-external-locking
 
-/usr/local/mysql/bin/mysql_install_db --defaults-file=/usr/local/mysql/etc/my.cnf
+default-storage-engine = INNODB
 
-/usr/local/mysql/bin/mysqld_safe --defaults-file=/usr/local/mysql/etc/my.cnf 2>&1 > /dev/null &
+log-bin=/mysql/binlog/mysql-bin
+log-bin-index=/mysql/binlog/mysql-bin.index
 
-/usr/local/mysql/bin/mysqladmin -uroot -p shutdown
+long_query_time = 1
+slow_query_log_file = /var/log/mysql/slow.log
+
+innodb_buffer_pool_size = 6G
+innodb_file_per_table
+innodb_flush_log_at_trx_commit = 2
+innodb_log_file_size = 256M
+innodb_flush_method = O_DIRECT
+
+mkdir /mysql/{binlog,data}
+
+/usr/local/mysql/bin/mysql_install_db
+
+chown -R mysql:mysql /mysql /usr/local/mysql
+
+mkdir /var/run/mysqld
+chown mysql /var/run/mysqld
+mkdir /var/log/mysql
+chown mysql /var/log/mysql
+
+cp /usr/local/mysql/share/mysql/mysql.server /etc/init.d/mysql
+chmod +x /etc/init.d/mysql
+sysv-rc-conf mysql on
+service mysql start
