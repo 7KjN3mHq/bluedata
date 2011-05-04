@@ -39,6 +39,8 @@ web2
 web3
 web4
 
+pssh -i 可显示执行后的详细输出。
+
 重启 Nginx:
 pssh killall -HUP nginx
 
