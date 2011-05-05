@@ -73,7 +73,7 @@
 					<percent_left>0.0000</percent_left>
 					<percent_right>0.0000</percent_right>
 					<graph_elements>
-						<graph_element item="Template_Zparts_LB_connection:ipvsadm.inactconn[proto,vip:port,rip:port]">
+						<graph_element item="Template_LB_connection:ipvsadm.inactconn[proto,vip:port,rip:port]">
 							<drawtype>0</drawtype>
 							<sortorder>0</sortorder>
 							<color>DD0000</color>
@@ -82,7 +82,7 @@
 							<type>0</type>
 							<periods_cnt>5</periods_cnt>
 						</graph_element>
-						<graph_element item="Template_Zparts_LB_connection:ipvsadm.activeconn[proto,vip:port,rip:port]">
+						<graph_element item="Template_LB_connection:ipvsadm.activeconn[proto,vip:port,rip:port]">
 							<drawtype>0</drawtype>
 							<sortorder>0</sortorder>
 							<color>009900</color>

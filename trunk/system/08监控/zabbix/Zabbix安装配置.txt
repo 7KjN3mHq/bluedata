@@ -297,6 +297,7 @@ wget http://mysql-cacti-templates.googlecode.com/files/better-cacti-templates-1.
 tar zxvf better-cacti-templates-1.1.8.tar.gz
 
 把 mysql.conf 和 better-cacti-templates-1.1.8/scripts/ss_get_mysql_stats.php 都放到被监控主机的 /etc/zabbix 目录下。
+在被监控机上还需要安装 php5-cli php5-mysql 。
 
 修改 zabbix_agentd.conf ，添加：
 Include=/etc/zabbix/mysql.conf
@@ -317,6 +318,8 @@ xml 文件有个错误，把 <expression>{Template_Memcached_11211:memcached[rusage_user
 <expression>{Template_Memcached_11211:memcached[rusage_user,11211].change(0)}/{Template_Memcached_11211:system.cpu.num.last(0)}&gt;90</expression>
 使用中，这个触发器还是会有问题，可以禁用了。
 Item Memcached version 也会有问题，也可禁用。
+
+禁掉 auth_cmds/auth_errors/reclaimed 这几个 items , 不然 zbx_memcached.pl 会一直挂起，最终造成 zabbix_agentd 死掉。
 
 把 scripts/zbx_memcached.pl 放到被监控端的 /etc/zabbix 目录并在 zabbix_agentd.conf 添加：
 UserParameter=memcached[*],/usr/bin/perl /etc/zabbix/zbx_memcached.pl --item $1 --port $2 --host $3

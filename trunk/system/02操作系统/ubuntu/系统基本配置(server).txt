@@ -5,6 +5,10 @@ wget http://mirrors.163.com/.help/sources.list.lucid -O sources.list
 apt-get update
 
 -----
+cp /usr/share/zoneinfo/UTC /etc/localtime
+chmod -w /etc/localtime
+
+-----
 apt-get install vim
 
 vi /etc/vim/vimrc
