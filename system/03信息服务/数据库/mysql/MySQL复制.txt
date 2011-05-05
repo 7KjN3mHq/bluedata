@@ -20,6 +20,15 @@ relay-log        = /var/log/mysqld/relay-bin
 #binlog-ignore-db = mysql information_schema
 #slave-skip-errors = all
 
+更好的做法是：
+配置文件只设置 relay-log:
+relay-log=/mysql/binlog/relay-bin
+relay_log_index=/mysql/binlog/relay-bin.index
+
+启动后，手动进行操作：
+change master to master_host='10.36.88.144', master_port=3306, master_user='slave', master_password='slave', master_log_file='mysql-bin.000001', master_log_pos=31953524;
+start slave;
+
 查看信息：
 SHOW MASTER STATUS;
 SHOW SLAVE STATUS;
