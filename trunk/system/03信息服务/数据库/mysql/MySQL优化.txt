@@ -1,2 +1,25 @@
+慢查询分析：
+自带的工具：
+mysqldumpslow -r /var/log/mysql/slow.log > tmp.txt
+
+查找排序的慢语句：
+mysqldumpslow -r -g "order by " /var/log/mysql/slow.log > tmp.txt
+
+mysqlsla 工具，见 mysqlsla.txt , 以上工具不能分析 Percona MySQL 。
+
+mk-query-digest:
+wget http://www.maatkit.org/get/mk-query-digest
+chmod +x mk-query-digest
+mv mk-query-digest /usr/local/mysql/bin/
+直接分析：
+mk-query-digest /var/log/mysql/slow.log > tmp.txt
+分析慢查询日志并把找出来的语句写到指定的表里：
+mk-query-digest --limit 2 --select Query_time,Lock_time,Rows_sent,Rows_examined,ts --create-review-table --review D=test,t=query_review /var/log/mysql/slow.log
+分析当前运行的语句：
+mk-query-digest --select Query_time,Lock_time,Rows_sent,Rows_examined --processlist h=localhost,u=root
+mysql> select sleep(10);
+
+
+表设计：
 字段大小尽量取最小值。
 如有 text 字段，应分表。

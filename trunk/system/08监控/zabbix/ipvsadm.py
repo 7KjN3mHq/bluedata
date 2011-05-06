@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # usage: ipvsadm.py acctiveconn tcp 172.18.0.12:80 172.17.0.22:80

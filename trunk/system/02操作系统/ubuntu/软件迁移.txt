@@ -10,7 +10,7 @@ avast!
 
 系统优化：
 QQ 电脑管家
-Ubuntu Tweak
+Ubuntu Tweak (http://ubuntu-tweak.com/)
 
 
 浏览器：
@@ -40,12 +40,17 @@ ibus
 
 PDF:
 Adobe Reader (http://get.adobe.com/cn/reader/)
-Adobe Reader
+Adobe Reader / evince
 
 
 CHM:
 chm
 chmsee
+
+
+计算器：
+计算器
+gcalctool
 
 
 Office:

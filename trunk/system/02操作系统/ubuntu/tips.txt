@@ -7,3 +7,10 @@ sudo add-apt-repository -r ppa:user/ppa-name
 修改 sh 默认使用 bash 而不是 dash
 dpkg-reconfigure dash
 选 “否”
+
+清除已删除软件的残余文件：
+dpkg -P `dpkg -l | grep ^rc | awk '{print $2}'`
+
+卸载 wine 后，清除相关的程序关联和菜单项：
+1. 把 ~/.local/share/applications/ 下以 wine 开头的文件和目录删除。
+2. 把 ~/.config/menus/applications-merged/ 下以 wine 开头的文件删除。

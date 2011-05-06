@@ -1,3 +1,9 @@
+MySQL 运行时修改运行参数：
+set global long_query_time=0.25;
+set global log_queries_not_using_indexes=ON;
+退出当前会话，或者再打开一个会话，可以查看修改后的参数：
+show variables like 'long%';
+
 binlog 清理：
 FLUSH LOGS;
 PURGE BINARY LOGS TO 'mysql-bin.010';
