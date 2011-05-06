@@ -1,0 +1,21 @@
+Download the Adobe AIR .deb file
+http://get.adobe.com/air/
+
+In a terminal window go to the directory containing the adobeair.deb file
+Create a tmp dir:
+mkdir tmp
+
+Extract the deb file to the tmp dir:
+dpkg-deb -x adobeair.deb tmp
+
+Extract the control files:
+dpkg-deb --control adobeair.deb tmp/DEBIAN
+
+Change the Architecture parameter from “i386″ to “all”:
+sed -i "s/i386/all/" tmp/DEBIAN/control
+
+Repackage the deb file:
+dpkg -b tmp adobeair_64.deb
+
+Install:
+sudo dpkg -i adobeair_64.deb
