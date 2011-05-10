@@ -1,0 +1,7 @@
+#!/bin/sh
+export LANG=zh_CN.utf8
+export WINEDEBUG=-all
+wine reg add "HKCU\Software\Wine\DllOverrides" /v *oleaut32 /t REG_SZ /d "native,builtin" /f
+ln -s /usr/share/wine/Tencent "/home/$USER/.wine/drive_c/Program Files/Tencent"
+cd "/home/$USER/.wine/drive_c/Program Files/Tencent/RTXC"
+wine RTX.exe

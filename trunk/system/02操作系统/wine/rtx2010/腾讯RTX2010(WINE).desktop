@@ -1,0 +1,18 @@
+[Desktop Entry]
+Categories=Network;
+GenericName[zh_CN]=
+GenericName=
+Exec=/usr/bin/wine-rtx2010
+Icon=/usr/share/icons/rtx.gif
+MimeType=
+Name[zh_CN]=腾讯RTX 2010(WINE)
+Name=Tencent RTX 2010(Wine)
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

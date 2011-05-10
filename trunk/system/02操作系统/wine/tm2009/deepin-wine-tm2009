@@ -1,0 +1,60 @@
+#! /bin/sh
+export WINEPREFIX=$HOME/.wine-deepin
+export LANG=zh_CN.utf8
+#关闭命令行debug输出提高性能
+export WINEDEBUG=-all
+
+W_DRIVE_C="$WINEPREFIX/dosdevices/c:"
+W_WINDIR_UNIX="$W_DRIVE_C/windows"
+W_SYSTEM32_DLLS="$W_WINDIR_UNIX/system32"
+W_PROGRAMS_UNIX="$W_DRIVE_C/Program Files"
+W_USERS_UNIX="$W_DRIVE_C/users"
+
+#判断是否运行过deepin-wine-run
+    if [ ! -f "$W_SYSTEM32_DLLS"/plugin.ocx ]
+    then 
+        echo "No deepin-wine-run,must init..."
+        deepin-wine-run
+    fi
+
+#注册组件
+    if [ ! -e "$W_PROGRAMS_UNIX"/"Common Files"/Tencent/TXSSO ]
+    then 
+        mkdir -p "$W_PROGRAMS_UNIX"/"Common Files"/Tencent/TXSSO
+        cp -r /usr/share/deepin-wine/TM2009/TXSSO/* "$W_PROGRAMS_UNIX"/"Common Files"/Tencent/TXSSO
+        regsvr32 /s "$W_PROGRAMS_UNIX"/"Common Files"/Tencent/TXSSO/Bin/SSOAxCtrlForPTLogin.dll
+        regsvr32 /s "$W_PROGRAMS_UNIX"/"Common Files"/Tencent/TXSSO/Bin/SSOCommon.dll
+        wine /usr/share/deepin-wine/TM2009/Bin/TXPlatform.exe /regserver
+        regsvr32 /s  /usr/share/deepin-wine/TM2009/Bin/TXPFProxy.dll
+        regsvr32 /s  /usr/share/deepin-wine/TM2009/Bin/Timwp.dll
+        regsvr32 /s  /usr/share/deepin-wine/TM2009/Bin/AppCom.dll
+        regsvr32 /s  /usr/share/deepin-wine/TM2009/Bin/CPHelper.dll   
+        regsvr32 /s  /usr/share/deepin-wine/TM2009/Bin/KernelUtil.dll   
+        regsvr32 /s  /usr/share/deepin-wine/TM2009/Bin/Common.dll
+        regsvr32 /s  /usr/share/deepin-wine/TM2009/Bin/TXFTNActiveX.dll
+        mkdir -p $W_USERS_UNIX/Public/Documents/Tencent/TM/
+        echo "[UserDataSet]" > $W_USERS_UNIX/Public/Documents/Tencent/TM/UserDataInfo.ini
+        echo "UserDataSavePathType=1" >> $W_USERS_UNIX/Public/Documents/Tencent/TM/UserDataInfo.ini
+        echo "UserDataSavePath=C:\\users\\"$LOGNAME"\\My Documents\\Tencent Files\\" >> $W_USERS_UNIX/Public/Documents/Tencent/TM/UserDataInfo.ini
+        echo "NewVersion=26.58.0.0.1273" >> $W_USERS_UNIX/Public/Documents/Tencent/TM/UserDataInfo.ini
+    fi
+
+#防止自动升级
+if [ ! -f "$W_USERS_UNIX"/"$LOGNAME"/"Application Data"/Tencent/TM/SafeBase/selfupdate.exe ]
+then
+    mkdir -p "$W_USERS_UNIX"/"$LOGNAME"/"Application Data"/Tencent/TM/SafeBase
+    touch "$W_USERS_UNIX"/"$LOGNAME"/"Application Data"/Tencent/TM/SafeBase/selfupdate.exe
+    chmod 000 "$W_USERS_UNIX"/"$LOGNAME"/"Application Data"/Tencent/TM/SafeBase/selfupdate.exe
+    touch "$W_USERS_UNIX"/"$LOGNAME"/Temp/selfupdate.exe
+    chmod 000 "$W_USERS_UNIX"/"$LOGNAME"/Temp/selfupdate.exe
+fi
+
+#如果为腾讯RTX设置oleaut32.dll覆盖，则TM 2009将与之冲突，
+wine reg delete "HKCU\Software\Wine\DllOverrides" /v *oleaut32 /f
+
+#修正调用外部浏览器查看qq mail和空间等操作
+wine reg add "HKCR\http\shell\open\command"  /t REG_SZ /d "C:\windows\system32\winebrowser.exe -nohome %1" /f
+wine reg add "HKCR\https\shell\open\command"  /t REG_SZ /d "C:\windows\system32\winebrowser.exe -nohome %1" /f
+
+
+wine /usr/share/deepin-wine/TM2009/Bin/TM.exe
