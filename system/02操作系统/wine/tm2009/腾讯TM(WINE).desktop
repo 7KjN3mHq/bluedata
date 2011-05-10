@@ -1,0 +1,18 @@
+[Desktop Entry]
+Categories=Network;
+GenericName[zh_CN]=
+GenericName=
+Exec=/usr/bin/wine-tm2009
+Icon=/usr/share/icons/tm2009.gif
+MimeType=
+Name[zh_CN]=腾讯TM 2009(WINE)
+Name=TencentTM 2009(Wine)
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=
+X-KDE-SubstituteUID=false
+X-KDE-Username=

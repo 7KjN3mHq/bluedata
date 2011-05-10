@@ -1,0 +1,12 @@
+#!/bin/sh
+export LANG=zh_CN.utf8
+export WINEDEBUG=-all
+wine_base_path="$HOME/.wine"
+wine_application_data_path="${wine_base_path}/drive_c/users/$USER/Application Data"
+tm2009_exe="/usr/share/wine/Tencent/tm2009_single.exe"
+rm -rf "${wine_application_data_path}/Tencent"
+rm -rf "${wine_base_path}/drive_c/windows/temp/System/Lx003/TM2009"
+wine reg delete "HKCU\Software\Wine\DllOverrides" /v *oleaut32 /f
+wine reg add "HKCR\http\shell\open\command"  /t REG_SZ /d "C:\windows\system32\winebrowser.exe -nohome %1" /f
+wine reg add "HKCR\https\shell\open\command"  /t REG_SZ /d "C:\windows\system32\winebrowser.exe -nohome %1" /f
+wine ${tm2009_exe}

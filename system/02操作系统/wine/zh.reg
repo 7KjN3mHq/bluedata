@@ -1,0 +1,15 @@
+REGEDIT4
+[HKEY_CURRENT_USER\Software\Wine]
+"Version"="win7"
+ 
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes]
+"Tahoma"="WenQuanYi Micro Hei"
+ 
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontLink\SystemLink]
+"Lucida Sans Unicode"="wqy-microhei.ttc,wqy-microhei"
+"Microsoft Sans Serif"="wqy-microhei.ttc,wqy-microhei"
+"SimSun"="wqy-microhei.ttc,wqy-microhei"
+"Tahoma"="wqy-microhei.ttc,wqy-microhei"
+ 
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"FontSmoothing"="2"
