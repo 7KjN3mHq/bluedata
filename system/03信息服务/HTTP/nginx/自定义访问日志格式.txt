@@ -1,3 +1,7 @@
-log_format  custom  '$http_x_forwarded_for [$time_local] "$host$request_uri" - '
+log_format  custom  '$remote_addr [$time_local] "$host$request_uri" - '
                     '$status $body_bytes_sent $request_time - '
                     '$upstream_status $upstream_cache_status $upstream_response_time';
+
+access_log  /var/log/nginx/access.log custom;
+
+如果前端有代理服务器，可使用 $http_x_forwarded_for 替换 $remote_addr ，从而记录透过代理的访问地址。

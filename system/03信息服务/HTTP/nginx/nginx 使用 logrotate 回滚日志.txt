@@ -1,0 +1,30 @@
+vi /usr/local/nginx/conf/logrotate.conf
+
+/var/log/nginx/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 640 www-data adm
+    sharedscripts
+    prerotate
+    sleep 59
+    endscript
+    postrotate
+        if [ -f /var/run/nginx.pid ]; then
+          kill -USR1 `cat /var/run/nginx.pid`
+        fi
+    endscript
+}
+
+调试：
+logrotate -d /usr/local/nginx/conf/logrotate.conf
+
+执行：
+logrotate -f /usr/local/nginx/conf/logrotate.conf
+
+定期执行：
+vi /etc/crontab
+59 23 * * * root logrotate -f /usr/local/nginx/conf/logrotate.conf
