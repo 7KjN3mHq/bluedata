@@ -6,9 +6,9 @@ wget http://www.maatkit.org/get/toolname
 perl -e 'use DBD::mysql'
 有错误输出就安装：
 http://www.cpan.org/modules/by-module/DBD
-wget http://www.cpan.org/modules/by-module/DBD/DBD-mysql-4.012.tar.gz
-tar zxvf DBD-mysql-4.012.tar.gz
-cd DBD-mysql-4.012
+wget http://www.cpan.org/modules/by-module/DBD/DBD-mysql-4.019.tar.gz
+tar zxvf DBD-mysql-4.019.tar.gz
+cd DBD-mysql-4.019
 perl Makefile.PL --mysql_config=/usr/local/mysql/bin/mysql_config
 make
 make install
@@ -17,24 +17,17 @@ echo "/usr/local/mysql/lib/mysql" > /etc/ld.so.conf.d/mysql-x86_64.conf
 ldconfig
 
 
-在 master 上：
-mk-table-checksum --createreplicate --replicate=test.checksum localhost
+从库被写入数据后的重新同步：
+检查指定的表：
+mk-table-checksum h=127.0.0.1,u=root h=10.10.30.84,u=root -d fairyvillage -t fvs_building_info
 
-test.checksum 表示的是 test 数据库的 checksum 数据表（也可以使用别的数据库或数据表，只要保证它在主从服务器间没被忽略复制即可）。
-有了 createreplicate 参数，系统会自动创建这个表，里面会保存一些核对数据。
+从库同步到主库(从库在前，主库在后)：
+mk-table-sync --execute --print --nobin-log --databases fairyvillage --tables fvs_building_info h=10.10.30.84:3306,u=root h=10.10.30.66:3306,u=root
 
-执行完之后，就可以用下面的命令来查询是否存在不一致：
-mk-table-checksum --replicate=test.checksum --replcheck 1 localhost
+检查库并过滤出不同步的表：
+mk-table-checksum h=127.0.0.1,u=root h=10.10.30.84,u=root -d fairyvillage | mk-checksum-filter
 
-replcheck 参数指明了核对的级联深度，比如1表示此服务器和它的从服务器。
-
-同步不一致的数据：
-mk-table-sync --execute --replicate test.checksum localhost
-
-如果用的 MySQL 不支持触发器语法的话，记得在上面的命令里加上 --ignore-triggers 参数。
-
-
-mk-table-checksum --createreplicate --replicate=test.checksum localhost -d visitor -t shop_117,shop_99
+同步非复制库需要加上 --nocheck-slave 参数。
 
 
 重复索引检查：
@@ -47,21 +40,3 @@ mk-find --engine MyISAM --print --exec "optimize table %D.%N"
 mk-find --exec "repair table %D.%N use_frm"
 
 for i in `mk-find --dblike mysql --engine MyISAM --print` ; do mysql -e 'optimize table '$i''; mysql -e 'repair table '$i''; done > /dev/null 2>&1
-
-
-mk-table-sync 不能同步无 unique key 的表时（加上 -no-unique-checks 也无效），可以做如下操作：
-mysql> RENAME TABLE rep TO rep_maint;
-Query OK, 0 rows affected (0.01 sec)
-
-mysql> SELECT * FROM rep_maint INTO OUTFILE '/tmp/rep.txt';
-Query OK, 0 rows affected (0.01 sec)
-
-mysql> CREATE TABLE rep_new LIKE rep_maint;
-Query OK, 0 rows affected (0.00 sec)
-
-mysql> LOAD DATA INFILE '/tmp/rep.txt' INTO TABLE rep_new;
-Query OK, 0 rows affected (0.01 sec)
-Records: 0  Deleted: 0  Skipped: 0  Warnings: 0
-
-mysql> RENAME TABLE rep_maint TO rep_old, rep_new TO rep;
-Query OK, 0 rows affected (0.00 sec)
