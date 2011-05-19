@@ -1,4 +1,4 @@
-apt-get install build-essential python-dev
+apt-get install build-essential python-dev libxml2-dev
 
 wget http://projects.unbit.it/downloads/uwsgi-0.9.7.2.tar.gz
 tar zxvf uwsgi-0.9.7.2.tar.gz
