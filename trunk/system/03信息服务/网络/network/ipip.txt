@@ -1,0 +1,17 @@
+modprobe ipip
+ip tunnel add tun11 mode ipip remote 182.237.3.12 local 118.113.3.155 ttl 64
+ip link set tun11 mtu 1480 up
+ip address add 172.16.10.1 brd 255.255.255.255 peer 172.16.10.2 dev tun11
+
+modprobe ipip
+ip tunnel add tun11 mode ipip remote 118.113.3.155 local 182.237.3.12 ttl 64
+ip link set tun11 mtu 1480 up
+ip address add 172.16.10.2 brd 255.255.255.255 peer 172.16.10.1 dev tun11
+
+
+echo "1" > /proc/sys/net/ipv4/ip_forward
+iptables -F -t nat
+iptables -t nat -A POSTROUTING -s 192.168.1.0/24 -j MASQUERADE
+echo "200     NET10" >> /etc/iproute2/rt_tables
+ip route add default via 172.16.10.1 table NET10
+ip rule add from 192.168.1.245 table NET10
