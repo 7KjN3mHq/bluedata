@@ -1,0 +1,27 @@
+#!/bin/sh
+
+NAME=$0
+STATIC_ROUTE=192.168.1.3
+DEST=`cat cnnet.txt`
+
+set -e
+
+case "$1" in
+  add)
+        for net in $DEST; do
+          route add -net $net gw $STATIC_ROUTE
+        done
+        ;;
+  del)
+        for net in $DEST; do
+          route del -net $net
+        done
+        ;;
+  *)
+        NAME=`basename $NAME`
+        echo "Usage: $NAME {add|del}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
