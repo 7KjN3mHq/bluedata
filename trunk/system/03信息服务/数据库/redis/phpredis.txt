@@ -1,0 +1,10 @@
+https://github.com/nicolasff/phpredis
+
+phpize
+./configure
+make && make install
+
+vi /etc/php.ini
+extension=redis.so
+
+restart apache or restart php-cgi process.

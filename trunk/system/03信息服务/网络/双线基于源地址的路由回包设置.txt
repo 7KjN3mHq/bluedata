@@ -1,0 +1,17 @@
+eht0接电信网线，eth1接网通网线
+$if_tel＝电信IP   $gw_tel＝电信网关
+$if_cnc＝网通IP   $gw_cnc＝网通网关
+
+
+Linux IProute2
+
+ip route add default via $gw_tel dev eth0 src $if_tel table 100
+ip route add default via $gw_cnc dev eth1 src $if_cnc table 200
+ip rule add from $if_tel table 100
+ip rule add from $if_cnc table 200
+
+
+FreeBSD PF
+
+pass out quick route-to ( 电信网卡 电信网关IP ) from 电信IP to any
+pass out quick route-to ( 网通网卡 网通网关IP ) from 网通IP to any
