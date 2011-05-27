@@ -1,0 +1,343 @@
+<?xml version="1.0"?>
+<zabbix_export version="1.0" date="03.10.07" time="11.27">
+	<hosts>
+		<host name="Template_app_FileServer">
+			<ip>0.0.0.0</ip>
+			<port>10050</port>
+			<status>3</status>
+			<groups>
+				<group>Templates</group>
+			</groups>
+			<items>
+				<item type="0" key="custom.vfs.dev.io.active[sdb]" value_type="3">
+					<description>Disk:$1:IO:Currently Active</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>io</units>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.io.active[sdc]" value_type="3">
+					<description>Disk:$1:IO:Currently Active</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>io</units>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.io.ms[sdb]" value_type="3">
+					<description>Disk:$1:IO:ms</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ms</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.io.ms[sdc]" value_type="3">
+					<description>Disk:$1:IO:ms</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ms</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.read.ms[sdb]" value_type="3">
+					<description>Disk:$1:Read:ms</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ms</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.read.ms[sdc]" value_type="3">
+					<description>Disk:$1:Read:ms</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ms</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.read.ops[sdb]" value_type="3">
+					<description>Disk:$1:Read:ops per second</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ops/second</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.read.ops[sdc]" value_type="3">
+					<description>Disk:$1:Read:ops per second</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ops/second</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.read.sectors[sdb]" value_type="3">
+					<description>Disk:$1:Read:Bytes/sec</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>B/sec</units>
+					<multiplier>1</multiplier>
+					<delta>1</delta>
+					<formula>512</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.read.sectors[sdc]" value_type="3">
+					<description>Disk:$1:Read:Bytes/sec</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>B/sec</units>
+					<multiplier>1</multiplier>
+					<delta>1</delta>
+					<formula>512</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.write.ms[sdb]" value_type="3">
+					<description>Disk:$1:Write:ms</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ms</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.write.ms[sdc]" value_type="3">
+					<description>Disk:$1:Write:ms</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ms</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.write.ops[sdb]" value_type="3">
+					<description>Disk:$1:Write:ops per second</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ops/second</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.write.ops[sdc]" value_type="3">
+					<description>Disk:$1:Write:ops per second</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>ops/second</units>
+					<delta>1</delta>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.write.sectors[sdb]" value_type="3">
+					<description>Disk:$1:Write:Bytes/sec</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>B/sec</units>
+					<multiplier>1</multiplier>
+					<delta>1</delta>
+					<formula>512</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="custom.vfs.dev.write.sectors[sdc]" value_type="3">
+					<description>Disk:$1:Write:Bytes/sec</description>
+					<delay>10</delay>
+					<history>10</history>
+					<trends>365</trends>
+					<units>B/sec</units>
+					<multiplier>1</multiplier>
+					<delta>1</delta>
+					<formula>512</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="vfs.fs.inode[/data/app,free]" value_type="3">
+					<description>FileSystem:$1:Inodes Free</description>
+					<delay>60</delay>
+					<history>7</history>
+					<trends>365</trends>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="vfs.fs.inode[/data/app,pfree]" value_type="0">
+					<description>FileSystem:$1:% Inodes Free</description>
+					<delay>60</delay>
+					<history>7</history>
+					<trends>365</trends>
+					<units>%</units>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="vfs.fs.size[/data/app,free]" value_type="3">
+					<description>FileSystem:$1:Free Space</description>
+					<delay>60</delay>
+					<history>7</history>
+					<trends>365</trends>
+					<units>B</units>
+					<formula>1024</formula>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="vfs.fs.size[/data/app,pfree]" value_type="0">
+					<description>FileSystem:$1:% Free Space</description>
+					<delay>60</delay>
+					<history>7</history>
+					<trends>365</trends>
+					<units>%</units>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="vfs.fs.size[/data/app,pused]" value_type="0">
+					<description>FileSystem:$1:% Used Space</description>
+					<delay>60</delay>
+					<history>7</history>
+					<trends>365</trends>
+					<units>%</units>
+					<formula>1</formula>
+					<snmp_community>public</snmp_community>
+					<snmp_oid>interfaces.ifTable.ifEntry.ifInOctets.1</snmp_oid>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="vfs.fs.size[/data/app,total]" value_type="3">
+					<description>FileSystem:$1:Total Size</description>
+					<delay>3600</delay>
+					<history>7</history>
+					<trends>365</trends>
+					<units>B</units>
+					<multiplier>1</multiplier>
+					<formula>1024</formula>
+					<snmp_port>161</snmp_port>
+				</item>
+				<item type="0" key="vfs.fs.size[/data/app,used]" value_type="3">
+					<description>FileSystem:$1:Used Space</description>
+					<delay>60</delay>
+					<history>7</history>
+					<trends>365</trends>
+					<units>B</units>
+					<formula>1024</formula>
+					<snmp_port>161</snmp_port>
+				</item>
+			</items>
+			<graphs>
+				<graph name="Disk - Bytes/second" width="900" height="200">
+					<show_work_period>1</show_work_period>
+					<show_triggers>1</show_triggers>
+					<yaxismin>0.0000</yaxismin>
+					<yaxismax>100.0000</yaxismax>
+					<graph_elements>
+						<graph_element item="{HOSTNAME}:custom.vfs.dev.read.sectors[sdc]">
+							<color>990000</color>
+							<yaxisside>1</yaxisside>
+							<calc_fnc>2</calc_fnc>
+							<periods_cnt>5</periods_cnt>
+						</graph_element>
+						<graph_element item="{HOSTNAME}:custom.vfs.dev.read.sectors[sdb]">
+							<color>00CC00</color>
+							<yaxisside>1</yaxisside>
+							<calc_fnc>2</calc_fnc>
+							<periods_cnt>5</periods_cnt>
+						</graph_element>
+						<graph_element item="{HOSTNAME}:custom.vfs.dev.write.sectors[sdb]">
+							<color>000099</color>
+							<yaxisside>1</yaxisside>
+							<calc_fnc>2</calc_fnc>
+							<periods_cnt>5</periods_cnt>
+						</graph_element>
+						<graph_element item="{HOSTNAME}:custom.vfs.dev.write.sectors[sdc]">
+							<color>990099</color>
+							<yaxisside>1</yaxisside>
+							<calc_fnc>2</calc_fnc>
+							<periods_cnt>5</periods_cnt>
+						</graph_element>
+					</graph_elements>
+				</graph>
+				<graph name="Disk - ops/second" width="900" height="200">
+					<show_work_period>1</show_work_period>
+					<show_triggers>1</show_triggers>
+					<yaxismin>0.0000</yaxismin>
+					<yaxismax>100.0000</yaxismax>
+					<graph_elements>
+						<graph_element item="{HOSTNAME}:custom.vfs.dev.read.ops[sdb]">
+							<color>00CC00</color>
+							<yaxisside>1</yaxisside>
+							<calc_fnc>2</calc_fnc>
+							<periods_cnt>5</periods_cnt>
+						</graph_element>
+						<graph_element item="{HOSTNAME}:custom.vfs.dev.read.ops[sdc]">
+							<color>990000</color>
+							<yaxisside>1</yaxisside>
+							<calc_fnc>2</calc_fnc>
+							<periods_cnt>5</periods_cnt>
+						</graph_element>
+						<graph_element item="{HOSTNAME}:custom.vfs.dev.write.ops[sdb]">
+							<color>000099</color>
+							<yaxisside>1</yaxisside>
+							<calc_fnc>2</calc_fnc>
+							<periods_cnt>5</periods_cnt>
+						</graph_element>
+						<graph_element item="{HOSTNAME}:custom.vfs.dev.write.ops[sdc]">
+							<color>990099</color>
+							<yaxisside>1</yaxisside>
+							<calc_fnc>2</calc_fnc>
+							<periods_cnt>5</periods_cnt>
+						</graph_element>
+					</graph_elements>
+				</graph>
+			</graphs>
+		</host>
+	</hosts>
+</zabbix_export>
