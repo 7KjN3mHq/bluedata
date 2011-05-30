@@ -17,6 +17,12 @@ Windows 下用 WinRAR 压缩的中文文件乱码问题：
 在 Ubuntu 下用 unrar 解压。
 使用归档管理器的话，可以删除 rar ，只用 unrar 。
 
+Adobe Reader 中文支持：
+wget ftp://ftp.adobe.com/pub/adobe/reader/unix/9.x/9.1/misc/FontPack910_chs_i486-linux.tar.bz2
+tar jxvf FontPack910_chs_i486-linux.tar.bz2
+cd CHSKIT
+sudo ./INSTALL
+
 vim 乱码问题：
 先安装 vim: sudo apt-get install vim
 在 /etc/vim/vimrc 添加：
