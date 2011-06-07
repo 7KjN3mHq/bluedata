@@ -23,11 +23,19 @@ mkdir etc
 cp share/mysql/my-innodb-heavy-4G.cnf etc/my.cnf
 
 vi etc/my.cnf
+[client]
+port            = 3306
+socket          = /var/run/mysqld/mysqld.sock
+default-character-set=utf8
+
+[mysqld]
 datadir         = /mysql/data
 socket          = /var/run/mysqld/mysqld.sock
 pid-file        = /var/run/mysqld/mysqld.pid
 log-error       = /var/log/mysql/err.log
 skip-name-resolve
+default-character-set=utf8
+init_connect='SET NAMES utf8'
 
 default-storage-engine = INNODB
 
