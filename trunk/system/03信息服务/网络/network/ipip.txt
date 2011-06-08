@@ -1,12 +1,12 @@
 modprobe ipip
-ip tunnel add tun11 mode ipip remote 182.237.3.12 local 118.113.3.155 ttl 64
+ip tunnel add tun11 mode ipip remote 182.237.3.12 local 125.71.204.21 ttl 64
 ip link set tun11 mtu 1480 up
-ip address add 172.16.10.1 brd 255.255.255.255 peer 172.16.10.2 dev tun11
+ip address add 172.16.12.1 brd 255.255.255.255 peer 172.16.12.2 dev tun11
 
 modprobe ipip
-ip tunnel add tun11 mode ipip remote 118.113.3.155 local 182.237.3.12 ttl 64
+ip tunnel add tun11 mode ipip remote 125.71.204.21 local 182.237.3.12 ttl 64
 ip link set tun11 mtu 1480 up
-ip address add 172.16.10.2 brd 255.255.255.255 peer 172.16.10.1 dev tun11
+ip address add 172.16.12.2 brd 255.255.255.255 peer 172.16.12.1 dev tun11
 
 
 echo "1" > /proc/sys/net/ipv4/ip_forward

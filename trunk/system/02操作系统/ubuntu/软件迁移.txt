@@ -35,7 +35,7 @@ RefControl: https://addons.mozilla.org/zh-CN/firefox/addon/953
 
  ‰»Î∑®£∫
 À—π∑∆¥“Ù ‰»Î∑®  http://pinyin.sogou.com/
-ibus
+ibus-sunpinyin + À—π∑œ∏∞˚¥ ø‚ (http://sunpinyin.googlecode.com/files/sunpinyin_importer.tar.bz2 , http://pinyin.sogou.com/dict/)
 
 
 PDF:
