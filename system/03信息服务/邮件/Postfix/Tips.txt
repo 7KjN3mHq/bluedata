@@ -105,7 +105,7 @@ echo $decode;
 ?>
 
 perl -e 'use MIME::Base64; print encode_base64("bluedata\@jc001.cn")'
-perl -e 'use MIME::Base64; print encode_base64("fanssoft")'
+perl -e 'use MIME::Base64; print encode_base64("PASSWORD")'
 
 telnet localhost 25
 Trying 127.0.0.1...
