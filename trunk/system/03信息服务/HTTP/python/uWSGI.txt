@@ -5,3 +5,6 @@ tar zxvf uwsgi-0.9.7.2.tar.gz
 cd uwsgi-0.9.7.2
 make
 mv uwsgi /usr/bin/
+
+
+/etc/uwsgi.conf 里面有 listen = 4096 ，根据这个帖子（http://forum.nginx.org/read.php?2,156979）的建议，把 /proc/sys/net/core/somaxconn 的值设为 4096
