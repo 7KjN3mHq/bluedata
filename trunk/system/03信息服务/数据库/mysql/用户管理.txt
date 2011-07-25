@@ -67,3 +67,7 @@ update mysql.user set host='127.0.0.1' where user='test';
 
 修改用户密码：
 set password for '<username>'@'<hostname>' = password('<password>');
+
+忘记 root 密码重置：
+在 my.cnf 文件的 [mysqld] 段添加 skip-grant-tables 后重启，可以免密码登陆，然后重置 root 的密码，
+update mysql.user set password=password('<password>') where user='root';
