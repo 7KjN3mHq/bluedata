@@ -21,13 +21,23 @@ ldconfig
 检查指定的表：
 mk-table-checksum h=127.0.0.1,u=root h=10.10.30.84,u=root -d fairyvillage -t fvs_building_info
 
+
 从库同步到主库(从库在前，主库在后)：
 mk-table-sync --execute --print --nobin-log --databases fairyvillage --tables fvs_building_info h=10.10.30.84:3306,u=root h=10.10.30.66:3306,u=root
 
-检查库并过滤出不同步的表：
-mk-table-checksum h=127.0.0.1,u=root h=10.10.30.84,u=root -d fairyvillage | mk-checksum-filter
+需要指定编码，否则会乱码：
+--charset=utf8
+
+可以同时同步多个表：
+-d test -t a,b,c...
+
+最好一次同步一个从库，多个从库一起同步容易造成主键冲突，导致主从同步中断。
 
 同步非复制库需要加上 --nocheck-slave 参数。
+
+
+检查库并过滤出不同步的表：
+mk-table-checksum h=127.0.0.1,u=root h=10.10.30.84,u=root -d fairyvillage | mk-checksum-filter
 
 
 重复索引检查：
