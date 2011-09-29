@@ -1,3 +1,5 @@
+Debian/Ubuntu 修改 datadir 还需要修改 /etc/apparmor.d/usr.sbin.mysqld 中相应的目录权限并重启 apparmor 服务。
+
 MySQL 运行时修改运行参数：
 set global long_query_time=0.25;
 set global log_queries_not_using_indexes=ON;
