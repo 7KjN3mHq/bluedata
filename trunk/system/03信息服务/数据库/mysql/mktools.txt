@@ -6,9 +6,9 @@ wget http://www.maatkit.org/get/toolname
 perl -e 'use DBD::mysql'
 有错误输出就安装：
 http://www.cpan.org/modules/by-module/DBD
-wget http://www.cpan.org/modules/by-module/DBD/DBD-mysql-4.019.tar.gz
-tar zxvf DBD-mysql-4.019.tar.gz
-cd DBD-mysql-4.019
+wget http://www.cpan.org/modules/by-module/DBD/DBD-mysql-4.020.tar.gz
+tar zxvf DBD-mysql-4.020.tar.gz
+cd DBD-mysql-4.020
 perl Makefile.PL --mysql_config=/usr/local/mysql/bin/mysql_config
 make
 make install
@@ -50,3 +50,12 @@ mk-find --engine MyISAM --print --exec "optimize table %D.%N"
 mk-find --exec "repair table %D.%N use_frm"
 
 for i in `mk-find --dblike mysql --engine MyISAM --print` ; do mysql -e 'optimize table '$i''; mysql -e 'repair table '$i''; done > /dev/null 2>&1
+
+
+报错：
+Had to create DBD::mysql::dr::imp_data_size unexpectedly at /usr/xx/DBI.pm line 1190.
+Had to create DBD::mysql::db::imp_data_size unexpectedly at /usr/xx/DBI.pm line 1190.
+Undefined subroutine &DBD::mysql::db::_login called at /usr/xx/DBD/mysql.pm line 148.
+
+可以手工指定:
+export LD_LIBRARY_PATH=/path/to/mysql/lib
