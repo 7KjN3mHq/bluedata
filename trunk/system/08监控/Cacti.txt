@@ -306,6 +306,9 @@ tar zxvf mysql-cacti-templates-1.1.1.tar.gz
 cd mysql-cacti-templates-1.1.1
 cp ss_get_mysql_stats.php /data/cacti/scripts/
 
+在被监控的 MySQL 服务器需要创建相应账号，如：
+mysql> GRANT PROCESS, SUPER ON *.* TO 'cacti'@'cacti.net' IDENTIFIED BY '<PASSWORD>';
+
 
 yum install python-setuptools
 wget ftp://ftp.tummy.com/pub/python-memcached/python-memcached-latest.tar.gz
