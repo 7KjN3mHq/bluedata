@@ -1,0 +1,11 @@
+vm 模式可以节省约三分之二的内存，但 CPU 负载极高，高并发下不能及时响应请求。
+
+
+主从模式下，可以把 master 改为不 dump 数据，如： save 10000000000 10000000000
+并延长 slave dump 数据的间隔和开启 vm 模式，如： save 1800 1
+提升性能并确保高可用性。
+
+
+手动打开 slave
+redis-cli slaveof HOST PORT
+关闭： SLAVEOF NO ONE

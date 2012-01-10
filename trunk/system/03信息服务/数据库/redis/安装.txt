@@ -1,11 +1,11 @@
-groupadd redis
+﻿groupadd redis
 useradd -m -g redis -d /usr/local/redis -s /bin/bash redis
 cd /usr/local/redis
 mkdir bin etc
 cd
-wget http://redis.googlecode.com/files/redis-2.2.5.tar.gz
-tar zxvf redis-2.2.5.tar.gz
-cd redis-2.2.5
+wget http://redis.googlecode.com/files/redis-2.4.5.tar.gz
+tar zxvf redis-2.4.5.tar.gz
+cd redis-2.4.5
 make
 cp redis.conf /usr/local/redis/etc/
 cd src
@@ -31,7 +31,7 @@ DAEMON=/usr/local/redis/bin/redis-server
 DAEMON_ARGS=/usr/local/redis/etc/redis.conf
 NAME=redis-server
 DESC=redis-server
-PIDFILE=/var/run/redis.pid
+PIDFILE=/var/run/redis/redis.pid
 
 test -x $DAEMON || exit 0
 
@@ -98,7 +98,7 @@ pidfile /var/run/redis/redis.pid
 port 6379
 timeout 300
 loglevel notice
-logfile  /var/log/redis/redis.log
+logfile /var/log/redis/redis.log
 databases 16
 save 900 1
 save 300 10
