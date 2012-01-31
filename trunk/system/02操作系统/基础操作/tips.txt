@@ -1,3 +1,10 @@
+增加 swap
+mkdir /sw
+dd if=/dev/zero of=/sw/swap bs=1024 count=10240000
+mkswap /sw/swap
+swapon /sw/swap
+
+
 dos/unix 文件互转： dos2unix unxi2dos
 
 
