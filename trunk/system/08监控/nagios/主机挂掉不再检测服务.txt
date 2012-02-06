@@ -1,0 +1,53 @@
+主机挂掉不再检测服务：
+http://monitoringtt.blogspot.com/2011/05/nagios-service-checks-based-on-host.html
+
+vi check_status
+if HOSTSTATUSID=0 the
+  # Host has changed to an UP status
+
+  # Force status for all host services
+  for each host Service
+    # Submit an external command to set, as service status,
+    # previous current value ($LASTSERVICESTATUSID$ macro)
+    ExternalCommand(PROCESS_SERVICE_CHECK_RESULT,Service,
+                    $LASTSERVICESTATUSID:HostName:Service$)
+  endfor
+
+  # Enable notifications for all host services
+  ExternalCommand(ENABLE_HOST_SVC_NOTIFICATIONS, HostName)
+
+  # Enable active checks for all host services
+  ExternalCommand(ENABLE_HOST_SVC_CHECKS, Hostname)
+else
+  # Host has changed to a non-UP status
+
+  # Disable active checks for all host services
+  ExternalCommand(DISABLE_HOST_SVC_CHECKS, Hostname)
+
+  # Disable notifications for all host services
+  ExternalCommand(DISABLE_HOST_SVC_NOTIFICATIONS, HostName)
+  # Set UNKNOWN (3) status for all host services
+  for each host Service
+    ExternalCommand(PROCESS_SERVICE_CHECK_RESULT,Service,3)
+  endfor
+endif
+
+
+vi commands.cfg
+define command {
+ command_name setSvcStatusByHostStatus
+ command_line $USER1$/check_status -h $HOSTNAME$ -s $HOSTSTATUSID$
+}
+
+
+全局应用：
+vi nagios.cfg
+global_host_event_handler = setSvcStatusByHostStatus
+
+
+针对主机：
+define host {
+ ...
+ event_handler setSvcStatusByHostStatus
+ ...
+}
