@@ -1,4 +1,4 @@
-vi /usr/local/nginx/conf/logrotate.conf
+﻿vi /usr/local/nginx/conf/logrotate.conf
 
 /var/log/nginx/*.log {
     daily
