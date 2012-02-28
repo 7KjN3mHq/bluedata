@@ -1,3 +1,29 @@
+back_log
+TCP/IP连接队列的最大值。
+当 MySQL 同时有大量连接请求的时候， MySQL 会尝试用当前现有的线程处理这些请求，如果处理不过来， MySQL 会把连接先放到一个队列里面，然后起新的线程处理。
+这个过程会很快， 但是并发请求很多的话，需要调高这个值，否则新来的连接请求会被拒绝。
+在一次压测的时候发现客户端返回大量的 "Lost connection to MySQL" ， 就是因为 back_log 的默认值太小导致的。增大这个值会增大 CPU 负载并消耗更多的内存。
+默认值：50 ， 参考设置： 200
+
+connect_timeout
+连接超时的秒数。
+默认值： 5 ， 参考设置： 15
+
+max_connect_errors
+当客户端连接服务端超时 （超过 connect_timeout ）, 服务端就会给这个客户端记录一次 error ，当出错的次数达到 max_connect_errors 的时候，
+这个客户端就会被锁定。除非执行 FLUSH HOSTS 命令。
+默认值： 10 ， 参考设置： 1844674407370954751 （能设多大设多大）
+
+slave_net_timeout
+MySQL 主从复制的时候，当 Master 和 Slave 之间的网络中断，但是 Master 和 Slave 无法察觉的情况下（比如防火墙或者路由问题）。
+Slave 会等待 slave_net_timeout 设置的秒数后，才能认为网络出现故障，然后才会重连并且追赶这段时间主库的数据。
+默认值： 3600 ， 参考设置： 30
+
+wait_timeout
+连接过期秒数。当一个连接 SLEEP 超过 wait_timeout 秒后， MySQL 服务端会中断这个连接。
+这个值设置的过长有可能会导致大量的 SLEEP 链接占用系统资源，过小会导致 "MySQL has gone away" 错误。
+默认值： 28800 ， 参考设置： 30
+
 Debian/Ubuntu 修改 datadir 还需要修改 /etc/apparmor.d/usr.sbin.mysqld 中相应的目录权限并重启 apparmor 服务。
 
 MySQL 运行时修改运行参数：
