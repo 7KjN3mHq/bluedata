@@ -1,4 +1,4 @@
-mongodb提供了两个命令来备份（mongodump ）和恢复（mongorestore ）数据库。
+﻿mongodb提供了两个命令来备份（mongodump ）和恢复（mongorestore ）数据库。
 
 1.备份（mongodump）
 用法 ：
@@ -71,3 +71,4 @@ going into namespace [citys.system.indexes]
 例：
 mongoexport -d mixi_top_city_prod -c building_45 -q '{ "uid" : "10832545" }' > mongo_10832545.bson
 mongoimport -d mixi_top_city -c building_45 --file mongo_10832545.bson
+mongodb提供了两个命令来备份（mongodump ）和恢复（mongorestore ）数据库。
