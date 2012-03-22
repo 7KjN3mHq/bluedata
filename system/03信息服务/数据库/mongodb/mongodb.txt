@@ -1,4 +1,4 @@
-Ubuntu 下的安装：
+﻿Ubuntu 下的安装：
 vi /etc/apt/sources.list
 deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen
 
