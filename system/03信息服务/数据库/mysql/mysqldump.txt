@@ -15,3 +15,7 @@ mysqldump --opt -d -uroot <DATABASE> > <DATABASE>_frm.sql
 
 导出并打包：
 mysqldump <mysqldump options> | gzip > outputfile.sql.gz
+
+
+--master-data 参数可以得到 file 和 position 的记录，用于建立 slave
+grep -i "CHANGE MASTER TO" dumpfile
