@@ -1,4 +1,4 @@
-添加一个PPA源
+﻿添加一个PPA源
 sudo add-apt-repository ppa:user/ppa-name
 
 删除一个PPA源
