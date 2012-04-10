@@ -10,5 +10,8 @@ dpkg -i hpacucli_8.50-6.0.2-2_amd64.deb
 
 hpacucli
 => ctrl all show status
-
 => ctrl slot=0 show config detail
+
+也可写为一行直接执行：
+hpacucli ctrl all show status
+hpacucli ctrl slot=0 show config detail
