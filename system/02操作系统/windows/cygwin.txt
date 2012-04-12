@@ -8,6 +8,8 @@ http://www.cygwin.com/setup.exe
 如果有不能下载的包，可以换站点试试，比如： http://ftp.twaren.net/Unix/Sourceware/cygwin 。
 
 启用 sshd:
+mkpasswd -l > /etc/passwd
+mkgroup -l > /etc/group
 chmod +r /etc/passwd
 chmod +r /etc/group
 chmod +rwx /var
@@ -35,6 +37,9 @@ net start sshd
 停止服务：
 net stop sshd
 
+发生系统错误 1069。
+由于登录失败而无法启动服务。
+这是由于用户密码输入错误导致的，以后更改用户后 sshd 也可能发生这个问题，在 services.msc 里的登录标签里修改用户密码即可。
 
 ssh 公私钥验证：
 mkdir ~/.ssh
