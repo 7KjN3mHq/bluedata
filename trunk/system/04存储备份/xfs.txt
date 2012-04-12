@@ -1,2 +1,1 @@
 mount -t xfs -o noatime,nobarrier /dev/vg/mysql /mysql
-
