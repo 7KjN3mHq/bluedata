@@ -59,6 +59,7 @@ export http_proxy=http://host:port/
 
 查看网卡的状态
 mii-tool
+最高只能显示 100Mb 的连接，可用 ethtool 替代。
 
 无类的内部域路由(CIDR)
 子网掩码 CIDR值
