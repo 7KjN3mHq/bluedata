@@ -1,0 +1,7 @@
+#!/bin/sh
+for user in `cat users.txt`; do
+  passwd=`cat /dev/urandom | head -1 | md5sum | head -c 6`
+  echo "u:$user  p:$passwd" >> passwd.txt
+  touch htpasswd.txt
+  htpasswd -db htpasswd.txt $user $passwd
+done
