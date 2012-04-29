@@ -17,14 +17,16 @@ echo "AUTOFSCK_TIMEOUT=5" > /etc/sysconfig/autofsck
 echo "AUTOFSCK_DEF_CHECK=yes" >> /etc/sysconfig/autofsck
 
 扩展 YUM 源 (DAG)
-http://dag.wieers.com/rpm/FAQ.php#B
+vi /etc/yum.repos.d/dag.repo
+[dag]
+name=Dag RPM Repository for Red Hat Enterprise Linux
+baseurl=http://apt.sw.be/redhat/el$releasever/en/$basearch/dag
+gpgcheck=1
+gpgkey=http://dag.wieers.com/rpm/packages/RPM-GPG-KEY.dag.txt
+enabled=1
 
 使用 Fedora 源
-http://fedoraproject.org/wiki/EPEL
-rpm -Uvh http://download.fedora.redhat.com/pub/epel/4/i386/epel-release-4-9.noarch.rpm
-rpm -Uvh http://download.fedora.redhat.com/pub/epel/4/x86_64/epel-release-4-9.noarch.rpm
-rpm -Uvh http://download.fedora.redhat.com/pub/epel/5/i386/epel-release-5-3.noarch.rpm
-
+https://fedoraproject.org/wiki/EPEL/zh-cn
 
 YUM 使用 DVD 光盘或 ISO 文件
 先把光盘或 ISO 文件挂载到文件系统：
