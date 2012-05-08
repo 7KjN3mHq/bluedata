@@ -61,15 +61,15 @@ done
 
 vi /usr/local/sbin/rsync.sh
 #!/bin/sh
-src=/home
-des=/home
-ip=192.168.6.102
-/usr/local/bin/inotifywait -mrq --timefmt '%d/%m/%y %H:%M' --format '%T %w%f' \
- -e modify,attrib,create,delete,move \
+src=/home/
+des=/home/
+host=192.168.6.102
+inotifywait -mrq --timefmt '%d/%m/%y %H:%M' --format '%T %w%f' \
+-e modify,attrib,create,delete,move \
 ${src} \
-| while read  file
+| while read file
 do
-rsync -ae ssh --delete --progress ${src} root@${ip}:${des}
+rsync -ae ssh --delete --progress ${src} root@${host}:${des} > /dev/null 2>&1
 done
 
 
