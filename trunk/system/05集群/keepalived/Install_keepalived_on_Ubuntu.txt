@@ -1,4 +1,4 @@
-apt-get install ipvsadm keepalived
+﻿apt-get install ipvsadm keepalived
 
 vi /etc/keepalived/keepalived.conf
 #global define
@@ -43,7 +43,7 @@ virtual_server 173.193.29.146 80 {
     persistence_timeout 10
     protocol TCP
 
-    real_server 75.126.237.67 80 {
+    real_server 10.36.88.132 80 {
         weight 100
         TCP_CHECK {
             connect_timeout 3
@@ -53,7 +53,7 @@ virtual_server 173.193.29.146 80 {
         }
     }
 
-    real_server 75.126.237.69 80 {
+    real_server 10.36.88.136 80 {
         weight 100
         TCP_CHECK {
             connect_timeout 3
@@ -89,7 +89,7 @@ virtual_server 173.193.29.147 80 {
     persistence_timeout 10
     protocol TCP
 
-    real_server 75.126.237.67 80 {
+    real_server 10.36.88.132 80 {
         weight 100
         TCP_CHECK {
             connect_timeout 3
@@ -99,7 +99,7 @@ virtual_server 173.193.29.147 80 {
         }
     }
 
-    real_server 75.126.237.69 80 {
+    real_server 10.36.88.136 80 {
         weight 100
         TCP_CHECK {
             connect_timeout 3
