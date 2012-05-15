@@ -3,9 +3,9 @@ useradd -m -g redis -d /usr/local/redis -s /bin/bash redis
 cd /usr/local/redis
 mkdir bin etc
 cd
-wget http://redis.googlecode.com/files/redis-2.4.5.tar.gz
-tar zxvf redis-2.4.5.tar.gz
-cd redis-2.4.5
+wget http://redis.googlecode.com/files/redis-2.4.13.tar.gz
+tar zxvf redis-2.4.13.tar.gz
+cd redis-2.4.13
 make
 cp redis.conf /usr/local/redis/etc/
 cd src
