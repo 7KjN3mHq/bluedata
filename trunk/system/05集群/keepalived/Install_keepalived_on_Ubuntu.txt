@@ -31,12 +31,12 @@ vrrp_instance VI_WEB1{
         auth_pass WALLPAPER1
     }
     virtual_ipaddress {
-        173.193.29.146
+        74.86.39.194
     }
 
 }
 
-virtual_server 173.193.29.146 80 {
+virtual_server 74.86.39.194 80 {
     delay_loop 6
     lb_algo wlc
     lb_kind TUN
@@ -78,11 +78,11 @@ vrrp_instance VI_WEB2 {
         auth_pass WALLPAPER2
     }
     virtual_ipaddress {
-        173.193.29.147
+        74.86.39.195
     }
 }
 
-virtual_server 173.193.29.147 80 {
+virtual_server 74.86.39.195 80 {
     delay_loop 6
     lb_algo wlc
     lb_kind TUN
@@ -116,13 +116,13 @@ realserver 配置：
 vi /etc/network/interfaces
 auto tunl0
 iface tunl0 inet static
-  address 173.193.29.146
+  address 74.86.39.194
   netmask 255.255.255.255
   pre-up sysctl -p > /dev/null
 
 auto tunl0:0
 iface tunl0:0 inet static
-  address 173.193.29.147
+  address 74.86.39.195
   netmask 255.255.255.255
   pre-up sysctl -p > /dev/null
 
