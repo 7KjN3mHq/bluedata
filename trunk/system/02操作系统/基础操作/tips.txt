@@ -1,9 +1,17 @@
 增加 swap
+交换文件：
 mkdir /sw
 dd if=/dev/zero of=/sw/swap bs=1024 count=10240000
 mkswap /sw/swap
 swapon /sw/swap
+系统启动时自启动，在/etc/fstab 添加：
+/sw/swap    swap    swap defaults   0 0
 
+交换分区：
+mkswap /dev/sdc1
+swapon /dev/sdc1
+系统启动时自启动，在/etc/fstab 添加：
+/dev/sdc1    none    swap sw   0 0
 
 dos/unix 文件互转： dos2unix unxi2dos
 
