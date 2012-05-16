@@ -17,6 +17,8 @@ iconv -f gbk -t utf-8 -o new.sql old.sql
 修改 new.sql ，增加一条 sql 语句： "SET NAMES utf8;" ，保存。
 mysql db < new.sql
 
+创建数据库时指定字符集：
+CREATE DATABASE db_name CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 修改数据库字符集：
 ALTER DATABASE db_name DEFAULT CHARACTER SET character_name [COLLATE ...];

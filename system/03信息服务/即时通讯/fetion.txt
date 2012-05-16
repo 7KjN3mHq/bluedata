@@ -26,7 +26,7 @@ $message=iconv('GBK','UTF-8',$_GET['message']);
 echo exec("/usr/local/bin/sms.sh $to $message");
 ?>
 
-http://sms.jc001.cn/sms.php?to=159xxxxxxxx&message=²âÊÔ
+http://sms.domain.com/sms.php?to=159xxxxxxxx&message=²âÊÔ
 
 
 ÐÂµÄÃüÁîÐÐÄ£Ê½ (2009 Version)
@@ -56,7 +56,7 @@ $to=$_GET['to'];
 $message=iconv('GBK','UTF-8',$_GET['message']);
 echo exec("/usr/local/bin/fetion.sh $from $to $message");
 
-http://sms.jc001.cn/fetion.php?from=159xxxxxxxx&to=159xxxxxxxx&message=%B2%E2%CA%D4
+http://sms.domain.com/fetion.php?from=159xxxxxxxx&to=159xxxxxxxx&message=%B2%E2%CA%D4
 
 
 Daemon ¼àÌýÄ£Ê½
@@ -78,10 +78,10 @@ $fetion_svc_socket = socket_create(AF_INET,SOCK_DGRAM,0);
 @socket_sendto($fetion_svc_socket,$command,strlen($command),0,'127.0.0.1', $svc_port);
 socket_close($fetion_svc_socket);
 
-http://sms.jc001.cn/daemon.php?to=159xxxxxxxx&message=%B2%E2%CA%D4
+http://sms.domain.com/daemon.php?to=159xxxxxxxx&message=%B2%E2%CA%D4
 
 $message=mb_convert_encoding($_GET['message'],"UTF-8","GBK");
-http://www.jc001.cn/sms.php?to=15982058812&message=%D6%D0%B9%FA%BD%A8%B2%C4%B5%DA%D2%BB%CD%F8
+http://www.domain.com/sms.php?to=15982058812&message=%D6%D0%B9%FA%BD%A8%B2%C4%B5%DA%D2%BB%CD%F8
 
 
 ----------------------------------------------------------------------------------
@@ -134,12 +134,12 @@ tar zxvf fetion20091117-linux.tar.gz
 mv fx /usr/local/fetion
 
 cd /usr/local/fetion
-LD_LIBRARY_PATH=. ./fetion --mobile=15982058812 --pwd=fanssoft\!\@\# --to=15982058812 --msg-utf8=²âÊÔ
+LD_LIBRARY_PATH=. ./fetion --mobile=159xxxxxxxx --pwd=password --to=159xxxxxxxx --msg-utf8=²âÊÔ
 
 vi /usr/local/bin/fetion.sh
 #!/bin/sh
 cd /usr/local/fetion
-LD_LIBRARY_PATH=. ./fetion --mobile=15982058812 --pwd=fanssoft\!\@\# --to=$1 --msg-utf8="$2" > /dev/null 2>&1
+LD_LIBRARY_PATH=. ./fetion --mobile=159xxxxxxxx --pwd=password --to=$1 --msg-utf8="$2" > /dev/null 2>&1
 
 nagios
 command_line    /usr/local/bin/sendsms.sh $CONTACTPAGER$ "`/usr/bin/printf "%s" "$HOSTALIAS$($HOSTADDRESS$) is $HOSTSTATE$ on $LONGDATETIME$"`"

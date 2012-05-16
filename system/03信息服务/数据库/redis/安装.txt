@@ -106,27 +106,20 @@ save 60 10000
 save 30 100000
 rdbcompression yes
 dbfilename database.rdb
-dir /redis
+dir /data/redis
 appendonly no
 appendfsync everysec
-vm-enabled no
-vm-swap-file /redis/redis.swap
-vm-max-memory 0
-vm-page-size 32
-vm-pages 134217728
-vm-max-threads 4
 glueoutputbuf yes
 hash-max-zipmap-entries 64
 hash-max-zipmap-value 512
 activerehashing yes
 
-mkdir /redis
-chown -R redis:redis /redis /usr/local/redis
+mkdir /data/redis
+chown -R redis:redis /data/redis /usr/local/redis
 
 mkdir /var/run/redis
-chown redis /var/run/redis
 mkdir /var/log/redis
-chown redis /var/log/redis
+chown redis /var/run/redis /var/log/redis
 
 sysctl vm.overcommit_memory=1
 service redis-server start
