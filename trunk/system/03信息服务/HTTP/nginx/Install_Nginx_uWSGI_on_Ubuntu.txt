@@ -1,4 +1,4 @@
-apt-get install -y python-software-properties
+﻿apt-get install -y python-software-properties
 
 add-apt-repository ppa:nginx/stable
 add-apt-repository ppa:uwsgi/release
