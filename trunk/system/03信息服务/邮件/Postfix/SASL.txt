@@ -1,0 +1,34 @@
+apt-get install sasl2-bin libsasl2-2 libsasl2-modules
+
+adduser postfix sasl
+mkdir -p /var/spool/postfix/var/run/saslauthd
+chown -R root:sasl /var/spool/postfix/var/run/saslauthd
+
+cp -a /etc/sasldb2 /var/spool/postfix/etc/
+
+vi /etc/postfix/sasl/smtpd.conf
+pwcheck_method: saslauthd
+mech_list: PLAIN LOGIN
+log_level: 5
+
+vi /etc/default/saslauthd
+START=yes
+MECHANISMS="shadow"
+PWDIR="/var/spool/postfix/var/run/saslauthd"
+OPTIONS="-c -m ${PWDIR}"
+PIDFILE="${PWDIR}/saslauthd.pid"
+DAEMON_ARGS="-r"
+
+/etc/init.d/saslauthd start
+
+chmod o+r /etc/sasldb2
+testsaslauthd -u <user> -p '<password>' -f /var/spool/postfix/var/run/saslauthd/mux
+
+vi /etc/postfix/main.cf
+smtpd_sasl_local_domain =
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+broken_sasl_auth_clients = yes
+smtpd_recipient_restrictions = permit_sasl_authenticated,permit_mynetworks,reject _unauth_destination
+
+/etc/init.d/postfix restart
