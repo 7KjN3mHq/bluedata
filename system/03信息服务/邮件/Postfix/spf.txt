@@ -82,8 +82,9 @@ cd pyspf-2.0.5
 python setup.py build
 python setup.py install
 
-svn co http://www.openspf.org/svn/software/postfix-policyd-spf-python/trunk python-spf
-cd python-spf
+wget https://launchpad.net/pypolicyd-spf/1.0/1.0/+download/pypolicyd-spf-1.0.tar.gz
+tar zxvf pypolicyd-spf-1.0.tar.gz
+cd pypolicyd-spf-1.0
 python setup.py build
 python setup.py install
 
