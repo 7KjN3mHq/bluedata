@@ -1,11 +1,6 @@
 apt-get install rinetd
 
-grep -v ^# /etc/rinetd.conf | grep -v ^$
-allow 192.168.0.9
-allow 192.168.0.14
-192.168.0.252   3721      127.0.0.1       3721
-logfile /var/log/rinetd.log
+[Source Address] [Source Port] [Destination Address] [Destination Port]
 
-/etc/init.d/rinetd restart
-
-把只监听在 127.0.0.1 3721 端口的服务转发到内网端口，并且只允许 192.168.0.9 和 192.168.0.14 访问。
+例如：
+0.0.0.0 80 192.168.0.252 80
