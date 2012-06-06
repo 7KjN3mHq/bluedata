@@ -1,3 +1,6 @@
+禁止 icmp 包的服务器可以用 tcp ping
+hping3 -S -p 80 <ip address>
+
 通过命令得到 IP 地址：
 ip addr sh | grep eth0 | grep inet | awk '{print $2}' | cut -d '/' -f 1
 

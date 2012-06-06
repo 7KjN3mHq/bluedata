@@ -1,0 +1,61 @@
+
+	HOWTO check step-by-step a LVS-TUN setup for problems
+
+Q.1 The director must use unique address when talking to the real server
+
+	director# ip route get RIP
+
+		If  the  above command  returns  as preferred  source IP
+	address  the VIP or another IP address already configured on the
+	real server then the IPIP packets will be dropped there.
+
+Q.2 The real server's routing drops the decapsulated packets?
+
+	rs# ip route get from CIP to VIP iif tunl0
+
+	If  the  above command  returns error  then  may be  the request
+	packets   are   dropped   from   rp_filter   protection.   Check
+	tunl0/rp_filter.   It should be 0 to  allow the packets to reach
+	the  real server's sockets.  Note that  in such case the reverse
+	path   protection   can   not  detect   spoofed   packets  after
+	decapsulation, so proper firewall rules should be added instead.
+
+	The  packets can  be dropped also  when the tunl0  device is not
+	configured properly for IP. To setup the real server use:
+
+	echo 1 > /proc/sys/net/ipv4/conf/all/hidden
+	ifconfig tunl0 0.0.0.0 up
+	echo 1 > /proc/sys/net/ipv4/conf/tunl0/hidden
+	ip addr add VIP dev tunl0
+
+Q.3 The real server's gateway passes the packets to the client?
+
+	rs# arp -d GW ; traceroute -n -s VIP CIP
+
+	As  result, after some  time, we should see  on the director the
+	ICMP  port unreachable replies  sent from the  client. Note that
+	these  replies should be received in  the director. At least, we
+	should see on the client the UDP packets generated from the real
+	server.
+
+	Note  that not  all ISPs  allow such  kind of  IP spoofing. Some
+	ISPs  filter the outgoing traffic  sent with incorrect source IP
+	address (VIP in our case).
+
+Q.4 Other trivial reasons such as:
+
+	- firewall filtering on the real server or on the director
+
+	- the  real server's gateway allows spoofed IP traffic (see Q.3)
+	but  drops ARP probes "who-has GW tell  VIP". In such case it is
+	recommended  to make sure  the VIP is not  advertised in the ARP
+	probes (for example, by hiding the VIP).
+
+
+Some useful tcpdump commands that can help in the debugging process:
+
+director# tcpdump -ln -i INDEV host CIP
+director# tcpdump -ln -i OUTDEV host RIP -vvv
+real server# tcpdump -ln -i IN_ETH host DIP -vvv
+real server# tcpdump -ln -i tunl0 host CIP
+real server# tcpdump -ln -i OUT_DEV host CIP
