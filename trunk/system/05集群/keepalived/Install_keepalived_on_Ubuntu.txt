@@ -113,6 +113,7 @@ virtual_server 74.86.39.195 80 {
 
 
 realserver 配置：
+Ubuntu:
 vi /etc/network/interfaces
 auto tunl0
 iface tunl0 inet static
@@ -126,6 +127,27 @@ iface tunl0:0 inet static
   netmask 255.255.255.255
   pre-up sysctl -p > /dev/null
 
+CentOS:
+vi /etc/sysconfig/network-scripts/ifcfg-tunl0
+DEVICE=tunl0
+IPADDR=74.86.39.194
+NETMASK=255.255.255.255
+BROADCAST=74.86.39.194
+ONBOOT=yes
+
+vi /etc/sysconfig/network-scripts/ifcfg-tunl0:0
+DEVICE=tunl0:0
+IPADDR=74.86.39.195
+NETMASK=255.255.255.255
+BROADCAST=74.86.39.195
+ONBOOT=yes
+
+vi /etc/sysconfig/network-scripts/route-tunl0
+74.86.39.194 dev tunl0
+
+vi /etc/sysconfig/network-scripts/route-tunl0:0
+74.86.39.195 dev tunl0
+
 vi /etc/sysctl.conf
 net.ipv4.conf.all.arp_ignore = 1
 net.ipv4.conf.tunl0.arp_ignore = 1
@@ -134,8 +156,18 @@ net.ipv4.conf.tunl0.arp_announce = 2
 net.ipv4.conf.all.rp_filter = 0
 net.ipv4.conf.tunl0.rp_filter = 0
 
+sysctl -p
+
+Ubuntu:
 vi /etc/modules
 ipip
+
+CentOS:
+vi /etc/sysconfig/modules/ipip.modules
+#!/bin/sh
+modprobe ipip >/dev/null 2>&1
+
+chmod +x /etc/sysconfig/modules/ipip.modules
 
 modprobe ipip
 ifup tunl0 tunl0:0
