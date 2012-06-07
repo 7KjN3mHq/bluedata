@@ -1,0 +1,18 @@
+监控机也需要被监控：
+在监控机安装 nrpe ，并做如下配置：
+command[check_nagios]=/usr/local/nagios/libexec/check_nagios -e 5 -F /usr/local/nagios/var/status.dat -C /usr/local/nagios/bin/nagios
+
+再在另一个 nagios 服务器上添加 host 和 service ，例如：
+define service {
+host_name nagios
+service_description check_nagios
+check_period 24x7
+max_check_attempts 3
+normal_check_interval 30
+contact_groups admins
+retry_check_interval 15
+notification_interval 0
+notification_period 24x7
+notification_options w,u,c,r
+check_command check_nrpe!check_nagios
+}
