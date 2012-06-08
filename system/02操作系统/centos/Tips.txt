@@ -1,3 +1,6 @@
+最后的 CentOS 4 Yum 源：
+http://vault.centos.org/4.9/
+
 修复 rpmdb
 # rm -f /var/lib/rpm/__db.*
 # rpm -vv --rebuilddb
