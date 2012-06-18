@@ -1,3 +1,6 @@
+apt repo:
+http://www.percona.com/doc/percona-server/5.5/installation/apt_repo.html
+
 wget http://www.percona.com/redir/downloads/Percona-Server-5.1/Percona-Server-5.1.56-12.7/source/Percona-Server-5.1.56.tar.gz
 tar zxvf Percona-Server-5.1.56.tar.gz
 cd Percona-Server-5.1.56
