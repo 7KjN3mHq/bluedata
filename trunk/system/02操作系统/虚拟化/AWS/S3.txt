@@ -62,3 +62,20 @@ s3fs#<bucket> /<mountpoint> fuse uid=500,gid=500,url=https://s3.amazonaws.com 0 
 s3fs#<bucket> /<mountpoint> fuse allow_other,url=https://s3.amazonaws.com 0 0
 
 mount -t fuse -o allow_other,url=https://s3.amazonaws.com s3fs#<> /<mountpoint>
+
+
+允许公开访问，在 "Edit bucket policy" 添加如下规则（注意替换 <bucket_name> 为真实 bucket 名）：
+{
+	"Version": "2008-10-17",
+	"Statement": [
+		{
+			"Sid": "AllowPublicRead",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "*"
+			},
+			"Action": "s3:GetObject",
+			"Resource": "arn:aws:s3:::<bucket_name>/*"
+		}
+	]
+}
