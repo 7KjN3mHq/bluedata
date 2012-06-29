@@ -49,7 +49,7 @@ vrrp_instance VI_WEB1{
     state MASTER  ## another: BACKUP
     interface eth1
     lvs_sync_daemon_inteface eth1
-    virtual_router_id 51
+    virtual_router_id 11
     priority 99  ## another: 88
     advert_int 5
     authentication {
@@ -96,7 +96,7 @@ vrrp_instance VI_WEB2 {
     state BACKUP  ## another: MASTER
     interface eth1
     lvs_sync_daemon_inteface eth1
-    virtual_router_id 52
+    virtual_router_id 12
     priority 88  ## another: 99
     advert_int 5
     authentication {
@@ -146,23 +146,58 @@ DEVICE=lo:0
 IPADDR=74.86.39.194
 NETMASK=255.255.255.255
 BROADCAST=74.86.39.194
+ARP=no
 ONBOOT=yes
+NAME=loopback
 
 vi /etc/sysconfig/network-scripts/ifcfg-lo:1
 DEVICE=lo:1
 IPADDR=74.86.39.195
 NETMASK=255.255.255.255
 BROADCAST=74.86.39.195
+ARP=no
 ONBOOT=yes
+NAME=loopback
 
 vi /etc/sysctl.conf
 net.ipv4.conf.all.arp_ignore = 1
 net.ipv4.conf.eth1.arp_ignore = 1
 net.ipv4.conf.all.arp_announce = 2
 net.ipv4.conf.eth1.arp_announce = 2
-net.ipv4.conf.lo.rp_filter = 0
 
 sysctl -p
 
 ifup lo:0
 ifup lo:1
+
+
+或者：
+vi /usr/local/sbin/lvs_real.sh
+#!/bin/bash
+#description : start realserver
+VIP1=74.86.39.194
+VIP2=74.86.39.195
+/etc/rc.d/init.d/functions
+case "$1" in
+start)
+echo "start LVS of REALServer"
+/sbin/ifconfig lo:0 $VIP1 broadcast $VIP1 netmask 255.255.255.255 up
+/sbin/ifconfig lo:1 $VIP2 broadcast $VIP2 netmask 255.255.255.255 up
+echo "1" >/proc/sys/net/ipv4/conf/lo/arp_ignore
+echo "2" >/proc/sys/net/ipv4/conf/lo/arp_announce
+echo "1" >/proc/sys/net/ipv4/conf/all/arp_ignore
+echo "2" >/proc/sys/net/ipv4/conf/all/arp_announce
+;;
+stop)
+/sbin/ifconfig lo:0 down
+/sbin/ifconfig lo:1 down
+echo "close LVS Directorserver"
+echo "0" >/proc/sys/net/ipv4/conf/lo/arp_ignore
+echo "0" >/proc/sys/net/ipv4/conf/lo/arp_announce
+echo "0" >/proc/sys/net/ipv4/conf/all/arp_ignore
+echo "0" >/proc/sys/net/ipv4/conf/all/arp_announce
+;;
+*)
+echo "Usage: $0 {start|stop}"
+exit 1
+esac
