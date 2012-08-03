@@ -1,4 +1,4 @@
-log_format  custom  '$remote_addr [$time_local] "$host$request_uri" - '
+﻿log_format  custom  '$remote_addr [$time_local] "$host$request_uri" - '
                     '$status $body_bytes_sent $request_time - '
                     '$upstream_status $upstream_cache_status $upstream_response_time';
 

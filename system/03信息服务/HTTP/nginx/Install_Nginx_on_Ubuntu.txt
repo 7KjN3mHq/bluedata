@@ -1,33 +1,20 @@
 ﻿在 Ubuntu 上安装 Nginx
 
-
-安装依赖的包：
-apt-get install build-essential libpcre3-dev libpcrecpp0 libssl-dev zlib1g-dev
-
-下载最新稳定版安装：
 http://nginx.org/en/download.html
-wget http://nginx.org/download/nginx-0.8.54.tar.gz
-tar zxvf nginx-0.8.54.tar.gz
-cd nginx-0.8.54
-./configure --user=www-data --group=www-data --prefix=/usr/local/nginx --with-http_stub_status_module && make && make install
-
+apt-get update
+apt-get install nginx
 
 Nginx 的设置：
-cd /usr/local/nginx
-mv logs /var/log/nginx && ln -s /var/log/nginx ./logs
-cd conf
-mkdir conf.d sites-available sites-enabled
+cd /etc/nginx
+vi nginx.conf
+user  nginx;
 
-echo 'user  www-data www-data;
+worker_processes  4;
 
-worker_processes  2;
-
-#worker_cpu_affinity  01 10;
-
+worker_cpu_affinity  0001 0010 0100 1000;
 worker_rlimit_nofile  65536;
 
-error_log  /var/log/nginx/error.log;
-
+error_log  /var/log/nginx/error.log warn;
 pid  /var/run/nginx.pid;
 
 events {
@@ -39,13 +26,23 @@ http {
     include  mime.types;
     default_type  text/html;
 
-    access_log  /var/log/nginx/access.log;
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    log_format  custom  '$remote_addr [$time_local] "$host$request_uri" - '
+                        '$status $request_time - '
+                        '$upstream_status $upstream_response_time';
+
+    access_log  /var/log/nginx/access.log  custom;
+
+    server_tokens  off;
 
     sendfile        on;
     tcp_nopush      on;
     tcp_nodelay     on;
 
-    keepalive_timeout  65;
+    keepalive_timeout  0;
 
     gzip  on;
     gzip_min_length  1100;
@@ -67,12 +64,10 @@ http {
     client_max_body_size   8m;
     send_timeout           1m;
 
+    include fastcgi.conf
     include /etc/nginx/conf.d/*.conf;
-    include /etc/nginx/sites-enabled/*;
-}' > nginx.conf
+}
 
-mv fastcgi.conf conf.d/
-cd conf.d
 echo 'fastcgi_connect_timeout 300s;
 fastcgi_send_timeout 300s;
 fastcgi_read_timeout 300s;
@@ -81,128 +76,44 @@ fastcgi_buffers 8 128k;
 fastcgi_busy_buffers_size 256k;
 fastcgi_temp_file_write_size 256k;' > fastcgi.conf
 
-cd ../sites-available
-echo 'server {
+vi conf.d/default.conf
+server {
     listen  80;
     server_name  _;
+
+    set $webroot $host;
+
+    if ( $host ~* (.*)\.(.*)\.(.*) ) {
+        set $webroot $2.$3;
+    }
+
+    location / {
+        root  /home/www/$webroot;
+        index  index.php index.html index.htm;
+    }
+
+    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico)$ {
+        access_log  off;
+        expires  30d;
+    }
+ 
+    location ~ \.php$ {
+        fastcgi_pass  127.0.0.1:9000;
+        fastcgi_param  SCRIPT_FILENAME /home/www/$webroot/$fastcgi_script_name;
+        include  fastcgi_params;
+    }
+
+    location ~ /\.ht {
+        deny  all;
+    }
+
     location /nginx_status {
         stub_status  on;
         access_log  off;
         allow  127.0.0.1;
         deny  all;
     }
-}' > default
-
-cd ../sites-enabled
-ln -s ../sites-available/default ./
-
-cd ..
-echo '
-fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;' >> fastcgi_params
-
-rm -rf /etc/nginx && ln -s /usr/local/nginx/conf /etc/nginx
-
-
-创建启动脚本：
-echo '#!/bin/sh
-
-### BEGIN INIT INFO
-# Provides:          nginx
-# Required-Start:    $local_fs $remote_fs $network $syslog
-# Required-Stop:     $local_fs $remote_fs $network $syslog
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: starts the nginx web server
-# Description:       starts nginx using start-stop-daemon
-### END INIT INFO
-
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/local/nginx/sbin/nginx
-NAME=nginx
-DESC=nginx
-
-# Include nginx defaults if available
-if [ -f /etc/default/nginx ]; then
-	. /etc/default/nginx
-fi
-
-test -x $DAEMON || exit 0
-
-set -e
-
-. /lib/lsb/init-functions
-
-test_nginx_config() {
-	if $DAEMON -t $DAEMON_OPTS >/dev/null 2>&1; then
-		return 0
-	else
-		$DAEMON -t $DAEMON_OPTS
-		return $?
-	fi
 }
-
-case "$1" in
-	start)
-		echo -n "Starting $DESC: "
-		test_nginx_config
-		# Check if the ULIMIT is set in /etc/default/nginx
-		if [ -n "$ULIMIT" ]; then
-			# Set the ulimits
-			ulimit $ULIMIT
-		fi
-		start-stop-daemon --start --quiet --pidfile /var/run/$NAME.pid \
-		    --exec $DAEMON -- $DAEMON_OPTS || true
-		echo "$NAME."
-		;;
-
-	stop)
-		echo -n "Stopping $DESC: "
-		start-stop-daemon --stop --quiet --pidfile /var/run/$NAME.pid \
-		    --exec $DAEMON || true
-		echo "$NAME."
-		;;
-
-	restart|force-reload)
-		echo -n "Restarting $DESC: "
-		start-stop-daemon --stop --quiet --pidfile \
-		    /var/run/$NAME.pid --exec $DAEMON || true
-		sleep 1
-		test_nginx_config
-		start-stop-daemon --start --quiet --pidfile \
-		    /var/run/$NAME.pid --exec $DAEMON -- $DAEMON_OPTS || true
-		echo "$NAME."
-		;;
-
-	reload)
-		echo -n "Reloading $DESC configuration: "
-		test_nginx_config
-		start-stop-daemon --stop --signal HUP --quiet --pidfile /var/run/$NAME.pid \
-		    --exec $DAEMON || true
-		echo "$NAME."
-		;;
-
-	configtest|testconfig)
-		echo -n "Testing $DESC configuration: "
-		if test_nginx_config; then
-			echo "$NAME."
-		else
-			exit $?
-		fi
-		;;
-
-	status)
-		status_of_proc -p /var/run/$NAME.pid "$DAEMON" nginx && exit 0 || exit $?
-		;;
-	*)
-		echo "Usage: $NAME {start|stop|restart|reload|force-reload|status|configtest}" >&2
-		exit 1
-		;;
-esac
-
-exit 0' > /etc/init.d/nginx
-
-chmod +x /etc/init.d/nginx
-
 
 系统的相关设置：
 echo '
@@ -211,12 +122,8 @@ fs.file-max = 65536
 sysctl -p
 
 echo '
-www-data soft nofile 65536
-www-data hard nofile 65536
+nginx soft nofile 65536
+nginx hard nofile 65536
 ' >> /etc/security/limits.conf
 
-
-设置 nginx 开机自启动：
-update-rc.d -f nginx defaults
-
-service nginx start
+service nginx restart

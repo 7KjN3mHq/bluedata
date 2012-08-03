@@ -1,0 +1,61 @@
+## Install PHP-CGI
+apt-get install php5-cgi php5-mysql php5-gd
+
+## Install ZendOptimizer
+http://www.zend.com/en/products/guard/downloads
+tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
+cp ZendGuardLoader-php-5.3-linux-glibc23-x86_64/php-5.3.x/ZendGuardLoader.so /usr/lib/php5/20090626/
+
+vi /etc/php5/conf.d/zend.ini
+[Zend]
+zend_extension=/usr/lib/php5/20090626/ZendGuardLoader.so
+
+
+## Install eAccelerator
+apt-get install build-essential php5-dev
+wget https://github.com/eaccelerator/eaccelerator/tarball/master -O eaccelerator.tar.gz
+tar jxvf eaccelerator.tar.gz
+cd eaccelerator*
+phpize
+./configure --enable-eaccelerator=shared
+make
+make install
+
+vi /etc/php5/conf.d/eaccelerator.ini
+[eAccelerator]
+zend_extension="/usr/lib/php5/20090626/eaccelerator.so"
+eaccelerator.shm_size="32"
+eaccelerator.cache_dir="/dev/shm"
+eaccelerator.enable="1"
+eaccelerator.optimizer="1"
+eaccelerator.check_mtime="1"
+eaccelerator.debug="0"
+eaccelerator.filter=""
+eaccelerator.shm_max="0"
+eaccelerator.shm_ttl="3600"
+eaccelerator.shm_prune_period="0"
+eaccelerator.shm_only="1"
+eaccelerator.compress="1"
+eaccelerator.compress_level="9"
+eaccelerator.keys="shm_only"
+eaccelerator.sessions="shm_only"
+eaccelerator.content="shm_only"
+eaccelerator.allowed_admin_path="/var/www/eaccelerator"
+
+
+## Configure
+vi /etc/php5/cgi/php.ini
+max_execution_time = 5
+memory_limit = 8M
+default_socket_timeout = 10
+mysql.allow_persistent = Off
+mysql.connect_timeout = 10
+session.save_path = /dev/shm
+session.gc_maxlifetime = 3600
+
+
+## Start
+apt-get install spawn-fcgi
+
+vi /etc/rc.local
+/usr/bin/spawn-fcgi -a 127.0.0.1 -p 9000 -C 128 -u www-data -g www-data -f /usr/bin/php-cgi
