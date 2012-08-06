@@ -1,0 +1,83 @@
+apt-get install pure-ftpd-mysql
+
+cd /etc/pure-ftpd/conf
+echo "yes" > ChrootEveryone
+echo "yes" > CreateHomeDir
+echo "no" > PAMAuthentication
+echo "30000 30099" > PassivePortRange
+echo "33" > MinUID
+echo "yes" > AllowUserFXP
+echo "no" > NoTruncate
+
+cd ../db
+cp mysql.conf mysql.conf~
+vi mysql.conf
+MYSQLSocket     /var/run/mysqld/mysqld.sock
+MYSQLUser       pureftpd
+MYSQLPassword   ftpdpass
+MYSQLDatabase   pureftpd
+MYSQLCrypt      md5
+MYSQLGetPW      SELECT Password FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MYSQLGetUID     SELECT Uid FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MYSQLGetGID     SELECT Gid FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MYSQLGetDir     SELECT Dir FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MySQLGetBandwidthUL SELECT ULBandwidth FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MySQLGetBandwidthDL SELECT DLBandwidth FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MySQLGetQTASZ   SELECT QuotaSize FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+MySQLGetQTAFS   SELECT QuotaFiles FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
+
+vi pureftpd.sql
+CREATE DATABASE pureftpd;
+GRANT SELECT, INSERT, UPDATE, DELETE on pureftpd.* to pureftpd@localhost identified by 'ftpdpass';
+FLUSH PRIVILEGES;
+
+USE pureftpd;
+CREATE TABLE admin (
+Username varchar(16) NOT NULL default '',
+Password char(32) binary NOT NULL default '',
+PRIMARY KEY (Username)
+);
+
+CREATE TABLE users (
+User char(16) NOT NULL default '',
+Password char(32) binary NOT NULL default '',
+Uid tinyint(5) NOT NULL default '33',
+Gid tinyint(5) NOT NULL default '33',
+Dir char(255) NOT NULL default '',
+QuotaFiles int(10) NOT NULL default '0',
+QuotaSize int(10) NOT NULL default '0',
+ULBandwidth int(10) NOT NULL default '0',
+DLBandwidth int(10) NOT NULL default '0',
+ULRatio tinyint(5) NOT NULL default '0',
+DLRatio tinyint(5) NOT NULL default '0',
+Status enum('0','1') NOT NULL default '1',
+Ipaddress varchar(15) NOT NULL default '*',
+Comment tinytext NOT NULL,
+PRIMARY KEY (User),
+UNIQUE KEY User (User)
+);
+
+mysql < pureftpd.sql
+
+INSERT INTO `admin` VALUES ( 'root', MD5( 'password' ) );
+INSERT INTO `users` VALUES ( 'test', MD5( 'password' ) , '33', '33', '/var/www/ftp', '1000', '50', '128', '16', '0', '0', '1', '*', '' );
+
+/etc/init.d/pureftpd restart
+
+
+wget http://machiel.generaal.net/files/pureftpd/ftp_v2.1.tar.gz
+tar zxvf ftp_v2.1.tar.gz
+mv ftp /var/www/
+cd /var/www/ftp
+vi config.php
+$LANG = "Chinese";
+$DBHost = "localhost";
+$DBLogin = "pureftpd";
+$DBPassword = "ftpdpass";
+$DBDatabase = "pureftpd";
+
+cd language
+mv chinese.php chinese.php~
+iconv -f utf-8 -t gbk -o chinese.php chinese.php~
+vi chinese.php
+$CharSet = "GBK";
