@@ -1,3 +1,17 @@
+/etc/security/limits.conf 里的 * 是不匹配 root 用户的。需要手动指定 root 才能生效。
+echo '
+root soft nofile 65536
+root hard nofile 65536
+' >> /etc/security/limits.conf
+最保险的做法还是写入 root 的 .profile 文件：
+ulimit -SHn 65536
+
+检查进程的 limits
+for pid in `ps aux | grep nginx | grep -v grep | awk '{print $2}'`
+do
+cat /proc/${pid}/limits | grep 'Max open files'
+done
+
 使用 screen 管理远程会话
 http://www.ibm.com/developerworks/cn/linux/l-cn-screen/
 screen mongodump -h <host> -d <db> -o </path/to/dir>

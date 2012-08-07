@@ -7,7 +7,7 @@ apt-get install nginx
 Nginx 的设置：
 cd /etc/nginx
 vi nginx.conf
-user  nginx;
+user  www-data;
 
 worker_processes  4;
 
@@ -83,16 +83,26 @@ server {
 
     set $webroot $host;
 
+    if ( $host ~* (.*)\.(.*) ) {
+        set $webroot $1.$2/www;
+    }
+
     if ( $host ~* (.*)\.(.*)\.(.*) ) {
-        set $webroot $2.$3;
+        set $webroot $2.$3/$1;
     }
 
     location / {
         root  /home/www/$webroot;
-        index  index.php index.html index.htm;
+        index  index.html index.htm index.php;
+    }
+
+    location ~* ^.+.(html|htm)$ {
+        root  /home/www/$webroot;
+        expires  1h;
     }
 
     location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico)$ {
+        root  /home/www/$webroot;
         access_log  off;
         expires  30d;
     }
@@ -122,8 +132,9 @@ fs.file-max = 65536
 sysctl -p
 
 echo '
-nginx soft nofile 65536
-nginx hard nofile 65536
+www-data soft nofile 65536
+www-data hard nofile 65536
 ' >> /etc/security/limits.conf
 
+ulimit -SHn 65536
 service nginx restart
