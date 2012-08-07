@@ -2,11 +2,10 @@
 show variables like 'character%';
 编辑 my.cnf
 [client]
-default-character-set=utf8
+default-character-set = utf8
 [mysqld]
-default-character-set=utf8
+default-character-set = utf8   ## MySQL 5.5 后是 character-set-server = utf8
 init_connect='SET NAMES utf8'  ## 设定连接 mysql 数据库时使用 utf8 编码
-
 
 编码转换：
 1. 导出旧库：
