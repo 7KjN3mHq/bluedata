@@ -1,4 +1,8 @@
-﻿添加一个PPA源
+﻿增加 apt cache limit
+echo "APT::Cache-Limit \"100000000\";" >> /etc/apt/apt.conf.d/70debconf
+apt-get clean && apt-get update --fix-missing
+
+添加一个PPA源
 sudo add-apt-repository ppa:user/ppa-name
 
 删除一个PPA源

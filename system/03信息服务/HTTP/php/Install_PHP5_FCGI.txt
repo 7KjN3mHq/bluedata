@@ -3,27 +3,28 @@
 
 软件下载：
 PHP5(http://www.php.net/downloads.php):
-wget http://cn.php.net/get/php-5.2.14.tar.bz2/from/this/mirror
+wget http://cn.php.net/get/php-5.2.17.tar.bz2/from/this/mirror
+mv mirror php-5.2.17.tar.bz2
 
 php-fpm(http://php-fpm.org/downloads/):
-wget http://php-fpm.org/downloads/php-5.2.14-fpm-0.5.14.diff.gz
+wget http://php-fpm.org/downloads/php-5.2.17-fpm-0.5.14.diff.gz
 
 
 安装依赖的包：
 CentOS:
 yum install mysql-devel gd-devel libxml2-devel
 
-Debian:
-apt-get install libmysqlclient15-dev libgd2-xpm-dev libxml2-dev
+Debian/Ubuntu:
+apt-get install libmysqlclient18-dev libgd2-xpm-dev libxml2-dev libcurl4-openssl-dev
 
 
 应用 php-fpm 补丁：
-tar jxvf php-5.2.14.tar.bz2
-gzip -cd php-5.2.14-fpm-0.5.14.diff.gz | patch -d php-5.2.14 -p1
+tar jxvf php-5.2.17.tar.bz2
+gzip -cd php-5.2.17-fpm-0.5.14.diff.gz | patch -d php-5.2.17 -p1
 
 
 安装 PHP5:
-cd php-5.2.14
+cd php-5.2.17
 ./configure \
 --prefix=/usr/local/php5-fcgi \
 --enable-discard-path \
@@ -39,7 +40,7 @@ cd php-5.2.14
 --with-png-dir \
 --with-freetype-dir \
 --with-zlib \
---with-mysql=/usr/local/mysql
+--with-mysql
 
 make
 make install
@@ -50,9 +51,8 @@ cp -f php.ini-recommended /usr/local/php5-fcgi/etc/php.ini
 一些必备模块的安装：
 安装 eAccelerator:
 PHP scripts 的缓存，对于提高 PHP 程序执行速度很有帮助。
-下载： http://eaccelerator.net/
-wget http://bart.eaccelerator.net/source/0.9.6.1/eaccelerator-0.9.6.1.tar.bz2
-tar jxvf eaccelerator-0.9.6.1.tar.bz2
+下载： http://sourceforge.net/projects/eaccelerator/
+unzip eaccelerator-0.9.6.1.zip
 cd eaccelerator-0.9.6.1
 /usr/local/php5-fcgi/bin/phpize
 ./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php5-fcgi/bin/php-config
@@ -93,7 +93,7 @@ mysql.allow_persistent = Off
 # 缩短连接超时时间
 mysql.connect_timeout = 10
 # session 文件存储目录
-session.save_path = "/tmpfs"
+session.save_path = "/dev/shm"
 # session 过期时间设为一小时
 session.gc_maxlifetime = 3600
 # 关闭 session.bug_compat_warn
@@ -101,21 +101,23 @@ session.bug_compat_warn = 0
 
 # 开启 eAccelerator
 [eAccelerator]
-extension="eaccelerator.so"
-# 可使用内存设为了 16M ，太大会启动不了 PHP ，以 CGI 模式运行的 PHP ，各进程间也不能共享内存， eAccelerator 的共享模式也就无效了。
-eaccelerator.shm_size="16"
-eaccelerator.cache_dir="/tmpfs/eaccelerator"
+zend_extension="/usr/local/php5-fcgi/lib/php/extensions/no-debug-non-zts-20060613/eaccelerator.so"
+eaccelerator.shm_size="32"
+eaccelerator.cache_dir="/dev/shm"
 eaccelerator.enable="1"
 eaccelerator.optimizer="1"
 eaccelerator.check_mtime="1"
 eaccelerator.debug="0"
 eaccelerator.filter=""
 eaccelerator.shm_max="0"
-eaccelerator.shm_ttl="0"
+eaccelerator.shm_ttl="3600"
 eaccelerator.shm_prune_period="0"
-eaccelerator.shm_only="0"
+eaccelerator.shm_only="1"
 eaccelerator.compress="1"
 eaccelerator.compress_level="9"
+eaccelerator.keys="shm_only"
+eaccelerator.sessions="shm_only"
+eaccelerator.content="shm_only"
 
 # 在 eAccelerator 之后启用 ZendOptimizer ，避免 eaccelerator.so 不能加载。
 [Zend]
@@ -125,7 +127,6 @@ zend_extension=/usr/local/php5-fcgi/lib/php/extensions/no-debug-non-zts-20060613
 # 开启 memcache
 [memcache]
 extension=memcache.so
-
 
 用 tmpfs 提升性能
 mkdir /tmpfs

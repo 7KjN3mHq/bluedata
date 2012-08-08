@@ -79,3 +79,7 @@ mount -t fuse -o allow_other,url=https://s3.amazonaws.com s3fs#<> /<mountpoint>
 		}
 	]
 }
+
+
+S3 使用自定义域名访问，需要 bucket 名和域名完全一样，例如： 
+images.johnsmith.net  CNAME  images.johnsmith.net.s3.amazonaws.com.
