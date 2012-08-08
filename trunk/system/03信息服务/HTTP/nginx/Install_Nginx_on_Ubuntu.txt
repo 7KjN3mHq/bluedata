@@ -83,12 +83,8 @@ server {
 
     set $webroot $host;
 
-    if ( $host ~* (.*)\.(.*) ) {
-        set $webroot $1.$2/www;
-    }
-
-    if ( $host ~* (.*)\.(.*)\.(.*) ) {
-        set $webroot $2.$3/$1;
+    if ( $host ~* www\.(.*) ) {
+        set $webroot $1;
     }
 
     location / {

@@ -75,6 +75,13 @@ $DBHost = "localhost";
 $DBLogin = "pureftpd";
 $DBPassword = "ftpdpass";
 $DBDatabase = "pureftpd";
+$FTPAddress = "<IP_or_domain>:21";
+$DEFUserID = "33";
+$DEFGroupID = "33";
+$EnableQuota = 0;
+$EnableRatio = 0;
+
+index.php 文件 590 行开始还有默认值的设置，可根据需要修改。
 
 cd language
 mv chinese.php chinese.php~

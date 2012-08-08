@@ -1,0 +1,222 @@
+sed 's/lucid/karmic/g' /etc/apt/sources.list > /etc/apt/sources.list.d/karmic.list
+
+把以下内容保存为 /etc/apt/preferences.d/php 后执行 apt-get clean && apt-get update
+Package: php5
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-adodb 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-auth-pam 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-exactimage 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-ffmpeg 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-geoip 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-gpib 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-idn 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-imagick 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-imap 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-interbase 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-lasso 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-librdf 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-mapscript 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-mcrypt 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-memcache 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-memcached 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-ming 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-ps 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-radius 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-remctl 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-sasl 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-sqlrelay 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-suhosin 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-svn 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-symfony1.0 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-uuid 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-xapian 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-xcache 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-xdebug 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-cgi 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-cli 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-common 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-curl 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-dbg 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-dev 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-gd 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-gmp 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-ldap 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-mysql 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-odbc 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-pgsql 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-pspell 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-recode 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-snmp 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-sqlite 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-sybase 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-tidy 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-xmlrpc 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-xsl 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-enchant 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php5-intl 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: libapache2-mod-php5 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: libapache2-mod-php5filter 
+Pin: release a=karmic
+Pin-Priority: 991
+
+Package: php-pear
+Pin: release a=karmic
+Pin-Priority: 991
