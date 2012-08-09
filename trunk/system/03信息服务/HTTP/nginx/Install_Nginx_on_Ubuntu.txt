@@ -30,9 +30,8 @@ http {
                       '$status $body_bytes_sent "$http_referer" '
                       '"$http_user_agent" "$http_x_forwarded_for"';
 
-    log_format  custom  '$remote_addr [$time_local] "$host$request_uri" - '
-                        '$status $request_time - '
-                        '$upstream_status $upstream_response_time';
+    log_format  custom  '$remote_addr [$time_local] $host "$request_uri" '
+                        '$status $request_time $upstream_response_time "$http_user_agent"';
 
     access_log  /var/log/nginx/access.log  custom;
 
@@ -64,7 +63,7 @@ http {
     client_max_body_size   8m;
     send_timeout           1m;
 
-    include fastcgi.conf
+    include fastcgi.conf;
     include /etc/nginx/conf.d/*.conf;
 }
 
@@ -97,7 +96,7 @@ server {
         expires  1h;
     }
 
-    location ~* ^.+.(jpg|jpeg|gif|css|png|js|ico)$ {
+    location ~* ^.+.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|doc|xls|exe|pdf|ppt|txt|tar|mid|midi|wav|bmp|rtf|swf|js|asp)$ {
         root  /home/www/$webroot;
         access_log  off;
         expires  30d;
@@ -119,6 +118,22 @@ server {
         allow  127.0.0.1;
         deny  all;
     }
+}
+
+子域名对应域名子目录的配置：
+server {
+    listen  80;
+    server_name  *.domain.com domain.com;
+
+    if ( $host ~* ^domain\.com$ ) {
+        set $webroot domain.com/www;
+    }
+
+    if ( $host ~* (.*)\.domain\.com ) {
+        set $webroot domain.com/$1;
+    }
+
+    include  location.conf;
 }
 
 系统的相关设置：

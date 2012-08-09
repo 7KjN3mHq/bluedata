@@ -10,9 +10,10 @@ cd /etc/apt
 mv sources.list sources.list~
 vi sources.list
 
-deb http://mirrors.163.com/debian lenny main non-free contrib
-deb http://mirrors.163.com/debian lenny-proposed-updates main contrib non-free
-deb http://mirrors.163.com/debian-security lenny/updates main contrib non-free
+deb http://mirrors.163.com/debian/ squeeze main non-free contrib
+deb http://mirrors.163.com/debian/ squeeze-proposed-updates main non-free contrib
+deb-src http://mirrors.163.com/debian/ squeeze main non-free contrib
+deb-src http://mirrors.163.com/debian/ squeeze-proposed-updates main non-free contrib
 
 -----
 apt-get install ssh vim ntp psmisc sysv-rc-conf
