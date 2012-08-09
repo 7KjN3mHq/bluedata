@@ -1,3 +1,6 @@
+Debian 6 下 Percona 的 Checking for corrupt, not cleanly closed and upgrade needing tables..
+是 /etc/mysql/debian-start 报出的错误，但不影响使用。
+
 back_log
 TCP/IP连接队列的最大值。
 当 MySQL 同时有大量连接请求的时候， MySQL 会尝试用当前现有的线程处理这些请求，如果处理不过来， MySQL 会把连接先放到一个队列里面，然后起新的线程处理。

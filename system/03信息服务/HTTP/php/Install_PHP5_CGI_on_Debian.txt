@@ -63,13 +63,7 @@ session.gc_maxlifetime = 3600
 
 
 ## Start
-http://redmine.lighttpd.net/news/2
-wget http://www.lighttpd.net/download/spawn-fcgi-1.6.0.tar.gz
-tar zxvf spawn-fcgi-1.6.0.tar.gz
-cd spawn-fcgi-1.6.0
-./configure
-make
-make install
+apt-get install spawn-fcgi
 
 vi /etc/rc.local
-/usr/local/bin/spawn-fcgi -a 127.0.0.1 -p 9000 -C 16 -u www-data -g www-data -f /usr/bin/php-cgi
+/usr/bin/spawn-fcgi -a 127.0.0.1 -p 9000 -C 16 -u www-data -g www-data -f /usr/bin/php-cgi

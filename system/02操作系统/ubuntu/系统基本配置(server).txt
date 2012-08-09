@@ -5,6 +5,10 @@ wget http://mirrors.163.com/.help/sources.list.lucid -O sources.list
 apt-get update
 
 -----
+dpkg-reconfigure dash
+No
+
+-----
 cp /usr/share/zoneinfo/UTC /etc/localtime
 chmod -w /etc/localtime
 

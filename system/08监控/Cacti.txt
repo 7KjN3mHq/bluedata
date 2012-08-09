@@ -84,6 +84,9 @@ $database_username = "cactiuser";
 $database_password = "cactiuser";
 $database_port = "3306";
 
+0.8.8 以上版本如果使用独立域名还要设置：
+$url_path = "";
+
 创建用户并分配权限：
 mysql -e "CREATE USER 'cactiuser'@'localhost' IDENTIFIED BY 'cactiuser'"
 mysql -e "GRANT ALL PRIVILEGES ON cacti.* TO 'cactiuser'@'localhost'"
