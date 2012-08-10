@@ -1,9 +1,7 @@
-在 Debian Nginx 上安装 Nagios 3.2
+在 Debian Nginx 上安装 Nagios 3.4
 
-
-下载所需软件：
+下载 Nagios Core 和 Nagios Plugins :
 http://www.nagios.org/download/
-wget http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-3.2.0.tar.gz
 
 创建 nagios 用户和组：
 groupadd nagios
@@ -19,8 +17,8 @@ apt-get install libgd2-xpm-dev
 The following NEW packages will be installed:
   defoma fontconfig-config libfontconfig1 libfreetype6 libgd2-xpm libjpeg62 libxpm4 ttf-dejavu ttf-dejavu-core ttf-dejavu-extra
 
-tar zxvf nagios-3.2.0.tar.gz
-cd nagios-3.2.0
+tar zxvf nagios-3.4.1.tar.gz
+cd nagios-3.4.1
 ./configure \
 --prefix=/usr/local/nagios \
 --with-command-group=nagcmd
@@ -72,9 +70,8 @@ htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
 
 
 安装 Nagios 插件：
-wget http://prdownloads.sourceforge.net/sourceforge/nagiosplug/nagios-plugins-1.4.13.tar.gz
-tar zxvf nagios-plugins-1.4.13.tar.gz
-cd nagios-plugins-1.4.13
+tar zxvf nagios-plugins-1.4.16.tar.gz
+cd nagios-plugins-1.4.16
 ./configure \
 --prefix=/usr/local/nagios \
 --with-nagios-group=nagcmd
