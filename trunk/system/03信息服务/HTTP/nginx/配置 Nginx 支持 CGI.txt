@@ -1,0 +1,215 @@
+安装所需的 perl fcgi 模块：
+apt-get install libfcgi-perl libfcgi-procmanager-perl
+
+用 perl 写一个 daemon 程序来处理 cgi 文件：
+vi /usr/local/bin/cgiwrap-fcgi.pl
+#!/usr/bin/perl -w
+use FCGI;
+use Socket;
+use FCGI::ProcManager;
+sub shutdown { FCGI::CloseSocket($socket); exit; }
+sub restart  { FCGI::CloseSocket($socket); &main; }
+use sigtrap 'handler', \&shutdown, 'normal-signals';
+use sigtrap 'handler', \&restart,  'HUP';
+require 'syscall.ph';
+use POSIX qw(setsid);
+ 
+#&daemonize; we don't daemonize when running under runsv
+#this keeps the program alive or something after exec'ing perl scripts
+END()   { }
+BEGIN() { }
+{
+    no warnings;
+    *CORE::GLOBAL::exit = sub { die "fakeexit\nrc=" . shift() . "\n"; };
+};
+eval q{exit};
+if ($@) {
+    exit unless $@ =~ /^fakeexit/;
+}
+&main;
+ 
+sub daemonize() {
+    chdir '/' or die "Can't chdir to /: $!";
+    defined( my $pid = fork ) or die "Can't fork: $!";
+    exit if $pid;
+    setsid() or die "Can't start a new session: $!";
+    umask 0;
+}
+ 
+sub main {
+ 
+#$socket = FCGI::OpenSocket( "127.0.0.1:8999", 10 ); #use IP sockets
+#$socket = FCGI::OpenSocket( "/var/run/nginx/perl_cgi-dispatch.sock", 10 ); #use UNIX sockets - user running this script must have w access to the 'nginx' folder!!
+#foreach $item (keys %ENV) { delete $ENV{$item}; }
+    $proc_manager = FCGI::ProcManager->new( {n_processes => 5} );
+    $socket = FCGI::OpenSocket( "127.0.0.1:8999", 10 )
+        ; #use UNIX sockets - user running this script must have w access to the 'nginx' folder!!
+    $request =
+       FCGI::Request( \*STDIN, \*STDOUT, \*STDERR, \%req_params, $socket,
+        &FCGI::FAIL_ACCEPT_ON_INTR );
+    $proc_manager->pm_manage();
+    if ($request) { request_loop() }
+   FCGI::CloseSocket($socket);
+}
+ 
+sub request_loop {
+    while ( $request->Accept() >= 0 ) {
+        $proc_manager->pm_pre_dispatch();
+ 
+        #processing any STDIN input from WebServer (for CGI-POST actions)
+        $stdin_passthrough = '';
+        { no warnings; $req_len = 0 + $req_params{'CONTENT_LENGTH'}; };
+        if ( ( $req_params{'REQUEST_METHOD'} eq 'POST' ) && ( $req_len != 0 ) )
+        {
+            my $bytes_read = 0;
+            while ( $bytes_read < $req_len ) {
+                my $data = '';
+                my $bytes = read( STDIN, $data, ( $req_len - $bytes_read ) );
+                last if ( $bytes == 0 || !defined($bytes) );
+                $stdin_passthrough .= $data;
+                $bytes_read += $bytes;
+            }
+        }
+ 
+        #running the cgi app
+        if (
+            ( -x $req_params{SCRIPT_FILENAME} ) &&    #can I execute this?
+            ( -s $req_params{SCRIPT_FILENAME} ) &&    #Is this file empty?
+            ( -r $req_params{SCRIPT_FILENAME} )       #can I read this file?
+            )
+        {
+            pipe( CHILD_RD,   PARENT_WR );
+            pipe( PARENT_ERR, CHILD_ERR );
+            my $pid = open( CHILD_O, "-|" );
+            unless ( defined($pid) ) {
+                print("Content-type: text/plain\r\n\r\n");
+                print
+"Error: CGI app returned no output - Executing $req_params{SCRIPT_FILENAME} failed !\n";
+                next;
+            }
+            $oldfh = select(PARENT_ERR);
+            $|     = 1;
+            select(CHILD_O);
+            $| = 1;
+            select($oldfh);
+            if ( $pid > 0 ) {
+                close(CHILD_RD);
+                close(CHILD_ERR);
+                print PARENT_WR $stdin_passthrough;
+                close(PARENT_WR);
+                $rin = $rout = $ein = $eout = '';
+                vec( $rin, fileno(CHILD_O),    1 ) = 1;
+                vec( $rin, fileno(PARENT_ERR), 1 ) = 1;
+                $ein    = $rin;
+                $nfound = 0;
+ 
+                while ( $nfound =
+                    select( $rout = $rin, undef, $ein = $eout, 10 ) )
+                {
+                    die "$!" unless $nfound != -1;
+                    $r1 = vec( $rout, fileno(PARENT_ERR), 1 ) == 1;
+                    $r2 = vec( $rout, fileno(CHILD_O),    1 ) == 1;
+                    $e1 = vec( $eout, fileno(PARENT_ERR), 1 ) == 1;
+                    $e2 = vec( $eout, fileno(CHILD_O),    1 ) == 1;
+ 
+                    if ($r1) {
+                        while ( $bytes = read( PARENT_ERR, $errbytes, 4096 ) ) {
+                            print STDERR $errbytes;
+                        }
+                        if ($!) {
+                            $err = $!;
+                            die $!;
+                            vec( $rin, fileno(PARENT_ERR), 1 ) = 0
+                                unless ( $err == EINTR or $err == EAGAIN );
+                        }
+                    }
+                    if ($r2) {
+                        while ( $bytes = read( CHILD_O, $s, 4096 ) ) {
+                            print $s;
+                        }
+                        if ( !defined($bytes) ) {
+                            $err = $!;
+                            die $!;
+                            vec( $rin, fileno(CHILD_O), 1 ) = 0
+                                unless ( $err == EINTR or $err == EAGAIN );
+                        }
+                    }
+                    last if ( $e1 || $e2 );
+                }
+                close CHILD_RD;
+                close PARENT_ERR;
+                waitpid( $pid, 0 );
+            } else {
+                foreach $key ( keys %req_params ) {
+                    $ENV{$key} = $req_params{$key};
+                }
+ 
+                # cd to the script's local directory
+                if ( $req_params{SCRIPT_FILENAME} =~ /^(.*)\/[^\/]+$/ ) {
+                    chdir $1;
+                }
+                close(PARENT_WR);
+ 
+                #close(PARENT_ERR);
+                close(STDIN);
+                close(STDERR);
+ 
+                #fcntl(CHILD_RD, F_DUPFD, 0);
+                syscall( &SYS_dup2, fileno(CHILD_RD),  0 );
+                syscall( &SYS_dup2, fileno(CHILD_ERR), 2 );
+ 
+                #open(STDIN, "<&CHILD_RD");
+                exec( $req_params{SCRIPT_FILENAME} );
+                die("exec failed");
+            }
+        } else {
+            print("Content-type: text/plain\r\n\r\n");
+            print
+"Error: No such CGI app - $req_params{SCRIPT_FILENAME} may not exist or is not executable by this process.\n";
+        }
+    }
+}
+
+注意文件中的这两行：
+#$socket = FCGI::OpenSocket( "127.0.0.1:8999", 10 );
+#$socket = FCGI::OpenSocket( "/var/run/nginx/perl_cgi-dispatch.sock", 10 );
+这两行都表示监听来自 perl CGI 的请求。
+其中 perl_cgi-dispatch.sock 表示使用 unix socket 响应 CGI 请求。
+127.0.0.1:8999 表示使用 TCP/IP 协议响应请求。
+需要使用哪种方式就在下面的 FCGI::OpenSocket 中填入相对应的内容。
+
+启动：
+chmod +x /usr/local/bin/cgiwrap-fcgi.pl
+/usr/local/bin/cgiwrap-fcgi.pl > /dev/null 2>&1 &
+
+配置 Nginx 的 location 处理 cgi 文件：
+location ~ .*\.cgi$ {
+    fastcgi_pass  127.0.0.1:8999;
+    fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+    include  fastcgi_params;
+}
+
+测试：
+在 web 的根目录下创建一个 cgi 文件：
+vi test.cgi
+#!/usr/bin/perl
+print "Content-type: text/html\n\n";
+print "Hello, world.";
+
+文件需要有可执行权限：
+chmod +x test.cgi
+
+访问 http://www.domain.com/test.cgi 看看有没有输出。
+
+cgiwrap-fcgi.pl 随 nginx 一起启动/关闭：
+修改 nginx 启动脚本：
+在 start 段加入：
+/usr/local/bin/cgiwrap-fcgi.pl > /dev/null 2>&1 &
+
+在 stop 段加入：
+PID=`/bin/netstat -npl | grep "127.0.0.1:8999" | awk '{print $7}' | cut -d "/" -f 1`
+while [ -n "$PID" ]
+do
+kill -9 "$PID"
+PID=`/bin/netstat -npl | grep "127.0.0.1:8999" | awk '{print $7}' | cut -d "/" -f 1`
+done

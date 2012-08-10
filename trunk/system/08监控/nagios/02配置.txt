@@ -132,6 +132,7 @@ define host {
 host_name web1
 alias web1
 address 192.168.0.101
+hostgroups web
 contact_groups admins
 check_command check-host-alive
 max_check_attempts 5
@@ -146,6 +147,7 @@ notification_options d,u,r
 define service {
 host_name web1
 service_description check_http
+servicegroups http
 check_period 24x7
 max_check_attempts 3
 normal_check_interval 30
@@ -175,7 +177,6 @@ cfg_dir=/usr/local/nagios/etc/services
 define hostgroup {
 hostgroup_name app-hosts
 alias APP Hosts
-members app1,app2
 }
 
 在 services 目录中创建了各种服务的配置文件，如： disk.cfg http.cfg load.cfg mysql.cfg
@@ -183,5 +184,37 @@ members app1,app2
 define servicegroup {
 servicegroup_name disk
 alias DISK
-members cache1,check_disk,cache2,check_disk
+}
+
+
+模板的使用
+在 objects/templates.cfg 里已经定义了一些主机和服务的模板，可对其进行修改或添加：
+define service{
+        name                            http-service
+        service_description             check_http
+        servicegroups                   http
+        check_command                   check_http
+        check_period                    24x7
+        max_check_attempts              3
+        normal_check_interval           30
+        retry_check_interval            15
+        notification_interval           0
+        notification_period             24x7
+        notification_options            w,u,c,r
+        }
+
+然后引用：
+define host {
+use linux-server
+host_name web1
+alias web1
+address 192.168.0.101
+host_groups web
+contact_groups web
+}
+
+define service {
+use http-service
+host_name web1
+contact_groups admins
 }
