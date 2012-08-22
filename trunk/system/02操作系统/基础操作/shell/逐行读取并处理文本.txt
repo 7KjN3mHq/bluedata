@@ -1,0 +1,21 @@
+以下两种方式取其一即可，只是第一种由于采用了管道引用更广，可将其他命令的输出作为输入：
+cat data.dat | while read line
+do
+    echo "File: ${line}"
+done
+ 
+while read line
+do
+    echo "File: ${line}"
+done < data.dat
+
+如果输入文本行中没有空格，也可以采用以下两种方式进行处理：
+for line in $(cat data.dat)
+do
+    echo "File: ${line}"
+done
+ 
+for line in `cat data.dat`
+do
+    echo "File: ${line}"
+done

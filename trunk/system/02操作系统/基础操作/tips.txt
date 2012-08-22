@@ -112,12 +112,18 @@ mount -t iso9660 -o loop /path/to/iso_file /cdrom
 pkill -9 -t pts/0
 
 
-tar解压tar包中指定文件
-例如:在/home/xxl下面有个xxl.tar.gz包(是通过tar -zcvf xxl.tar.gz xxl/来创建的)，我们可以用tar -ztvf xxl.tar.gz来查看xxl.tar.gz这个包中包含了什么文件，如果包中有个文件test.sql在xxl/date/目录下面，我现在需要解压出这个文件，其他文件不需要，我可以用下面的命令来解压出来：
+tar 打包文件列表
+cat filelist | xargs tar cf a.tar
+filelist 是要打包的文件列表
+tar -czv -T filelist -f /backup.tar.gz  
+-T 选项可以指定包含要打包的档案的列表
+
+tar 解压压缩包中的指定文件
+例如：在 /home/xxl 下面有个 xxl.tar.gz 包，可以用 tar -ztvf xxl.tar.gz 来查看这个包中包含了什么文件。
+如果压缩包中有个文件 test.sql 在 xxl/date/ 目录下面，可以用下面的命令来解压出来：
 tar -zxvf xxl.tar.gz ./ xxl/date/test.sql
-这时候在当前目录下面产生一个文件夹/xxl/date，里面就会有我想要的文件test.sql了，这样我就不需要对整个tar包来解包了，还可以解压指定的文件到指定的文件夹
+这时候在当前目录下会产生一个文件夹 /xxl/date ，里面就有 test.sql 文件了，还可以解压指定的文件到指定的文件夹：
 tar -zxvf xxl.tar.gz -C /home/xxl1/ /xxl/date/test.sql
-这是我们要的文件test.sql就会在/home/xxl1文件夹下面
 
 
 安装新的 glibc
