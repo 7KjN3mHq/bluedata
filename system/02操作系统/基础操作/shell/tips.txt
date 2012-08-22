@@ -1,3 +1,6 @@
+生成随机密码：
+cat /dev/urandom | head -1 | md5sum | head -c 6
+
 查看某列大于一个值的行：
 tail -f /var/log/nginx/access.log | awk '{if($11 > 0.100) print $_'}
 
