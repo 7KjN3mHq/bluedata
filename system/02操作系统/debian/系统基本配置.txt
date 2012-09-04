@@ -27,8 +27,7 @@ if has("autocmd")
     \| exe "normal g'\"" | endif
 endif
 
-cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-chmod -w /etc/localtime
+dpkg-reconfigure tzdata
 
 -----
 vi /etc/modprobe.d/blacklist

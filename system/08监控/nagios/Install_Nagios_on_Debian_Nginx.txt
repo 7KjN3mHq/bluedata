@@ -18,7 +18,7 @@ The following NEW packages will be installed:
   defoma fontconfig-config libfontconfig1 libfreetype6 libgd2-xpm libjpeg62 libxpm4 ttf-dejavu ttf-dejavu-core ttf-dejavu-extra
 
 tar zxvf nagios-3.4.1.tar.gz
-cd nagios-3.4.1
+cd nagios
 ./configure \
 --prefix=/usr/local/nagios \
 --with-command-group=nagcmd
