@@ -9,8 +9,7 @@ dpkg-reconfigure dash
 No
 
 -----
-cp /usr/share/zoneinfo/UTC /etc/localtime
-chmod -w /etc/localtime
+dpkg-reconfigure tzdata
 
 -----
 apt-get install vim

@@ -329,3 +329,26 @@ cp memcached.py /data/cacti/scripts/
 Bug:
 自动保存密码功能引起的错误：
 Passwords do not match, please retype.
+
+
+rrd 文件迁移：
+32 位系统向 64 位系统迁移，或者系统 rrdtool 版本不同不能直接复制时，需要先把 rrd 文件导出为 xml 文件再导入。
+vi rradump.sh
+#!/bin/sh
+rrddump="/usr/bin/rrdtool dump"
+xmldir=/tmp/rraxml
+cd /home/www/cacti/rra
+for file in `find ./ -mtime -4 | awk -F\/ "{print $NF}"`
+do
+${rrddump} ${file} > ${xmldir}/${file}.xml
+done
+
+vi rrarestore.sh
+#!/bin/sh
+rrdrestore="/usr/bin/rrdtool restore"
+xmldir=/tmp/rraxml
+cd ${xmldir}
+for file in `find ./ | awk -F\/ '{print $NF}' | sed s/.xml//g`
+do
+${rrdrestore} ${xmldir}/${file}.xml /tmp/rra/${file}
+done

@@ -3,6 +3,7 @@
 command_check_interval=10s  ; 命令检查时间间隔，-1 表示尽可能频繁的进行检查
 interval_length=1  ; 间隔时间基准由 60s 改为 1s
 date_format=iso8601  ; 日期格式
+use_timezone=Asia/Shanghai  ; 时区
 
 objects/contacts.cfg 用来定义联系人：
 define contact {
