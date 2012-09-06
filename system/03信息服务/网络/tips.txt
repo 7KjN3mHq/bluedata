@@ -1,3 +1,6 @@
+多线程下载工具：
+axel -n 10 -vo . http://speedtest.dal05.softlayer.com/downloads/test100.zip
+
 禁止 icmp 包的服务器可以用 tcp ping
 hping3 -S -p 80 <ip address>
 
