@@ -1,10 +1,12 @@
-wget http://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.21.tar.bz2
+wget http://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.36.tar.bz2
 
 yum install mysql-devel
 ln -s /usr/lib64/mysql /usr/lib/mysql
 
-tar jxvf pure-ftpd-1.0.21.tar.bz2
-cd pure-ftpd-1.0.21
+tar jxvf pure-ftpd-1.0.36.tar.bz2
+cd pure-ftpd-1.0.36
+
+##################################################
 用 IE 直接进入 FTP 目录时，如果系统没有提供匿名登录， IE 不会弹出登录界面，而是弹出不提供匿名登录的警告对话框。解决方法：
 vi src/ftpd.c
 注释 1166 行：
@@ -21,6 +23,7 @@ vi src/quotas.c
 old_quota.size = quota->size = strtoull(bufpnt + 1, NULL, 10);
 读出并传给 quota->size 的值有错误，不应该是 bufpnt + 1 ，而应该是 buf + 1 ，或是 bufpnt 。
 修改并安装后在网页上传时还是看不到，但是用命令行或是 FTP 工具能够正常看到显示的磁盘配额信息。
+##################################################
 
 ./configure \
 --prefix=/usr/local/pureftpd \
@@ -57,12 +60,12 @@ cp configuration-file/pure-config.pl /usr/local/pureftpd/sbin/
 chmod 755 /usr/local/pureftpd/sbin/pure-config.pl
 
 cd contrib
-vi redhat.init
+cp redhat.init /etc/init.d/pureftpd
+vi /etc/init.d/pureftpd
 fullpath=/usr/local/pureftpd/sbin/$prog
 pureftpwho=/usr/local/pureftpd/sbin/pure-ftpwho
 $fullpath /usr/local/pureftpd/etc/pure-ftpd.conf --daemonize
 
-cp redhat.init /etc/init.d/pureftpd
 chmod u+x /etc/init.d/pureftpd
 chkconfig --add pureftpd
 chkconfig --level 2345 pureftpd on
@@ -77,8 +80,9 @@ NoTruncate                  no
 
 vi /usr/local/pureftpd/etc/pureftpd-mysql.conf
 MYSQLSocket     /var/lib/mysql/mysql.sock
-MYSQLUser       ftp
-MYSQLPassword   password
+MYSQLUser       pureftpd
+MYSQLPassword   ftpdpass
+MYSQLDatabase   pureftpd
 MYSQLCrypt      md5
 MYSQLGetPW      SELECT Password FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
 MYSQLGetUID     SELECT Uid FROM users WHERE User="\L" AND Status="1" AND (Ipaddress = "*" OR Ipaddress LIKE "\R")
@@ -91,18 +95,16 @@ MySQLGetQTAFS   SELECT QuotaFiles FROM users WHERE User="\L" AND Status="1" AND 
 
 vi pureftpd.sql
 CREATE DATABASE pureftpd;
+GRANT SELECT, INSERT, UPDATE, DELETE on pureftpd.* to pureftpd@localhost identified by 'ftpdpass';
+FLUSH PRIVILEGES;
+
 USE pureftpd;
-CREATE TABLE admin (
-Username varchar(16) NOT NULL default '',
-Password char(32) binary NOT NULL default '',
-PRIMARY KEY (Username)
-) TYPE=MyISAM;
-INSERT INTO `admin` VALUES ( 'root', MD5( 'password' ) );
+
 CREATE TABLE users (
 User char(16) NOT NULL default '',
 Password char(32) binary NOT NULL default '',
-Uid tinyint(5) NOT NULL default '48',
-Gid tinyint(5) NOT NULL default '48',
+Uid tinyint(5) NOT NULL default '33',
+Gid tinyint(5) NOT NULL default '33',
 Dir char(255) NOT NULL default '',
 QuotaFiles int(10) NOT NULL default '0',
 QuotaSize int(10) NOT NULL default '0',
@@ -115,35 +117,10 @@ Ipaddress varchar(15) NOT NULL default '*',
 Comment tinytext NOT NULL,
 PRIMARY KEY (User),
 UNIQUE KEY User (User)
-) TYPE=MyISAM;
-INSERT INTO `users` VALUES ( 'test', MD5( 'password' ) , '48', '48', '/home/test', '1000', '50', '128', '16', '0', '0', '1', '*', '' );
-GRANT SELECT, INSERT, UPDATE, DELETE on pureftpd.* to ftp@localhost identified by 'password';
-FLUSH PRIVILEGES;
+);
 
 mysql < pureftpd.sql
 
+INSERT INTO `users` VALUES ( 'test', MD5( 'password' ) , '33', '33', '/var/www/ftp', '1000', '50', '128', '16', '0', '0', '1', '*', '' );
+
 /etc/init.d/pureftpd start
-
-
-wget http://machiel.generaal.net/files/pureftpd/ftp_v2.1.tar.gz
-tar zxvf ftp_v2.1.tar.gz
-mv ftp /var/www/
-cd /var/www/ftp
-
-$LANG = "Chinese";
-$DBHost = "localhost";
-$DBLogin = "ftp";
-$DBPassword = "ftp";
-$DBDatabase = "pureftpd";
-$FTPAddress = "www.xbjcw.cn:21";
-
-cd language
-mv chinese.php chinese.php~
-iconv -f utf-8 -t gbk -o chinese.php chinese.php~
-vi chinese.php
-$CharSet = "GBK";
-
-vi /etc/httpd/conf.d/vhosts.conf
-Alias /ftp /var/www/ftp
-
-/etc/init.d/httpd reload
