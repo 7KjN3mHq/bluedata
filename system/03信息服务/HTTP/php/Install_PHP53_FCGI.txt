@@ -1,0 +1,151 @@
+以 FastCGI 模式安装 PHP5.3
+
+
+软件下载：
+PHP5(http://www.php.net/downloads.php):
+wget http://cn.php.net/get/php-5.3.17.tar.bz2/from/this/mirror
+mv mirror php-5.3.17.tar.bz2
+
+安装依赖的包：
+CentOS:
+yum install mysql-devel gd-devel libxml2-devel
+
+Debian/Ubuntu:
+apt-get install libmysqlclient18-dev libgd2-xpm-dev libxml2-dev libcurl4-openssl-dev
+
+
+安装 PHP5.3:
+cd php-5.3.17
+./configure \
+--prefix=/usr/local/php5.3 \
+--enable-fpm \
+--enable-mbstring \
+--enable-sockets \
+--with-config-file-path=/usr/local/php5.3/etc \
+--with-curl \
+--with-gd \
+--with-jpeg-dir \
+--with-png-dir \
+--with-freetype-dir \
+--with-zlib \
+--with-mysql
+
+make
+make install
+
+cp -f php.ini-production /usr/local/php5.3/etc/php.ini
+cp /usr/local/php5.3/etc/php-fpm.conf.default /usr/local/php5.3/etc/php-fpm.conf
+cp -f sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
+chmod 755 /etc/init.d/php-fpm
+sysv-rc-conf php-fpm on
+
+一些必备模块的安装：
+安装 eAccelerator:
+PHP scripts 的缓存，对于提高 PHP 程序执行速度很有帮助。
+wget https://github.com/eaccelerator/eaccelerator/tarball/master -O eaccelerator.tar.gz
+tar zxvf eaccelerator.tar.gz
+cd eaccelerator*
+/usr/local/php5.3/bin/phpize
+./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php5.3/bin/php-config
+make
+make install
+
+安装 ZendOptimizer:
+Zend 的优化器，免费使用，如果加密了 PHP 程序文件，这是必须的。
+如果没有使用 Zend 优化器，PHP 进程的内存会难以释放。
+下载： http://www.zend.com/en/products/guard/downloads
+tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
+cp ZendGuardLoader-php-5.3-linux-glibc23-x86_64/php-5.3.x/ZendGuardLoader.so /usr/local/php5.3/lib/php/extensions/no-debug-non-zts-20090626/
+
+安装 memcache:
+下载： http://pecl.php.net/package/memcache
+wget http://pecl.php.net/get/memcache-2.2.7.tgz
+tar zxvf memcache-2.2.7.tgz
+cd memcache-2.2.7
+/usr/local/php5.3/bin/phpize
+./configure --with-php-config=/usr/local/php5.3/bin/php-config
+make
+make install
+
+安装 redis 扩展：
+下载： https://github.com/nicolasff/phpredis
+wget https://github.com/nicolasff/phpredis/zipball/master -O phpredis.zip
+unzip phpredis.zip
+cd nicolasff-phpredis*
+/usr/local/php5.3/bin/phpize
+./configure --with-php-config=/usr/local/php5.3/bin/php-config
+make
+make install
+
+
+PHP5 的配置：
+vi /usr/local/php5.3/etc/php.ini
+# 开启短标记支持
+short_open_tag = On
+# session 文件存储目录
+session.save_path = "/dev/shm"
+# session 过期时间设为一小时
+session.gc_maxlifetime = 3600
+
+# 开启 eAccelerator
+[eAccelerator]
+zend_extension="/usr/local/php5.3/lib/php/extensions/no-debug-non-zts-20090626/eaccelerator.so"
+eaccelerator.shm_size="32"
+eaccelerator.cache_dir="/dev/shm"
+eaccelerator.enable="1"
+eaccelerator.optimizer="1"
+eaccelerator.check_mtime="1"
+eaccelerator.debug="0"
+eaccelerator.filter=""
+eaccelerator.shm_max="0"
+eaccelerator.shm_ttl="3600"
+eaccelerator.shm_prune_period="0"
+eaccelerator.shm_only="1"
+eaccelerator.compress="1"
+eaccelerator.compress_level="9"
+eaccelerator.keys="shm_only"
+eaccelerator.sessions="shm_only"
+eaccelerator.content="shm_only"
+
+# 在 eAccelerator 之后启用 ZendOptimizer ，避免 eaccelerator.so 不能加载。
+[Zend]
+zend_extension="/usr/local/php5.3/lib/php/extensions/no-debug-non-zts-20090626/ZendGuardLoader.so"
+
+# 开启 memcache
+[memcache]
+extension=memcache.so
+
+# redis 扩展
+extension=redis.so
+
+启动 PHP FastCGI
+创建相关目录
+mkdir /var/log/php5.3-fpm
+vi /usr/local/php5.3/etc/php-fpm.conf
+pid = run/php-fpm.pid
+error_log = /var/log/php5.3-fpm/error.log
+syslog.ident = php5.3-fpm
+process.max = 128
+rlimit_files = 65536
+user = www-data
+group = www-data
+pm.max_children = 16
+pm.max_requests = 16384
+slowlog = /var/log/php5-fpm/slow.log
+request_slowlog_timeout = 1s
+request_terminate_timeout = 60s
+
+ulimit -SHn 65536
+/etc/init.d/php-fpm start
+修改 php.ini 后重新加载配置文件使用 reload ，可以不重启 PHP FastCGI 进程。
+
+永久增大 Shell 对一个进程打开的文件句柄数量：
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
+
+echo -ne "
+* soft nofile 65536
+* hard nofile 65536
+" >> /etc/security/limits.conf
