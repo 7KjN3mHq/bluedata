@@ -14,7 +14,7 @@ zend_extension=/usr/lib/php5/20090626/ZendGuardLoader.so
 ## Install eAccelerator
 apt-get install build-essential php5-dev
 wget https://github.com/eaccelerator/eaccelerator/tarball/master -O eaccelerator.tar.gz
-tar jxvf eaccelerator.tar.gz
+tar zxvf eaccelerator.tar.gz
 cd eaccelerator*
 phpize
 ./configure --enable-eaccelerator=shared
