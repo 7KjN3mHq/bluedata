@@ -1,0 +1,6 @@
+apt-get install munin-node
+
+vi /etc/munin/munin-node.conf
+allow ^1\.2\.3\.4$
+
+/etc/init.d/munin-node restart

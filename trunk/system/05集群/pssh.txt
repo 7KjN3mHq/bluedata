@@ -4,12 +4,13 @@
 先要配置好 ssh 的 key ，然后安装：
 apt-get install pssh
 
-为了方便输入，设置一下别名和环境变量（ CentOS 安装后的程序文件名直接就是短格式的）：
-vi ~/.bashrc
-alias pssh='parallel-ssh'
-alias pscp='parallel-scp'
-alias prsync='parallel-rsync'
+为了方便输入，做链接并设置环境变量（ CentOS 安装后的程序文件名直接就是短格式的）：
+cd /usr/bin
+ln -s parallel-ssh pssh
+ln -s parallel-scp pscp
+ln -s parallel-rsync prsync
 
+vi ~/.profile
 export PSSH_HOSTS="/root/servers.txt"
 export PSSH_USER="root"
 export PSSH_PAR="32"
