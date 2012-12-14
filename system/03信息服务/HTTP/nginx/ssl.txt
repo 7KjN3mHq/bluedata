@@ -1,0 +1,23 @@
+openssl genrsa -out server.key 2048
+openssl req -new -key server.key -out cert.csr
+Country Name (2 letter code) [GB]:US
+State or Province Name (full name) [Berkshire]:California
+Locality Name (eg, city) [Newbury]:Los Angeles
+Organization Name (eg, company) [My Company Ltd]:Domain Name
+Organizational Unit Name (eg, section) []:Domain Name
+Common Name (eg, your name or your server's hostname) []:*.domain.com
+Email Address []:admin@domain.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+
+openssl x509 -req -days 365 -in cert.csr -signkey server.key -out domain.crt
+
+
+listen  443;
+ssl  on;
+ssl_certificate /etc/nginx/sslkey/domain.crt;
+ssl_certificate_key /etc/nginx/sslkey/server.key;

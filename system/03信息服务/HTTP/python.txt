@@ -1,0 +1,43 @@
+apt-get install python-pip build-essential python-dev libmysqlclient-dev
+pip install django==1.2.5 PIL mysql-python pymongo uwsgi virtualenv
+
+
+提高 uwsgi 可处理并发数：
+vi /etc/sysctl.conf
+net.core.netdev_max_backlog = 4096
+net.core.somaxconn = 4096
+
+vi /etc/uwsgi.conf
+listen = 4096
+
+echo -ne "
+fs.file-max = 65536
+" >> /etc/sysctl.conf
+sysctl -p
+
+echo -ne "
+* soft nofile 65536
+* hard nofile 65536
+" >> /etc/security/limits.conf
+
+ulimit -SHn 65536
+
+
+充分使用 CPU ，对于多核 CPU ，可以把 worker 数量设置为 CPU cores 数量，例如：
+workers = 4
+
+注意：此参数设置过大，会造成 CPU 占用率过高，负载也会异常升高。
+
+4 cores / 4 workers / 4 sockets :
+cpu-affinity = 1
+map-socket = 0:1
+map-socket = 1:2
+map-socket = 2:3
+map-socket = 3:4
+
+16 cores / 16 workers / 4 sockets :
+cpu-affinity = 1
+map-socket = 0:1,2,3,4
+map-socket = 1:5,6,7,8
+map-socket = 2:9,10,11,12
+map-socket = 3:13,14,15,16
