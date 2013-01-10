@@ -1,0 +1,3 @@
+启动时提示 "Could not reliably determine the server's fully qualified domain name, using ... for ServerName"
+vi /etc/apache2/httpd.conf
+ServerName localhost
