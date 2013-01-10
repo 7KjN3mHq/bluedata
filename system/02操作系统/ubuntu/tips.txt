@@ -1,4 +1,15 @@
-﻿增加 apt cache limit
+﻿服务启动管理
+sysv-rc-conf
+删除服务启动项需要：
+update-rc.d -f <basename> remove
+
+删除用户后 dpkg unknown user 错误的处理
+安装软件时出现：
+dpkg: unrecoverable fatal error, aborting:
+ syntax error: unknown user 'munin' in statoverride file
+可以修改 /var/lib/dpkg/statoverride 删除相应用户。
+
+增加 apt cache limit
 echo "APT::Cache-Limit \"100000000\";" >> /etc/apt/apt.conf.d/70debconf
 apt-get clean && apt-get update --fix-missing
 

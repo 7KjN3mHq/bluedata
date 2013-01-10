@@ -36,7 +36,7 @@ mkdir /var/log/apache
 vi /usr/local/apache/conf/httpd.conf
 User nobody
 Group nobody
-ServerAdmin bluedata@gmail.com
+ServerAdmin webmaster@domain.com
 #Order deny,allow
 #Deny from all
 ErrorLog "|/usr/local/sbin/cronolog /var/log/apache/error_log.%Y%m%d"
