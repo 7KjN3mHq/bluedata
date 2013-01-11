@@ -15,6 +15,7 @@ dpkg-reconfigure tzdata
 apt-get install vim
 
 vi /etc/vim/vimrc
+highlight Comment ctermfg=white guifg=white
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif

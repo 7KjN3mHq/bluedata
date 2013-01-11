@@ -19,3 +19,7 @@ mysqldump <mysqldump options> | gzip > outputfile.sql.gz
 
 --master-data 参数可以得到 file 和 position 的记录，用于建立 slave
 grep -i "CHANGE MASTER TO" dumpfile
+
+导入时出现错误：
+ERROR 1231 (42000): Variable 'character_set_client' can't be set to the value of 'NULL'
+导入非常慢。导出时加上 --compact 参数，去掉所有注释再导入。
