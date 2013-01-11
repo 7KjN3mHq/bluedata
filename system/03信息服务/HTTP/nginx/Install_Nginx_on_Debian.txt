@@ -39,6 +39,8 @@ http {
     include  mime.types;
     default_type  text/html;
 
+    server_tokens  off;
+
     access_log  /var/log/nginx/access.log combined;
 
     sendfile        on;
@@ -79,11 +81,11 @@ upstream php5-fcgi {
 EOF
 
 cat <<EOF> fastcgi.conf
-fastcgi_connect_timeout 300s;
-fastcgi_send_timeout 300s;
-fastcgi_read_timeout 300s;
+fastcgi_connect_timeout 60s;
+fastcgi_send_timeout 180s;
+fastcgi_read_timeout 180s;
 fastcgi_buffer_size 128k;
-fastcgi_buffers 8 128k;
+fastcgi_buffers 4 256k;
 fastcgi_busy_buffers_size 256k;
 fastcgi_temp_file_write_size 256k;
 fastcgi_intercept_errors on;
@@ -119,8 +121,10 @@ EOF
 
 echo "listen  80;" > port.conf
 
-并在 fastcgi_params 中增加如下一行：
+在 fastcgi_params 中增加如下一行：
 fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+并去掉 nginx 版本号：
+nginx/$nginx_version 改为 nginx
 
 
 创建启动脚本：
