@@ -1,0 +1,34 @@
+redis:
+https://github.com/bpineau/redis-munin
+
+
+uwsgi:
+https://github.com/jarus/munin-uwsgi
+wget -O /usr/local/munin/lib/plugins/uwsgi_ https://raw.github.com/jarus/munin-uwsgi/master/uwsgi_
+chmod 755 /usr/local/munin/lib/plugins/uwsgi_
+ln -s /usr/local/munin/lib/plugins/uwsgi_ /usr/local/munin/etc/plugins/uwsgi_memory
+ln -s /usr/local/munin/lib/plugins/uwsgi_ /usr/local/munin/etc/plugins/uwsgi_processes
+
+wget -O /usr/local/munin/lib/plugins/uwsgi_ https://github.com/stevetu/munin-uwsgi-stats/raw/master/uwsgi_
+chmod 755 /usr/local/munin/lib/plugins/uwsgi_
+ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_avg_rt
+ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_exceptions
+ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_listen_queue
+ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_listen_queue_errors
+ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_requests
+ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_tx
+ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_vsz
+
+
+nginx:
+ln -s /usr/local/munin/lib/plugins/nginx_request nginx_request
+ln -s /usr/local/munin/lib/plugins/nginx_status nginx_status
+
+
+mongodb:
+https://github.com/erh/mongo-munin
+ln -s /usr/local/munin/lib/plugins/mongo_btree mongo_btree
+ln -s /usr/local/munin/lib/plugins/mongo_conn mongo_conn
+ln -s /usr/local/munin/lib/plugins/mongo_lock mongo_lock
+ln -s /usr/local/munin/lib/plugins/mongo_mem mongo_mem
+ln -s /usr/local/munin/lib/plugins/mongo_ops mongo_ops

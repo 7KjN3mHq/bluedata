@@ -1,6 +1,6 @@
 Ö÷ÅäÖÃÎÄ¼ş nagios.cfg ĞèÒª¸ü¸ÄµÄµØ·½£º
 #cfg_file=/usr/local/nagios/etc/objects/localhost.cfg
-command_check_interval=10s  ; ÃüÁî¼ì²éÊ±¼ä¼ä¸ô£¬-1 ±íÊ¾¾¡¿ÉÄÜÆµ·±µÄ½øĞĞ¼ì²é
+command_check_interval=10s  ; ÃüÁî¼ì²éÖ´ĞĞÊ±¼äµÄ¼ä¸ô£¬-1 ±íÊ¾¾¡¿ÉÄÜÆµ·±µÄ½øĞĞ¼ì²é
 interval_length=1  ; ¼ä¸ôÊ±¼ä»ù×¼ÓÉ 60s ¸ÄÎª 1s
 date_format=iso8601  ; ÈÕÆÚ¸ñÊ½
 use_timezone=Asia/Shanghai  ; Ê±Çø
@@ -55,11 +55,11 @@ define timeperiod{
         }
 
 
-Ö÷»ú¼à¿ØµÄÅäÖÃ
+Ö÷»ú¼à¿ØµÄÅäÖÃ£º
 define host {
 host_name host_name    ; ¼ò¶ÌµÄÖ÷»úÃû³Æ¡£
 alias alias    ; ±ğÃû£¬¿ÉÒÔ¸üÏêÏ¸µÄËµÃ÷Ö÷»ú¡£
-address address    ; IP µØÖ·£¬Ò²¿ÉÒÔĞ´Ö÷»úÃû¡£Èç¹û²»¶¨ÒåÕâ¸öÖµ£¬ nagio ½«»áÓÃ host_name È¥Ñ°ÕÒÖ÷»ú¡£
+address address    ; IP µØÖ·£¬Ò²¿ÉÒÔĞ´Ö÷»úÃû¡£Èç¹û²»¶¨ÒåÕâ¸öÖµ£¬ nagios ½«»áÓÃ host_name È¥Ñ°ÕÒÖ÷»ú¡£
 parents host_names    ; ÉÏÒ»½ÚµãµÄÃû³Æ£¬Ò²¾ÍÊÇÖ¸´Ó nagios ·şÎñÆ÷µ½±»¼à¿ØÖ÷»úÖ®¼ä¾­¹ıµÄ½Úµã£¬¿ÉÒÔÊÇÂ·ÓÉÆ÷¡¢½»»»»ú¡¢Ö÷»úµÈµÈ¡£
 hostgroups hostgroup_names    ; ¼ò¶ÌµÄÖ÷»ú×éÃû³Æ¡£
 check_command command_name    ; ¼ì²éÃüÁîµÄ¼ò¶ÌÃû³Æ£¬Èç¹û´ËÏîÁô¿Õ£¬ nagios ½«²»»áÈ¥ÅĞ¶ÏÖ÷»úÊÇ·ñ alive ¡£
@@ -87,7 +87,7 @@ notifications_enabled [0/1]    ; ÊÇ·ñ¿ªÆôÌáĞÑ¹¦ÄÜ¡£"1" Îª¿ªÆô£¬"0" Îª½ûÓÃ¡£Ò»°ã£
 stalking_options [o,d,u]    ; ³ÖĞø×´Ì¬¼ì²â²ÎÊı£¬o = ³ÖĞøµÄ UP ×´Ì¬ , d = ³ÖĞøµÄ DOWN ×´Ì¬ , u = ³ÖĞøµÄ UNREACHABLE ×´Ì¬
 }
 
-·şÎñ¼à¿ØµÄÅäÖÃ
+·şÎñ¼à¿ØµÄÅäÖÃ£º
 define service {
 host_name host_name
 service_description service_description
@@ -128,7 +128,7 @@ retry_check_interval x interval_length Ãë
 notification_interval x interval_length Ãë
 
 
-Ö÷»ú¼à¿ØÅäÖÃµÄÀı×Ó
+Ö÷»ú¼à¿ØÅäÖÃµÄÀı×Ó£º
 define host {
 host_name web1
 alias web1
@@ -144,7 +144,8 @@ notification_options d,u,r
 
 ¶ÔÖ÷»ú web1 ½øĞĞ 24x7 µÄ¼à¿Ø£¬Ä¬ÈÏ»áÃ¿ 10 Ãë¼ì²éÒ»´Î×´Ì¬£¬ÀÛ¼ÆÎå´ÎÊ§°Ü¾Í·¢ËÍÌáĞÑ£¬²¢ÇÒ²»ÔÙÖØ¸´·¢ËÍÌáĞÑ¡£
 
-·şÎñ¼à¿ØÅäÖÃµÄÀı×Ó
+
+·şÎñ¼à¿ØÅäÖÃµÄÀı×Ó£º
 define service {
 host_name web1
 service_description check_http
@@ -170,52 +171,76 @@ check_command check_ssh
 
 Îª·½±ã¹ÜÀí£¬¶ÔÅäÖÃÎÄ¼şµÄ·Ö²¼×öÁËÈçÏÂĞŞ¸Ä£º
 nagios.cfg ÖĞÔö¼ÓÁË£º
-cfg_dir=/usr/local/nagios/etc/hosts
-cfg_dir=/usr/local/nagios/etc/services
+cfg_file=/usr/local/nagios/etc/services.cfg
+²¢È¡ÏûÒÔÏÂĞĞµÄ×¢ÊÍ£º
+cfg_dir=/usr/local/nagios/etc/servers
 
-ÔÚ hosts Ä¿Â¼ÖĞ£¬Îª²»Í¬ÀàĞÍµÄÖ÷»ú´´½¨ÁËÅäÖÃÎÄ¼ş£¬Èç£º app.cfg cache.cfg mysql.cfg web.cfg
-²¢´´½¨ÁË hostgroup.cfg ÎÄ¼ş¶ÔÖ÷»ú½øĞĞ·Ö×é£¬Èç£º
-define hostgroup {
-hostgroup_name app-hosts
-alias APP Hosts
+ÔÚ servers Ä¿Â¼ÖĞ£¬Îª²»Í¬ÀàĞÍµÄÖ÷»ú´´½¨ÁËÅäÖÃÎÄ¼ş£¬Èç£º lvs.cfg  mongodb.cfg  redis.cfg  uwsgi.cfg  web.cfg
+ÔÚ²»Í¬ÀàĞÍµÄÖ÷»úÖĞ¶¨ÒåÖ÷»úºÍ×éµÄĞÅÏ¢£¬Èç web.cfg :
+define host{
+name                            web
+use                             linux-server
+check_interval                  30
+retry_interval                  10
+max_check_attempts              3
+notification_period             24x7
+notification_interval           0
 }
 
-ÔÚ services Ä¿Â¼ÖĞ´´½¨ÁË¸÷ÖÖ·şÎñµÄÅäÖÃÎÄ¼ş£¬Èç£º disk.cfg http.cfg load.cfg mysql.cfg
-²¢´´½¨ÁË servicegroup.cfg ÎÄ¼ş¶Ô·şÎñ½øĞĞ·Ö×é£¬Èç£º
-define servicegroup {
-servicegroup_name disk
-alias DISK
+define hostgroup{
+hostgroup_name web
+alias Web
 }
 
-
-Ä£°åµÄÊ¹ÓÃ
-ÔÚ objects/templates.cfg ÀïÒÑ¾­¶¨ÒåÁËÒ»Ğ©Ö÷»úºÍ·şÎñµÄÄ£°å£¬¿É¶ÔÆä½øĞĞĞŞ¸Ä»òÌí¼Ó£º
-define service{
-        name                            http-service
-        service_description             check_http
-        servicegroups                   http
-        check_command                   check_http
-        check_period                    24x7
-        max_check_attempts              3
-        normal_check_interval           30
-        retry_check_interval            15
-        notification_interval           0
-        notification_period             24x7
-        notification_options            w,u,c,r
-        }
-
-È»ºóÒıÓÃ£º
-define host {
-use linux-server
+define host{
 host_name web1
 alias web1
-address 192.168.0.101
-host_groups web
-contact_groups web
+address 10.36.88.132
+hostgroups web
+use web
 }
 
-define service {
-use http-service
-host_name web1
-contact_groups admins
+define host{
+host_name web2
+alias web2
+address 10.36.88.136
+hostgroups web
+use web
 }
+
+
+services.cfg ÖĞ¶¨ÒåÁË·şÎñ¼°×éµÄÏà¹ØĞÅÏ¢£¬Èç£º
+define service{
+name custom-service
+use generic-service
+hostgroup_name lvs,mongodb,redis,uwsgi,web
+normal_check_interval 30
+retry_check_interval 10
+notification_interval 0
+check_command check_ssh
+}
+
+define service{
+name check_http
+service_description HTTP
+hostgroup_name web
+servicegroups http
+use custom-service
+check_command check_http!-u /nginx_status
+}
+define servicegroup {
+servicegroup_name http
+alias HTTP
+}
+
+define service{
+name check_disk
+service_description Disk usage
+use custom-service
+normal_check_interval 3600
+retry_check_interval 60
+check_command check_nrpe!check_disk
+}
+
+
+ÔÙ´Î¶¨ÒåµÄ²ÎÊı¿ÉÒÔ¸²¸ÇÒıÓÃµÄÄ£°åµÄÄ¬ÈÏ²ÎÊıÖµ¡£
