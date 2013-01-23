@@ -4,10 +4,13 @@ CentOS:
 yum install openssl-devel
 Installing for dependencies: e2fsprogs-devel krb5-devel
 
-Debian:
+Ubuntu/Debian:
 apt-get install libssl-dev
 The following NEW packages will be installed:
   libssl-dev zlib1g-dev
+
+Ubuntu 12.04 :
+ln -s /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/libssl.so
 
 再安装 NRPE:
 http://www.nagios.org/download/addons
@@ -29,7 +32,7 @@ define command{
 同样需要安装 openssl-devel (Debian: libssl-dev)
 创建 nagios 用户和组
 groupadd nagios
-useradd -g nagios -d /usr/local/nagios -s /sbin/nologin nagios
+useradd -g nagios -d /usr/local/nagios -s /bin/false nagios
 
 先安装 nagios-plugin:
 tar zxvf nagios-plugins-1.4.16.tar.gz

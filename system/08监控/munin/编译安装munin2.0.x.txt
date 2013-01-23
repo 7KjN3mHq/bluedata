@@ -1,14 +1,4 @@
-apt-get install munin-node
-
-vi /etc/munin/munin-node.conf
-allow ^1\.2\.3\.4$
-
-/etc/init.d/munin-node restart
-
-
 http://munin-monitoring.org/
-
-apt-get install perl htmldoc html2text default-jdk
 
 tar zxvf munin-2.0.10.tar.gz
 cd munin-2.0.10
@@ -18,12 +8,13 @@ PREFIX     = /usr/local/munin
 CONFDIR    = $(PREFIX)/etc
 LOGDIR     = $(DESTDIR)/var/log/munin
 
-make
-
 Node:
+make
 make install-common-prime install-node-prime install-plugins-prime
 
 Master:
+make
+apt-get install perl htmldoc html2text default-jdk
 make install
 
 
@@ -35,6 +26,7 @@ cd /usr/local/munin/sbin
 vi /usr/local/munin/etc/munin-node.conf
 allow ^10\.36\.88\.134$
 
+mkdir -p /var/log/munin
 /usr/local/munin/sbin/munin-node
 
 

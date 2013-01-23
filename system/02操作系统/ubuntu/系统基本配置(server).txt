@@ -14,7 +14,7 @@ dpkg-reconfigure tzdata
 -----
 apt-get install vim
 
-vi /etc/vim/vimrc
+vi ~/.vimrc
 highlight Comment ctermfg=white guifg=white
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -29,20 +29,14 @@ alias rm='rm -i'
 cp ~/.bash_aliases /etc/skel/
 
 -----
-apt-get autoremove libdbd-mysql-perl libmysqlclient16 mysql-client-5.1 mysql-client-core-5.1 mysql-common mysql-server mysql-server-5.1 mysql-server-core-5.1 php5-mysql
-dpkg -P libmysqlclient16 mysql-common mysql-server-5.1 php5-mysql
+apt-get autoremove libdbd-mysql-perl libmysqlclient18 libmysqlclient18:i386 libqt4-sql-mysql:i386 mysql-client-5.5 mysql-client-core-5.5 mysql-common mysql-server mysql-server-5.5 mysql-server-core-5.5 php5-mysql
+dpkg -P libmysqlclient18 libmysqlclient18:i386 mysql-common mysql-server-5.5 php5-mysql
 
 apt-get autoremove apache2 apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common libapache2-mod-php5
 dpkg -P apache2.2-common libapache2-mod-php5
 
 apt-get autoremove bind9 bind9utils
 dpkg -P bind9
-
-or:
-
-apt-get autoremove libdbd-mysql-perl libmysqlclient16 mysql-client-5.1 mysql-client-core-5.1 mysql-common mysql-server mysql-server-5.1 mysql-server-core-5.1 php5-mysql apache2 apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common libapache2-mod-php5 bind9 bind9utils
-
-dpkg -P libmysqlclient16 mysql-common mysql-server-5.1 php5-mysql apache2.2-common libapache2-mod-php5 bind9
 
 -----
 apt-get install sysv-rc-conf
