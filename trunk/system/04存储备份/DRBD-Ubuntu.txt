@@ -24,6 +24,14 @@ lvcreate -l 111124 -n data vg
 
 
 apt-get install drbd8-utils
+vi /etc/drbd.d/global_common.conf
+global {
+  usage-count yes;
+}
+common {
+  protocol C;
+}
+
 vi /etc/drbd.d/mysql.res
 resource mysql {
   on db1 {
@@ -75,7 +83,12 @@ drbdsetup /dev/drbd1 primary -o
 mkfs -t ext4 /dev/drbd1
 mount -t ext4 -o rw,noatime,nodiratime /dev/drbd1 /data
 
+查看状态：
+/etc/init.d/drbd status
 
+
+安装 MySQL
+http://www.percona.com/doc/percona-server/5.5/installation/apt_repo.html
 apt-get install percona-server-server-5.5 percona-server-client-5.5
 /etc/init.d/mysql stop
 sysv-rc-conf mysql off
@@ -124,16 +137,21 @@ ucast eth0 10.36.88.152
 auto_failback off
 node db1
 node db2
-ping 10.36.88.152
+respawn hacluster /usr/lib/heartbeat/ipfail
 
 nfs master node:
 ucast eth0 10.36.88.150
 auto_failback off
 node db1
 node db2
-ping 10.36.88.150
+
+#ping 10.36.64.1
+#respawn hacluster /usr/lib/heartbeat/ipfail
+
+两台服务器的 /etc/hosts 中都要配置好 ip / hostname 的对应关系。
 
 
+初次启动时：
 vi haresources
 mysql master node:
 db1 \
@@ -149,3 +167,34 @@ drbddisk::data \
 Filesystem::/dev/drbd1::/data::ext4::rw,noatime,nodiratime \
 nfs-kernel-server
 
+然后把 haresources 改为：
+db1 \  ## 另一个节点修改为 db2
+IPaddr::10.36.64.2/26/eth0 \
+IPaddr::10.36.64.3/26/eth0 \
+drbddisk::mysql \
+drbddisk::data \
+Filesystem::/dev/drbd0::/mysql::ext4::rw,noatime,nodiratime \
+Filesystem::/dev/drbd1::/data::ext4::rw,noatime,nodiratime \
+mysql \
+nfs-kernel-server
+
+手动切换资源时要注意停止的顺序，例如：
+PATH=$PATH:/etc/ha.d/resource.d
+/etc/init.d/mysql stop
+IPaddr 10.36.64.2/26/eth0 stop
+Filesystem /dev/drbd0 /mysql ext4 rw,noatime,nodiratime stop
+drbddisk mysql stop
+
+
+nfs 客户端安装：
+nfs-common portmap
+
+写操作测速
+dd if=/dev/zero of=test bs=1024k count=4k
+
+读操作测速
+dd if=test of=/dev/null
+
+
+数据库连接测试：
+mysql -e "show variables like 'hostname'" | grep hostname | awk '{print $2}'

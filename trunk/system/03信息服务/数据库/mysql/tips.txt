@@ -77,7 +77,7 @@ mysqldump 加上 --allow-keywords 这个参数可以在把关键字``起来。
 /usr/local/mysql/bin/mysqldump -u root -p --opt --allow-keywords dbname > dbname.sql
 
 
-修改 charset 的方法
+修改默认字符集的方法（5.5 后不可用）：
 vi /etc/my.cnf
 [mysqld]
 default-character-set=gbk
