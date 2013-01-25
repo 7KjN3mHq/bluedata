@@ -32,3 +32,8 @@ ln -s /usr/local/munin/lib/plugins/mongo_conn mongo_conn
 ln -s /usr/local/munin/lib/plugins/mongo_lock mongo_lock
 ln -s /usr/local/munin/lib/plugins/mongo_mem mongo_mem
 ln -s /usr/local/munin/lib/plugins/mongo_ops mongo_ops
+
+
+mysql:
+https://github.com/kjellm/munin-mysql
+apt-get install libdbd-mysql-perl
