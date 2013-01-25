@@ -1,5 +1,8 @@
 http://munin-monitoring.org/
 
+groupadd munin
+useradd -g munin -d /usr/local/munin -s /bin/false munin
+
 tar zxvf munin-2.0.10.tar.gz
 cd munin-2.0.10
 
@@ -13,8 +16,8 @@ make
 make install-common-prime install-node-prime install-plugins-prime
 
 Master:
-make
 apt-get install perl htmldoc html2text default-jdk
+make
 make install
 
 
