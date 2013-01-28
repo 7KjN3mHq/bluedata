@@ -1,0 +1,85 @@
+mysql:
+https://www.monitoringexchange.org/inventory/Check-Plugins/Database/MySQL/check_mysqld
+wget -O /usr/local/nagios/libexec/check_mysqld.pl https://www.monitoringexchange.org/attachment/download/Check-Plugins/Database/MySQL/check_mysqld/11-12-23_12-57-23_check_mysqld.pl
+chmod +x /usr/local/nagios/libexec/check_mysqld.pl
+chown nagios:nagios /usr/local/nagios/libexec/check_mysqld.pl
+
+apt-get install libdbi-perl libdbd-mysql-perl
+
+mysql> GRANT USAGE ON *.* TO '<USER>'@'<NAGIOS_IP>' IDENTIFIED BY '<PASSWORD>';
+mysql> FLUSH PRIVILEGES;
+
+vi /usr/local/nagios/etc/objects/commands.cfg
+# 'check_mysqld' command definition
+define command{
+        command_name    check_mysqld
+        command_line    $USER1$/check_mysqld.pl -H $HOSTADDRESS$ -u $ARG1$ -p $ARG2$ $ARG3$
+        }
+
+vi /usr/local/nagios/etc/services.cfg
+define service{
+name check_mysqld
+service_description MySQL
+host_name db1
+servicegroups mysql
+use generic-service
+normal_check_interval 30
+retry_check_interval 10
+notification_interval 0
+check_command check_mysqld!<USER>!<PASSWORD>
+}
+define servicegroup {
+servicegroup_name mysql
+alias MySQL
+}
+
+检查非默认端口的 slave 状态可以写作： check_command check_mysqld!USER!PASSWORD!-P 3307 -s ON
+
+
+memcached:
+http://exchange.nagios.org/directory/Plugins/Software/check_memcached-2Epl/details
+
+
+mongodb:
+https://github.com/mzupan/nagios-plugin-mongodb
+wget https://github.com/mzupan/nagios-plugin-mongodb/archive/master.zip
+unzip master.zip
+mv nagios-plugin-mongodb-master/check_mongodb.py /usr/local/nagios/libexec/
+chown nagios:nagios /usr/local/nagios/libexec/check_mongodb.py
+
+vi /usr/local/nagios/etc/objects/commands.cfg
+# 'check_mongodb*' command definition
+define command{
+        command_name    check_mongodb
+        command_line    $USER1$/check_mongodb.py -H $HOSTADDRESS$ -A $ARG1$ -P $ARG2$ -W $ARG3$ -C $ARG4$
+        }
+
+define command{
+        command_name    check_mongodb_database
+        command_line    $USER1$/check_mongodb.py -H $HOSTADDRESS$ -A $ARG1$ -P $ARG2$ -W $ARG3$ -C $ARG4$ -d $ARG5$
+        }
+
+
+define command{
+        command_name    check_mongodb_replicaset
+        command_line    $USER1$/check_mongodb.py -H $HOSTADDRESS$ -A $ARG1$ -P $ARG2$ -W $ARG3$ -C $ARG4$ -r $ARG5$
+        }
+
+define command{
+        command_name    check_mongodb_query
+        command_line    $USER1$/check_mongodb.py -H $HOSTADDRESS$ -A $ARG1$ -P $ARG2$ -W $ARG3$ -C $ARG4$ -q $ARG5$
+        }
+
+vi /usr/local/nagios/etc/services.cfg
+define service{
+name check_mongo
+service_description Mongo Connect Check
+host_name db2
+servicegroups mongodb
+use custom-service
+check_command check_mongodb!connect!27017!2!4
+}
+define servicegroup {
+servicegroup_name mongodb
+alias MongoDB
+}
