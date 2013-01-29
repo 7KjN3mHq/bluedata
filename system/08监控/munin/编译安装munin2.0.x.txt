@@ -27,6 +27,7 @@ apt-get install libnet-server-perl
 cd /usr/local/munin/sbin
 ./munin-node-configure --shell --families=contrib,auto | sh -x
 vi /usr/local/munin/etc/munin-node.conf
+pid_file /var/run/munin-node.pid
 allow ^10\.36\.88\.134$
 
 mkdir -p /var/log/munin
