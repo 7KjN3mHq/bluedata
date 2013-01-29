@@ -63,10 +63,6 @@ on-io-error detach;    # 当磁盘有错误时不连接
 after-sb-0pri discard-older-primary;
 after-sb-1pri call-pri-lost-after-sb;
 after-sb-2pri call-pri-lost-after-sb;
-或下面三行也可以：
-after-sb-0pri discard-zero-changes;
-after-sb-1pri discard-secondary;
-after-sb-2pri disconnect;
 rate 1000M;    # 复制时的网络速度限制，单位 bits ，填最大带宽，会自动 * 0.3 得到实际速度，避免 syncer 抢占服务所需的带宽
 
 vi /etc/drbd.d/mysql.res
@@ -211,7 +207,6 @@ dbpath=/data/mongodb
 directoryperdb = true
 logpath=/var/log/mongodb/mongodb.log
 logappend = true
-nojournal = true
 rest = true
 
 

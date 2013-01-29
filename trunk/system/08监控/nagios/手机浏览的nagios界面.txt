@@ -1,0 +1,14 @@
+http://hirose31.github.com/teeny-nagios/
+
+wget https://github.com/hirose31/teeny-nagios/archive/master.zip
+unzip master.zip
+cd teeny-nagios-master
+mv index.php /usr/local/nagios/share/m.php
+mv nagios.png /usr/local/nagios/share/
+chown nagios:nagios /usr/local/nagios/share/*
+
+vi /usr/local/nagios/share/m.php
+$STATUS_FILE  = getenv("TN_STATUS_FILE")  ? getenv("TN_STATUS_FILE")  : "/usr/local/nagios/var/status.dat";
+$COMMAND_FILE = getenv("TN_COMMAND_FILE") ? getenv("TN_COMMAND_FILE") : "/usr/local/nagios/var/rw/nagios.cmd";
+
+ini_set("date.timezone", "Asia/Shanghai");
