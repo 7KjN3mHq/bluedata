@@ -10,6 +10,9 @@ mesg n
 #  cannot be properly displayed at the Linux console
 LANG=C
 LANGUAGE=C
+ulimit -SHn 65536
+PATH=$PATH
+HISTTIMEFORMAT='%Y-%m-%d %H:%M:%S    '
 
 
 # Test for an interactive shell.  There is no need to set anything

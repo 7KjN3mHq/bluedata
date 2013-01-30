@@ -1,3 +1,9 @@
+统计重复次数并排序：
+awk '{print $1}' file.txt | sort | uniq -c | sort -r
+
+最后一行大于 60 即打印一整行：
+awk '{if($NF>60){print $0}}' file.txt
+
 生成随机密码：
 cat /dev/urandom | head -1 | md5sum | head -c 6
 
