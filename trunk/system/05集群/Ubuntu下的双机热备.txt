@@ -163,7 +163,7 @@ apt-get install memcached
 /etc/init.d/memcached stop
 sysv-rc-conf memcached off
 
-vi /etc/ha.d/resource.d/memcached
+vi /etc/ha.d/resource.d/Memcached
 #!/bin/sh
 
 case "$1" in
@@ -181,7 +181,7 @@ case "$1" in
         exit 1
 esac
 
-chmod +x /etc/ha.d/resource.d/memcached
+chmod +x /etc/ha.d/resource.d/Memcached
 
 
 MongoDB °²×°£º
@@ -261,7 +261,7 @@ drbddisk::data \
 Filesystem::/dev/drbd0::/mysql::ext4::rw,noatime,nodiratime \
 Filesystem::/dev/drbd1::/data::ext4::rw,noatime,nodiratime \
 mysql \
-memcached \
+Memcached \
 mongodb \
 nfs-kernel-server
 
@@ -273,12 +273,12 @@ drbddisk mysql start
 Filesystem /dev/drbd0 /mysql ext4 rw,noatime,nodiratime start
 IPaddr 10.36.64.2/26/eth0 start
 /etc/init.d/mysql start
-memcached start
+Memcached start
 
 vi db1-res-stop.sh
 #!/bin/sh
 PATH=$PATH:/etc/ha.d/resource.d
-memcached stop
+Memcached stop
 /etc/init.d/mysql stop
 IPaddr 10.36.64.2/26/eth0 stop
 Filesystem /dev/drbd0 /mysql ext4 rw,noatime,nodiratime stop
