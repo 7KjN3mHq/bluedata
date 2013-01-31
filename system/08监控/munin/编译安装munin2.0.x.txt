@@ -10,6 +10,7 @@ vi Makefile.config
 PREFIX     = /usr/local/munin
 CONFDIR    = $(PREFIX)/etc
 LOGDIR     = $(DESTDIR)/var/log/munin
+STATEDIR   = $(DESTDIR)/var/run
 
 Node:
 make

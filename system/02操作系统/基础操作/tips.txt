@@ -7,10 +7,7 @@ root hard nofile 65536
 ulimit -SHn 65536
 
 检查进程的 limits
-for pid in `ps aux | grep nginx | grep -v grep | awk '{print $2}'`
-do
-cat /proc/${pid}/limits | grep 'Max open files'
-done
+for pid in `ps aux | grep nginx | grep -v grep | awk '{print $2}'`; do cat /proc/${pid}/limits | grep 'Max open files'; done
 
 使用 screen 管理远程会话
 http://www.ibm.com/developerworks/cn/linux/l-cn-screen/
