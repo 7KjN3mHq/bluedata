@@ -9,8 +9,11 @@ chmod 755 /usr/local/munin/lib/plugins/uwsgi_
 ln -s /usr/local/munin/lib/plugins/uwsgi_ /usr/local/munin/etc/plugins/uwsgi_memory
 ln -s /usr/local/munin/lib/plugins/uwsgi_ /usr/local/munin/etc/plugins/uwsgi_processes
 
+
 wget -O /usr/local/munin/lib/plugins/uwsgi_ https://github.com/stevetu/munin-uwsgi-stats/raw/master/uwsgi_
 chmod 755 /usr/local/munin/lib/plugins/uwsgi_
+vi /usr/local/munin/lib/plugins/uwsgi_  # edit UWSGI_STATS for host
+cd /usr/local/munin/etc/plugins
 ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_avg_rt
 ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_exceptions
 ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_listen_queue

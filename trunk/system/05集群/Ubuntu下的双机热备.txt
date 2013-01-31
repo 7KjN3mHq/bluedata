@@ -305,7 +305,7 @@ drbddisk data stop
 
 其它：
 nfs 客户端安装：
-apt-get install nfs-common portmap
+apt-get install nfs-common
 
 写操作测速
 dd if=/dev/zero of=test bs=1024k count=4k
