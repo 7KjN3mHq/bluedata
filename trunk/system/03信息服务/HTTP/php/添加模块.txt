@@ -11,3 +11,17 @@ extension=sockets.so
 
 /usr/local/php4-fcgi/bin/php-cgi -m | grep sockets
 /usr/local/php4-fcgi/sbin/php-fpm restart
+
+
+
+cd php-5.3.17/ext/openssl
+mv config0.m4 config.m4
+/usr/local/php5.3/bin/phpize
+./configure --with-openssl --with-php-config=/usr/local/php5.3/bin/php-config
+make
+make install
+
+vi /usr/local/php5.3/etc/php.ini
+extension=openssl.so
+
+/etc/init.d/php-fpm restart

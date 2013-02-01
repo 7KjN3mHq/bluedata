@@ -1,4 +1,4 @@
-以 FastCGI 模式安装 PHP5.3
+以 FPM 模式安装 PHP5.3
 
 
 软件下载：
@@ -18,6 +18,7 @@ cd php-5.3.21
 --enable-mbstring \
 --enable-sockets \
 --with-config-file-path=/usr/local/php/etc \
+--with-openssl \
 --with-curl \
 --with-gd \
 --with-jpeg-dir \
@@ -29,8 +30,7 @@ cd php-5.3.21
 make
 make install
 
-cp -f php.ini-production /usr/local/php/etc/php.ini
-cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf
+cp php.ini-production /usr/local/php/etc/php.ini
 cp -f sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
 chmod 755 /etc/init.d/php-fpm
 sysv-rc-conf php-fpm on
@@ -91,12 +91,17 @@ cp -r xhprof_html xhprof_lib /path/to/project/
 
 PHP5.3 的配置：
 vi /usr/local/php/etc/php.ini
+# 设置默认时区
+date.timezone = UTC
 # 开启短标记支持
 short_open_tag = On
 # session 文件存储目录
 session.save_path = "/dev/shm"
 # session 过期时间设为一小时
 session.gc_maxlifetime = 3600
+# 禁用 mysql 长连接
+mysql.allow_persistent = Off
+mysqli.allow_persistent = Off
 
 # 开启 eAccelerator
 [eAccelerator]
@@ -118,7 +123,7 @@ eaccelerator.keys="shm_only"
 eaccelerator.sessions="shm_only"
 eaccelerator.content="shm_only"
 
-要增大 eaccelerator.shm_size 需要修改内核参数共享内存大小：
+要增大 eaccelerator.shm_size 需要修改内核参数共享内存的大小：
 echo -ne "
 kernel.shmmax = 134217728
 " >> /etc/sysctl.conf
@@ -139,7 +144,7 @@ extension=redis.so
 # 开启 Xhprof
 [Xhprof]
 extension=xhprof.so
-xhprof.output_dir = /var/log/php
+xhprof.output_dir = /var/log/php/xhprof
 
 
 启动 PHP FastCGI
@@ -196,7 +201,8 @@ php_admin_value[error_log] = /var/log/php/admin_error.log
 php_admin_value[memory_limit] = 64M
 
 创建相关目录
-mkdir /var/log/php
+mkdir -p /var/log/php/xhprof
+chown www-data:www-data /var/log/php/xhprof
 
 ulimit -SHn 65536
 /etc/init.d/php-fpm start
