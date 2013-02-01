@@ -10,7 +10,7 @@ TCP/IP连接队列的最大值。
 
 connect_timeout
 连接超时的秒数。
-默认值： 5 ， 参考设置： 15
+默认值： 10 ， 参考设置： 15
 
 max_connect_errors
 当客户端连接服务端超时 （超过 connect_timeout ）, 服务端就会给这个客户端记录一次 error ，当出错的次数达到 max_connect_errors 的时候，
