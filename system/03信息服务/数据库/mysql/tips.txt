@@ -46,9 +46,14 @@ mysql_convert_table_format 的 -e 参数没用，要修改脚本，如果要转为 INNODB ，就把 
 mysql_convert_table_format <DBNAME> <TABLE>
 select concat(table_schema,'.',table_name) as table_name, engine from information_schema.tables where table_schema = '<DBNAME>';
 
+修改客户端提示符：
+vi ~/.my.cnf
+[mysql]
+prompt=(\\u@\\h) [\\d] >\\_
+
 设置自动登录：
 vi ~/.my.cnf
-[client]
+[mysql]
 user            = <USER>
 password        = <PASSWORD>
 host            = <HOST>
