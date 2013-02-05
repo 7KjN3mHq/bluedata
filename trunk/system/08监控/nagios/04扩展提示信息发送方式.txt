@@ -8,6 +8,9 @@ wget http://caspian.dotconf.net/menu/Software/SendEmail/sendEmail-v1.56.tar.gz
 tar zxvf sendEmail-v1.56.tar.gz
 mv sendEmail-v1.56/sendEmail /usr/local/bin/
 
+使用 gmail 发信需要 IO::Socket::SSL :
+apt-get install libio-socket-ssl-perl
+
 发送邮件的示例：
 sendEmail -f nagios@test.com -t admin@test.com -s smtp.test.com -u "test" -xu nagios@test.com -xp password -m "test." -o message-charset=gb2312
 

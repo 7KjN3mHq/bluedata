@@ -5,7 +5,7 @@ command[check_nagios]=/usr/local/nagios/libexec/check_nagios -e 5 -F /usr/local/
 再在另一个 nagios 服务器上添加 host 和 service ，例如：
 define service {
 host_name nagios
-service_description check_nagios
+service_description Nagios
 check_period 24x7
 max_check_attempts 3
 normal_check_interval 30

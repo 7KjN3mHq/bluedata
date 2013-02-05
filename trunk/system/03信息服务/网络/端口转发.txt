@@ -1,6 +1,18 @@
+Ubuntu:
 apt-get install rinetd
 
-[Source Address] [Source Port] [Destination Address] [Destination Port]
+CentOS:
+wget http://www.boutell.com/rinetd/http/rinetd.tar.gz
+tar zxvf rinetd.tar.gz
+make
+make install
 
+[Source Address] [Source Port] [Destination Address] [Destination Port]
 АэИзЈє
 0.0.0.0 80 192.168.0.252 80
+
+vi /etc/rinetd.conf
+0.0.0.0 80 192.168.0.252 80
+0.0.0.0 443 192.168.0.252 443
+allow *.*.*.*
+logfile /var/log/rinetd.log
