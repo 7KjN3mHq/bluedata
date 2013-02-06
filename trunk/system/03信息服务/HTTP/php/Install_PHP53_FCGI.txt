@@ -155,6 +155,7 @@ vi php-fpm.conf
 [global]
 pid = run/php-fpm.pid
 error_log = /var/log/php/php-fpm.log
+log_level = warning
 rlimit_files = 65536
 
 pool 的设置：
@@ -218,3 +219,20 @@ echo -ne "
 * soft nofile 65536
 * hard nofile 65536
 " >> /etc/security/limits.conf
+
+
+日志回滚
+vi /etc/logrotate.d/php-fpm
+/var/log/php/*.log {
+        daily
+        missingok
+        rotate 7
+        compress
+        delaycompress
+        notifempty
+        create 640 develop develop
+        sharedscripts
+        postrotate
+                /etc/init.d/php-fpm reload
+        endscript
+}

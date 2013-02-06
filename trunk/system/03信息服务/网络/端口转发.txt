@@ -16,3 +16,6 @@ vi /etc/rinetd.conf
 0.0.0.0 443 192.168.0.252 443
 allow *.*.*.*
 logfile /var/log/rinetd.log
+
+/etc/init.d/nginx stop
+/usr/sbin/rinetd -c /etc/rinetd.conf

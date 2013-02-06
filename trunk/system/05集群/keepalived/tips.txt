@@ -1,0 +1,24 @@
+Ubuntu 10.04 apt 安装的 keepalived ，版本是 1.1.17 ，报 "SIOCGMIIREG on ethX failed: Input/output error" 错误。 1.1.19 以上版本修复了这个 bug 。
+
+apt-get install linux-source
+cd /usr/src
+tar jxvf linux-source-2.6.32.tar.bz2
+ln -s linux-source-2.6.32 linux
+
+apt-get install libpopt-dev
+
+wget http://www.keepalived.org/software/keepalived-1.1.19.tar.gz
+tar zxvf keepalived-1.1.19.tar.gz
+./configure --bindir=/usr/bin --sbindir=/usr/sbin --sysconfdir=/etc/keepalived
+make
+
+/etc/init.d/keepalived stop
+
+mv /usr/bin/genhash /usr/bin/genhash-17
+mv /usr/sbin/keepalived /usr/sbin/keepalived-17
+mv bin/genhash /usr/bin/
+mv bin/keepalived /usr/sbin/
+chown root:root /usr/bin/genhash
+chown root:root /usr/sbin/keepalived
+
+/etc/init.d/keepalived start
