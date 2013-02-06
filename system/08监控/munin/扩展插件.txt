@@ -27,6 +27,14 @@ nginx:
 ln -s /usr/local/munin/lib/plugins/nginx_request nginx_request
 ln -s /usr/local/munin/lib/plugins/nginx_status nginx_status
 
+    location /nginx_status {
+        stub_status  on;
+        access_log  off;
+        allow  127.0.0.1;
+        allow  10.36.88.134;
+        deny  all;
+    }
+
 
 mongodb:
 https://github.com/erh/mongo-munin
