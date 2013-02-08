@@ -1,5 +1,8 @@
 ﻿apt-get install ipvsadm keepalived
 
+vi /etc/modules
+ip_vs
+
 vi /etc/keepalived/keepalived.conf
 #global define
 global_defs {
