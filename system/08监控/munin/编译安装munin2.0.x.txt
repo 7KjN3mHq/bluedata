@@ -10,7 +10,6 @@ vi Makefile.config
 PREFIX     = /usr/local/munin
 CONFDIR    = $(PREFIX)/etc
 LOGDIR     = $(DESTDIR)/var/log/munin
-STATEDIR   = $(DESTDIR)/var/run
 
 Node:
 make
@@ -45,7 +44,7 @@ a2enmod expires
 htpasswd -c /usr/local/munin/etc/munin-htpasswd admin
 apt-get install liblog-log4perl-perl libio-socket-inet6-perl librrds-perl libfile-copy-recursive-perl libdate-manip-perl
 vi /etc/crontab
-*/5 * * * *     munin if [ -x /usr/local/munin/bin/munin-cron ]; then /usr/local/munin/bin/munin-cron; fi
+*/5 * * * * munin if [ -x /usr/local/munin/bin/munin-cron ]; then /usr/local/munin/bin/munin-cron; fi
 
 
 cgi:
