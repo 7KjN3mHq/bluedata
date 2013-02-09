@@ -152,17 +152,17 @@ service_description check_http
 servicegroups http
 check_period 24x7
 max_check_attempts 3
-normal_check_interval 30
+normal_check_interval 60
 contact_groups admins
-retry_check_interval 15
+retry_check_interval 30
 notification_interval 3600
 notification_period 24x7
 notification_options w,u,c,r
 check_command check_http
 }
 
-配置解释： 24x7 监控 web1 主机上的 HTTP 服务，检查间隔为 30 秒， 检查失败后每 15 秒再进行一次检查，累计三次失败就认定是故障并发送提醒。
-联系人组是 admins 。提醒后恢复到 30 秒一次的 normal_check_interval 检查。如果服务仍然没有被恢复，每个小时发送一次提醒。
+配置解释： 24x7 监控 web1 主机上的 HTTP 服务，检查间隔为 60 秒， 检查失败后每 30 秒再进行一次检查，累计三次失败就认定是故障并发送提醒。
+联系人组是 admins 。提醒后恢复到 60 秒一次的 normal_check_interval 检查。如果服务仍然没有被恢复，每个小时发送一次提醒。
 
 如果要检测其他服务，例如，要检查 ssh 服务是否开启，更改如下两行：
 service_description check_ssh
@@ -180,8 +180,8 @@ cfg_dir=/usr/local/nagios/etc/servers
 define host{
 name                            web
 use                             linux-server
-check_interval                  30
-retry_interval                  10
+check_interval                  60
+retry_interval                  30
 max_check_attempts              3
 notification_period             24x7
 notification_interval           0
@@ -214,8 +214,8 @@ define service{
 name custom-service
 use generic-service
 hostgroup_name lvs,mongodb,redis,uwsgi,web
-normal_check_interval 30
-retry_check_interval 10
+normal_check_interval 60
+retry_check_interval 30
 notification_interval 0
 check_command check_ssh
 }

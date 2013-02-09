@@ -65,9 +65,9 @@ sysv-rc-conf nagios on
 注意 /usr/local/nagios 目录的权限，默认安装是 700 ， Apache 会报 403 错误。
 chmod 755 /usr/local/nagios
 
-cgi 的配置（不需要重启）：
+cgi 的配置（不需要重启 nagios ）：
 vi cgi.cfg
-refresh_rate=30  # 刷新间隔改为 30s
+refresh_rate=60  # 刷新间隔改为 60s
 use_authentication=0  # 不建议，应该为每一个权限设置账号。
 
 添加浏览权限的账号 admin :
