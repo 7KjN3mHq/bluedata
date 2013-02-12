@@ -171,22 +171,12 @@ check_command check_ssh
 
 为方便管理，对配置文件的分布做了如下修改：
 nagios.cfg 中增加了：
-cfg_file=/usr/local/nagios/etc/services.cfg
+cfg_dir=/usr/local/nagios/etc/services
 并取消以下行的注释：
 cfg_dir=/usr/local/nagios/etc/servers
 
-在 servers 目录中，为不同类型的主机创建了配置文件，如： lvs.cfg  mongodb.cfg  redis.cfg  uwsgi.cfg  web.cfg
+在 servers 目录中，为不同类型的主机创建了配置文件，如： db.cfg lvs.cfg php.cfg redis.cfg uwsgi.cfg web.cfg
 在不同类型的主机中定义主机和组的信息，如 web.cfg :
-define host{
-name                            web
-use                             linux-server
-check_interval                  60
-retry_interval                  30
-max_check_attempts              3
-notification_period             24x7
-notification_interval           0
-}
-
 define hostgroup{
 hostgroup_name web
 alias Web
@@ -209,19 +199,15 @@ use web
 }
 
 
-services.cfg 中定义了服务及组的相关信息，如：
+services/services.cfg 中定义了服务及组的相关信息，如：
 define service{
 name custom-service
 use generic-service
-hostgroup_name lvs,mongodb,redis,uwsgi,web
-normal_check_interval 60
-retry_check_interval 30
-notification_interval 0
+hostgroup_name db,php,uwsgi,web
 check_command check_ssh
 }
 
 define service{
-name check_http
 service_description HTTP
 hostgroup_name web
 servicegroups http
@@ -234,11 +220,10 @@ alias HTTP
 }
 
 define service{
-name check_disk
 service_description Disk usage
 use custom-service
 normal_check_interval 3600
-retry_check_interval 60
+retry_check_interval 600
 check_command check_nrpe!check_disk
 }
 
