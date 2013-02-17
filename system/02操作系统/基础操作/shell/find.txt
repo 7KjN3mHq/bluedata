@@ -78,4 +78,4 @@ find /data/test/ -name "test5" -prune -o -name "test1" -prune -o -print
 find ./ -name "*.php" -exec grep -l "TEXT" {} \;
 
 ÅúÁ¿Ìæ»»
-find `pwd` -name "*.htm" -exec perl -p -i -e 's/bluedata\@yahoo.cn/bluedata\@gmail.com/g' {} \;
+find `pwd` -name "*.htm" -exec perl -p -i -e 's/php5-fpm/php-fpm/g' {} \;

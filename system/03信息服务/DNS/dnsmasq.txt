@@ -22,3 +22,10 @@ echo "64.233.189.99 test.domain.com" >> /etc/dnsmasq.hosts
 只监听在本地端口：
 listen-address=127.0.0.1
 bind-interfaces
+
+
+Ubuntu 12.04 重启时出现：
+resolvconf: Error: /etc/resolv.conf isn't a symlink, not doing anything.
+解决：
+dpkg-reconfigure resolvconf
+选 "YES" 。
