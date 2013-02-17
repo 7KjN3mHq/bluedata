@@ -48,3 +48,21 @@ ln -s /usr/local/munin/lib/plugins/mongo_ops mongo_ops
 mysql:
 https://github.com/kjellm/munin-mysql
 apt-get install libdbd-mysql-perl
+
+
+php-fpm:
+apt-get install libwww-perl
+https://github.com/tjstein/php5-fpm-munin-plugins
+wget https://github.com/tjstein/php5-fpm-munin-plugins/archive/master.zip
+unzip master.zip
+cd php5-fpm-munin-plugins-master
+find ./ -type f -name "phpfpm_*" -exec perl -p -i -e 's/php5-fpm/php-fpm/g' {} \;
+find ./ -type f -name "phpfpm_*" -exec perl -p -i -e 's/PHP5-FPM/PHP-FPM/g' {} \;
+chmod +x phpfpm_*
+mv phpfpm_* /usr/local/munin/lib/plugins/
+cd /usr/local/munin/etc/plugins
+ln -s /usr/local/munin/lib/plugins/phpfpm_average phpfpm_average
+ln -s /usr/local/munin/lib/plugins/phpfpm_connections phpfpm_connections
+ln -s /usr/local/munin/lib/plugins/phpfpm_memory phpfpm_memory
+ln -s /usr/local/munin/lib/plugins/phpfpm_status phpfpm_status
+ln -s /usr/local/munin/lib/plugins/phpfpm_processes phpfpm_processes
