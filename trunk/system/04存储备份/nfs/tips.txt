@@ -1,0 +1,2 @@
+Ubuntu 12.04 + NFSv4 不稳定，可强制使用 NFSv3 ， mount 挂载参数： nfsvers=3,vers=3
+https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1006446
