@@ -44,6 +44,17 @@ Line Description
 7 Connect_Retry
 
 
+主从复制的 1032 错误：
+主从服务器 binlog_format 都是 MIXED ，把从改为 STATEMENT 正常。
+
+跳过：
+STOP SLAVE;
+SET GLOBAL SQL_SLAVE_SKIP_COUNTER = 1;
+START SLAVE;
+
+跳过 1032 错误（会造成数据不一致）：
+slave-skip-errors=1032
+
 
 生成新的 binlog 文件：
 1. 执行 mysqladmin refresh

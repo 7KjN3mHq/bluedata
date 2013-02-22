@@ -1,0 +1,18 @@
+vi /etc/mongodb.conf
+replSet = rs1
+
+初始化 replica set
+conf={"_id":"rs1","members":[{"_id":1,"host":"10.36.64.3:27017"},{"_id":2,"host":"10.60.174.134:27017"},{"_id":3,"host":"10.36.88.148:27017"}]}
+rs.initiate(conf);
+
+增加节点到 replica set
+rs.add("10.60.174.134:27017");
+rs.addArb("10.36.88.148:27017");
+
+查看 ReplSet 的状态：
+rs.status();
+查看 ReplSet 的配置：
+rs.conf();
+
+删除节点：
+rs.remove("10.36.88.146:27017");

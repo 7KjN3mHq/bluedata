@@ -57,7 +57,7 @@ directory
 --drop参数可以在导入之前把collection先删掉。
 
 例子：
-[root@web3 3]# mongorestore -h 127.0.0.1 --directoryperdb /backup/mongobak/3/         
+mongorestore -h 127.0.0.1 --directoryperdb /backup/mongobak/3/         
 connected to: 127.0.0.1
 /backup/mongobak/3/citys/building.bson
 going into namespace [citys.building]
@@ -66,9 +66,8 @@ going into namespace [citys.building]
 going into namespace [citys.system.indexes]
 1 objects
 
-另外mongodb还提供了mongoexport 和 mongoimport 这两个命令来导出或导入数据，导出的数据是json格式的。也可以实现备份和恢复的功能。
 
-例：
+
+另外mongodb还提供了mongoexport 和 mongoimport 这两个命令来导出或导入数据，导出的数据是json格式的。也可以实现备份和恢复的功能。例：
 mongoexport -d mixi_top_city_prod -c building_45 -q '{ "uid" : "10832545" }' > mongo_10832545.bson
 mongoimport -d mixi_top_city -c building_45 --file mongo_10832545.bson
-mongodb提供了两个命令来备份（mongodump ）和恢复（mongorestore ）数据库。
