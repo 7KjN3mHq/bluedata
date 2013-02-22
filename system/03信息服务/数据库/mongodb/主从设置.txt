@@ -1,0 +1,9 @@
+master:
+vi /etc/mongodb.conf
+master = true
+
+slave:
+vi /etc/mongodb.conf
+slave = true
+source = <master_ip>
+only = <db_name>
