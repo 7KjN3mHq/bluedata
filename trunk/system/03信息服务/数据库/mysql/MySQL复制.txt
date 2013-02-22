@@ -55,6 +55,9 @@ START SLAVE;
 跳过 1032 错误（会造成数据不一致）：
 slave-skip-errors=1032
 
+内存表造成的 1032 错误，可以忽略内存表：
+replicate-wild-ignore-table=dbname.tablename
+
 
 生成新的 binlog 文件：
 1. 执行 mysqladmin refresh
