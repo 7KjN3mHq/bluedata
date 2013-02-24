@@ -1,5 +1,6 @@
 redis:
 https://github.com/bpineau/redis-munin
+ln -s /usr/local/redis/bin/redis-cli /usr/bin/redis-cli
 
 
 uwsgi:

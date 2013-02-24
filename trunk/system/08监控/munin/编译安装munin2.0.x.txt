@@ -3,6 +3,8 @@ http://munin-monitoring.org/
 groupadd munin
 useradd -g munin -d /usr/local/munin -s /bin/false munin
 
+apt-get install libnet-snmp-perl
+
 tar zxvf munin-2.0.10.tar.gz
 cd munin-2.0.10
 
