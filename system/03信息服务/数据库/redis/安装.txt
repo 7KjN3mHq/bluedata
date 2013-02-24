@@ -1,7 +1,6 @@
-﻿groupadd redis
-useradd -m -g redis -d /usr/local/redis -s /bin/bash redis
-cd /usr/local/redis
-mkdir bin etc
+﻿mkdir -p /usr/local/redis/{bin,etc}
+groupadd redis
+useradd -g redis -d /usr/local/nagios -s /bin/bash redis
 cd
 wget http://redis.googlecode.com/files/redis-2.6.10.tar.gz
 tar zxvf redis-2.6.10.tar.gz
@@ -94,7 +93,7 @@ vm.overcommit_memory = 1' >> /etc/sysctl.conf
 mv /usr/local/redis/etc/redis.conf /usr/local/redis/etc/redis.conf.default
 vi /usr/local/redis/etc/redis.conf
 daemonize yes
-pidfile /var/run/redis/redis.pid
+pidfile /var/run/redis.pid
 port 6379
 timeout 300
 loglevel notice
@@ -108,20 +107,16 @@ dbfilename database.rdb
 dir /data/redis
 appendonly no
 appendfsync everysec
-glueoutputbuf yes
-hash-max-zipmap-entries 64
-hash-max-zipmap-value 512
 activerehashing yes
 
 mkdir /data/redis
 chown -R redis:redis /data/redis /usr/local/redis
 
-mkdir /var/run/redis
 mkdir /var/log/redis
-chown redis /var/run/redis /var/log/redis
+chown redis /var/log/redis
 
 sysctl vm.overcommit_memory=1
 service redis-server start
 
 主从复制设置只需在 slave 上加上：
-slaveof 192.168.1.1 6379
+slaveof 10.36.88.148 6379
