@@ -44,7 +44,7 @@ make install
 再安装 NRPE:
 tar zxvf nrpe-2.13.tar.gz
 cd nrpe-2.13
-./configure
+./configure --enable-ssl --with-ssl-lib
 make all
 make install-plugin
 make install-daemon
@@ -54,7 +54,7 @@ chown -R nagios:nagios /usr/local/nagios
 
 配置 NRPE:
 vi /usr/local/nagios/etc/nrpe.cfg
-allowed_hosts=127.0.0.1,$Nagios监控平台的地址或域名
+allowed_hosts=127.0.0.1,<Nagios监控平台的地址或域名>
 
 启动 NRPE 守护进程：
 /usr/local/nagios/bin/nrpe -c /usr/local/nagios/etc/nrpe.cfg -d
@@ -68,6 +68,8 @@ allowed_hosts=127.0.0.1,$Nagios监控平台的地址或域名
 都应该可以输出 NRPE 的版本： NRPE v2.13
 
 NRPE 监听在 5666 端口，需要在防火墙规则中开放这个端口。
+如果设置了 /etc/hosts.allow ，需要添加：
+nrpe: <Nagios监控平台的地址或域名>
 
 在被监控端的 nrpe.cfg 文件中，可以看到这样的配置：
 command[check_load]=/usr/local/nagios/libexec/check_load -w 15,10,5 -c 30,25,20
