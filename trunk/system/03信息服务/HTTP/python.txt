@@ -1,4 +1,5 @@
 apt-get install python-pip build-essential python-dev libmysqlclient-dev
+easy_install -U distribute
 pip install django==1.2.5 PIL mysql-python pymongo uwsgi virtualenv
 
 

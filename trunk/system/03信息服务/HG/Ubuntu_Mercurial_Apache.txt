@@ -1,0 +1,42 @@
+apt-get install mercurial apache2
+
+mkdir -p /var/hg/{cgi-bin,repos}
+cd /var/hg/cgi-bin
+wget http://www.selenic.com/repo/hg-stable/raw-file/tip/hgwebdir.cgi
+chmod +x hgwebdir.cgi
+vi hgweb.config
+[collections]
+/var/hg/repos = /var/hg/repos
+
+vi /etc/apache2/sites-available/hg
+<VirtualHost *:80>
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+        RewriteEngine on
+        RewriteRule (.*) /var/hg/cgi-bin/hgwebdir.cgi/$1
+        <Directory "/var/hg/cgi-bin/">
+                Order allow,deny
+                Allow from all
+                AllowOverride All
+                Options ExecCGI
+                AddHandler cgi-script .cgi
+                AuthName "Mercurial repositories"
+                AuthType Basic
+                AuthUserFile /var/hg/hgusers
+                Require valid-user
+        </Directory>
+</VirtualHost>
+
+a2dissite 000-default
+a2ensite hg
+a2enmod rewrite
+service apache2 reload
+
+
+如果要 allow push ，需要先确定 apache 有 /var/hg/repos 的写入权限：
+chown -R www-data:www-data /var/hg/repos
+在 allow push 的 repository 的 .hg 目录下编辑 hgrc 文件：
+[web]
+allow_push = user1,user2
+push_ssl = false
