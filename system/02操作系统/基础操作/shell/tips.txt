@@ -13,6 +13,7 @@ tail -f /var/log/nginx/access.log | awk '{if($11 > 0.100) print $_'}
 替换文件中的指定字串：
 sed -i 's/192.168.0.10 00:1A:4B:A9:D1:5E/192.168.0.10 00:1A:4B:CF:23:A0/' /etc/ethers
 sed -i 's/etch/testing/g' /etc/apt/sources.list
+遇到换行可用 \n 表示。
 
 cut -d '分隔字符' -f fields
 参数：

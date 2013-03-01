@@ -19,6 +19,8 @@ make install
 
 mysqlsla -lt slow /var/log/mysqld/slow_queries.log
 
+mysqlsla -lt slow --top 10 -sf "+select" --sort t_sum /var/log/mysql/slow.log
+
 格式说明如下:
 总查询次数 (queries total), 去重后的sql数量 (unique)
 输出报表的内容排序(sorted by)

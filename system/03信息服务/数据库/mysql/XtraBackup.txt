@@ -9,6 +9,7 @@ innobackupex-1.5.1 --defaults-file=/etc/mysql/my.cnf --user=root --databases=wal
 tar -izxvf wallpaper.tar.gz
 
 注：不能不压缩的单独备份某个库。
+解压缩时必须加上 -i 参数。
 
 在线制作 复制：
 master 上：
