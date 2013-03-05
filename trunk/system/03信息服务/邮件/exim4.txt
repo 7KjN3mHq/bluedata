@@ -1,0 +1,13 @@
+apt-get install exim4
+dpkg-reconfigure exim4-config
+
+选择第一项，使用 SMTP 直接发信
+系统邮件名称，随意；（这里我写了admin@ip)
+(4)要监听的入站 SMTP 连接的 IP 地址：
+127.0.0.1 (这样，就只有本机可以利用exim4)
+*         (大家都可以用)
+192.168.0.0/24，仅该IP范围可以用
+
+(5)其它可接受的邮件目的地址：(empty)
+(6)为这些主机进行邮件转发：(empty)
+(7)保持最小 DNS 查询量吗(按需拔号 Dial-on-Demand)？ 否
