@@ -48,7 +48,26 @@ ln -s /usr/local/munin/lib/plugins/mongo_ops mongo_ops
 
 mysql:
 https://github.com/kjellm/munin-mysql
-apt-get install libdbd-mysql-perl
+apt-get install libdbi-perl libdbd-mysql-perl
+
+GRANT PROCESS, SUPER ON *.* TO '<USER>'@'localhost' IDENTIFIED BY '<PASSWORD>';
+FLUSH PRIVILEGES;
+
+wget https://github.com/kjellm/munin-mysql/archive/master.zip
+unzip master
+cd munin-mysql-master
+vi Makefile
+CONFIG_DIR:=/usr/local/munin/etc
+PLUGIN_DIR:=/usr/local/munin/lib/plugins
+
+vi mysql.conf
+env.mysqlconnection DBI:mysql:
+env.mysqluser <USER>
+env.mysqlpassword <PASSWORD>
+
+make install
+
+/usr/local/munin/sbin/munin-run mysql --debug
 
 
 php-fpm:
@@ -67,3 +86,9 @@ ln -s /usr/local/munin/lib/plugins/phpfpm_connections phpfpm_connections
 ln -s /usr/local/munin/lib/plugins/phpfpm_memory phpfpm_memory
 ln -s /usr/local/munin/lib/plugins/phpfpm_status phpfpm_status
 ln -s /usr/local/munin/lib/plugins/phpfpm_processes phpfpm_processes
+
+
+exim:
+vi /usr/local/munin/etc/plugin-conf.d/exim.conf
+[exim_mailqueue]
+group adm, (Debian-exim)
