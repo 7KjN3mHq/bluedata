@@ -89,6 +89,13 @@ ln -s /usr/local/munin/lib/plugins/phpfpm_processes phpfpm_processes
 
 
 exim:
+exim: permission denied
 vi /usr/local/munin/etc/plugin-conf.d/exim.conf
 [exim_mailqueue]
 group adm, (Debian-exim)
+
+
+yum:
+Can't open /var/lib/munin/plugin-state/yum.state for reading: No such file or directory
+touch /var/lib/munin/plugin-state/yum.state
+chown munin:munin /var/lib/munin/plugin-state/yum.state

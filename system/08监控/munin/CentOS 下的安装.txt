@@ -1,0 +1,19 @@
+yum 安装的 1.2.5 版本有问题。可以下载 rpm 包安装，这个 1.4.5 rpm 包的 nginx_request 插件有问题，可以用 debian 上的替换。
+
+wget ftp://195.220.108.108/linux/sourceforge/m/mu/munin/munin%20stable/1.4.5/RPMS/el5/munin-1.4.5-2.el5.noarch.rpm
+wget ftp://rpmfind.net/linux/sourceforge/m/mu/munin/munin%20stable/1.4.5/RPMS/el5/munin-node-1.4.5-2.el5.noarch.rpm
+wget ftp://rpmfind.net/linux/sourceforge/m/mu/munin/munin%20stable/1.4.5/RPMS/el5/munin-common-1.4.5-2.el5.noarch.rpm
+rpm -Uvh munin-1.4.5-2.el5.noarch.rpm munin-common-1.4.5-2.el5.noarch.rpm munin-node-1.4.5-2.el5.noarch.rpm
+/etc/init.d/munin-node start
+
+vi /etc/httpd/conf.d/munin.conf
+<Directory /var/www/html/munin>
+AuthType Basic
+AuthUserFile /etc/munin/munin-htpasswd
+AuthName "munin"
+require valid-user
+</Directory>
+
+htpasswd -c /etc/munin/munin-htpasswd admin
+
+/etc/init.d/httpd reload
