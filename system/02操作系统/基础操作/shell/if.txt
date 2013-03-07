@@ -1,0 +1,97 @@
+if/else是通过判断选择执行或者执行部分代码，可以根据变量、文件名、命令是否执行成功等很多条件进行判断，他的格式如下：
+if condition 
+then 
+    statements 
+[elif condition 
+    then statements. ..] 
+[else 
+    statements ] 
+fi
+　　和 C程序不一样，bash的判断不是通过boolean，而是通过statement，也就是执行命令后的最终状态（exit status）。所有的Linux命令，无论你是代码是C还是脚本，执行完，都返回一个整数通知他的调用这，这就是exit status，通常0表示OK，其他（1-255）表示错误。这只是通常的情况，例如diff，0表示你no difference，1表示difference，2表示错误。if判断statements的最后一个的exit status，通常我们只放一个statement，如果为0，表示true，否则表示false。
+　　执行下一条命令会冲掉原来exit status。可以使用$?来查看上一命令执行的结果。例如我们希望用一个新的cd命令来替代原来在linux kernel中已将编译的cd命令，由于function是优先于built-in命令，所以调用时，将调用我们的function。下面有一个例子，function pushd，在stack中键入cd的dirname路径名，并执行跳到该路径下。
+cd ( ) 
+{ 
+    #由于我们已经定义了具有更高优先级别的function，如果希望调用原来built-in的命令，需要再前面加上builtin。 
+    builtin cd "$@" 
+    #$?是上一command的返回值，即builtin cd "$@"的值，并记录在result里面。 
+    result=$? 
+    echo "$OLDPWD --> $PWD" 
+    #返回result的值。我们需要注意shell中的返回和在其他程序，例如C语言中的返回是不一样的，只代表最后的exit statue，而不是所谓的返回值，虽然也用到了return。如何没有最后的reture，例如后面的push_func，exit status就是最后执行的command的exit status 
+    return   $result 
+}
+push_func( ) 
+{ 
+    dirname=$1 
+    #如果dirname为null，退出funcuntion，如cd dirname成功，push the directory ，否则显示still in $PWD，cd使用function的cd函数，其优先级别高于已在内核编译了的cd 
+    if cd ${dirname:?"missing directory name."}   
+    then 
+        mystack="$dirname ${mystack:-$OLDPWD }"         
+        echo $mystack 
+    else 
+        echo still in $PWD.         
+    fi 
+}
+push_func $1
+条件结合
+　　和C语言一样，可以进行条件结合，使用&&，||，以及！三种方式，表示“和”，“或”，与”非“，格式如下：if statement1 && statement2， if statement1 || statement2 ，if ！ statement1 。
+　　exit status不是判断的唯一值，可以使用[...]和[[...]]。
+字符串比较
+　　字符串比较是放置在[...]中，有以下的几种：
+str1 = str2，字符串1匹配字符串2
+str1 != str2，字符串1不匹配字符串2
+str1 > str2，字符串1大于字符串2
+str1 < str2，字符串1小于字符串2
+-n str，字符串不为null，长度大于零
+-z str，字符串为null，长度为零
+　　需要注意<和>符号和重定向符号相似，为了避免歧义和错误，使用if [ $a /> $b ] 的方式 。仍然上面的例子，我们增加pop_func来操作stack:
+    pop_func()
+    {
+        mystack=${mystack#* }
+        #下面请至于[ ... ]，即[后面有一个空格，]前面有一空格，另外$mystack用双引号，表示这代表的是一个字符串。注意到then不放在下一行，与if放在用一行，用;来隔开。 
+        if [ -n "$mystack" ]; then
+            cd ${mystack%% *}
+            echo "$PWD", stack is [$mystack]
+        else
+            echo "stack empty, still in $PWD."
+        fi
+    }
+　　例如，我们要求命令带有参数，除了使用{1?"<message"}以外，下面给出更可读的方式：
+if [ -z "$1" ]; then
+    echo 'usage: c filename [-N]'
+    exit 1
+fi
+　　在这里exit表示结束，退出，执行的结果为失败，非零。
+文件属性比较
+　　文件属性比较是另一个常用的条件判断类型。
+-a   file ：file 存在
+-d file ：file存在并是一个目录
+-e file ：file 存在，同- a
+-f file ：file 存在并且是一个常规的文件（不是目录或者其他特殊类型文件）
+-r file ：有读的权限
+-s file ：文件存在且不为空
+-w file ：有写的权限
+-x file ：有执行的权限，或者对于目录有search的权限
+-N file ：在上次读取后，文件有改动
+-O file ：own所属的文件
+-G file ：group所属的文件
+file1 -nt file2 ：file1 比 file2 更新，以最后更新时间为准
+file1 -ot file2 ：file1 比 file2 更旧 ，以最后更新时间为准
+　　这些在[ ... ]中的条件判断是可以多个结合起来，例如if [ condition ] && [ condition ]; then，当然也可以if command && [ condition ]; then，不在类推。尤其我们可以进行复制的条件判断。另外还可以使用-a 和-o ，等同于C语言中的&和|的逻辑计算复符号，他们和&&即||相似。当他们用在condition里面。
+　　在上面push_func的例子中，除了判断是否参数之外，增加判断是否是目录名，如下：
+        if [ -n "$dirname" ] &&[ -d "$dirname" ] 
+        then
+            cd $dirname
+            mystack="$dirname ${mystack:-$OLDPWD }"        
+            echo $mystack
+        else
+            echo still in $PWD.        
+        fi
+　　我们在增加一个判断，当时目录名的时候，在检查是否可以进行查看或操作。使用if [ -n "$dirname" ] &&[ -d "$dirname" -a -x "$dirname" ]，但是这种写法很难阅读，我们需要将两个前后判断括起来，( -d "$dirname" ) -a ( -x "$dirname" )。但是（是个特殊符合，需使用/(的方式，即为：if [ -n "$dirname" ] &&[ /( -d "$dirname" /) -a /( -x "$dirname" /) ] 。
+整数比较
+　　>或者<或者=是用于字符串的比较，如果用于整数比较，使用：
+-lt，小于
+-le，小于等于
+-eq，等于
+-ge，大于等于
+-gt，大于
+-ne，不等于

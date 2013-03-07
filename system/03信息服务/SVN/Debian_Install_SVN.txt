@@ -38,10 +38,10 @@ RANDFILE=/dev/random openssl req $@ -new -x509 -days 365 -nodes \
 Country Name (2 letter code) [AU]:CN
 State or Province Name (full name) [Some-State]:Sichuan
 Locality Name (eg, city) []:Chengdu
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:JiuZheng
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:Test
 Organizational Unit Name (eg, section) []:Technical Section
-Common Name (eg, YOUR name) []:www.9z.cn
-Email Address []:bluedata@jc001.cn
+Common Name (eg, YOUR name) []:svn.test.com
+Email Address []:admin@test.com
 
 注意： Common Name 一定要和虚拟主机的 ServerName 相同。
 
@@ -66,9 +66,8 @@ NameVirtualHost *:443
 <VirtualHost *:443>
     SSLEngine On
     SSLCertificateFile /etc/apache2/ssl/svn.pem
-    ServerAdmin bluedata@jc001.cn
-    ServerName www.9z.cn
-    ServerAlias 9z.cn
+    ServerAdmin admin@test.com
+    ServerName svn.test.com
     <Location /svn/test>
         DAV svn
         SVNPath /home/svn/test
@@ -84,7 +83,7 @@ NameVirtualHost *:443
     CustomLog /var/log/apache2/access_svn.log combined
 </VirtualHost>
 
-通过 https://www.9z.cn/svn/test/ ，输入用户名和密码就可以访问了。
+通过 https://svn.test.com/svn/test/ ，输入用户名和密码就可以访问了。
 
 可以每个库都添加一个 Location ，也可以用 SVNParentPath 访问其目录的多个库。
 
@@ -99,4 +98,12 @@ tests = r                # test 用户只有读权限
 
 [test:/conf]             # 定义 test 库下 conf 目录的访问权限
 * =                      # 禁止所有用户访问，星号代表所有用户，权限为空代表没有任何权限
-bluedata = rw            # 打开 bluedata 用户的读写权限
+bluedata = rw            # bluedata 用户有读写权限
+
+
+一些常用命令：
+svn co http://svn.stm.com/svn_test/test
+cd test
+svn mkdir tags trunk branches
+svn ci -m ""
+svnlook tree /var/svn/test/test
