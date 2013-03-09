@@ -89,8 +89,8 @@ vi /usr/src/linux2.4.22/include/linux/nfsd/const.h
 所有的2.4的的client都支持最大32K的传输块。系统缺省的块可能会太大或者太小，这主要取决于你的kernel和你的网卡，太大或者太小都有可能导致nfs速度很慢。
 具体的可以使用Bonnie，Bonnie++，iozone等benchmark来测试不同risize和wsize下nfs的速度。当然，也可以使用dd来测试。 
 
-＃time dd if=/dev/zero of=/testfs/testfile bs=8k count=1024　　测试nfs写 
-＃time dd if=/testfs/testfile of=/dev/null bs=8k　　　　　　　 测试nfs读 
+time dd if=/dev/zero of=/testfs/testfile bs=8k count=1024　　测试nfs写 
+time dd if=/testfs/testfile of=/dev/null bs=8k　　　　　　　 测试nfs读 
 
 测试时文件的大小至少是系统RAM的两倍，每次测试都使用umount 和mount对/testfs进行挂载，通过比较不同的块大小，得到优化的块大小。
 
@@ -98,8 +98,8 @@ vi /usr/src/linux2.4.22/include/linux/nfsd/const.h
 2.网络传输包的大小
 网络在包传输过程，对包要进行分组，过大或者过小都不能很好的利用网络的带宽，所以对网络要进行测试和调优。可以使用ping -s 2048 -f hostname进行ping，尝试不同的package size，这样可以看到包的丢失情况。同时，可以使用nfsstat -o net 测试nfs使用udp传输时丢包的多少。因为统计不能清零，所以要先运行此命令记住该值，然后可以再次运行统计。如果，经过上面的统计丢包很多。那么可以看看网络传输包的大小。使用下面的命令：
 
-#tracepath node1/端口号 
-#ifconfig eth0
+tracepath node1/端口号 
+ifconfig eth0
 
 比较网卡的mtu和刚刚的pmtu，使用#ifconfig eth0 mtu 16436设置网卡的mtu和测试的一致。 当然如果risize和wsize比mtu的值大，那么的话，server端的包传到client端就要进行重组，这是要消耗client端的cpu资源。此外，包重组可能导致网络的不可信和丢包，任何的丢包都会是的rpc请求重新传输，rpc请求的重传有会导致超时，严重降低nfs的性能。
 可以通过查看
@@ -122,16 +122,16 @@ async：　　异步读写
 
 4.nfsd的个数
 缺省的系统在启动时，有8个nfsd进程 
-#ps -efl|grep nfsd
+ps -efl|grep nfsd
 通过查看/proc/net/rpc/nfsd文件的th行，第一个是nfsd的个数，后十个是线程是用的时间数，第二个到第四个值如果很大，那么就需要增加nfsd的个数。 
 具体如下： 
 
-#vi /etc/init.d/nfs
+vi /etc/init.d/nfs
 
 找到RPCNFSDCOUNT,修改该值，一般和client端数目一致。 
 
-#service nfs restart 
-#mount -a 
+service nfs restart 
+mount -a 
 
 5.nfsd的队列长度 
 对于8个nfsd进程，系统的nfsd队列长度是64k大小，如果是多于8个，就要相应的增加相应的队列大小，具体的在
@@ -143,7 +143,7 @@ async：　　异步读写
 
 队列的长度最好是每一个nfsd有8k的大小。这样，server端就可以对client的请求作排队处理。如果要永久更改此值 
 
-#vi /etc/sysctl.conf
+vi /etc/sysctl.conf
 net.core.rmmem_default=数目
 net.core.wmmem_default=数目 
 net.core.rmmem_max=数目 
