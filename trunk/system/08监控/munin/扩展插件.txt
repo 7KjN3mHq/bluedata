@@ -70,6 +70,32 @@ make install
 /usr/local/munin/sbin/munin-run mysql --debug
 
 
+memcached:
+https://github.com/munin-monitoring/contrib/tree/master/plugins/memcached
+wget https://github.com/munin-monitoring/contrib/archive/master.zip
+unzip master.zip
+mv contrib-master/plugins/memcached/memcached_* /usr/local/munin/lib/plugins/
+apt-get install libcache-memcached-perl
+for i in $(find /usr/local/munin/lib/plugins/memcached*); do ln -s $i /usr/local/munin/etc/plugins/$(basename $i)127_0_0_1_11211; done
+for i in $(find /usr/local/munin/etc/plugins/memcached*); do /usr/local/munin/sbin/munin-run $i; done
+
+https://github.com/mhwest13/Memcached-Munin-Plugin
+wget https://github.com/mhwest13/Memcached-Munin-Plugin/archive/master.zip
+unzip master.zip
+mv Memcached-Munin-Plugin-master/memcached_multi_ /usr/local/munin/lib/plugins/
+cd /usr/local/munin/etc/plugins
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_bytes
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_commands
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_conns
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_evictions
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_items
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_memory
+vi ../../etc/plugin-conf.d/memcached.conf
+[memcached_*]
+env.host 10.36.64.2
+env.port 11411
+
+
 php-fpm:
 apt-get install libwww-perl
 https://github.com/tjstein/php5-fpm-munin-plugins
