@@ -1,0 +1,8 @@
+https://github.com/delano/redis-dump
+
+apt-get install ruby libopenssl-ruby rubygems
+gem install redis-dump
+
+redis-dump -u 127.0.0.1:6379 -d 1 > db1.json
+
+< db1.json redis-load -d 1

@@ -1,1 +1,0 @@
-iptables -I INPUT -i eth0 -s 119.120.94.156 -p tcp --dport 80 -j DROP
