@@ -1,6 +1,8 @@
 apt-get install percona-toolkit
 http://www.percona.com/doc/percona-toolkit/2.1/pt-query-digest.html
 
+pt-query-digest /var/log/mysql/slow.log > slow.txt ; > slow.log
+
 pt-query-digest --processlist h=localhost --print --no-report
 
 可以设置 .pt-query-digest.conf 文件。
