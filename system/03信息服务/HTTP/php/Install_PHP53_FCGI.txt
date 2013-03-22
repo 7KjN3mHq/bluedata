@@ -3,15 +3,15 @@
 
 软件下载：
 PHP5(http://www.php.net/downloads.php):
-wget http://www.php.net/get/php-5.3.21.tar.bz2/from/this/mirror -O php-5.3.21.tar.bz2
+wget http://www.php.net/get/php-5.3.23.tar.bz2/from/this/mirror -O php-5.3.23.tar.bz2
 
 安装依赖的包：
 apt-get install libmysqlclient-dev libgd2-xpm-dev libxml2-dev libcurl4-openssl-dev
 
 
 安装 PHP5.3:
-tar jxvf php-5.3.21.tar.bz2
-cd php-5.3.21
+tar jxvf php-5.3.23.tar.bz2
+cd php-5.3.23
 ./configure \
 --prefix=/usr/local/php \
 --enable-fpm \
@@ -110,18 +110,19 @@ eaccelerator.shm_size="32"
 eaccelerator.cache_dir="/dev/shm"
 eaccelerator.enable="1"
 eaccelerator.optimizer="1"
-eaccelerator.check_mtime="1"
+eaccelerator.check_mtime="0"
 eaccelerator.debug="0"
 eaccelerator.filter=""
 eaccelerator.shm_max="0"
 eaccelerator.shm_ttl="3600"
-eaccelerator.shm_prune_period="0"
+eaccelerator.shm_prune_period="3600"
 eaccelerator.shm_only="1"
 eaccelerator.compress="1"
 eaccelerator.compress_level="9"
 eaccelerator.keys="shm_only"
 eaccelerator.sessions="shm_only"
 eaccelerator.content="shm_only"
+eaccelerator.allowed_admin_path = "/var/www"
 
 要增大 eaccelerator.shm_size 需要修改内核参数共享内存的大小：
 echo -ne "

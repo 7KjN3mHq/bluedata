@@ -1,3 +1,10 @@
+在创建存储过程的时候自定义分隔符
+DELIMITER //
+创建完后在改回去
+DELIMITER ;
+然后调用
+call sp_name();
+
 Debian 6 下 Percona 的 Checking for corrupt, not cleanly closed and upgrade needing tables..
 是 /etc/mysql/debian-start 报出的错误，但不影响使用。
 

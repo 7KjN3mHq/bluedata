@@ -1,0 +1,43 @@
+apt-get update
+apt-get install pptpd
+
+vi /etc/pptpd.conf
+#确保如下选项的配置
+option /etc/ppp/pptpd-option                    #指定PPP选项文件的位置
+debug                                           #启用调试模式
+localip 10.0.28.3                               #VPN服务器的虚拟ip
+remoteip 10.0.28.100-200,10.0.28.245        #分配给VPN客户端的虚拟ip
+
+vi /etc/ppp/pptpd-options
+#确保如下选项的配置
+name pptpd                      #pptpd服务的名称
+refuse-pap                      #拒绝pap身份认证模式
+refuse-chap                     #拒绝chap身份认证模式
+refuse-mschap                   #拒绝mschap身份认证模式
+require-mschap-v2               #允许mschap-v2身份认证模式
+require-mppe-128                #允许mppe 128位加密身份认证模式
+ms-dns 8.8.8.8                  #使用Google DNS
+ms-dns 8.8.4.4                  #使用Google DNS
+proxyarp                        #arp代理
+debug                           #调试模式
+dump                            #服务启动时打印出所有配置信息
+lock                            #锁定TTY设备
+nobsdcomp                       #禁用BSD压缩模式
+logfile /var/log/pptpd.log      #输出日志文件位置
+
+vi /etc/ppp/chap-secrets
+#格式：用户名   服务类型   密码   分配的ip地址
+test    *    1234    *
+#第一个*代表服务可以是PPTPD也可以是L2TPD，第二个*代表随机分配ip
+
+service pptpd restart
+
+sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
+sysctl -p
+
+设置iptables NAT转发
+iptables -t nat -A POSTROUTING -s 10.0.28.0/24 -o eth0 -j MASQUERADE
+iptables -t nat -A POSTROUTING -s 10.0.28.0/24 -o eth0 -j SNAT --to-source 10.0.28.2
+
+设置MTU来确保过大的包不会被丢弃（这个可以不做）
+iptables -I FORWARD -s 10.0.28.0/24 -p tcp --syn -i ppp+ -j TCPMSS --set-mss 1480
