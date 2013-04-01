@@ -72,6 +72,8 @@ syn 队列，默认 1024 。
 Linux 2.6 以上内核的 ip_conntrack 记录了 TCP ESTABLISHED 连接，而超时时间默认为 5 天。较大访问量可能会填满 ip_conntrack 表，造成网络丢包。
 通过
 cat /proc/sys/net/ipv4/ip_conntrack_max
+或者
+cat /proc/sys/net/ipv4/netfilter/ip_conntrack_max
 wc -l /proc/net/ip_conntrack
 确定合适的超时时间。
 如果 Web Server 设置了 keepalive time ，与其设置一致，可以达到监控目的。
