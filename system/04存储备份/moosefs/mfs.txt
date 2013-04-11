@@ -3,14 +3,17 @@ http://www.moosefs.org/download.html
 
 主控服务器 Master Server 安装：
 groupadd mfs
-useradd -g mfs -d /var/lib/mfs -s /sbin/nologin mfs
+useradd -g mfs -d /usr/local/mfs -s /bin/false mfs
 
-tar zxvf mfs-1.6.15.tar.gz
-cd mfs-1.6.15
+apt-get install zlib1g-dev
+
+wget http://pro.hit.gemius.pl/hitredir/id=.WCbG2t.7Ln5k1s3Q9xPg8cPfX.wVMc5kyXfrKcJTDH.c7/url=moosefs.org/tl_files/mfscode/mfs-1.6.27-1.tar.gz
+tar zxvf mfs-1.6.27.tar.gz
+cd mfs-1.6.27
 ./configure \
 --prefix=/usr \
 --sysconfdir=/etc \
---localstatedir=/var/lib \
+--localstatedir=/data \
 --with-default-user=mfs \
 --with-default-group=mfs \
 --disable-mfschunkserver \
@@ -19,38 +22,41 @@ cd mfs-1.6.15
 make
 make install
 
-cd /etc
+cd /etc/mfs
 cp mfsmaster.cfg.dist mfsmaster.cfg
 cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
 cp mfsexports.cfg.dist mfsexports.cfg
+cp mfstopology.cfg.dist mfstopology.cfg
 
 设置访问权限：
 vi mfsexports.cfg
-192.168.0.0/24 / rw,alldirs,maproot=0
+10.0.0.0/8 / rw,alldirs,maproot=0
 
-cd /var/lib/mfs
+cd /data/mfs
 cp metadata.mfs.empty metadata.mfs
 
 修改 /etc/hosts 文件以绑定主机名 mfsmaster 与 ip 地址：
 vi /etc/hosts
-192.168.0.201 mfsmaster
+10.36.64.3 mfsmaster
 
-启动： /usr/sbin/mfsmaster start
+启动：
+chown -R mfs:mfs /data/mfs
+/usr/sbin/mfsmaster start
 
 监控服务： /usr/sbin/mfscgiserv
-http://192.168.0.201:9425
+http://10.36.64.3:9425
 
 
 备份服务器 Backup Server (metalogger) 安装：
 groupadd mfs
-useradd -g mfs -d /var/lib/mfs -s /sbin/nologin mfs
+useradd -g mfs -d /data/mfs -s /bin/false mfs
 
-tar zxvf mfs-1.6.15.tar.gz
-cd mfs-1.6.15
+tar zxvf mfs-1.6.27.tar.gz
+cd mfs-1.6.27
 ./configure \
 --prefix=/usr \
 --sysconfdir=/etc \
---localstatedir=/var/lib \
+--localstatedir=/data \
 --with-default-user=mfs \
 --with-default-group=mfs \
 --disable-mfschunkserver \
@@ -63,7 +69,7 @@ cd /etc
 cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
 
 修改 /etc/hosts 文件，增加下面的行：
-192.168.0.201 mfsmaster
+10.36.64.3 mfsmaster
 
 运行备份服务 mfsmetaloger:
 /usr/sbin/mfsmetalogger start
@@ -71,10 +77,10 @@ cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
 
 存储块服务器 Chunk Servers 安装：
 groupadd mfs
-useradd -g mfs -d /var/lib/mfs -s /sbin/nologin mfs
+useradd -g mfs -d /data/mfs -s /bin/false mfs
 
-tar zxvf mfs-1.6.15.tar.gz
-cd mfs-1.6.15
+tar zxvf mfs-1.6.27.tar.gz
+cd mfs-1.6.27
 ./configure \
 --prefix=/usr \
 --sysconfdir=/etc \
@@ -97,7 +103,7 @@ vi mfshdd.cfg
 chown -R mfs:mfs /data/mfs
 
 vi /etc/hosts
-192.168.0.201 mfsmaster
+10.36.64.3 mfsmaster
 
 启动 Chunk Server:
 /usr/sbin/mfschunkserver start
@@ -124,10 +130,10 @@ yum install pkgconfig fuse-devel
 
 
 groupadd mfs
-useradd -g mfs -d /var/lib/mfs -s /sbin/nologin mfs
+useradd -g mfs -d /data/mfs -s /bin/false mfs
 
-tar zxvf mfs-1.6.15.tar.gz
-cd mfs-1.6.15
+tar zxvf mfs-1.6.27.tar.gz
+cd mfs-1.6.27
 ./configure \
 --prefix=/usr \
 --sysconfdir=/etc \
@@ -141,7 +147,7 @@ make
 make install
 
 vi /etc/hosts
-192.168.0.201 mfsmaster
+10.36.64.3 mfsmaster
 
 挂载：
 mkdir -p /mnt/mfs
@@ -160,7 +166,7 @@ mfssettrashtime 600 /mnt/mfs
 mfsgettrashtime -r /mnt/mfs
 mfssettrashtime -r 600 /mnt/mfs
 
-mfscheckfile /mnt/mfs/mfs-1.6.15.tar.gz
+mfscheckfile /mnt/mfs/mfs-1.6.27.tar.gz
 
 mfsmount -m -w /mnt/mfsmeta -H mfsmaster
 mfsmetarestore -a
