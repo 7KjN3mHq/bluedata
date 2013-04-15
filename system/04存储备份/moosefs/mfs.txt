@@ -1,14 +1,15 @@
 软件下载：
 http://www.moosefs.org/download.html
-
-主控服务器 Master Server 安装：
-groupadd mfs
-useradd -g mfs -d /usr/local/mfs -s /bin/false mfs
+wget http://pro.hit.gemius.pl/hitredir/id=.WCbG2t.7Ln5k1s3Q9xPg8cPfX.wVMc5kyXfrKcJTDH.c7/url=moosefs.org/tl_files/mfscode/mfs-1.6.27-1.tar.gz
 
 apt-get install zlib1g-dev
 
-wget http://pro.hit.gemius.pl/hitredir/id=.WCbG2t.7Ln5k1s3Q9xPg8cPfX.wVMc5kyXfrKcJTDH.c7/url=moosefs.org/tl_files/mfscode/mfs-1.6.27-1.tar.gz
-tar zxvf mfs-1.6.27.tar.gz
+
+主控服务器 Master Server 安装：
+groupadd mfs
+useradd -g mfs -d /data/mfs -s /bin/false mfs
+
+tar zxvf mfs-1.6.27-1.tar.gz
 cd mfs-1.6.27
 ./configure \
 --prefix=/usr \
@@ -43,7 +44,8 @@ vi /etc/hosts
 chown -R mfs:mfs /data/mfs
 /usr/sbin/mfsmaster start
 
-监控服务： /usr/sbin/mfscgiserv
+监控服务：
+/usr/sbin/mfscgiserv
 http://10.36.64.3:9425
 
 
@@ -51,7 +53,7 @@ http://10.36.64.3:9425
 groupadd mfs
 useradd -g mfs -d /data/mfs -s /bin/false mfs
 
-tar zxvf mfs-1.6.27.tar.gz
+tar zxvf mfs-1.6.27-1.tar.gz
 cd mfs-1.6.27
 ./configure \
 --prefix=/usr \
@@ -65,7 +67,7 @@ cd mfs-1.6.27
 make
 make install
 
-cd /etc
+cd /etc/mfs
 cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
 
 修改 /etc/hosts 文件，增加下面的行：
@@ -77,30 +79,28 @@ cp mfsmetalogger.cfg.dist mfsmetalogger.cfg
 
 存储块服务器 Chunk Servers 安装：
 groupadd mfs
-useradd -g mfs -d /data/mfs -s /bin/false mfs
+useradd -g mfs -d /mfs -s /bin/false mfs
 
-tar zxvf mfs-1.6.27.tar.gz
+tar zxvf mfs-1.6.27-1.tar.gz
 cd mfs-1.6.27
 ./configure \
 --prefix=/usr \
 --sysconfdir=/etc \
---localstatedir=/var/lib \
+--localstatedir=/ \
 --with-default-user=mfs \
 --with-default-group=mfs \
 --disable-mfsmaster \
---enable-mfsmount
+--disable-mfsmount
 
 make
 make install
 
-cd /etc
+cd /etc/mfs
 cp mfschunkserver.cfg.dist mfschunkserver.cfg
 cp mfshdd.cfg.dist mfshdd.cfg
 
 vi mfshdd.cfg
-/data/mfs
-
-chown -R mfs:mfs /data/mfs
+/mfs
 
 vi /etc/hosts
 10.36.64.3 mfsmaster
@@ -130,14 +130,14 @@ yum install pkgconfig fuse-devel
 
 
 groupadd mfs
-useradd -g mfs -d /data/mfs -s /bin/false mfs
+useradd -g mfs -d /mfs -s /bin/false mfs
 
-tar zxvf mfs-1.6.27.tar.gz
+tar zxvf mfs-1.6.27-1.tar.gz
 cd mfs-1.6.27
 ./configure \
 --prefix=/usr \
 --sysconfdir=/etc \
---localstatedir=/var/lib \
+--localstatedir=/ \
 --with-default-user=mfs \
 --with-default-group=mfs \
 --disable-mfsmaster \
@@ -150,24 +150,28 @@ vi /etc/hosts
 10.36.64.3 mfsmaster
 
 挂载：
-mkdir -p /mnt/mfs
+mkdir -p /mnt/mfs-10.36.64.3
 modprobe fuse
-/usr/bin/mfsmount /mnt/mfs -H mfsmaster
+/usr/bin/mfsmount /mnt/mfs-10.36.64.3 -H mfsmaster
 
 
 MooseFS 基础用法：
-mfsgetgoal /mnt/mfs
-mfssetgoal 2 /mnt/mfs
-mfsgetgoal -r /mnt/mfs
-mfssetgoal -r 2 /mnt/mfs
+mfsgetgoal /mnt/mfs-10.36.64.3
+mfssetgoal 2 /mnt/mfs-10.36.64.3
+mfsgetgoal -r /mnt/mfs-10.36.64.3
+mfssetgoal -r 2 /mnt/mfs-10.36.64.3
 
-mfsgettrashtime /mnt/mfs
-mfssettrashtime 600 /mnt/mfs
-mfsgettrashtime -r /mnt/mfs
-mfssettrashtime -r 600 /mnt/mfs
+mfsgettrashtime /mnt/mfs-10.36.64.3
+mfssettrashtime 600 /mnt/mfs-10.36.64.3
+mfsgettrashtime -r /mnt/mfs-10.36.64.3
+mfssettrashtime -r 600 /mnt/mfs-10.36.64.3
 
-mfscheckfile /mnt/mfs/mfs-1.6.27.tar.gz
+mfscheckfile /mnt/mfs-10.36.64.3/mfs-1.6.27-1.tar.gz
 
-mfsmount -m -w /mnt/mfsmeta -H mfsmaster
+mfsmount -m /mnt/mfsmeta-10.36.64.3 -H mfsmaster
+
+恢复文件只需把 mfsmeta-10.36.64.3/trash 下的文件移动到 undel 目录即可。
+
+
 mfsmetarestore -a
 mfschunkserver -s
