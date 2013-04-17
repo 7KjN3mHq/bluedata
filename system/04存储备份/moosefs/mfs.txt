@@ -162,9 +162,9 @@ mfsgetgoal -r /mnt/mfs-10.36.64.3
 mfssetgoal -r 2 /mnt/mfs-10.36.64.3
 
 mfsgettrashtime /mnt/mfs-10.36.64.3
-mfssettrashtime 600 /mnt/mfs-10.36.64.3
+mfssettrashtime 604800 /mnt/mfs-10.36.64.3
 mfsgettrashtime -r /mnt/mfs-10.36.64.3
-mfssettrashtime -r 600 /mnt/mfs-10.36.64.3
+mfssettrashtime -r 604800 /mnt/mfs-10.36.64.3
 
 mfscheckfile /mnt/mfs-10.36.64.3/mfs-1.6.27-1.tar.gz
 
