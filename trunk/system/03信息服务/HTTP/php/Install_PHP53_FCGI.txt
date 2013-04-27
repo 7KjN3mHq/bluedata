@@ -204,7 +204,7 @@ php_admin_value[memory_limit] = 64M
 
 创建相关目录
 mkdir -p /var/log/php/xhprof
-chown www-data:www-data /var/log/php/xhprof
+chown www-data:www-data /var/log/php
 
 ulimit -SHn 65536
 /etc/init.d/php-fpm start
@@ -231,7 +231,7 @@ vi /etc/logrotate.d/php-fpm
         compress
         delaycompress
         notifempty
-        create 640 develop develop
+        create 640 www-data www-data
         sharedscripts
         postrotate
                 /etc/init.d/php-fpm reload
