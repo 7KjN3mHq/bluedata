@@ -1,3 +1,6 @@
+清除表数据
+TRUNCATE TABLE <table_name>;
+
 在创建存储过程的时候自定义分隔符
 DELIMITER //
 创建完后在改回去
@@ -46,6 +49,9 @@ binlog 清理：
 FLUSH LOGS;
 PURGE BINARY LOGS TO 'mysql-bin.010';
 PURGE BINARY LOGS BEFORE '2008-04-02 22:46:26';
+
+只保留三天的 binlog
+set global expire_logs_days=3;
 
 批量转表引擎：
 apt-get install libdbi-perl libdbd-mysql-perl

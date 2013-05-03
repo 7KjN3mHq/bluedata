@@ -87,6 +87,8 @@ alias MongoDB
 
 redis:
 https://github.com/shift/nagios-check-redis
+apt-get install ruby libopenssl-ruby rubygems
+gem install redis
 wget https://github.com/shift/nagios-check-redis/archive/master.zip
 unzip master.zip
 mv nagios-check-redis-master/check_redis /usr/local/nagios/libexec/

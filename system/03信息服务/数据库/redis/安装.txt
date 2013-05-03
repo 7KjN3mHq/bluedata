@@ -1,17 +1,17 @@
 ﻿mkdir -p /usr/local/redis/{bin,etc}
 groupadd redis
-useradd -g redis -d /usr/local/nagios -s /bin/bash redis
+useradd -g redis -d /usr/local/redis -s /bin/bash redis
 cd
-wget http://redis.googlecode.com/files/redis-2.6.10.tar.gz
-tar zxvf redis-2.6.10.tar.gz
-cd redis-2.6.10
+wget http://redis.googlecode.com/files/redis-2.6.13.tar.gz
+tar zxvf redis-2.6.13.tar.gz
+cd redis-2.6.13
 make
 cp redis.conf /usr/local/redis/etc/
 cd src
 cp redis-benchmark redis-check-aof redis-check-dump redis-cli redis-server /usr/local/redis/bin/
 
 vi /etc/init.d/redis-server
-#! /bin/sh
+#!/bin/sh
 ### BEGIN INIT INFO
 # Provides:		redis-server
 # Required-Start:	$syslog $remote_fs
@@ -109,7 +109,7 @@ appendonly no
 appendfsync everysec
 activerehashing yes
 
-mkdir /data/redis
+mkdir -p /data/redis
 chown -R redis:redis /data/redis /usr/local/redis
 
 mkdir /var/log/redis

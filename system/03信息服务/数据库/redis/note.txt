@@ -11,3 +11,8 @@ vm 模式可以节省约三分之二的内存，但 CPU 负载极高，高并发下不能及时响应请求。
 redis-cli slaveof HOST PORT
 关闭： SLAVEOF NO ONE
 关闭复制 slave 数据不会丢失，重新指定新的 master 原有数据会丢失。
+
+
+清除数据：
+> select 15
+> flushdb
