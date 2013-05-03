@@ -1,6 +1,30 @@
 redis:
 https://github.com/bpineau/redis-munin
 ln -s /usr/local/redis/bin/redis-cli /usr/bin/redis-cli
+wget https://github.com/bpineau/redis-munin/archive/master.zip
+unzip master.zip
+mv redis-munin-master/redis_ /usr/local/munin/lib/plugins/redis_
+cd /usr/local/munin/etc/plugins
+ln -s /usr/local/munin/lib/plugins/redis_ redis
+
+
+memcached:
+https://github.com/mhwest13/Memcached-Munin-Plugin
+wget https://github.com/mhwest13/Memcached-Munin-Plugin/archive/master.zip
+unzip master.zip
+mv Memcached-Munin-Plugin-master/memcached_multi_ /usr/local/munin/lib/plugins/memcached_multi_
+vi /usr/local/munin/etc/plugin-conf.d/memcached.conf
+[memcached_*]
+env.host 127.0.0.1
+env.port 11412
+cd /usr/local/munin/etc/plugins
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_bytes
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_commands
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_conns
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_evictions
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_items
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_memory
+ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_unfetched
 
 
 uwsgi:
