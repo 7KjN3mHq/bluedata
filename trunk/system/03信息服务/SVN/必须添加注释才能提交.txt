@@ -1,0 +1,17 @@
+进入项目目录下的 hooks 目录：
+vi pre-commit
+#!/bin/sh
+REPOS="$1"
+TXN="$2"
+
+SVNLOOK=/usr/bin/svnlook
+
+LOGMSG=`$SVNLOOK log -t "$TXN" "$REPOS" | grep "[a-zA-Z0-9]" | wc -c`
+
+if [ "$LOGMSG" -lt 1 ]
+then
+ echo "Empty log message not allowed. Commit aborted!" >&2
+ exit 1
+fi
+
+chmod +x pre-commit
