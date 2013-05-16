@@ -103,3 +103,16 @@ define service {
   check_command  check_redis!used_memory!6379!password!5!100000!1048576!2097152
   ...
 }
+
+
+supervisorctl:
+http://exchange.nagios.org/directory/Plugins/Software/check_supervisorctl/details
+wget http://dl.dropbox.com/u/9183129/check_supervisorctl.zip
+unzip check_supervisorctl.zip
+chown nagios:nagios check_supervisorctl.sh
+chmod 744 check_supervisorctl.sh
+mv check_supervisorctl.sh /usr/local/nagios/libexec/
+vi /etc/sudoers
+nagios ALL=(ALL) NOPASSWD:/usr/local/nagios/libexec/check_supervisorctl.sh
+vi /usr/local/nagios/etc/nrpe.cfg
+command[check_supervisorctl]=sudo /usr/local/nagios/libexec/check_supervisorctl.sh
