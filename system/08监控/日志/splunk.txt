@@ -5,3 +5,21 @@ tar zxvf splunk-4.2-96430-Linux-x86_64.tgz -C /usr/local/
 /usr/local/splunk/bin/splunk start
 
 http://<URL>:8000
+
+
+splunk storm forwarder ≈‰÷√£∫
+http://docs.splunk.com/Documentation/Storm/latest/User/Setupauniversalforwarderonnix
+
+dpkg -i splunkforwarder-5.0.2-149561-linux-2.6-amd64.deb
+
+/opt/splunkforwarder/bin/splunk start
+
+/opt/splunkforwarder/bin/splunk install app /usr/local/src/stormforwarder_80a806a2bd4111e2abab22000a1ea029.spl -auth admin:changeme
+
+/opt/splunkforwarder/bin/splunk login -auth admin:changeme
+
+/opt/splunkforwarder/bin/splunk edit user admin -password foo
+
+/opt/splunkforwarder/bin/splunk add monitor /var/log/nginx/access_central_services.log
+
+/opt/splunkforwarder/bin/splunk restart
