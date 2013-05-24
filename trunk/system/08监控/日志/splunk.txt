@@ -20,6 +20,8 @@ dpkg -i splunkforwarder-5.0.2-149561-linux-2.6-amd64.deb
 
 /opt/splunkforwarder/bin/splunk edit user admin -password foo
 
-/opt/splunkforwarder/bin/splunk add monitor /var/log/nginx/access_central_services.log
+/opt/splunkforwarder/bin/splunk add monitor /var/log/nginx/central_services_access.log
+
+/opt/splunkforwarder/bin/splunk add monitor /var/log/nginx/central_services_error.log -sourcetype apache_error
 
 /opt/splunkforwarder/bin/splunk restart
