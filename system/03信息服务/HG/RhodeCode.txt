@@ -1,0 +1,31 @@
+http://pythonhosted.org/RhodeCode/setup.html
+
+easy_install rhodecode
+
+mkdir /var/source
+cd /var/source
+
+生成配置文件：
+paster make-config RhodeCode production.ini
+vi production.ini
+port = 80
+
+paster setup-rhodecode production.ini
+
+paster setup-rhodecode production.ini --user=marcink --password=secret --email=marcin@rhodecode.org --repos=/home/marcink/my_repos
+
+paster serve production.ini &
+
+
+下载 tip.tar.gz  必须以 web 方式登录。解决办法：
+vi /usr/local/lib/python2.7/dist-packages/rhodecode/controllers/files.py
+@LoginRequired()
+改为：
+@LoginRequired(api_access=True)
+
+其中 LoginRequired() 这个修饰器在这里：
+https://github.com/marcinkuzminski/rhodecode/blob/a58223dbfbc0b48f0302260d6462fe72026ee242/rhodecode/lib/auth.py#L535
+
+然后通过类似以下地址下载：
+http://hg.test.com/test_project/archive/tip.tar.gz?api_key=6cdb6eb59770a282f1434aec39ddc6b507c69854
+其中 api_key 可以在各自的 account 页面里看到。
