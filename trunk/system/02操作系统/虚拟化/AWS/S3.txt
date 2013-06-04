@@ -28,7 +28,7 @@ http://code.google.com/p/s3fs/
 
 apt-get install build-essential libfuse-dev fuse-utils libcurl4-openssl-dev libxml2-dev mime-support
 
-需要 fuse = 2.8.4 ，其它版本在传输大量文件时容易断开，如果 fuse 版本不对：
+需要 fuse >= 2.8.4 ，其它版本在传输大量文件时容易断开，如果 fuse 版本不对：
 dpkg -P libfuse2 libfuse-dev fuse-utils
 http://fuse.sourceforge.net/
 tar zxvf fuse-2.8.4.tar.gz
@@ -37,9 +37,9 @@ cd fuse-2.8.4
 make
 make install
 
-wget http://s3fs.googlecode.com/files/s3fs-1.58.tar.gz
-tar zxvf s3fs-1.58.tar.gz
-cd s3fs-1.58
+wget https://s3fs.googlecode.com/files/s3fs-1.70.tar.gz
+tar zxvf s3fs-1.70.tar.gz
+cd s3fs-1.70
 ./configure --prefix=/usr
 make
 make install
