@@ -54,6 +54,9 @@ s3fs $AWS_S3_BUCKET /mnt/s3
 先查找 ~/.passwd-s3fs ，再查找 /etc/passwd-s3fs
 ~/.passwd-s3fs 权限为 600
 
+指定 passwd 文件：
+s3fs $AWS_S3_BUCKET /mnt/user1 -o passwd_file=/root/user1
+
 加入 /etc/fstab:
 指定使用用户（试验后不行）：
 s3fs#<bucket> /<mountpoint> fuse uid=500,gid=500,url=https://s3.amazonaws.com 0 0
