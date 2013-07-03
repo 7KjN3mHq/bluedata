@@ -1,3 +1,6 @@
+unsigned 引起的错误 ERROR 1690 (22003): BIGINT UNSIGNED value is out of range in ...
+可以设置 sql_mode="NO_UNSIGNED_SUBTRACTION"
+
 清除表数据
 TRUNCATE TABLE <table_name>;
 
