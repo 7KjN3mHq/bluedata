@@ -1,0 +1,34 @@
+#!/bin/bash
+#description : start realserver
+case "$1" in
+start)
+echo "Start LVS of Real Server"
+modprobe ipip
+ifconfig tunl0 <First_VIP> netmask 255.255.255.255 up
+exec < /usr/local/etc/vip.txt
+i=0
+while read vip
+do
+ifconfig tunl0:$i $vip netmask 255.255.255.255 up
+i=`expr $i + 1`
+done
+exec < /dev/tty
+echo "1" > /proc/sys/net/ipv4/conf/tunl0/arp_ignore
+echo "2" > /proc/sys/net/ipv4/conf/tunl0/arp_announce
+echo "1" > /proc/sys/net/ipv4/conf/all/arp_ignore
+echo "2" > /proc/sys/net/ipv4/conf/all/arp_announce
+echo "0" > /proc/sys/net/ipv4/conf/all/rp_filter
+echo "0" > /proc/sys/net/ipv4/conf/tunl0/rp_filter
+;;
+stop)
+echo "Stop LVS of Real Server"
+ifconfig tunl0 down
+modprobe -r ipip
+echo "0" > /proc/sys/net/ipv4/conf/all/arp_ignore
+echo "0" > /proc/sys/net/ipv4/conf/all/arp_announce
+echo "1" > /proc/sys/net/ipv4/conf/all/rp_filter
+;;
+*)
+echo "Usage: $0 {start|stop}"
+exit 1
+esac
