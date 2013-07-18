@@ -2,9 +2,9 @@
 groupadd redis
 useradd -g redis -d /usr/local/redis -s /bin/bash redis
 cd
-wget http://redis.googlecode.com/files/redis-2.6.13.tar.gz
-tar zxvf redis-2.6.13.tar.gz
-cd redis-2.6.13
+wget http://redis.googlecode.com/files/redis-2.6.14.tar.gz
+tar zxvf redis-2.6.14.tar.gz
+cd redis-2.6.14
 make
 cp redis.conf /usr/local/redis/etc/
 cd src
