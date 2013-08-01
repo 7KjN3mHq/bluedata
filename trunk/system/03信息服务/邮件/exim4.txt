@@ -11,3 +11,7 @@ dpkg-reconfigure exim4-config
 (5)其它可接受的邮件目的地址：(empty)
 (6)为这些主机进行邮件转发：(empty)
 (7)保持最小 DNS 查询量吗(按需拔号 Dial-on-Demand)？ 否
+
+
+清除邮件队列：
+exim -bp | exiqgrep -i | xargs exim -Mrm
