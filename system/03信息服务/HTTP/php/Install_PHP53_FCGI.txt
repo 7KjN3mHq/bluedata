@@ -25,7 +25,9 @@ cd php-5.3.23
 --with-png-dir \
 --with-freetype-dir \
 --with-zlib \
---with-mysql
+--with-mysql=mysqlnd \
+--with-mysqli=mysqlnd \
+--with-pdo-mysql=mysqlnd
 
 make
 make install
