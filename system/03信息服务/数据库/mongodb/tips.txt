@@ -1,0 +1,6 @@
+http://docs.mongodb.org/manual/administration/production-notes/#production-numa
+使用 NUMA 架构的多核心 CPU 运行 MongoDB 要这样启动：
+echo 0 > /proc/sys/vm/zone_reclaim_mode
+numactl -interleave=all mongod --config /etc/mongodb.conf
+Ubuntu 可以加到 /etc/init/mongodb.conf 文件中。
+没安装 numactl 需要先安装： apt-get install numactl
