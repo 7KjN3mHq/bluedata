@@ -3,28 +3,30 @@ apt-get install subversion subversion-tools apache2 libapache2-svn openssl
 
 Subversion repository 基本配置
 创建 svn repository:
-mkdir /home/svn
-svnadmin create --fs-type fsfs /home/svn/test
+mkdir /svn
+svnadmin create --fs-type fsfs /svn/test
 
 设置以 Apache 用户的权限访问：
-chown -R www-data:www-data/home/svn/*
-chmod -R 770 /home/svn/*
+chown -R www-data:www-data /svn/*
+chmod -R 770 /svn/*
 
 或者直接以 www-data 用户来创建：
-su www-data -c "svnadmin create /home/svn/test"
+su www-data -c "svnadmin create /svn/test"
 
 在服务器端可以通过 file:/// 方式进行操作了：
-su www-data -c "svn import /home/software/nginx file:///home/svn/test"
+su www-data -c "svn import /tmp/nginx file:///svn/test"
 
 显示库的内容：
-svn list file:///home/svn/test
+svn list file:///svn/test
 
 在服务器端可以使用 svnlook 来检查库的结构：
-svnlook tree /home/svn/test
+svnlook tree /svn/test
 
 Subversion 的基本配置就完成了。
 接下来是与 Apache2 + mod_ssl 结合通过 WebDAV 访问 Subversion 库。
-安装完 apache2 后， mod_dav 、 mod_dav_svn 和 mod_authz_svn 就已经加载了，而 mod_ssl 需要手动加载：
+安装完 apache2 后， mod_dav 、 mod_dav_svn 和 mod_authz_svn 就已经加载了，
+a2enmod authz_svn
+而 mod_ssl 需要手动加载：
 a2enmod ssl
 
 创建证书：
@@ -70,8 +72,8 @@ NameVirtualHost *:443
     ServerName svn.test.com
     <Location /svn/test>
         DAV svn
-        SVNPath /home/svn/test
-        #SVNParentPath /home/svn
+        SVNPath /svn/test
+        #SVNParentPath /svn
         AuthType Basic
         AuthName "Subversion repository"
         AuthUserFile /etc/apache2/dav_svn.passwd
@@ -102,8 +104,8 @@ bluedata = rw            # bluedata 用户有读写权限
 
 
 一些常用命令：
-svn co http://svn.stm.com/svn_test/test
+svn co http://svn.test.com/svn/test
 cd test
 svn mkdir tags trunk branches
 svn ci -m ""
-svnlook tree /var/svn/test/test
+svnlook tree /svn/test/test

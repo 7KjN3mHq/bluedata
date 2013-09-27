@@ -1,0 +1,56 @@
+安装 Ruby
+
+apt-get install ruby
+
+wget http://pkgs.fedoraproject.org/repo/pkgs/rubygems/rubygems-1.3.5.tgz/6e317335898e73beab15623cdd5f8cff/rubygems-1.3.5.tgz
+tar zxvf rubygems-1.3.5.tgz
+cd rubygems-1.3.5
+ruby setup.rb
+ln -s /usr/bin/gem1.8 /usr/bin/gem
+
+gem install -v=2.3.5 rails
+gem install -v=2.1.2 builder
+gem install mysql
+gem uninstall i18n
+
+
+创建数据库和用户：
+CREATE DATABASE redmine CHARACTER SET utf8 COLLATE utf8_general_ci;
+GRANT ALL ON *.* TO 'redmine'@'localhost' IDENTIFIED BY 'redmine';
+
+
+安装 Redmine
+下载 1.3.0 版本
+mkdir /data
+tar zxvf redmine-1.3.0.tar.gz
+mv redmine-1.3.0 /data/redmine
+cd /data/redmine/config
+cp database.yml.example database.yml
+vi database.yml
+#只留production:其余全部注释
+  adapter: mysql
+  database: redmine
+  host: localhost
+  username: redmine
+  password: redmine
+  encoding: utf8
+ 
+vi config/environment.rb
+#插入下面一行
+config.action_controller.session = { :key => "_redmine_session", :secret => "275589819C2DE801B002DFED28FBC0736109C358"}
+#”275589819…..36109C358”就是mysql里面redmine库redmine用户密码的MD5值
+mysql>use mysql
+mysql>select Host,User,Password from user; #这样也能查看redmine用户密码的MD5值
+ 
+rake RAILS_ENV=production db:migrate    #生成数据库文件
+rake redmine:load_default_data RAILS_ENV=production  #输入默认语言zh
+ 
+/usr/local/bin/ruby /data/redmine/script/server -e production &   #启动服务
+ 
+vi /etc/rc.local
+/usr/local/bin/ruby /data/redmine/script/server -e production &    #加入开机启动
+ 
+netstat -an | grep 3000  #查看3000服务端口是否开启
+ 
+http://server-ip:3000     #访问方式
+初始用户名和密码都是admin  登录后设置默认语言为中文

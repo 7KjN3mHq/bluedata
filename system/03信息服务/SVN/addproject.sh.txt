@@ -1,0 +1,19 @@
+#!/bin/sh
+branch=$1
+project=$2
+svnadmin create /svn/$branch/$project
+chgrp -R subversion /svn/$branch/$project
+chmod 664 /svn/$branch/$project/db/rep-cache.db
+
+cd /tmp
+
+if [ $branch = iphone ]; then
+svn co http://svn.test.com/svn/$project
+else
+svn co http://svn.test.com/svn_$branch/$project
+fi
+
+cd $project
+svn mkdir tags trunk branches
+svn ci -m ""
+rm -rf /tmp/$project
