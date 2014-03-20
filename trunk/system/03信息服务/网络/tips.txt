@@ -1,3 +1,6 @@
+OpenVPN 配置后需要在 VPN Server 做虚拟网段的 NAT 才能访问物理网络内的其它服务器，如：
+iptables -t nat -A POSTROUTING -s 172.16.0.0/24 -j MASQUERADE
+
 多线程下载工具：
 axel -n 10 -vo . http://speedtest.dal05.softlayer.com/downloads/test100.zip
 
