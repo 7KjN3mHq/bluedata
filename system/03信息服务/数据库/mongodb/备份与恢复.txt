@@ -71,3 +71,6 @@ going into namespace [citys.system.indexes]
 另外mongodb还提供了mongoexport 和 mongoimport 这两个命令来导出或导入数据，导出的数据是json格式的。也可以实现备份和恢复的功能。例：
 mongoexport -d mixi_top_city_prod -c building_45 -q '{ "uid" : "10832545" }' > mongo_10832545.bson
 mongoimport -d mixi_top_city -c building_45 --file mongo_10832545.bson
+
+mongoexport -h 127.0.0.1 --port 27018 -d wallpaper_v3 -c imagepool -o /backup/mongodb/imagepool.json
+mongoimport -d wallpaper_v3 -c imagepool --drop --type json --file /backup/mongodb/imagepool.json
