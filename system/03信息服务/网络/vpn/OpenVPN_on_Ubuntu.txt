@@ -1,0 +1,107 @@
+安装：
+apt-get install openvpn libpam-pwdfile apache2-utils
+
+复制 OpenVPN 配置文件到 /etc/openvpn 下：
+cp -r /usr/share/doc/openvpn/examples/easy-rsa /etc/openvpn/
+cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz /etc/openvpn/
+gzip -d /etc/openvpn/server.conf.gz
+
+修改 vars 文件部分内容，修改部分如下：
+vi /etc/openvpn/easy-rsa/2.0/vars
+export KEY_COUNTRY="CN"
+export KEY_PROVINCE="SC"
+export KEY_CITY="ChengDu"
+export KEY_ORG="STM"
+export KEY_EMAIL="lanfeng@smalltreemedia.com"
+export KEY_EMAIL=lanfeng@smalltreemedia.com
+
+生成服务端 CA 证书：
+cd /etc/openvpn/easy-rsa/2.0
+cp openssl-1.0.0.cnf openssl.cnf
+source vars
+./clean-all
+./build-ca
+全部直接按回车。
+
+生成服务器端证书和密钥， server 为名字可以自定义：
+./build-key-server server
+
+生成客户端证书和密钥：
+./build-key client
+
+生成 Diffie Hellman 参数：
+./build-dh
+
+配置 pam 验证：
+vi /etc/pam.d/vuser
+auth required pam_pwdfile.so pwdfile /etc/openvpn/auth.txt
+account required pam_permit.so
+
+htpasswd -c /etc/openvpn/auth.txt lanfeng
+
+配置 OpenVPN 服务：
+cd keys
+cp ca.crt server.crt server.key dh1024.pem /etc/openvpn/
+vi /etc/openvpn/server.conf
+port 1074
+proto udp
+dev tun
+
+ca /etc/openvpn/ca.crt
+cert /etc/openvpn/server.crt
+key /etc/openvpn/server.key
+dh /etc/openvpn/dh1024.pem
+
+server 172.17.0.0 255.255.255.0
+push "redirect-gateway"
+push "route 119.81.133.58 255.255.255.0 route_net-gateway"
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"
+
+duplicate-cn     
+keepalive 10 120     
+comp-lzo  
+max-clients 100   
+user nobody     
+group nogroup     
+persist-key     
+persist-tun     
+tun-mtu 1480
+status /var/log/openvpn-status.log
+log /var/log/openvpn.log
+plugin /usr/lib/openvpn/openvpn-auth-pam.so "/etc/pam.d/vuser"
+verb 3     
+mute 20
+
+网络配置：
+vi /etc/sysctl.conf
+net.ipv4.ip_forward = 1
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+
+sysctl -p
+iptables -t nat -A POSTROUTING -s 172.17.0.0/16 -j MASQUERADE
+
+可加入 /etc/rc.local
+
+客户端的配置：
+需要把服务端文件 ca.crt client.crt client.key 放到 config 下，然后建立配置文件 hk.ovpn ，内容如下：
+client
+dev tun1
+proto udp
+remote 119.81.133.58 1074
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert client.crt
+key client.key
+reneg-sec 0
+tran-window 84600
+route 119.81.133.58 255.255.255.255 net_gateway
+comp-lzo
+verb 3
+auth-user-pass
