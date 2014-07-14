@@ -4,6 +4,9 @@ mysqldump --opt -uroot -ppassword database > dump.sql
 导出单个数据表 table
 mysqldump --opt -uroot -ppassword database table > dump.sql
 
+可以用下面的命令排除不需要的表
+mysqldump --opt -uroot -ppassword --ignore-table=database.table1 --ignore-table=database.table2 > dump.sql
+
 锁表后导出
 mysql> lock table shop_117 read;
 
