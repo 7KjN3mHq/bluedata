@@ -1,0 +1,22 @@
+a2enmod authnz_ldap ldap
+
+vi /etc/ldap/ldap.conf
+REFERRALS  off
+
+vi /etc/apache2/sites-enabled/000-default
+<Location /svn_win8/>
+DAV svn
+SVNListParentPath on
+SVNParentPath /svn/win8
+AuthzSVNAccessFile /svn/win8/conf/authz
+AuthType Basic
+AuthName "Subversion Repository"
+AuthBasicProvider ldap
+AuthzLDAPAuthoritative off
+AuthLDAPBindDN "software@stm.com"
+AuthLDAPBindPassword "123456"
+AuthLDAPURL "ldap://stm.com:389/DC=stm,DC=com?sAMAccountName?sub?(objectClass=*)"
+Require valid-user
+</Location>
+
+service apache2 restart
