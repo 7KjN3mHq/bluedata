@@ -12,7 +12,7 @@ AuthzSVNAccessFile /svn/win8/conf/authz
 AuthType Basic
 AuthName "Subversion Repository"
 AuthBasicProvider ldap
-AuthzLDAPAuthoritative off
+AuthzLDAPAuthoritative on
 AuthLDAPBindDN "software@stm.com"
 AuthLDAPBindPassword "123456"
 AuthLDAPURL "ldap://stm.com:389/DC=stm,DC=com?sAMAccountName?sub?(objectClass=*)"
