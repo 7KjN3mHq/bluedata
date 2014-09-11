@@ -22,6 +22,19 @@ s3cmd setacl --acl-public s3://<bucket>/<file>
 公开整个 bucket:
 s3cmd setacl --acl-public --recursive s3://<bucket>
 
+s3cmd 不能上传过大的文件。
+
+
+aws cli
+wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
+unzip awscli-bundle.zip
+./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+aws configure
+aws s3 cp local_file.tgz s3://thereoncewasans3bucket
+
+配置文件 ~/.aws/config
+s3cmd 有权限而 aws cli 无权限操作 bucket ，给相应 bucket 的 Authenticated Users 账号添加列表及上传下载权限。
+
 
 s3fs:
 http://code.google.com/p/s3fs/
