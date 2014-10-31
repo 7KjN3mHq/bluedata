@@ -1,0 +1,26 @@
+Download:
+https://www.atlassian.com/software/stash/download#4
+wget http://www.atlassian.com/software/stash/downloads/binary/atlassian-stash-3.4.0-x64.bin
+
+Install:
+apt-get install git
+chmod +x atlassian-stash-3.4.0-x64.bin
+./atlassian-stash-3.4.0-x64.bin
+
+MySQL:
+http://dev.mysql.com/downloads/connector/j/
+wget http://ftp.kaist.ac.kr/mysql/Downloads/Connector-J/mysql-connector-java-5.1.33.tar.gz
+tar zxvf mysql-connector-java-5.1.33.tar.gz
+cp mysql-connector-java-5.1.33/mysql-connector-java-5.1.33-bin.jar /opt/atlassian/stash/3.4.0/lib/
+/etc/init.d/atlstash restart
+
+mysql> CREATE DATABASE stash CHARACTER SET utf8 COLLATE utf8_bin;
+mysql> GRANT ALL PRIVILEGES ON stash.* TO 'stash'@'localhost' IDENTIFIED BY 'stash';
+mysql> FLUSH PRIVILEGES;
+mysql> QUIT
+
+HTTP:
+apt-get install rinetd
+vi /etc/rinetd.conf
+0.0.0.0 80 127.0.0.1 7990
+/etc/init.d/rinetd restart
