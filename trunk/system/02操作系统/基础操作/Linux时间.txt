@@ -1,3 +1,7 @@
+更改时区：
+dpkg-reconfigure tzdata
+
+
 date 命令设置时间：
 date -s 20080710
 date -s 21:19:50
