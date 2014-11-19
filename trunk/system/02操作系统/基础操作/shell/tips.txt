@@ -1,3 +1,10 @@
+sed 删除指定行
+sed -i '/TEST/d' test.txt
+sed 删除指定行的上一行
+sed -i -e :a -e '$!N;s/.*\n\(TEST\)/\1/;ta' -e 'P;D' test.txt
+awk 删除指定行的下一行
+awk '!NF{print;next};!/TEST/;/TEST/{print;getline;getline;print}' test.txt
+
 统计重复次数并排序：
 awk '{print $1}' file.txt | sort | uniq -c | sort -r
 
