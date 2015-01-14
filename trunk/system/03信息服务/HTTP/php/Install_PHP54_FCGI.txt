@@ -1,17 +1,17 @@
-以 FPM 模式安装 PHP5.3
+以 FPM 模式安装 PHP5.4
 
 
 软件下载：
 PHP5(http://www.php.net/downloads.php):
-wget http://www.php.net/get/php-5.3.23.tar.bz2/from/this/mirror -O php-5.3.23.tar.bz2
+wget http://cn2.php.net/get/php-5.4.36.tar.bz2/from/this/mirror -O php-5.4.36.tar.bz2
 
 安装依赖的包：
 apt-get install libmysqlclient-dev libgd2-xpm-dev libxml2-dev libcurl4-openssl-dev
 
 
 安装 PHP5.3:
-tar jxvf php-5.3.23.tar.bz2
-cd php-5.3.23
+tar jxvf php-5.4.36.tar.bz2
+cd php-5.4.36
 ./configure \
 --prefix=/usr/local/php \
 --enable-fpm \
@@ -53,8 +53,8 @@ make install
 Zend 的优化器，免费使用，如果加密了 PHP 程序文件，这是必须的。
 如果没有使用 Zend 优化器，PHP 进程的内存会难以释放。
 下载： http://www.zend.com/en/products/guard/downloads
-tar zxvf ZendGuardLoader-php-5.3-linux-glibc23-x86_64.tar.gz
-cp ZendGuardLoader-php-5.3-linux-glibc23-x86_64/php-5.3.x/ZendGuardLoader.so /usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/
+tar zxvf ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64.tar.gz
+cp ZendGuardLoader-70429-PHP-5.4-linux-glibc23-x86_64/php-5.4.x/ZendGuardLoader.so /usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/
 
 安装 memcache:
 下载： http://pecl.php.net/package/memcache
@@ -101,7 +101,7 @@ cd ..
 cp -r xhprof_html xhprof_lib /path/to/project/
 
 
-PHP5.3 的配置：
+PHP5.4 的配置：
 vi /usr/local/php/etc/php.ini
 # 设置默认时区
 date.timezone = UTC
@@ -117,7 +117,7 @@ mysqli.allow_persistent = Off
 
 # 开启 eAccelerator
 [eAccelerator]
-zend_extension="/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/eaccelerator.so"
+zend_extension="/usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/eaccelerator.so"
 eaccelerator.shm_size="32"
 eaccelerator.cache_dir="/dev/shm"
 eaccelerator.enable="1"
@@ -144,7 +144,7 @@ sysctl -p
 
 # 在 eAccelerator 之后启用 ZendOptimizer ，避免 eaccelerator.so 不能加载。
 [Zend]
-zend_extension="/usr/local/php/lib/php/extensions/no-debug-non-zts-20090626/ZendGuardLoader.so"
+zend_extension="/usr/local/php/lib/php/extensions/no-debug-non-zts-20100525/ZendGuardLoader.so"
 
 # 开启 memcache
 [Memcache]

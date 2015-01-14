@@ -1,6 +1,6 @@
 ﻿在 Ubuntu 上安装 Nginx
 
-http://nginx.org/en/download.html
+http://nginx.org/en/linux_packages.html#stable
 wget http://nginx.org/keys/nginx_signing.key
 apt-key add nginx_signing.key
 vi /etc/apt/sources.list
