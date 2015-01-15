@@ -1,4 +1,8 @@
 -----
+vi /etc/default/locale
+LANG="C"
+
+-----
 cd /etc/apt
 mv sources.list sources.list~
 wget http://mirrors.163.com/.help/sources.list.lucid -O sources.list
