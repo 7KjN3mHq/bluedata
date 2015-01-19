@@ -9,7 +9,7 @@ wget http://cn2.php.net/get/php-5.4.36.tar.bz2/from/this/mirror -O php-5.4.36.ta
 apt-get install libmysqlclient-dev libgd2-xpm-dev libxml2-dev libcurl4-openssl-dev
 
 
-安装 PHP5.3:
+安装 PHP5.4:
 tar jxvf php-5.4.36.tar.bz2
 cd php-5.4.36
 ./configure \

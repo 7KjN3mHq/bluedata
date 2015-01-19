@@ -11,6 +11,8 @@ apt-get install vsftpd
 
 配置：
 vi /etc/vsftpd.conf
+改默认端口：
+listen_port=2121
 
 禁止匿名用户登录：
 anonymous_enable=NO
@@ -40,3 +42,6 @@ pasv_max_port=30099
 vi /etc/passwd
 www-data:x:33:33:www-data:/home:/bin/false
 把 shell 改为 /bin/sh
+
+Ubuntu 下的重启：
+service vsftpd restart
