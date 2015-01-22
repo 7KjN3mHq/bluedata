@@ -1,5 +1,8 @@
+安装：
 apt-get install awstats
 
+基本配置：
+vi /etc/awstats/awstats.conf
 # 解决中文搜索引擎统计问题
 LoadPlugin="decodeutfkeys"
 需要安装 URI/Escape.pm
@@ -7,42 +10,36 @@ apt-get install liburi-perl
 
 LogFormat=1
 DNSLookup=0
-
-vi /etc/awstats/awstats.conf
 ExtraTrackedRowsLimit=500000
 
-
-wget http://www.bluedata.org/software/linux/awstats/lib.tgz
+搜索引擎的补充：
+wget http://www.chedong.com/tech/lib.tgz
 tar zxvf lib.tgz
-cp -rf lib/* /usr/share/awstats/lib/
-
-wget http://www.google.com/tools/dlpage/res/chrome/images/chrome-16.png -O /usr/share/awstats/icon/browser/chrome.png
-
+cp -f lib/*.pm /usr/share/awstats/lib/
 
 插件：
 apt-get install libgeo-ip-perl
-wget http://www.bluedata.org/software/linux/awstats/GeoIP.dat -O /usr/share/awstats/plugins/GeoIP.dat
+wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+gzip -d GeoIP.dat.gz
+cp -f GeoIP.dat /usr/share/awstats/plugins/
 vi /etc/awstats/awstats.conf
 LoadPlugin="geoip GEOIP_STANDARD /usr/share/awstats/plugins/GeoIP.dat"
 
 apt-get install libnet-xwhois-perl
-cd /usr/share/awstats/plugins
-wget http://www.bluedata.org/software/linux/awstats/qqwry/QQWry.Dat
-wget http://www.bluedata.org/software/linux/awstats/qqwry/qqhostinfo.pm
-wget http://www.bluedata.org/software/linux/awstats/qqwry/qqwry.pl
+wget https://derekdata.googlecode.com/files/awstats_plugins_qqhostinfo.zip
+unzip -d awstats_plugins_qqhostinfo.zip
+cp -f awstats_plugins_qqhostinfo/qq* /usr/share/awstats/plugins/
 
-vi qqhostinfo.pm
+vi /usr/share/awstats/plugins/qqhostinfo.pm
 push @INC, "/usr/share/awstats/plugins/plugins";
 require "/usr/share/awstats/plugins/qqwry.pl";
 
-vi qqwry.pl
-my $ipfile="/usr/share/awstats/plugins/QQWry.Dat";
+vi /usr/share/awstats/plugins/qqwry.pl
+my $ipfile="/usr/share/awstats/plugins/qqwry.dat";
 
 vi /etc/awstats/awstats.conf.local
 LoadPlugin="qqhostinfo"
 
-
-vi /etc/awstats/awstats.conf.local
 ExtraSectionName1="Baidu crawls - Top 50"
 ExtraSectionCodeFilter1="200 304"
 ExtraSectionCondition1="UA,(.*Baiduspider.*)"
@@ -99,55 +96,91 @@ MaxNbOfExtra5=50
 MinHitExtra5=1
 
 
-vi /etc/awstats/awstats.nvkan.com.conf
+创建站点配置文件：
+vi /etc/awstats/awstats.domain.conf
 Include "awstats.conf"
-LoadPlugin="decodeutfkeys"
-LogFile="/var/log/apache2/access_log.%YYYY-24%MM-24%DD-24"
-SiteDomain="nvkan.com"
-HostAliases="www.nvkan.com old.nvkan.com www.shoumeiren.com shoumeiren.com bbs.nvkan.com join.nvkan.com 35.nvkan.com zone.nvkan.com blog.nvkan.com shop.nvkan.com maga.nvkan.com"
-DirData="/home/awstats/data/nvkan/"
+LogFile="/var/log/nginx/domain_access.log.1"
+LogFormat="%virtualname %host %other %logname %time1 %methodurl %code %bytesd %refererquot %uaquot"
+SiteDomain="domain.com"
+HostAliases="www.domain.com"
+DirData="/data/www/awstats/data/domain/"
+
+Nginx 下创建 AWStats 的虚拟主机：
+server {
+    listen  80;
+    server_name  log.domain.com;
+    root  /data/www/awstats/wwwroot;
+    index  index.html;
+    location /awstatsclasses/ {
+        alias /usr/share/awstats/lib/;
+    }
+    location /awstats-icon/ {
+        alias /usr/share/awstats/icon/;
+    }
+    location /awstatscss/ {
+        alias /usr/share/doc/awstats/examples/css/;
+    }
+    location /cgi-bin/awstats.pl {
+        fastcgi_pass  127.0.0.1:8999;
+        fastcgi_param  SCRIPT_FILENAME  /usr/lib/cgi-bin/awstats.pl;
+        include  fastcgi_params;
+        auth_basic  "AWStats Access";
+        auth_basic_user_file  /etc/awstats/htpasswd.users;
+    }
+}
+
+自定义日志格式：
+log_format  custom   '$host $remote_addr - $remote_user [$time_local] '
+                     '"$request" $status $body_bytes_sent "$http_referer" '
+                     '"$http_user_agent" "$http_x_forwarded_for"';
 
 
-vi /etc/apache2/sites-enabled/nvkan
-<VirtualHost *:80>
-DocumentRoot "/home/shoumeiren"
-ServerName www.nvkan.com
+配置 perl-fpm :
+apt-get install libfcgi-perl
+wget http://nginxlibrary.com/downloads/perl-fcgi/fastcgi-wrapper -O /usr/bin/fastcgi-wrapper.pl
+wget http://nginxlibrary.com/downloads/perl-fcgi/perl-fcgi -O /etc/init.d/perl-fcgi
+chmod +x /usr/bin/fastcgi-wrapper.pl
+chmod +x /etc/init.d/perl-fcgi
+update-rc.d perl-fcgi defaults
 
-Alias /awstats-icon /usr/share/awstats/icon
-<Directory /usr/share/awstats/icon>
-    Options None
-    AllowOverride None
-    Order allow,deny
-    Allow from all
-</Directory>
+vi /etc/init.d/perl-fcgi
+FASTCGI_USER=www-data
+用户需要有 shell
 
-Alias /awstats /home/awstats/www
-<Directory "/home/awstats/www">
-    Options None
-    AllowOverride None
-    Order allow,deny
-    Allow from all
-    AuthName "AWStats Access"
-    AuthType Basic
-    AuthUserFile /etc/apache2/htpasswd.users
-    Require valid-user
-</Directory>
+/etc/init.d/perl-fcgi start
 
-Alias /awstats-icon /usr/share/awstats/icon
-<Directory /usr/share/awstats/icon>
-  Options None
-  AllowOverride None
-  Order allow,deny
-  Allow from all
-</Directory>
+apt-get install apache2-utils
+htpasswd -c /etc/awstats/htpasswd.users log
 
-ScriptAlias /awstats /usr/lib/cgi-bin
-</VirtualHost>
 
-htpasswd -c /etc/awstats/htpasswd.setup awstats
+手动更新：
+/usr/lib/cgi-bin/awstats.pl -update -databasebreak=day -config=domain
 
-/usr/lib/cgi-bin/awstats.pl -update -databasebreak=day -config=nvkan.com
+浏览：
+http://log.domain.com/cgi-bin/awstats.pl?config=domain&year=2015&month=01&databasebreak=day&day=22
 
-http://www.nvkan.com/cgi-bin/awstats.pl?config=nvkan.com&year=2009&month=02&databasebreak=day&day=16
+自动更新：
+vi /etc/logrotate.d/nginx
+        postrotate
+                [ -f /var/run/nginx.pid ] && kill -USR1 `cat /var/run/nginx.pid`
+                /usr/lib/cgi-bin/awstats.pl -update -databasebreak=day -config=domain
+        endscript
 
-vi /usr/lib/cgi-bin/awstats.pl
+便于浏览：
+vi /data/www/awstats/wwwroot/index.html
+<html>
+ <head>
+  <title>AWStats</title>
+<script type="text/javascript">
+   var ndate , M , D , Y ,url;
+   ndate = new Date();
+   M= (ndate.getMonth() + 1);
+   D= ndate.getDate();
+   Y= ndate.getFullYear();
+url = "/cgi-bin/awstats.pl?config=domain&day="+ D +"&month="+ M +"&year="+ Y +"&databasebreak=day";
+window.location.href=url;
+</script>
+ </head>
+ <body>
+ </body>
+</html>
