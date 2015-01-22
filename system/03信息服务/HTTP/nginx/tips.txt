@@ -1,2 +1,8 @@
 ngx_http_upstream_keepalive 模块可大幅降低连接流量。
 http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive
+
+打开目录浏览
+location /spider/ {
+    autoindex on;
+    autoindex_localtime on;
+}

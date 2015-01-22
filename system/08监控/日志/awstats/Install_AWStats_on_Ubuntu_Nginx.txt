@@ -109,7 +109,7 @@ Nginx 下创建 AWStats 的虚拟主机：
 server {
     listen  80;
     server_name  log.domain.com;
-    root  /data/www/awstats/wwwroot;
+    root  /data/www/awstats;
     index  index.html;
     location /awstatsclasses/ {
         alias /usr/share/awstats/lib/;
