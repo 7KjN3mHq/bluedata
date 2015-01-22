@@ -1,3 +1,5 @@
+Ubuntu 下无法运行了，已更新到 perl-fpm.txt
+
 安装所需的 perl fcgi 模块：
 apt-get install libfcgi-perl libfcgi-procmanager-perl
 

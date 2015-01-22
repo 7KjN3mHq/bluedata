@@ -1,0 +1,21 @@
+apt-get install libfcgi-perl
+wget http://nginxlibrary.com/downloads/perl-fcgi/fastcgi-wrapper -O /usr/bin/fastcgi-wrapper.pl
+wget http://nginxlibrary.com/downloads/perl-fcgi/perl-fcgi -O /etc/init.d/perl-fcgi
+chmod +x /usr/bin/fastcgi-wrapper.pl
+chmod +x /etc/init.d/perl-fcgi
+update-rc.d perl-fcgi defaults
+
+vi /etc/init.d/perl-fcgi
+FASTCGI_USER=www-data
+用户需要有 shell
+
+/etc/init.d/perl-fcgi start
+
+Nginx 的配置：
+    location /cgi-bin/awstats.pl {
+        fastcgi_pass  127.0.0.1:8999;
+        fastcgi_param  SCRIPT_FILENAME  /usr/lib/cgi-bin/awstats.pl;
+        include  fastcgi_params;
+        auth_basic  "AWStats Access";
+        auth_basic_user_file  /etc/awstats/htpasswd.users;
+    }
