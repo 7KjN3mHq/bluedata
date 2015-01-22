@@ -8,25 +8,6 @@ cd /usr/local/munin/etc/plugins
 ln -s /usr/local/munin/lib/plugins/redis_ redis
 
 
-memcached:
-https://github.com/mhwest13/Memcached-Munin-Plugin
-wget https://github.com/mhwest13/Memcached-Munin-Plugin/archive/master.zip
-unzip master.zip
-mv Memcached-Munin-Plugin-master/memcached_multi_ /usr/local/munin/lib/plugins/memcached_multi_
-vi /usr/local/munin/etc/plugin-conf.d/memcached.conf
-[memcached_*]
-env.host 127.0.0.1
-env.port 11412
-cd /usr/local/munin/etc/plugins
-ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_bytes
-ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_commands
-ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_conns
-ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_evictions
-ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_items
-ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_memory
-ln -s /usr/local/munin/lib/plugins/memcached_multi_ memcached_multi_unfetched
-
-
 uwsgi:
 https://github.com/jarus/munin-uwsgi
 wget -O /usr/local/munin/lib/plugins/uwsgi_ https://raw.github.com/jarus/munin-uwsgi/master/uwsgi_
@@ -49,9 +30,12 @@ ln -s /usr/local/munin/lib/plugins/uwsgi_ uwsgi_vsz
 
 
 nginx:
+apt-get install libwww-perl
+cd /usr/local/munin/lib/plugins
 ln -s /usr/local/munin/lib/plugins/nginx_request nginx_request
 ln -s /usr/local/munin/lib/plugins/nginx_status nginx_status
 
+nginx config:
     location /nginx_status {
         stub_status  on;
         access_log  off;
@@ -136,6 +120,16 @@ ln -s /usr/local/munin/lib/plugins/phpfpm_connections phpfpm_connections
 ln -s /usr/local/munin/lib/plugins/phpfpm_memory phpfpm_memory
 ln -s /usr/local/munin/lib/plugins/phpfpm_status phpfpm_status
 ln -s /usr/local/munin/lib/plugins/phpfpm_processes phpfpm_processes
+
+Nginx config:
+    location /status
+    {
+        include fastcgi_params_php;
+        fastcgi_pass 127.0.0.1:9000;
+    }
+
+php-fpm config:
+pm.status_path = /status
 
 
 exim:

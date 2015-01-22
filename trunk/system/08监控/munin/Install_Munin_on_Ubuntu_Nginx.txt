@@ -1,0 +1,185 @@
+安装：
+apt-get install munin munin-node spawn-fcgi libcgi-fast-perl
+
+配置 munin fcgi :
+vi /etc/munin/munin-conf.d/90-fcgi
+graph_strategy cgi
+html_strategy cgi
+cgiurl_graph /munin/munin-cgi-graph
+
+vi /etc/init.d/munin-fcgi
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          munin-fcgi
+# Required-Start:    $remote_fs $syslog $network
+# Required-Stop:     $remote_fs $syslog $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start munin FCGI processes at boot time
+# Description:       Start the FCGI processes behind http://munin.*/
+### END INIT INFO
+
+graph_pidfile="/var/run/munin/fcgi_graph.pid"
+# Ubuntu 12.10: /usr/lib/cgi-bin/munin-cgi-graph
+graph_cgi="/usr/lib/munin/cgi/munin-cgi-graph"
+html_pidfile="/var/run/munin/fcgi_html.pid"
+# Ubuntu 12.10: /usr/lib/cgi-bin/munin-cgi-html
+html_cgi="/usr/lib/munin/cgi/munin-cgi-html"
+
+retval=0
+
+. /lib/lsb/init-functions
+
+start() {
+  echo -n "Starting munin graph FastCGI: "
+  start_daemon -p ${graph_pidfile} /usr/bin/spawn-fcgi -u munin -g munin \
+      -s /var/run/munin/fastcgi-graph.sock -U www-data ${graph_cgi}
+  echo
+  echo -n "Starting munin html FastCGI: "
+  start_daemon -p ${html_pidfile} /usr/bin/spawn-fcgi -u munin -g munin \
+      -s /var/run/munin/fastcgi-html.sock -U www-data ${html_cgi}
+  echo
+  retval=$?
+}
+stop() {
+  echo -n "Stopping munin graph FastCGI: "
+  killproc -p ${graph_pidfile} ${graph_cgi} -QUIT
+  echo
+  echo -n "Stopping munin html FastCGI: "
+  killproc -p ${html_pidfile} ${html_cgi} -QUIT
+  echo
+  retval=$?
+}
+
+case "$1" in
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  restart)
+    stop
+    start
+  ;;
+  *)
+    echo "Usage: munin-fcgi {start|stop|restart}"
+    exit 1
+  ;;
+esac
+exit $retval
+
+chmod +x /etc/init.d/munin-fcgi
+chown munin /var/log/munin/munin-cgi-*
+/etc/init.d/munin-fcgi start
+update-rc.d munin-fcgi defaults
+
+
+Nginx 设置：
+    location ~ ^/munin/munin-cgi-graph/ {
+        include fastcgi_params;
+        fastcgi_split_path_info ^(/munin/munin-cgi-graph)(.*);
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_pass unix:/var/run/munin/fastcgi-graph.sock;
+        auth_basic  "Munin Access";
+        auth_basic_user_file  /etc/munin/htpasswd.users;
+    }
+    location /munin/static/ {
+        alias /etc/munin/static/;
+        expires modified +1w;
+    }
+    location /munin/ {
+        include fastcgi_params;
+        fastcgi_split_path_info ^(/munin)(.*);
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_pass unix:/var/run/munin/fastcgi-html.sock;
+        auth_basic  "Munin Access";
+        auth_basic_user_file  /etc/munin/htpasswd.users;
+   }
+
+/etc/init.d/nginx reload
+
+
+扩展插件：
+MySQL:
+https://github.com/kjellm/munin-mysql
+apt-get install libdbi-perl libdbd-mysql-perl
+
+GRANT PROCESS, SUPER ON *.* TO '<USER>'@'localhost' IDENTIFIED BY '<PASSWORD>';
+FLUSH PRIVILEGES;
+
+wget https://github.com/kjellm/munin-mysql/archive/master.zip
+unzip master
+cd munin-mysql-master
+vi Makefile
+CONFIG_DIR:=/etc/munin
+PLUGIN_DIR:=/usr/share/munin/plugins
+
+vi mysql.conf
+env.mysqlconnection DBI:mysql:
+env.mysqluser <USER>
+env.mysqlpassword <PASSWORD>
+
+make install
+
+munin-run mysql --debug
+
+Nginx:
+apt-get install libwww-perl
+cd /etc/munin/plugins
+ln -s /usr/share/munin/plugins/nginx_request nginx_request
+ln -s /usr/share/munin/plugins/nginx_status nginx_status
+
+Nginx 设置：
+    location /nginx_status {
+        stub_status  on;
+        access_log  off;
+        allow  127.0.0.1;
+        deny  all;
+    }
+
+Memcached:
+https://github.com/mhwest13/Memcached-Munin-Plugin
+wget https://github.com/mhwest13/Memcached-Munin-Plugin/archive/master.zip
+unzip master.zip
+mv Memcached-Munin-Plugin-master/memcached_multi_ /usr/share/munin/plugins/memcached_multi_
+vi /etc/munin/plugin-conf.d/memcached.conf
+[memcached_*]
+env.host 127.0.0.1
+env.port 11211
+cd /etc/munin/plugins
+ln -s /usr/share/munin/plugins/memcached_multi_ memcached_multi_bytes
+ln -s /usr/share/munin/plugins/memcached_multi_ memcached_multi_commands
+ln -s /usr/share/munin/plugins/memcached_multi_ memcached_multi_conns
+ln -s /usr/share/munin/plugins/memcached_multi_ memcached_multi_evictions
+ln -s /usr/share/munin/plugins/memcached_multi_ memcached_multi_items
+ln -s /usr/share/munin/plugins/memcached_multi_ memcached_multi_memory
+ln -s /usr/share/munin/plugins/memcached_multi_ memcached_multi_unfetched
+
+php-fpm:
+apt-get install libwww-perl
+https://github.com/tjstein/php5-fpm-munin-plugins
+wget https://github.com/tjstein/php5-fpm-munin-plugins/archive/master.zip
+unzip master.zip
+cd php5-fpm-munin-plugins-master
+find ./ -type f -name "phpfpm_*" -exec perl -p -i -e 's/php5-fpm/php-fpm/g' {} \;
+find ./ -type f -name "phpfpm_*" -exec perl -p -i -e 's/PHP5-FPM/PHP-FPM/g' {} \;
+chmod +x phpfpm_*
+mv phpfpm_* /usr/share/munin/plugins/
+cd /etc/munin/plugins
+ln -s /usr/share/munin/plugins/phpfpm_average phpfpm_average
+ln -s /usr/share/munin/plugins/phpfpm_connections phpfpm_connections
+ln -s /usr/share/munin/plugins/phpfpm_memory phpfpm_memory
+ln -s /usr/share/munin/plugins/phpfpm_status phpfpm_status
+ln -s /usr/share/munin/plugins/phpfpm_processes phpfpm_processes
+
+Nginx 设置：
+    location /status
+    {
+        include fastcgi_params_php;
+        fastcgi_pass 127.0.0.1:9000;
+    }
+
+php-fpm 设置：
+pm.status_path = /status
