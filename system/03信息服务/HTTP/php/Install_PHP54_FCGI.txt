@@ -48,6 +48,9 @@ apt-get install autoconf
 ./configure --enable-eaccelerator=shared --with-php-config=/usr/local/php/bin/php-config
 make
 make install
+cp control.php /var/www/ea.php
+vi /var/www/ea.php
+$auth = false;
 
 安装 ZendOptimizer:
 Zend 的优化器，免费使用，如果加密了 PHP 程序文件，这是必须的。
@@ -103,7 +106,7 @@ cp -r xhprof_html xhprof_lib /path/to/project/
 
 PHP5.4 的配置：
 vi /usr/local/php/etc/php.ini
-# 设置默认时区
+# 设置默认时区，中国时区为 PRC
 date.timezone = UTC
 # 开启短标记支持
 short_open_tag = On
@@ -136,7 +139,7 @@ eaccelerator.sessions="shm_only"
 eaccelerator.content="shm_only"
 eaccelerator.allowed_admin_path = "/var/www"
 
-要增大 eaccelerator.shm_size 需要修改内核参数共享内存的大小：
+要增大 eaccelerator.shm_size 到 128MB 需要修改内核参数共享内存的大小：
 echo -ne "
 kernel.shmmax = 134217728
 " >> /etc/sysctl.conf

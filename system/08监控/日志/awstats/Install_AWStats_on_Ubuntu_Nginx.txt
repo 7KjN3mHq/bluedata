@@ -27,7 +27,7 @@ LoadPlugin="geoip GEOIP_STANDARD /usr/share/awstats/plugins/GeoIP.dat"
 
 apt-get install libnet-xwhois-perl
 wget https://derekdata.googlecode.com/files/awstats_plugins_qqhostinfo.zip
-unzip -d awstats_plugins_qqhostinfo.zip
+unzip awstats_plugins_qqhostinfo.zip
 cp -f awstats_plugins_qqhostinfo/qq* /usr/share/awstats/plugins/
 
 vi /usr/share/awstats/plugins/qqhostinfo.pm
@@ -99,7 +99,7 @@ MinHitExtra5=1
 创建站点配置文件：
 vi /etc/awstats/awstats.domain.conf
 Include "awstats.conf"
-LogFile="/var/log/nginx/domain_access.log.1"
+LogFile="/var/log/nginx/domain_access.log"
 LogFormat="%virtualname %host %other %logname %time1 %methodurl %code %bytesd %refererquot %uaquot"
 SiteDomain="domain.com"
 HostAliases="www.domain.com"
@@ -160,14 +160,26 @@ htpasswd -c /etc/awstats/htpasswd.users log
 http://log.domain.com/cgi-bin/awstats.pl?config=domain&year=2015&month=01&databasebreak=day&day=22
 
 自动更新：
-vi /etc/logrotate.d/nginx
+mv /etc/logrotate.d/nginx /etc/nginx/logrotate.conf
+vi /etc/nginx/logrotate.conf
+/var/log/nginx/*.log {
+        daily
+        missingok
+        rotate 7
+        nocompress
+        notifempty
+        create 640 www-data adm
+        sharedscripts
         postrotate
                 [ -f /var/run/nginx.pid ] && kill -USR1 `cat /var/run/nginx.pid`
-                /usr/lib/cgi-bin/awstats.pl -update -databasebreak=day -config=domain
         endscript
+}
+
+vi /etc/crontab
+59 23 * * * root logrotate -f /etc/nginx/logrotate.conf
 
 便于浏览：
-vi /data/www/awstats/wwwroot/index.html
+vi /data/www/awstats/index.html
 <html>
  <head>
   <title>AWStats</title>
