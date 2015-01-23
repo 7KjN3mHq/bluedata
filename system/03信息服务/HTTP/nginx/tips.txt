@@ -6,3 +6,10 @@ location /spider/ {
     autoindex on;
     autoindex_localtime on;
 }
+
+屏蔽某种 HTTP 请求模式：
+  location /analytics/ {
+    if ($request_method = GET ) {
+      return 403;
+    }
+  }
