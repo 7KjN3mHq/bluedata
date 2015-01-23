@@ -117,6 +117,9 @@ session.gc_maxlifetime = 3600
 # 禁用 mysql 长连接
 mysql.allow_persistent = Off
 mysqli.allow_persistent = Off
+# 指定 mysql socket 文件位置，使用 localhost 主机名连接时是通过 socket 连接，可能找不到文件。
+mysql.default_socket = /var/run/mysqld/mysqld.sock
+mysqli.default_socket = /var/run/mysqld/mysqld.sock
 
 # 开启 eAccelerator
 [eAccelerator]
