@@ -52,7 +52,7 @@ http {
     gzip  on;
     gzip_min_length  1100;
     gzip_buffers  4 8k;
-    gzip_types  text/css text/xml application/x-javascript text/plain;
+    gzip_types  text/css text/xml text/plain application/javascript;
     gzip_comp_level  9;
     gzip_proxied  any;
     gzip_vary  on;
