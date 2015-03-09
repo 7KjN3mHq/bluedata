@@ -1,17 +1,30 @@
 Download:
 https://www.atlassian.com/software/stash/download#4
-wget http://www.atlassian.com/software/stash/downloads/binary/atlassian-stash-3.6.0-x64.bin
+wget http://www.atlassian.com/software/stash/downloads/binary/atlassian-stash-3.7.0-x64.bin
+
 
 Install:
 apt-get install git
-chmod +x atlassian-stash-3.6.0-x64.bin
-./atlassian-stash-3.6.0-x64.bin
+chmod +x atlassian-stash-3.7.0-x64.bin
+./atlassian-stash-3.7.0-x64.bin
+
+cd /var
+mv atlassian /data ; ln -s /data/atlassian .
+
 
 MySQL:
+vi /etc/apt/sources.list
+deb http://repo.percona.com/apt trusty main
+deb-src http://repo.percona.com/apt trusty main
+
+apt-key adv --keyserver keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A
+apt-get update
+apt-get install percona-server-server-5.6 percona-server-client-5.6
+
 http://dev.mysql.com/downloads/connector/j/
 wget http://ftp.kaist.ac.kr/mysql/Downloads/Connector-J/mysql-connector-java-5.1.33.tar.gz
 tar zxvf mysql-connector-java-5.1.33.tar.gz
-cp mysql-connector-java-5.1.33/mysql-connector-java-5.1.33-bin.jar /opt/atlassian/stash/3.6.0/lib/
+cp mysql-connector-java-5.1.33/mysql-connector-java-5.1.33-bin.jar /opt/atlassian/stash/3.7.0/lib/
 /etc/init.d/atlstash restart
 
 mysql> CREATE DATABASE stash CHARACTER SET utf8 COLLATE utf8_bin;
@@ -19,11 +32,49 @@ mysql> GRANT ALL PRIVILEGES ON stash.* TO 'stash'@'localhost' IDENTIFIED BY 'sta
 mysql> FLUSH PRIVILEGES;
 mysql> QUIT
 
+
 HTTP:
 apt-get install rinetd
 vi /etc/rinetd.conf
 0.0.0.0 80 127.0.0.1 7990
 /etc/init.d/rinetd restart
 
-ÈÕÖ¾·ÖÎö£º
+
+log:
 https://bitbucket.org/ssaasen/stash-log-parser
+
+vi log.sh
+#!/bin/bash
+grep git $1 > log.txt.tmp
+echo "ip address | protocol | request id of the format | username | date/time | action / request details | labels | response time in millis | session-id" > log.txt
+exec < log.txt.tmp
+while read line
+do
+username=`echo "$line" | cut -d '|' -f 4`
+if [ $username != "-" ]; then
+echo $line >> log.txt
+fi
+done
+exec < /dev/tty
+rm -f log.txt.tmp
+
+
+backup:
+vi /usr/local/sbin/backup.sh
+#!/bin/bash
+day=`date +%u`
+passwd=`grep password /root/.my.cnf | awk '{print $NF}'`
+dbname=`mysql -uroot -p$passwd -e 'show databases' | cut -d \| -f 1 | grep -v Database | grep -v information_schema | grep -v performance_schema`
+
+rm -rf /backup/mysql/$day
+mkdir -p /backup/mysql/$day
+
+for db in $dbname; do
+    mysqldump --opt -uroot -p$passwd $db | gzip > /backup/mysql/$day/$db.sql.gz
+done
+
+chmod +x /usr/local/sbin/backup.sh
+mkdir -p /backup/mysql
+
+vi /etc/crontab
+0 0 * * * root /usr/local/sbin/backup.sh
